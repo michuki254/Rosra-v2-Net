@@ -1,0 +1,394 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+@{
+    bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+    int currentYear = DateTime.Now.Year;
+}
+
+<div class="tab-content-container">
+    <h5 class="mb-3">Potential Estimates</h5>
+    
+    <div class="row">
+        <!-- Left side (1/3 width) -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Location Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Country</label>
+                        <select class="form-select @(isViewMode ? "bg-light" : "")" id="country" name="Country" @(isViewMode ? "disabled" : "")>
+                            <option value="">Select a country</option>
+                            <option value="US">United States</option>
+                            <option value="CA">Canada</option>
+                            <option value="UK">United Kingdom</option>
+                            <option value="AU">Australia</option>
+                            <option value="KE">Kenya</option>
+                            <option value="NG">Nigeria</option>
+                            <option value="ZA">South Africa</option>
+                            <option value="IN">India</option>
+                            <option value="CN">China</option>
+                            <option value="JP">Japan</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">State/Region</label>
+                        <select class="form-select @(isViewMode ? "bg-light" : "")" id="region" name="Region" @(isViewMode ? "disabled" : "")>
+                            <option value="">Select a state/region</option>
+                            <!-- Regions will be populated dynamically based on the selected country -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="city" name="City" value="@Model.City" placeholder="Enter city name" @(isViewMode ? "readonly" : "")>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Currency</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="currency-symbol">$</span>
+                            <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="currency" name="Currency" value="@Model.Currency" placeholder="Currency" @(isViewMode ? "readonly" : "")>
+                            <input type="hidden" id="currencySymbol" name="CurrencySymbol" value="@Model.CurrencySymbol">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Financial Year</label>
+                        <select class="form-select @(isViewMode ? "bg-light" : "")" id="financialYear" name="FinancialYear" @(isViewMode ? "disabled" : "")>
+                            <option value="">Select financial year</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Financial Data Section -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Financial Data (<span id="financial-year-display">2018</span>)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Actual OSR in <span class="year-display">2018</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="actual-osr-currency">$</span>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualOsr" name="ActualOsr" value="@(Model.ActualOsr?.ToString("#,##0.##"))" placeholder="Enter actual OSR" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Budgeted OSR in <span class="year-display">2018</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="budgeted-osr-currency">$</span>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="budgetedOsr" name="BudgetedOsr" value="@(Model.BudgetedOsr?.ToString("#,##0.##"))" placeholder="Enter budgeted OSR" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Population in <span class="year-display">2018</span></label>
+                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="population" name="Population" value="@(Model.Population?.ToString("#,##0"))" placeholder="Enter population" @(isViewMode ? "readonly" : "")>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">GDP per capita in <span class="year-display">2018</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="gdp-currency">$</span>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="gdpPerCapita" name="GdpPerCapita" value="@(Model.GdpPerCapita?.ToString("#,##0.##"))" placeholder="Enter GDP per capita" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right side (2/3 width) -->
+        <div class="col-md-8">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Project Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="form-floating">
+                            <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="projectName" name="ProjectName" value="@Model.ProjectName" placeholder="Enter project name" @(isViewMode ? "readonly" : "")>
+                            <label for="projectName">Project Name</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Project Description</label>
+                        <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="projectDescription" name="ProjectDescription" rows="4" placeholder="Enter a detailed description of the project" @(isViewMode ? "readonly" : "")>@Model.ProjectDescription</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Key Objectives</label>
+                        <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="keyObjectives" name="KeyObjectives" rows="4" placeholder="Enter the key objectives of the project" @(isViewMode ? "readonly" : "")>@Model.KeyObjectives</textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" class="form-control @(isViewMode ? "bg-light" : "")" id="startDate" name="StartDate" value="@Model.StartDate?.ToString("yyyy-MM-dd")" @(isViewMode ? "readonly" : "")>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">End Date</label>
+                                <input type="date" class="form-control @(isViewMode ? "bg-light" : "")" id="endDate" name="EndDate" value="@Model.EndDate?.ToString("yyyy-MM-dd")" @(isViewMode ? "readonly" : "")>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set the selected country based on the model
+        const countrySelect = document.getElementById('country');
+        const countryValue = '@Model.Country';
+        if (countryValue) {
+            for (let i = 0; i < countrySelect.options.length; i++) {
+                if (countrySelect.options[i].value === countryValue) {
+                    countrySelect.options[i].selected = true;
+                    break;
+                }
+            }
+        }
+        
+        // Number formatting with commas
+        const numberFormatInputs = document.querySelectorAll('.number-format');
+        
+        // Function to format number with commas
+        function formatNumberWithCommas(value) {
+            if (!value) return '';
+            
+            // Remove any existing commas and non-numeric characters except decimal point
+            value = value.replace(/,/g, '').replace(/[^\d.]/g, '');
+            
+            // Check if it's a valid number
+            if (isNaN(parseFloat(value))) return '';
+            
+            // Split by decimal point
+            const parts = value.split('.');
+            
+            // Format the integer part with commas
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            
+            // Join back with decimal part if exists
+            return parts.length > 1 ? parts[0] + '.' + parts[1] : parts[0];
+        }
+        
+        // Add event listeners to format numbers on input
+        numberFormatInputs.forEach(input => {
+            // Format on blur (when user leaves the field)
+            input.addEventListener('blur', function() {
+                this.value = formatNumberWithCommas(this.value);
+            });
+            
+            // On focus, remove commas for easier editing
+            input.addEventListener('focus', function() {
+                this.value = this.value.replace(/,/g, '');
+            });
+            
+            // Handle form submission - remove commas before submitting
+            const form = input.closest('form');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    numberFormatInputs.forEach(input => {
+                        input.value = input.value.replace(/,/g, '');
+                    });
+                });
+            }
+        });
+        
+        // Populate financial years
+        const financialYearSelect = document.getElementById('financialYear');
+        const financialYearValue = '@Model.FinancialYear';
+        
+        // Create financial year options for individual years 2010 through 2025
+        for (let i = 2010; i <= 2025; i++) {
+            const option = document.createElement('option');
+            option.value = i.toString();
+            option.textContent = i.toString();
+            
+            if (option.value === financialYearValue) {
+                option.selected = true;
+            }
+            
+            financialYearSelect.appendChild(option);
+        }
+        
+        // Update year displays based on selected financial year
+        function updateYearDisplays() {
+            const selectedYear = financialYearSelect.value || '2018';
+            document.getElementById('financial-year-display').textContent = selectedYear;
+            document.querySelectorAll('.year-display').forEach(function(element) {
+                element.textContent = selectedYear;
+            });
+        }
+        
+        // Initialize year displays
+        updateYearDisplays();
+        
+        // Update year displays when financial year changes
+        financialYearSelect.addEventListener('change', updateYearDisplays);
+        
+        // Country-Region mapping
+        const regionsByCountry = {
+            'US': [
+                { value: 'AL', text: 'Alabama' },
+                { value: 'AK', text: 'Alaska' },
+                { value: 'AZ', text: 'Arizona' },
+                { value: 'AR', text: 'Arkansas' },
+                { value: 'CA', text: 'California' },
+                { value: 'CO', text: 'Colorado' },
+                { value: 'CT', text: 'Connecticut' },
+                { value: 'DE', text: 'Delaware' },
+                { value: 'FL', text: 'Florida' },
+                { value: 'GA', text: 'Georgia' },
+                { value: 'HI', text: 'Hawaii' },
+                { value: 'ID', text: 'Idaho' },
+                { value: 'IL', text: 'Illinois' },
+                { value: 'IN', text: 'Indiana' }
+            ],
+            'CA': [
+                { value: 'AB', text: 'Alberta' },
+                { value: 'BC', text: 'British Columbia' },
+                { value: 'MB', text: 'Manitoba' },
+                { value: 'NB', text: 'New Brunswick' },
+                { value: 'NL', text: 'Newfoundland and Labrador' },
+                { value: 'NS', text: 'Nova Scotia' },
+                { value: 'ON', text: 'Ontario' },
+                { value: 'PE', text: 'Prince Edward Island' },
+                { value: 'QC', text: 'Quebec' },
+                { value: 'SK', text: 'Saskatchewan' }
+            ],
+            'UK': [
+                { value: 'ENG', text: 'England' },
+                { value: 'SCT', text: 'Scotland' },
+                { value: 'WLS', text: 'Wales' },
+                { value: 'NIR', text: 'Northern Ireland' }
+            ],
+            'KE': [
+                { value: 'NAI', text: 'Nairobi' },
+                { value: 'MOM', text: 'Mombasa' },
+                { value: 'KIS', text: 'Kisumu' },
+                { value: 'NAK', text: 'Nakuru' },
+                { value: 'ELD', text: 'Eldoret' },
+                { value: 'NYE', text: 'Nyeri' },
+                { value: 'KAK', text: 'Kakamega' },
+                { value: 'KIT', text: 'Kitale' }
+            ],
+            'NG': [
+                { value: 'LAG', text: 'Lagos' },
+                { value: 'ABJ', text: 'Abuja' },
+                { value: 'KAN', text: 'Kano' },
+                { value: 'IBA', text: 'Ibadan' },
+                { value: 'PH', text: 'Port Harcourt' }
+            ],
+            'ZA': [
+                { value: 'GP', text: 'Gauteng' },
+                { value: 'WC', text: 'Western Cape' },
+                { value: 'EC', text: 'Eastern Cape' },
+                { value: 'KZN', text: 'KwaZulu-Natal' },
+                { value: 'FS', text: 'Free State' }
+            ],
+            'IN': [
+                { value: 'MH', text: 'Maharashtra' },
+                { value: 'DL', text: 'Delhi' },
+                { value: 'KA', text: 'Karnataka' },
+                { value: 'TN', text: 'Tamil Nadu' },
+                { value: 'UP', text: 'Uttar Pradesh' }
+            ],
+            'AU': [
+                { value: 'NSW', text: 'New South Wales' },
+                { value: 'VIC', text: 'Victoria' },
+                { value: 'QLD', text: 'Queensland' },
+                { value: 'WA', text: 'Western Australia' },
+                { value: 'SA', text: 'South Australia' },
+                { value: 'TAS', text: 'Tasmania' }
+            ]
+        };
+        
+        // Currency mapping by country
+        const currencyByCountry = {
+            'US': { name: 'US Dollar', symbol: '$' },
+            'CA': { name: 'Canadian Dollar', symbol: 'CA$' },
+            'UK': { name: 'British Pound', symbol: '£' },
+            'AU': { name: 'Australian Dollar', symbol: 'A$' },
+            'KE': { name: 'Kenyan Shilling', symbol: 'KSh' },
+            'NG': { name: 'Nigerian Naira', symbol: '₦' },
+            'ZA': { name: 'South African Rand', symbol: 'R' },
+            'IN': { name: 'Indian Rupee', symbol: '₹' },
+            'CN': { name: 'Chinese Yuan', symbol: '¥' },
+            'JP': { name: 'Japanese Yen', symbol: '¥' }
+        };
+        
+        // Function to update currency based on selected country
+        function updateCurrency() {
+            const countrySelect = document.getElementById('country');
+            const currencyInput = document.getElementById('currency');
+            const currencySymbolInput = document.getElementById('currencySymbol');
+            const currencySymbolSpan = document.getElementById('currency-symbol');
+            const actualOsrCurrency = document.getElementById('actual-osr-currency');
+            const budgetedOsrCurrency = document.getElementById('budgeted-osr-currency');
+            const gdpCurrency = document.getElementById('gdp-currency');
+            const selectedCountry = countrySelect.value;
+            
+            if (selectedCountry && currencyByCountry[selectedCountry]) {
+                const currency = currencyByCountry[selectedCountry];
+                currencyInput.value = currency.name;
+                currencySymbolInput.value = currency.symbol;
+                currencySymbolSpan.textContent = currency.symbol;
+                actualOsrCurrency.textContent = currency.symbol;
+                budgetedOsrCurrency.textContent = currency.symbol;
+                gdpCurrency.textContent = currency.symbol;
+            } else {
+                currencyInput.value = '';
+                currencySymbolInput.value = '$';
+                currencySymbolSpan.textContent = '$';
+                actualOsrCurrency.textContent = '$';
+                budgetedOsrCurrency.textContent = '$';
+                gdpCurrency.textContent = '$';
+            }
+        }
+        
+        // Function to populate regions based on selected country
+        function populateRegions() {
+            const countrySelect = document.getElementById('country');
+            const regionSelect = document.getElementById('region');
+            const selectedCountry = countrySelect.value;
+            const regionValue = '@Model.Region';
+            
+            // Clear existing options
+            regionSelect.innerHTML = '<option value="">Select a state/region</option>';
+            
+            // If a country is selected and regions exist for that country
+            if (selectedCountry && regionsByCountry[selectedCountry]) {
+                // Add region options for the selected country
+                regionsByCountry[selectedCountry].forEach(function(region) {
+                    const option = document.createElement('option');
+                    option.value = region.value;
+                    option.textContent = region.text;
+                    
+                    // Set selected if it matches the model value
+                    if (region.value === regionValue) {
+                        option.selected = true;
+                    }
+                    
+                    regionSelect.appendChild(option);
+                });
+            }
+        }
+        
+        // Initialize regions based on the initial country selection
+        populateRegions();
+        
+        // Initialize currency based on the initial country selection
+        updateCurrency();
+        
+        // Update regions and currency when country selection changes
+        document.getElementById('country').addEventListener('change', function() {
+            populateRegions();
+            updateCurrency();
+        });
+    });
+</script>

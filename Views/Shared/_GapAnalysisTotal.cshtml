@@ -1,0 +1,109 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+@{
+    bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+}
+
+<div class="gap-analysis-tab-content">
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="form-floating">
+                <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="totalDescription" name="TotalEstimate.Description" value="@Model.TotalEstimate.Description" placeholder="Enter description" @(isViewMode ? "readonly" : "")>
+                <label for="totalDescription">Description</label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="form-floating">
+                <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="totalCurrentRevenue" name="TotalEstimate.TotalCurrentRevenue" value="@(Model.TotalEstimate.TotalCurrentRevenue?.ToString("#,##0.##"))" placeholder="Enter total current revenue" @(isViewMode ? "readonly" : "")>
+                <label for="totalCurrentRevenue">Total Current Revenue</label>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-floating">
+                <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="totalPotentialRevenue" name="TotalEstimate.TotalPotentialRevenue" value="@(Model.TotalEstimate.TotalPotentialRevenue?.ToString("#,##0.##"))" placeholder="Enter total potential revenue" @(isViewMode ? "readonly" : "")>
+                <label for="totalPotentialRevenue">Total Potential Revenue</label>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-floating">
+                <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="totalRevenueGap" name="TotalEstimate.TotalRevenueGap" value="@(Model.TotalEstimate.TotalRevenueGap?.ToString("#,##0.##"))" placeholder="Enter total revenue gap" @(isViewMode ? "readonly" : "")>
+                <label for="totalRevenueGap">Total Revenue Gap</label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="form-floating">
+                <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="totalCurrentValue" name="TotalEstimate.CurrentValue" value="@(Model.TotalEstimate.CurrentValue?.ToString("#,##0.##"))" placeholder="Enter current value" @(isViewMode ? "readonly" : "")>
+                <label for="totalCurrentValue">Current Value</label>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-floating">
+                <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="totalPotentialValue" name="TotalEstimate.PotentialValue" value="@(Model.TotalEstimate.PotentialValue?.ToString("#,##0.##"))" placeholder="Enter potential value" @(isViewMode ? "readonly" : "")>
+                <label for="totalPotentialValue">Potential Value</label>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-floating">
+                <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="totalGap" name="TotalEstimate.Gap" value="@(Model.TotalEstimate.Gap?.ToString("#,##0.##"))" placeholder="Enter gap" @(isViewMode ? "readonly" : "")>
+                <label for="totalGap">Gap</label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-floating">
+                <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="totalNotes" name="TotalEstimate.Notes" style="height: 100px" placeholder="Enter notes" @(isViewMode ? "readonly" : "")>@Model.TotalEstimate.Notes</textarea>
+                <label for="totalNotes">Notes</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Calculate totals from all tabs
+        function calculateTotals() {
+            // Get values from all tabs
+            const propertyTaxCurrent = parseFloat(document.getElementById('propertyTaxCurrentValue')?.value.replace(/,/g, '')) || 0;
+            const licenseCurrent = parseFloat(document.getElementById('licenseCurrentValue')?.value.replace(/,/g, '')) || 0;
+            const shortTermCurrent = parseFloat(document.getElementById('shortTermCurrentValue')?.value.replace(/,/g, '')) || 0;
+            const longTermCurrent = parseFloat(document.getElementById('longTermCurrentValue')?.value.replace(/,/g, '')) || 0;
+            const mixedCurrent = parseFloat(document.getElementById('mixedCurrentValue')?.value.replace(/,/g, '')) || 0;
+            
+            const propertyTaxPotential = parseFloat(document.getElementById('propertyTaxPotentialValue')?.value.replace(/,/g, '')) || 0;
+            const licensePotential = parseFloat(document.getElementById('licensePotentialValue')?.value.replace(/,/g, '')) || 0;
+            const shortTermPotential = parseFloat(document.getElementById('shortTermPotentialValue')?.value.replace(/,/g, '')) || 0;
+            const longTermPotential = parseFloat(document.getElementById('longTermPotentialValue')?.value.replace(/,/g, '')) || 0;
+            const mixedPotential = parseFloat(document.getElementById('mixedPotentialValue')?.value.replace(/,/g, '')) || 0;
+            
+            // Calculate totals
+            const totalCurrentRevenue = propertyTaxCurrent + licenseCurrent + shortTermCurrent + longTermCurrent + mixedCurrent;
+            const totalPotentialRevenue = propertyTaxPotential + licensePotential + shortTermPotential + longTermPotential + mixedPotential;
+            const totalRevenueGap = totalPotentialRevenue - totalCurrentRevenue;
+            
+            // Update total fields
+            const totalCurrentRevenueInput = document.getElementById('totalCurrentRevenue');
+            const totalPotentialRevenueInput = document.getElementById('totalPotentialRevenue');
+            const totalRevenueGapInput = document.getElementById('totalRevenueGap');
+            const totalCurrentValueInput = document.getElementById('totalCurrentValue');
+            const totalPotentialValueInput = document.getElementById('totalPotentialValue');
+            const totalGapInput = document.getElementById('totalGap');
+            
+            if (totalCurrentRevenueInput) totalCurrentRevenueInput.value = totalCurrentRevenue.toLocaleString('en-US', {maximumFractionDigits: 2});
+            if (totalPotentialRevenueInput) totalPotentialRevenueInput.value = totalPotentialRevenue.toLocaleString('en-US', {maximumFractionDigits: 2});
+            if (totalRevenueGapInput) totalRevenueGapInput.value = totalRevenueGap.toLocaleString('en-US', {maximumFractionDigits: 2});
+            if (totalCurrentValueInput) totalCurrentValueInput.value = totalCurrentRevenue.toLocaleString('en-US', {maximumFractionDigits: 2});
+            if (totalPotentialValueInput) totalPotentialValueInput.value = totalPotentialRevenue.toLocaleString('en-US', {maximumFractionDigits: 2});
+            if (totalGapInput) totalGapInput.value = totalRevenueGap.toLocaleString('en-US', {maximumFractionDigits: 2});
+        }
+        
+        // Calculate totals when the Total Estimate tab is shown
+        document.getElementById('total-tab')?.addEventListener('click', calculateTotals);
+    });
+</script>

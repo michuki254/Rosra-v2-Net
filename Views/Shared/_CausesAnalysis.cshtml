@@ -1,0 +1,77 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+
+<div class="tab-content-container">
+    <h5 class="mb-3">Causes Analysis</h5>
+    
+    <div class="row g-3">
+        <div class="col-md-12">
+            <div class="form-floating mb-3">
+                <textarea class="form-control" id="problemStatement" name="ProblemStatement" style="height: 80px" placeholder="Define the problem">@Model.ProblemStatement</textarea>
+                <label for="problemStatement">Problem Statement</label>
+            </div>
+        </div>
+        
+        <div class="col-md-12">
+            <label class="form-label">Root Causes</label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="rootCauseInput" placeholder="Enter a root cause">
+                <button class="btn btn-outline-secondary" type="button" id="addRootCauseBtn">Add</button>
+            </div>
+            
+            <ul class="list-group" id="rootCausesList">
+                @for (int i = 0; i < Model.RootCauses.Count; i++)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @Model.RootCauses[i]
+                        <input type="hidden" name="RootCauses[@i]" value="@Model.RootCauses[i]" />
+                        <button class="btn btn-sm btn-outline-danger remove-root-cause" data-index="@i">×</button>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add root cause
+        document.getElementById('addRootCauseBtn').addEventListener('click', function() {
+            var input = document.getElementById('rootCauseInput');
+            var value = input.value.trim();
+            
+            if (value) {
+                var list = document.getElementById('rootCausesList');
+                var index = list.children.length;
+                
+                var li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.innerHTML = value + 
+                    '<input type="hidden" name="RootCauses[' + index + ']" value="' + value + '" />' +
+                    '<button class="btn btn-sm btn-outline-danger remove-root-cause" data-index="' + index + '">×</button>';
+                
+                list.appendChild(li);
+                input.value = '';
+                
+                // Add event listener to the new remove button
+                li.querySelector('.remove-root-cause').addEventListener('click', removeRootCause);
+            }
+        });
+        
+        // Remove root cause
+        var removeButtons = document.querySelectorAll('.remove-root-cause');
+        removeButtons.forEach(function(button) {
+            button.addEventListener('click', removeRootCause);
+        });
+        
+        function removeRootCause() {
+            this.closest('li').remove();
+            // Reindex the remaining items
+            var items = document.querySelectorAll('#rootCausesList li');
+            items.forEach(function(item, index) {
+                var hiddenInput = item.querySelector('input[type="hidden"]');
+                hiddenInput.name = 'RootCauses[' + index + ']';
+                item.querySelector('.remove-root-cause').dataset.index = index;
+            });
+        }
+    });
+</script>

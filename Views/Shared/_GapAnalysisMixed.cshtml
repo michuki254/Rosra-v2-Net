@@ -1,0 +1,116 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+@{
+    bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+}
+
+<div class="gap-analysis-tab-content">
+    <div class="row">
+        <!-- Left Side (1/3 width) -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Mixed Information</h6>
+                </div>
+                <div class="card-body">
+                    <h6 class="mb-3">Daily Users</h6>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="estimatedDailyUsers">Estimated Number of Daily Users</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="estimatedDailyUsers" name="MixedUserCharge.EstimatedDailyUsers" value="@Model.MixedUserCharge.EstimatedDailyUsers" placeholder="Enter estimated number of daily users" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="actualDailyUsers">Actual Daily Users</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualDailyUsers" name="MixedUserCharge.ActualDailyUsers" value="@Model.MixedUserCharge.ActualDailyUsers" placeholder="Enter actual daily users" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="averageDailyUserFee">Average Daily User Fee</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="averageDailyUserFee" name="MixedUserCharge.AverageDailyUserFee" value="@Model.MixedUserCharge.AverageDailyUserFee" placeholder="Enter average daily user fee" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="actualDailyUserFee">Actual Daily User Fee</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualDailyUserFee" name="MixedUserCharge.ActualDailyUserFee" value="@Model.MixedUserCharge.ActualDailyUserFee" placeholder="Enter actual daily user fee" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    <h6 class="mb-3">Monthly Users</h6>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="numberOfAvailableMonthlyUsers">Number of Available Monthly Users</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="numberOfAvailableMonthlyUsers" name="MixedUserCharge.NumberOfAvailableMonthlyUsers" value="@Model.MixedUserCharge.NumberOfAvailableMonthlyUsers" placeholder="Enter number of available monthly users" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="numberOfPayingMonthlyUsers">Number of Paying Monthly Users</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="numberOfPayingMonthlyUsers" name="MixedUserCharge.NumberOfPayingMonthlyUsers" value="@Model.MixedUserCharge.NumberOfPayingMonthlyUsers" placeholder="Enter number of paying monthly users" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="averageMonthlyRate">Average Monthly Rate</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="averageMonthlyRate" name="MixedUserCharge.AverageMonthlyRate" value="@Model.MixedUserCharge.AverageMonthlyRate" placeholder="Enter average monthly rate" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="actualMonthlyRate">Actual Monthly Rate</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualMonthlyRate" name="MixedUserCharge.ActualMonthlyRate" value="@Model.MixedUserCharge.ActualMonthlyRate" placeholder="Enter actual monthly rate" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden fields for backward compatibility -->
+                    <input type="hidden" name="MixedUserCharge.NumberOfMixedUsers" value="@Model.MixedUserCharge.NumberOfMixedUsers">
+                    <input type="hidden" name="MixedUserCharge.AverageMixedFee" value="@Model.MixedUserCharge.AverageMixedFee">
+                    <input type="hidden" name="MixedUserCharge.CurrentValue" value="@Model.MixedUserCharge.CurrentValue">
+                    <input type="hidden" name="MixedUserCharge.PotentialValue" value="@Model.MixedUserCharge.PotentialValue">
+                    <input type="hidden" name="MixedUserCharge.Gap" value="@Model.MixedUserCharge.Gap">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Side (2/3 width) -->
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Mixed Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="form-floating">
+                            <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="mixedDescription" name="MixedUserCharge.Description" value="@Model.MixedUserCharge.Description" placeholder="Enter description" @(isViewMode ? "readonly" : "")>
+                            <label for="mixedDescription">Description</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-floating">
+                            <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="mixedNotes" name="MixedUserCharge.Notes" style="height: 200px" placeholder="Enter notes" @(isViewMode ? "readonly" : "")>@Model.MixedUserCharge.Notes</textarea>
+                            <label for="mixedNotes">Notes</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize number formatting for the input fields
+        const numberFormatInputs = document.querySelectorAll('.number-format');
+        if (numberFormatInputs && numberFormatInputs.length > 0) {
+            numberFormatInputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    const value = parseFloat(this.value.replace(/,/g, '')) || 0;
+                    this.value = value.toLocaleString('en-US');
+                });
+            });
+        }
+    });
+</script>

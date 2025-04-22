@@ -1,0 +1,94 @@
+@model RosraApp.Models.ViewModels.UserDetailsViewModel
+
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<h1>User Details</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>User Information</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.User != null)
+                {
+                    <dl class="row">
+                        <dt class="col-sm-4">Email</dt>
+                        <dd class="col-sm-8">@Model.User.Email</dd>
+                        
+                        <dt class="col-sm-4">First Name</dt>
+                        <dd class="col-sm-8">@Model.User.FirstName</dd>
+                        
+                        <dt class="col-sm-4">Last Name</dt>
+                        <dd class="col-sm-8">@Model.User.LastName</dd>
+                        
+                        <dt class="col-sm-4">Created At</dt>
+                        <dd class="col-sm-8">@(Model.User.CreatedAt?.ToString("yyyy-MM-dd HH:mm") ?? "N/A")</dd>
+                    </dl>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>User Roles</h5>
+            </div>
+            <div class="card-body">
+                <h6>Current Roles</h6>
+                <ul class="list-group mb-3">
+                    @if (Model.UserRoles != null && Model.UserRoles.Any())
+                    {
+                        foreach (var role in Model.UserRoles)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @role
+                                @if (Model.User != null)
+                                {
+                                    <form asp-action="RemoveUserFromRole" method="post">
+                                        <input type="hidden" name="userId" value="@Model.User.Id" />
+                                        <input type="hidden" name="roleName" value="@role" />
+                                        <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                    </form>
+                                }
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="list-group-item">No roles assigned</li>
+                    }
+                </ul>
+                
+                @if (Model.User != null && Model.AllRoles != null && Model.UserRoles != null)
+                {
+                    <h6>Add Role</h6>
+                    <form asp-action="AddUserToRole" method="post">
+                        <input type="hidden" name="userId" value="@Model.User.Id" />
+                        <div class="input-group mb-3">
+                            <select name="roleName" class="form-control">
+                                @foreach (var role in Model.AllRoles)
+                                {
+                                    if (role.Name != null && !Model.UserRoles.Contains(role.Name))
+                                    {
+                                        <option value="@role.Name">@role.Name</option>
+                                    }
+                                }
+                            </select>
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit">Add</button>
+                            </div>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>

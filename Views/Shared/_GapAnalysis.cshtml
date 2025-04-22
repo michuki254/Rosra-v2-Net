@@ -1,0 +1,198 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+@{
+    bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+}
+
+<div class="tab-content-container">
+    <h5 class="mb-3">Gap Analysis</h5>
+    
+    <!-- Revenue Source Tabs -->
+    <div class="card">
+        <div class="card-header bg-light">
+            <h6 class="mb-0">Revenue Sources</h6>
+        </div>
+        <div class="card-body">
+            <!-- Static Tab Navigation -->
+            <div class="mb-3">
+                <div class="list-group list-group-horizontal-md flex-wrap mb-3" role="tablist">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary active" onclick="showTab('property-tax')">Property Tax</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="showTab('license')">License</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="showTab('short-term')">Short Term</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="showTab('long-term')">Long Term</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="showTab('mixed')">Mixed</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="showTab('total')">Total</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Static Tab Content -->
+            <div>
+                <!-- Property Tax Tab -->
+                <div id="property-tax-tab" class="revenue-tab" style="display: block;">
+                    @await Html.PartialAsync("_GapAnalysisPropertyTaxFixed", Model)
+                </div>
+                
+                <!-- License Tab -->
+                <div id="license-tab" class="revenue-tab" style="display: none;">
+                    @await Html.PartialAsync("_GapAnalysisLicense", Model)
+                </div>
+                
+                <!-- Short Term User Charge Tab -->
+                <div id="short-term-tab" class="revenue-tab" style="display: none;">
+                    @await Html.PartialAsync("_GapAnalysisShortTerm", Model)
+                </div>
+                
+                <!-- Long Term User Charge Tab -->
+                <div id="long-term-tab" class="revenue-tab" style="display: none;">
+                    @await Html.PartialAsync("_GapAnalysisLongTerm", Model)
+                </div>
+                
+                <!-- Mixed User Charge Tab -->
+                <div id="mixed-tab" class="revenue-tab" style="display: none;">
+                    @await Html.PartialAsync("_GapAnalysisMixed", Model)
+                </div>
+                
+                <!-- Total Estimate Tab -->
+                <div id="total-tab" class="revenue-tab" style="display: none;">
+                    @await Html.PartialAsync("_GapAnalysisTotal", Model)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to switch between tabs
+    function showTab(tabId) {
+        // Hide all tab contents
+        const tabContents = document.querySelectorAll('.revenue-tab');
+        tabContents.forEach(content => {
+            content.style.display = 'none';
+        });
+        
+        // Show the selected tab content
+        const selectedContent = document.getElementById(tabId + '-tab');
+        if (selectedContent) {
+            selectedContent.style.display = 'block';
+        }
+        
+        // Update active state on buttons
+        const tabButtons = document.querySelectorAll('.btn-group .btn');
+        tabButtons.forEach(button => {
+            button.classList.remove('active');
+        });
+        
+        // Find the button that was clicked and make it active
+        const activeButton = Array.from(tabButtons).find(button => {
+            return button.onclick.toString().includes(`showTab('${tabId}'`);
+        });
+        
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
+        
+        // If showing the Total tab, calculate totals
+        if (tabId === 'total') {
+            calculateTotals();
+        }
+        
+        // Calculate gap for property tax
+        if (tabId === 'property-tax') {
+            calculatePropertyTaxGap();
+        }
+        
+        // Prevent form submission
+        return false;
+    }
+    
+    // Calculate gap for property tax
+    function calculatePropertyTaxGap() {
+        const currentValue = parseFloat(document.getElementById('propertyTaxCurrentValue')?.value.replace(/,/g, '')) || 0;
+        const potentialValue = parseFloat(document.getElementById('propertyTaxPotentialValue')?.value.replace(/,/g, '')) || 0;
+        const gap = potentialValue - currentValue;
+        
+        const gapInput = document.getElementById('propertyTaxGap');
+        if (gapInput) {
+            gapInput.value = gap.toLocaleString('en-US', {maximumFractionDigits: 2});
+        }
+    }
+    
+    // Function to calculate totals from all tabs
+    function calculateTotals() {
+        // Get values from all tabs
+        const propertyTaxCurrent = parseFloat(document.getElementById('propertyTaxCurrentValue')?.value.replace(/,/g, '')) || 0;
+        const licenseCurrent = parseFloat(document.getElementById('licenseCurrentValue')?.value.replace(/,/g, '')) || 0;
+        const shortTermCurrent = parseFloat(document.getElementById('shortTermCurrentValue')?.value.replace(/,/g, '')) || 0;
+        const longTermCurrent = parseFloat(document.getElementById('longTermCurrentValue')?.value.replace(/,/g, '')) || 0;
+        const mixedCurrent = parseFloat(document.getElementById('mixedCurrentValue')?.value.replace(/,/g, '')) || 0;
+        
+        const propertyTaxPotential = parseFloat(document.getElementById('propertyTaxPotentialValue')?.value.replace(/,/g, '')) || 0;
+        const licensePotential = parseFloat(document.getElementById('licensePotentialValue')?.value.replace(/,/g, '')) || 0;
+        const shortTermPotential = parseFloat(document.getElementById('shortTermPotentialValue')?.value.replace(/,/g, '')) || 0;
+        const longTermPotential = parseFloat(document.getElementById('longTermPotentialValue')?.value.replace(/,/g, '')) || 0;
+        const mixedPotential = parseFloat(document.getElementById('mixedPotentialValue')?.value.replace(/,/g, '')) || 0;
+        
+        // Calculate totals
+        const totalCurrentRevenue = propertyTaxCurrent + licenseCurrent + shortTermCurrent + longTermCurrent + mixedCurrent;
+        const totalPotentialRevenue = propertyTaxPotential + licensePotential + shortTermPotential + longTermPotential + mixedPotential;
+        const totalRevenueGap = totalPotentialRevenue - totalCurrentRevenue;
+        
+        // Update total fields
+        const totalCurrentRevenueInput = document.getElementById('totalCurrentRevenue');
+        const totalPotentialRevenueInput = document.getElementById('totalPotentialRevenue');
+        const totalRevenueGapInput = document.getElementById('totalRevenueGap');
+        const totalCurrentValueInput = document.getElementById('totalCurrentValue');
+        const totalPotentialValueInput = document.getElementById('totalPotentialValue');
+        const totalGapInput = document.getElementById('totalGap');
+        
+        if (totalCurrentRevenueInput) totalCurrentRevenueInput.value = totalCurrentRevenue.toLocaleString('en-US', {maximumFractionDigits: 2});
+        if (totalPotentialRevenueInput) totalPotentialRevenueInput.value = totalPotentialRevenue.toLocaleString('en-US', {maximumFractionDigits: 2});
+        if (totalRevenueGapInput) totalRevenueGapInput.value = totalRevenueGap.toLocaleString('en-US', {maximumFractionDigits: 2});
+        if (totalCurrentValueInput) totalCurrentValueInput.value = totalCurrentRevenue.toLocaleString('en-US', {maximumFractionDigits: 2});
+        if (totalPotentialValueInput) totalPotentialValueInput.value = totalPotentialRevenue.toLocaleString('en-US', {maximumFractionDigits: 2});
+        if (totalGapInput) totalGapInput.value = totalRevenueGap.toLocaleString('en-US', {maximumFractionDigits: 2});
+    }
+    
+    // Format number inputs with commas
+    function formatNumberWithCommas(input) {
+        const value = input.value.replace(/,/g, '');
+        if (!isNaN(parseFloat(value))) {
+            input.value = parseFloat(value).toLocaleString('en-US', {maximumFractionDigits: 2});
+        }
+    }
+    
+    // Initialize when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set up event listeners for property tax calculations
+        const propertyTaxCurrentValue = document.getElementById('propertyTaxCurrentValue');
+        const propertyTaxPotentialValue = document.getElementById('propertyTaxPotentialValue');
+        
+        if (propertyTaxCurrentValue) {
+            propertyTaxCurrentValue.addEventListener('blur', function() {
+                formatNumberWithCommas(this);
+                calculatePropertyTaxGap();
+            });
+        }
+        
+        if (propertyTaxPotentialValue) {
+            propertyTaxPotentialValue.addEventListener('blur', function() {
+                formatNumberWithCommas(this);
+                calculatePropertyTaxGap();
+            });
+        }
+        
+        // Set up event listeners for the number formatting
+        const numberFormatInputs = document.querySelectorAll('.number-format');
+        numberFormatInputs.forEach(input => {
+            if (input !== propertyTaxCurrentValue && input !== propertyTaxPotentialValue) {
+                input.addEventListener('blur', function() {
+                    formatNumberWithCommas(this);
+                });
+            }
+        });
+        
+        // Calculate initial gaps
+        calculatePropertyTaxGap();
+    });
+</script>

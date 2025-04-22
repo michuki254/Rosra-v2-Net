@@ -1,0 +1,716 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+@{
+    bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+}
+
+<div class="gap-analysis-tab-content">
+    <div class="row">
+        <!-- Left Side (1/3 width) -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">License Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="numberOfLicenses">Total estimated No of Licensees</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="numberOfLicenses" name="License.TotalEstimatedNoOfLicensees" value="@(Model.License.TotalEstimatedNoOfLicensees)" placeholder="Enter total estimated no of licensees" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    
+                    <!-- Add Category Button -->
+                    <div class="mt-3 mb-3">
+                        <button type="button" class="btn btn-primary open-modal-only" data-target-modal="createCategoryModal" @(isViewMode ? "disabled" : "")>
+                            <i class="fas fa-plus"></i> Add New Category
+                        </button>
+                    </div>
+                    
+                    <!-- Residential Properties Category (Collapsible) -->
+                    <div class="card mb-3 category-card" id="category-Residential">
+                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#residentialCollapse" aria-expanded="false" aria-controls="residentialCollapse" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <h6 class="mb-0 category-title">Residential Properties</h6>
+                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameCategoryModal" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <i class="fas fa-chevron-down ms-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="residentialCollapse" class="collapse">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Estimated Licensees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.EstimatedLicenseesResidentialProperties" value="@Model.License.EstimatedLicenseesResidentialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Registered Licensees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.RegisteredLicenseesResidentialProperties" value="@Model.License.RegisteredLicenseesResidentialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Compliant Licensees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.CompliantLicenseesResidentialProperties" value="@Model.License.CompliantLicenseesResidentialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>License Fee</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.LicenseFeeResidentialProperties" value="@Model.License.LicenseFeeResidentialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>License Fee Average Paid</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.LicenseFeeAveragePaidResidentialProperties" value="@Model.License.LicenseFeeAveragePaidResidentialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Commercial Properties Category (Collapsible) -->
+                    <div class="card mb-3 category-card" id="category-Commercial">
+                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#commercialCollapse" aria-expanded="false" aria-controls="commercialCollapse" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <h6 class="mb-0 category-title">Commercial Properties</h6>
+                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameCategoryModal" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <i class="fas fa-chevron-down ms-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="commercialCollapse" class="collapse">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Estimated Licensees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.EstimatedLicenseesCommercialProperties" value="@Model.License.EstimatedLicenseesCommercialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Registered Licensees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.RegisteredLicenseesCommercialProperties" value="@Model.License.RegisteredLicenseesCommercialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Compliant Licensees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.CompliantLicenseesCommercialProperties" value="@Model.License.CompliantLicenseesCommercialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>License Fee</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.LicenseFeeCommercialProperties" value="@Model.License.LicenseFeeCommercialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>License Fee Average Paid</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.LicenseFeeAveragePaidCommercialProperties" value="@Model.License.LicenseFeeAveragePaidCommercialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Industrial Properties Category (Collapsible) -->
+                    <div class="card mb-3 category-card" id="category-Industrial">
+                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#industrialCollapse" aria-expanded="false" aria-controls="industrialCollapse" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <h6 class="mb-0 category-title">Industrial Properties</h6>
+                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameCategoryModal" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <i class="fas fa-chevron-down ms-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="industrialCollapse" class="collapse">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Estimated Licensees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.EstimatedLicenseesIndustrialProperties" value="@Model.License.EstimatedLicenseesIndustrialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Registered Licensees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.RegisteredLicenseesIndustrialProperties" value="@Model.License.RegisteredLicenseesIndustrialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Compliant Licensees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.CompliantLicenseesIndustrialProperties" value="@Model.License.CompliantLicenseesIndustrialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>License Fee</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.LicenseFeeIndustrialProperties" value="@Model.License.LicenseFeeIndustrialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>License Fee Average Paid</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.LicenseFeeAveragePaidIndustrialProperties" value="@Model.License.LicenseFeeAveragePaidIndustrialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Container for dynamically added categories -->
+                    <div id="dynamicCategoriesContainer">
+                        @if (Model.License.DynamicCategories != null && Model.License.DynamicCategories.Count > 0)
+                        {
+                            @foreach (var category in Model.License.DynamicCategories)
+                            {
+                                <div class="card mb-3 category-card" id="category-@category.Name.Replace(" ", "-")">
+                                    <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#category@(category.Name.Replace(" ", ""))Collapse" aria-expanded="false" aria-controls="category@(category.Name.Replace(" ", ""))Collapse" style="cursor: pointer;">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <h6 class="mb-0 category-title">@category.Name</h6>
+                                                <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameCategoryModal" @(isViewMode ? "disabled" : "")>
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" @(isViewMode ? "disabled" : "")>
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                                <i class="fas fa-chevron-down ms-2"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="category@(category.Name.Replace(" ", ""))Collapse" class="collapse category-content">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>Estimated Licensees</label>
+                                                    <input type="text" class="form-control number-format" name="License.DynamicCategories[@(Model.License.DynamicCategories.IndexOf(category))].EstimatedLicensees" value="@category.EstimatedLicensees" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>Registered Licensees</label>
+                                                    <input type="text" class="form-control number-format" name="License.DynamicCategories[@(Model.License.DynamicCategories.IndexOf(category))].RegisteredLicensees" value="@category.RegisteredLicensees" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>Compliant Licensees</label>
+                                                    <input type="text" class="form-control number-format" name="License.DynamicCategories[@(Model.License.DynamicCategories.IndexOf(category))].CompliantLicensees" value="@category.CompliantLicensees" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>License Fee</label>
+                                                    <input type="text" class="form-control number-format" name="License.DynamicCategories[@(Model.License.DynamicCategories.IndexOf(category))].LicenseFee" value="@category.LicenseFee" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>License Fee Average Paid</label>
+                                                    <input type="text" class="form-control number-format" name="License.DynamicCategories[@(Model.License.DynamicCategories.IndexOf(category))].LicenseFeeAveragePaid" value="@category.LicenseFeeAveragePaid" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="License.DynamicCategories[@(Model.License.DynamicCategories.IndexOf(category))].Name" value="@category.Name">
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    
+                    <!-- Template for new category (hidden) -->
+                    <div id="categoryTemplate" style="display: none;">
+                        <div class="card mb-3 category-card">
+                            <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#newCategoryCollapse" aria-expanded="false" style="cursor: pointer;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <h6 class="mb-0 category-title">New Category</h6>
+                                        <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameCategoryModal" @(isViewMode ? "disabled" : "")>
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" @(isViewMode ? "disabled" : "")>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <i class="fas fa-chevron-down ms-2"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="collapse category-content">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>Estimated Licensees</label>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>Registered Licensees</label>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>Compliant Licensees</label>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>License Fee</label>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>License Fee Average Paid</label>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Side (2/3 width) -->
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">License Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="form-floating">
+                            <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="licenseDescription" name="License.Description" value="@Model.License.Description" placeholder="Enter description" @(isViewMode ? "readonly" : "")>
+                            <label for="licenseDescription">Description</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-floating">
+                            <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="licenseNotes" name="License.Notes" style="height: 200px" placeholder="Enter notes" @(isViewMode ? "readonly" : "")>@Model.License.Notes</textarea>
+                            <label for="licenseNotes">Notes</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize counter for unique IDs - start with count of existing dynamic categories
+        let categoryCounter = @(Model.License.DynamicCategories != null ? Model.License.DynamicCategories.Count : 0) + 1;
+        
+        // Variables to store current category being edited/deleted
+        let currentCategoryCard = null;
+        let categoryToDelete = null;
+        
+        // Initialize Bootstrap modals
+        const renameModal = new bootstrap.Modal(document.getElementById('renameCategoryModal'));
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
+        const createModal = new bootstrap.Modal(document.getElementById('createCategoryModal'));
+        
+        // IMPORTANT: Use a different approach for opening modals
+        document.querySelectorAll('.open-modal-only').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const modalId = this.getAttribute('data-target-modal');
+                const modal = document.getElementById(modalId);
+                
+                if (modal) {
+                    const modalInstance = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
+                    
+                    // Clear any input fields in the modal
+                    const inputField = modal.querySelector('input[type="text"]');
+                    if (inputField) {
+                        inputField.value = '';
+                    }
+                    
+                    // Show the modal
+                    modalInstance.show();
+                }
+            });
+        });
+        
+        // Ensure we remove any existing event listeners before adding new ones
+        function removeAllEventListeners(element) {
+            if (!element) return;
+            
+            // Clone the element to remove all event listeners
+            const newElement = element.cloneNode(true);
+            if (element.parentNode) {
+                element.parentNode.replaceChild(newElement, element);
+            }
+            return newElement;
+        }
+        
+        // Add event listeners for modal cleanup
+        const modalElements = document.querySelectorAll('.modal');
+        modalElements.forEach(modal => {
+            modal.addEventListener('hidden.bs.modal', function() {
+                // Remove all backdrops
+                const modalBackdrops = document.querySelectorAll('.modal-backdrop');
+                modalBackdrops.forEach(backdrop => {
+                    backdrop.remove();
+                });
+                
+                // Reset body
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            });
+        });
+        
+        // Add event listeners to existing category buttons
+        document.querySelectorAll('.edit-category-btn').forEach(button => {
+            const newButton = removeAllEventListeners(button);
+            newButton.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent collapse toggle
+                currentCategoryCard = this.closest('.category-card');
+                const categoryTitle = currentCategoryCard.querySelector('.category-title').textContent.trim();
+                document.getElementById('newCategoryName').value = categoryTitle;
+            });
+        });
+        
+        document.querySelectorAll('.remove-category-btn').forEach(button => {
+            const newButton = removeAllEventListeners(button);
+            newButton.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent collapse toggle
+                categoryToDelete = this.closest('.category-card');
+            });
+        });
+        
+        // Add event listener to the save button in the rename modal
+        const saveCategoryNameBtn = document.getElementById('saveCategoryNameBtn');
+        if (saveCategoryNameBtn) {
+            const newSaveCategoryNameBtn = removeAllEventListeners(saveCategoryNameBtn);
+            newSaveCategoryNameBtn.addEventListener('click', function() {
+                const newName = document.getElementById('newCategoryName').value.trim();
+                if (newName && currentCategoryCard) {
+                    // Update the category title
+                    currentCategoryCard.querySelector('.category-title').textContent = newName;
+                    
+                    // Update the hidden input for the category name
+                    const hiddenInput = currentCategoryCard.querySelector('input[type="hidden"]');
+                    if (hiddenInput) {
+                        hiddenInput.value = newName;
+                    }
+                    
+                    // Close the modal
+                    renameModal.hide();
+                }
+            });
+        }
+        
+        // Add event listener to the delete confirmation button
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        if (confirmDeleteBtn) {
+            const newConfirmDeleteBtn = removeAllEventListeners(confirmDeleteBtn);
+            newConfirmDeleteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if (categoryToDelete) {
+                    categoryToDelete.remove();
+                    
+                    // Reindex all dynamic categories
+                    updateCategoryIndices();
+                    
+                    // Close the modal properly
+                    const deleteModalElement = document.getElementById('deleteCategoryModal');
+                    if (deleteModalElement) {
+                        const modalInstance = bootstrap.Modal.getInstance(deleteModalElement);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                    }
+                    
+                    // Make sure the backdrop is removed
+                    const modalBackdrops = document.querySelectorAll('.modal-backdrop');
+                    modalBackdrops.forEach(backdrop => {
+                        backdrop.remove();
+                    });
+                    
+                    // Reset body
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                }
+            });
+        }
+        
+        // Function to update indices for remaining categories
+        function updateCategoryIndices() {
+            const dynamicCategories = document.querySelectorAll('#dynamicCategoriesContainer .category-card');
+            dynamicCategories.forEach((category, index) => {
+                const inputs = category.querySelectorAll('input');
+                inputs.forEach(input => {
+                    if (input.name && input.name.includes('DynamicCategories[')) {
+                        input.name = input.name.replace(/DynamicCategories\[\d+\]/, `DynamicCategories[${index}]`);
+                    }
+                });
+            });
+        }
+        
+        // Function to create a new category
+        function createNewCategory(categoryName) {
+            // Clone the template
+            const template = document.getElementById('categoryTemplate');
+            const newCategory = template.querySelector('.category-card').cloneNode(true);
+            
+            // Generate unique IDs
+            const categoryId = 'category-' + categoryCounter;
+            const collapseId = 'collapse-' + categoryCounter;
+            
+            // Update IDs and attributes
+            newCategory.id = categoryId;
+            newCategory.querySelector('.card-header').setAttribute('data-bs-target', '#' + collapseId);
+            newCategory.querySelector('.card-header').setAttribute('aria-controls', collapseId);
+            newCategory.querySelector('.category-content').id = collapseId;
+            
+            // Set the user-provided category name
+            newCategory.querySelector('.category-title').textContent = categoryName;
+            
+            // Set name attributes for form submission
+            const inputs = newCategory.querySelectorAll('input');
+            inputs.forEach(function(input, index) {
+                if (input.classList.contains('number-format')) {
+                    const inputName = input.closest('.form-group').querySelector('label').textContent.trim();
+                    let fieldName = '';
+                    
+                    if (inputName.includes('Estimated Licensees')) {
+                        fieldName = 'EstimatedLicensees';
+                    } else if (inputName.includes('Registered Licensees')) {
+                        fieldName = 'RegisteredLicensees';
+                    } else if (inputName.includes('Compliant Licensees')) {
+                        fieldName = 'CompliantLicensees';
+                    } else if (inputName.includes('License Fee Average')) {
+                        fieldName = 'LicenseFeeAveragePaid';
+                    } else if (inputName.includes('License Fee')) {
+                        fieldName = 'LicenseFee';
+                    }
+                    
+                    input.name = `License.DynamicCategories[${categoryCounter-1}].${fieldName}`;
+                }
+            });
+            
+            // Add hidden input for category name
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = `License.DynamicCategories[${categoryCounter-1}].Name`;
+            hiddenInput.value = categoryName;
+            newCategory.querySelector('.card-body').appendChild(hiddenInput);
+            
+            // Add edit button handler - use direct function assignment to prevent duplicates
+            const editBtn = newCategory.querySelector('.edit-category-btn');
+            const newEditBtn = removeAllEventListeners(editBtn);
+            newEditBtn.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent collapse toggle
+                currentCategoryCard = newCategory;
+                const titleElement = newCategory.querySelector('.category-title');
+                const currentName = titleElement.textContent;
+                
+                // Set the current name in the modal input
+                document.getElementById('newCategoryName').value = currentName;
+            });
+            
+            // Add remove button handler - use direct function assignment to prevent duplicates
+            const removeBtn = newCategory.querySelector('.remove-category-btn');
+            const newRemoveBtn = removeAllEventListeners(removeBtn);
+            newRemoveBtn.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent collapse toggle
+                categoryToDelete = newCategory;
+            });
+            
+            // Add to container and show
+            document.getElementById('dynamicCategoriesContainer').appendChild(newCategory);
+            
+            // Initialize number formatting for the new inputs
+            initializeNumberFormatting(newCategory.querySelectorAll('.number-format'));
+            
+            // Show the collapse
+            const collapseElement = newCategory.querySelector('.category-content');
+            new bootstrap.Collapse(collapseElement).show();
+            
+            // Increment counter for next category
+            categoryCounter++;
+        }
+        
+        // Initialize number formatting
+        function initializeNumberFormatting(elements) {
+            elements.forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (this.value) {
+                        // Parse the input value as a number
+                        const value = parseFloat(this.value.replace(/,/g, ''));
+                        if (!isNaN(value)) {
+                            // Format with commas
+                            this.value = value.toLocaleString('en-US');
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Initialize number formatting for existing inputs
+        initializeNumberFormatting(document.querySelectorAll('.number-format'));
+        
+        // Calculate gap when current or potential value changes
+        const currentValueInput = document.getElementById('licenseCurrentValue');
+        const potentialValueInput = document.getElementById('licensePotentialValue');
+        const gapInput = document.getElementById('licenseGap');
+        
+        function calculateGap() {
+            if (currentValueInput && potentialValueInput && gapInput) {
+                const currentValue = parseFloat(currentValueInput.value.replace(/,/g, '')) || 0;
+                const potentialValue = parseFloat(potentialValueInput.value.replace(/,/g, '')) || 0;
+                const gap = potentialValue - currentValue;
+                
+                // Format with commas
+                gapInput.value = gap.toLocaleString('en-US', {maximumFractionDigits: 2});
+            }
+        }
+        
+        if (currentValueInput && potentialValueInput) {
+            currentValueInput.addEventListener('change', calculateGap);
+            potentialValueInput.addEventListener('change', calculateGap);
+        }
+        
+        // Add handler for Create Category button in the modal
+        const createCategoryBtn = document.getElementById('createCategoryBtn');
+        if (createCategoryBtn) {
+            const newCreateCategoryBtn = removeAllEventListeners(createCategoryBtn);
+            
+            // Add the only event handler we want
+            newCreateCategoryBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const categoryName = document.getElementById('newCategoryNameCreate').value.trim();
+                
+                if (!categoryName) {
+                    alert('Please enter a category name');
+                    return;
+                }
+                
+                // Check for duplicate category names
+                const existingCategories = document.querySelectorAll('.category-title');
+                for (let i = 0; i < existingCategories.length; i++) {
+                    if (existingCategories[i].textContent.trim() === categoryName) {
+                        alert('A category with this name already exists. Please use a different name.');
+                        return;
+                    }
+                }
+                
+                // Create the new category
+                createNewCategory(categoryName);
+                
+                // Close the modal
+                createModal.hide();
+            });
+        }
+    });
+</script>
+
+<!-- Modals -->
+<!-- Rename Category Modal -->
+<div class="modal fade" id="renameCategoryModal" tabindex="-1" aria-labelledby="renameCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="renameCategoryModalLabel">Rename Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newCategoryName">Category Name</label>
+                    <input type="text" class="form-control" id="newCategoryName" placeholder="Enter category name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveCategoryNameBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Category Modal -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCategoryModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove this category?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Category Modal -->
+<div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createCategoryModalLabel">Create New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newCategoryNameCreate">Category Name</label>
+                    <input type="text" class="form-control" id="newCategoryNameCreate" placeholder="Enter category name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="createCategoryBtn">Create</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,84 @@
+@model RosraApp.Models.ViewModels.TabsContainerViewModel
+
+<div class="tab-system mb-4">
+    <ul class="nav nav-pills nav-fill mb-3" id="@Model.ContainerId" role="tablist">
+        @foreach (var tab in Model.Tabs)
+        {
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(tab.IsActive ? "active" : "")" 
+                        id="@tab.Id-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#@tab.Id-content" 
+                        type="button" 
+                        role="tab" 
+                        aria-controls="@tab.Id-content" 
+                        aria-selected="@(tab.IsActive ? "true" : "false")"
+                        data-tab-id="@tab.Id">
+                    <span class="badge rounded-pill @(tab.IsVisited ? "bg-primary" : "bg-secondary") tab-badge me-2">@(Model.Tabs.IndexOf(tab) + 1)</span>
+                    @tab.Title
+                </button>
+            </li>
+        }
+    </ul>
+
+    <div class="tab-content p-3 border-top" id="@(Model.ContainerId)Content">
+        @foreach (var tab in Model.Tabs)
+        {
+            <div class="tab-pane fade @(tab.IsActive ? "show active" : "")" 
+                 id="@tab.Id-content" 
+                 role="tabpanel" 
+                 aria-labelledby="@tab.Id-tab">
+                @await Html.PartialAsync(tab.ContentPartialName, Model.TabContentModel)
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* Custom styling for the tabs */
+    .nav-pills .nav-link {
+        background-color: transparent;
+        color: #6c757d; /* Gray text for inactive tabs */
+        border: none;
+        padding: 0.75rem 1rem;
+    }
+    
+    .nav-pills .nav-link.active {
+        background-color: transparent;
+        color: #0d6efd; /* Blue text for active tab */
+        font-weight: 500;
+    }
+    
+    .nav-pills .nav-link:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+    
+    /* Badge styling */
+    .nav-pills .nav-link .tab-badge {
+        transition: all 0.2s ease-in-out;
+    }
+</style>
+
+<!-- Hidden form for tab switching -->
+<input type="hidden" id="tabIdInput" name="tabId" />
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add click event listeners to tab buttons
+        document.querySelectorAll('.nav-link').forEach(function(tabButton) {
+            tabButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Get the tab ID from the data attribute
+                var tabId = this.getAttribute('data-tab-id');
+                
+                // Set the form input value
+                document.getElementById('tabIdInput').value = tabId;
+                
+                // Submit the parent form (rosraForm)
+                document.getElementById('rosraForm').action = '@Url.Action("SwitchTab", "Rosra")';
+                document.getElementById('rosraForm').submit();
+            });
+        });
+    });
+</script>

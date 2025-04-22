@@ -1,0 +1,535 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+@{
+    bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+}
+
+<div class="gap-analysis-tab-content">
+    <div class="row">
+        <!-- Left Side (1/3 width) -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Long Term Information</h6>
+                </div>
+                <div class="card-body">
+                    <!-- Original fields -->
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="estimatedMonthlyLeasees">Estimated Number of Monthly Leasees</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="estimatedMonthlyLeasees" name="LongTermUserCharge.EstimatedMonthlyLeasees" value="@(Model.LongTermUserCharge.EstimatedMonthlyLeasees)" placeholder="Enter estimated number of monthly leasees" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="actualMonthlyLeasees">Actual Number of Monthly Leasees</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualMonthlyLeasees" name="LongTermUserCharge.ActualMonthlyLeasees" value="@(Model.LongTermUserCharge.ActualMonthlyLeasees)" placeholder="Enter actual number of monthly leasees" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    <h6 class="mb-3">Categories</h6>
+                    
+                    <!-- Add Category Button -->
+                    <div class="mt-3 mb-3">
+                        <button type="button" class="btn btn-primary" id="addCategoryBtn" @(isViewMode ? "disabled" : "")>
+                            <i class="fas fa-plus"></i> Add New Category
+                        </button>
+                    </div>
+                    
+                    <!-- Category A Fields (Collapsible) -->
+                    <div class="card mb-3 category-card" id="category-A">
+                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#categoryACollapse" aria-expanded="false" aria-controls="categoryACollapse" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <h6 class="mb-0 category-title">Category A</h6>
+                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <i class="fas fa-chevron-down ms-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="categoryACollapse" class="collapse">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Estimated Number of Monthly Leasees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="LongTermUserCharge.EstimatedMonthlyLeaseesCategoryA" value="@Model.LongTermUserCharge.EstimatedMonthlyLeaseesCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Actual Number of Monthly Leasees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="LongTermUserCharge.ActualMonthlyLeaseesCategoryA" value="@Model.LongTermUserCharge.ActualMonthlyLeaseesCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Potential Rate payable by Leasees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="LongTermUserCharge.PotentialRatePayableByCategoryA" value="@Model.LongTermUserCharge.PotentialRatePayableByCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Actual Rate paid by Leasees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="LongTermUserCharge.ActualRatePaidByCategoryA" value="@Model.LongTermUserCharge.ActualRatePaidByCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Category B Fields (Collapsible) -->
+                    <div class="card mb-3 category-card" id="category-B">
+                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#categoryBCollapse" aria-expanded="false" aria-controls="categoryBCollapse" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <h6 class="mb-0 category-title">Category B</h6>
+                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <i class="fas fa-chevron-down ms-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="categoryBCollapse" class="collapse">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Estimated Number of Monthly Leasees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="LongTermUserCharge.EstimatedMonthlyLeaseesCategoryB" value="@Model.LongTermUserCharge.EstimatedMonthlyLeaseesCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Actual Number of Monthly Leasees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="LongTermUserCharge.ActualMonthlyLeaseesCategoryB" value="@Model.LongTermUserCharge.ActualMonthlyLeaseesCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Potential Rate payable by Leasees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="LongTermUserCharge.PotentialRatePayableByCategoryB" value="@Model.LongTermUserCharge.PotentialRatePayableByCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Actual Rate paid by Leasees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="LongTermUserCharge.ActualRatePaidByCategoryB" value="@Model.LongTermUserCharge.ActualRatePaidByCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Category C Fields (Collapsible) -->
+                    <div class="card mb-3 category-card" id="category-C">
+                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#categoryCCollapse" aria-expanded="false" aria-controls="categoryCCollapse" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <h6 class="mb-0 category-title">Category C</h6>
+                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <i class="fas fa-chevron-down ms-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="categoryCCollapse" class="collapse">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Estimated Number of Monthly Leasees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="LongTermUserCharge.EstimatedMonthlyLeaseesCategoryC" value="@Model.LongTermUserCharge.EstimatedMonthlyLeaseesCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Actual Number of Monthly Leasees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="LongTermUserCharge.ActualMonthlyLeaseesCategoryC" value="@Model.LongTermUserCharge.ActualMonthlyLeaseesCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Potential Rate payable by Leasees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="LongTermUserCharge.PotentialRatePayableByCategoryC" value="@Model.LongTermUserCharge.PotentialRatePayableByCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label>Actual Rate paid by Leasees</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="LongTermUserCharge.ActualRatePaidByCategoryC" value="@Model.LongTermUserCharge.ActualRatePaidByCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Container for dynamically added categories -->
+                    <div id="dynamicCategoriesContainer">
+                        <!-- Dynamic categories will be added here -->
+                        @if (Model.LongTermUserCharge.DynamicCategories != null && Model.LongTermUserCharge.DynamicCategories.Count > 0)
+                        {
+                            @foreach (var category in Model.LongTermUserCharge.DynamicCategories)
+                            {
+                                <div class="card mb-3 category-card" id="category-@category.Name.Replace(" ", "-")">
+                                    <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#category@(category.Name.Replace(" ", ""))Collapse" aria-expanded="false" aria-controls="category@(category.Name.Replace(" ", ""))Collapse" style="cursor: pointer;">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <h6 class="mb-0 category-title">@category.Name</h6>
+                                                <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                                <i class="fas fa-chevron-down ms-2"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="category@(category.Name.Replace(" ", ""))Collapse" class="collapse category-content">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>Estimated Number of Monthly Leasees</label>
+                                                    <input type="text" class="form-control number-format" name="LongTermUserCharge.DynamicCategories[@(Model.LongTermUserCharge.DynamicCategories.IndexOf(category))].EstimatedMonthlyLeasees" value="@category.EstimatedMonthlyLeasees" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>Actual Number of Monthly Leasees</label>
+                                                    <input type="text" class="form-control number-format" name="LongTermUserCharge.DynamicCategories[@(Model.LongTermUserCharge.DynamicCategories.IndexOf(category))].ActualMonthlyLeasees" value="@category.ActualMonthlyLeasees" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>Potential Rate payable by Leasees</label>
+                                                    <input type="text" class="form-control number-format" name="LongTermUserCharge.DynamicCategories[@(Model.LongTermUserCharge.DynamicCategories.IndexOf(category))].PotentialRatePayable" value="@category.PotentialRatePayable" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>Actual Rate paid by Leasees</label>
+                                                    <input type="text" class="form-control number-format" name="LongTermUserCharge.DynamicCategories[@(Model.LongTermUserCharge.DynamicCategories.IndexOf(category))].ActualRatePaid" value="@category.ActualRatePaid" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="LongTermUserCharge.DynamicCategories[@(Model.LongTermUserCharge.DynamicCategories.IndexOf(category))].Name" value="@category.Name">
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    
+                    <!-- Template for new category (hidden) -->
+                    <div id="categoryTemplate" style="display: none;">
+                        <div class="card mb-3 category-card">
+                            <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#newCategoryCollapse" aria-expanded="false" style="cursor: pointer;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <h6 class="mb-0 category-title">New Category</h6>
+                                        <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <i class="fas fa-chevron-down ms-2"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="collapse category-content">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>Estimated Number of Monthly Leasees</label>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>Actual Number of Monthly Leasees</label>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>Potential Rate payable by Leasees</label>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>Actual Rate paid by Leasees</label>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Side (2/3 width) -->
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Long Term Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="form-floating">
+                            <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="longTermDescription" name="LongTermUserCharge.Description" value="@Model.LongTermUserCharge.Description" placeholder="Enter description" @(isViewMode ? "readonly" : "")>
+                            <label for="longTermDescription">Description</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-floating">
+                            <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="longTermNotes" name="LongTermUserCharge.Notes" style="height: 200px" placeholder="Enter notes" @(isViewMode ? "readonly" : "")>@Model.LongTermUserCharge.Notes</textarea>
+                            <label for="longTermNotes">Notes</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rename Category Modal -->
+<div class="modal fade" id="renameCategoryModal" tabindex="-1" aria-labelledby="renameCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="renameCategoryModalLabel">Rename Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newCategoryName">New Category Name</label>
+                    <input type="text" class="form-control" id="newCategoryName" placeholder="Enter new category name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveCategoryNameBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Category Modal -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCategoryModalLabel">Delete Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the category <span id="categoryToDeleteName"></span>?</p>
+                <p class="text-danger">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteCategoryBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize counter for unique IDs
+        let categoryCounter = 1;
+        
+        // Variables to store current category being edited/deleted
+        let currentCategory = null;
+        
+        // Initialize modals
+        const renameModal = new bootstrap.Modal(document.getElementById('renameCategoryModal'));
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
+        
+        // Initialize number formatting for the input fields
+        const numberFormatInputs = document.querySelectorAll('.number-format');
+        if (numberFormatInputs && numberFormatInputs.length > 0) {
+            numberFormatInputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    const value = parseFloat(this.value.replace(/,/g, '')) || 0;
+                    this.value = value.toLocaleString('en-US');
+                });
+            });
+        }
+        
+        // Add event listeners for existing edit buttons
+        document.querySelectorAll('.edit-category-btn').forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent collapse toggle
+                currentCategory = this.closest('.category-card');
+                const titleElement = currentCategory.querySelector('.category-title');
+                const currentName = titleElement.textContent;
+                
+                // Set the current name in the modal input
+                document.getElementById('newCategoryName').value = currentName;
+                
+                // Show the modal
+                renameModal.show();
+            });
+        });
+        
+        // Add event listeners for existing remove buttons
+        document.querySelectorAll('.remove-category-btn').forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent collapse toggle
+                currentCategory = this.closest('.category-card');
+                const titleElement = currentCategory.querySelector('.category-title');
+                
+                // Set the category name in the modal
+                document.getElementById('categoryToDeleteName').textContent = titleElement.textContent;
+                
+                // Show the modal
+                deleteModal.show();
+            });
+        });
+        
+        // Add Category button click handler
+        document.getElementById('addCategoryBtn').addEventListener('click', function() {
+            // Clone the template
+            const template = document.getElementById('categoryTemplate');
+            const newCategory = template.querySelector('.category-card').cloneNode(true);
+            
+            // Generate unique IDs
+            const categoryId = 'category-' + categoryCounter;
+            const collapseId = 'collapse-' + categoryCounter;
+            
+            // Update IDs and attributes
+            newCategory.id = categoryId;
+            newCategory.querySelector('.card-header').setAttribute('data-bs-target', '#' + collapseId);
+            newCategory.querySelector('.card-header').setAttribute('aria-controls', collapseId);
+            newCategory.querySelector('.collapse').id = collapseId;
+            
+            // Set default category name
+            newCategory.querySelector('.category-title').textContent = 'Category ' + String.fromCharCode(68 + categoryCounter); // D, E, F, etc.
+            
+            // Update input names for form submission
+            const inputs = newCategory.querySelectorAll('input');
+            inputs.forEach(function(input, index) {
+                const fieldName = index === 0 ? 'EstimatedMonthlyLeasees' : 
+                                 index === 1 ? 'ActualMonthlyLeasees' : 
+                                 index === 2 ? 'PotentialRatePayable' : 'ActualRatePaid';
+                input.name = `LongTermUserCharge.DynamicCategories[${categoryCounter - 1}].${fieldName}`;
+            });
+            
+            // Add hidden input for category name
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = `LongTermUserCharge.DynamicCategories[${categoryCounter - 1}].Name`;
+            hiddenInput.value = 'Category ' + String.fromCharCode(68 + categoryCounter);
+            newCategory.querySelector('.card-body').appendChild(hiddenInput);
+            
+            // Add edit button handler
+            newCategory.querySelector('.edit-category-btn').addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent collapse toggle
+                currentCategory = newCategory;
+                const titleElement = newCategory.querySelector('.category-title');
+                const currentName = titleElement.textContent;
+                
+                // Set the current name in the modal input
+                document.getElementById('newCategoryName').value = currentName;
+                
+                // Show the modal
+                renameModal.show();
+            });
+            
+            // Add remove button handler
+            newCategory.querySelector('.remove-category-btn').addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent collapse toggle
+                currentCategory = newCategory;
+                const titleElement = newCategory.querySelector('.category-title');
+                
+                // Set the category name in the modal
+                document.getElementById('categoryToDeleteName').textContent = titleElement.textContent;
+                
+                // Show the modal
+                deleteModal.show();
+            });
+            
+            // Add to container and show
+            document.getElementById('dynamicCategoriesContainer').appendChild(newCategory);
+            
+            // Increment counter for next category
+            categoryCounter++;
+            
+            // Show the collapse
+            new bootstrap.Collapse(document.getElementById(collapseId)).show();
+        });
+        
+        // Save Category Name button click handler
+        document.getElementById('saveCategoryNameBtn').addEventListener('click', function() {
+            if (currentCategory) {
+                const newName = document.getElementById('newCategoryName').value.trim();
+                if (newName) {
+                    // Update the category title
+                    const titleElement = currentCategory.querySelector('.category-title');
+                    titleElement.textContent = newName;
+                    
+                    // Update the hidden input value if it exists
+                    const hiddenInput = currentCategory.querySelector('input[type="hidden"]');
+                    if (hiddenInput) {
+                        hiddenInput.value = newName;
+                    }
+                    
+                    // Close the modal
+                    renameModal.hide();
+                }
+            }
+        });
+        
+        // Confirm Delete Category button click handler
+        document.getElementById('confirmDeleteCategoryBtn').addEventListener('click', function() {
+            if (currentCategory) {
+                // Remove the category card
+                currentCategory.remove();
+                
+                // Close the modal
+                deleteModal.hide();
+                
+                // Update indices for remaining dynamic categories
+                updateDynamicCategoryIndices();
+            }
+        });
+        
+        // Function to update indices for dynamic categories after deletion
+        function updateDynamicCategoryIndices() {
+            const dynamicCategories = document.getElementById('dynamicCategoriesContainer').querySelectorAll('.category-card');
+            dynamicCategories.forEach(function(category, index) {
+                const inputs = category.querySelectorAll('input');
+                inputs.forEach(function(input) {
+                    if (input.name.includes('DynamicCategories[')) {
+                        input.name = input.name.replace(/DynamicCategories\[\d+\]/, `DynamicCategories[${index}]`);
+                    }
+                });
+            });
+        }
+    });
+</script>

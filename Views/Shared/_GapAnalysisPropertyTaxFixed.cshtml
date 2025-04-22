@@ -1,0 +1,749 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+@{
+    bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+}
+
+<div class="gap-analysis-tab-content">
+    <div class="row">
+        <!-- Left Side (1/3 width) -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Property Tax Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="totalPropertyTaxPayers">Total estimated property tax payers</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="totalPropertyTaxPayers" name="PropertyTax.TotalPropertyTaxPayers" value="@Model.PropertyTax.TotalPropertyTaxPayers" placeholder="Enter total estimated property tax payers" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="registeredPropertyTaxPayers">Registered property tax payers</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="registeredPropertyTaxPayers" name="PropertyTax.RegisteredPropertyTaxPayers" value="@Model.PropertyTax.RegisteredPropertyTaxPayers" placeholder="Enter registered property tax payers" @(isViewMode ? "readonly" : "")>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    <h6 class="mb-3">Property Tax Categories</h6>
+                    
+                    <!-- Add Category Button -->
+                    <div class="mt-3 mb-3">
+                        <button type="button" class="btn btn-primary" id="addPropertyTaxCategoryBtn" @(isViewMode ? "disabled" : "")>
+                            <i class="fas fa-plus"></i> Add New Category
+                        </button>
+                    </div>
+                    
+                    <!-- Category A -->
+                    <div class="card mb-3 category-card" id="category-A">
+                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#categoryACollapse" aria-expanded="true" aria-controls="categoryACollapse" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <h6 class="mb-0 category-title">Category A</h6>
+                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <i class="fas fa-chevron-down ms-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="categoryACollapse" class="collapse show">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="registeredTaxpayersCategoryA">Registered Taxpayers</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="registeredTaxpayersCategoryA" name="PropertyTax.RegisteredTaxpayersCategoryA" value="@Model.PropertyTax.RegisteredTaxpayersCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="compliantTaxpayersCategoryA">Compliant Taxpayers</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="compliantTaxpayersCategoryA" name="PropertyTax.CompliantTaxpayersCategoryA" value="@Model.PropertyTax.CompliantTaxpayersCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="avgValueLandPropertyCategoryA">Average Value of land/property</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
+                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="avgValueLandPropertyCategoryA" name="PropertyTax.AveragePropertyValueCategoryA" value="@Model.PropertyTax.AveragePropertyValueCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="estAvgValueLandPropertyCategoryA">Estimated Average Value of land/property</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
+                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="estAvgValueLandPropertyCategoryA" name="PropertyTax.EstimatedAveragePropertyValueCategoryA" value="@Model.PropertyTax.EstimatedAveragePropertyValueCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="taxRateCategoryA">Tax Rate</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="taxRateCategoryA" name="PropertyTax.TaxRateCategoryA" value="@Model.PropertyTax.TaxRateCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Category B -->
+                    <div class="card mb-3 category-card" id="category-B">
+                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#categoryBCollapse" aria-expanded="false" aria-controls="categoryBCollapse" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <h6 class="mb-0 category-title">Category B</h6>
+                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <i class="fas fa-chevron-down ms-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="categoryBCollapse" class="collapse">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="registeredTaxpayersCategoryB">Registered Taxpayers</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="registeredTaxpayersCategoryB" name="PropertyTax.RegisteredTaxpayersCategoryB" value="@Model.PropertyTax.RegisteredTaxpayersCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="compliantTaxpayersCategoryB">Compliant Taxpayers</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="compliantTaxpayersCategoryB" name="PropertyTax.CompliantTaxpayersCategoryB" value="@Model.PropertyTax.CompliantTaxpayersCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="avgValueLandPropertyCategoryB">Average Value of land/property</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
+                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="avgValueLandPropertyCategoryB" name="PropertyTax.AveragePropertyValueCategoryB" value="@Model.PropertyTax.AveragePropertyValueCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="estAvgValueLandPropertyCategoryB">Estimated Average Value of land/property</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
+                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="estAvgValueLandPropertyCategoryB" name="PropertyTax.EstimatedAveragePropertyValueCategoryB" value="@Model.PropertyTax.EstimatedAveragePropertyValueCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="taxRateCategoryB">Tax Rate</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="taxRateCategoryB" name="PropertyTax.TaxRateCategoryB" value="@Model.PropertyTax.TaxRateCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Category C -->
+                    <div class="card mb-3 category-card" id="category-C">
+                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#categoryCCollapse" aria-expanded="false" aria-controls="categoryCCollapse" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <h6 class="mb-0 category-title">Category C</h6>
+                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <i class="fas fa-chevron-down ms-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="categoryCCollapse" class="collapse">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="registeredTaxpayersCategoryC">Registered Taxpayers</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="registeredTaxpayersCategoryC" name="PropertyTax.RegisteredTaxpayersCategoryC" value="@Model.PropertyTax.RegisteredTaxpayersCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="compliantTaxpayersCategoryC">Compliant Taxpayers</label>
+                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="compliantTaxpayersCategoryC" name="PropertyTax.CompliantTaxpayersCategoryC" value="@Model.PropertyTax.CompliantTaxpayersCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="avgValueLandPropertyCategoryC">Average Value of land/property</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
+                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="avgValueLandPropertyCategoryC" name="PropertyTax.AveragePropertyValueCategoryC" value="@Model.PropertyTax.AveragePropertyValueCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="estAvgValueLandPropertyCategoryC">Estimated Average Value of land/property</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
+                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="estAvgValueLandPropertyCategoryC" name="PropertyTax.EstimatedAveragePropertyValueCategoryC" value="@Model.PropertyTax.EstimatedAveragePropertyValueCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="taxRateCategoryC">Tax Rate</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="taxRateCategoryC" name="PropertyTax.TaxRateCategoryC" value="@Model.PropertyTax.TaxRateCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="dynamicPropertyTaxCategoriesContainer">
+                        <!-- Dynamic categories will be added here -->
+                        @if (Model.PropertyTax.DynamicCategories != null && Model.PropertyTax.DynamicCategories.Count > 0)
+                        {
+                            @foreach (var category in Model.PropertyTax.DynamicCategories)
+                            {
+                                <div class="card mb-3 category-card" id="category-@category.Name.Replace(" ", "-")">
+                                    <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#category@(category.Name.Replace(" ", ""))Collapse" aria-expanded="false" aria-controls="category@(category.Name.Replace(" ", ""))Collapse" style="cursor: pointer;">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <h6 class="mb-0 category-title">@category.Name</h6>
+                                                <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                                <i class="fas fa-chevron-down ms-2"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="category@(category.Name.Replace(" ", ""))Collapse" class="collapse">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>Registered Taxpayers</label>
+                                                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="PropertyTax.DynamicCategories[@(Model.PropertyTax.DynamicCategories.IndexOf(category))].RegisteredTaxpayers" value="@category.RegisteredTaxpayers" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>Compliant Taxpayers</label>
+                                                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="PropertyTax.DynamicCategories[@(Model.PropertyTax.DynamicCategories.IndexOf(category))].CompliantTaxpayers" value="@category.CompliantTaxpayers" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>Average Value of land/property</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
+                                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="PropertyTax.DynamicCategories[@(Model.PropertyTax.DynamicCategories.IndexOf(category))].AveragePropertyValue" value="@category.AveragePropertyValue" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>Estimated Average Value of land/property</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
+                                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="PropertyTax.DynamicCategories[@(Model.PropertyTax.DynamicCategories.IndexOf(category))].EstimatedAveragePropertyValue" value="@category.EstimatedAveragePropertyValue" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label>Tax Rate</label>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="PropertyTax.DynamicCategories[@(Model.PropertyTax.DynamicCategories.IndexOf(category))].TaxRate" value="@category.TaxRate" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                                        <span class="input-group-text">%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="PropertyTax.DynamicCategories[@(Model.PropertyTax.DynamicCategories.IndexOf(category))].Name" value="@category.Name">
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    
+                    <!-- Template for new category (hidden) -->
+                    <div id="propertyTaxCategoryTemplate" style="display: none;">
+                        <div class="card mb-3 category-card">
+                            <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#categoryTemplateCollapse" aria-expanded="false" aria-controls="categoryTemplateCollapse" style="cursor: pointer;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <h6 class="mb-0 category-title">New Category</h6>
+                                        <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <i class="fas fa-chevron-down ms-2"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="categoryTemplateCollapse" class="collapse">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>Registered Taxpayers</label>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>Compliant Taxpayers</label>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>Average Value of land/property</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
+                                                <input type="text" class="form-control number-format" placeholder="Enter value">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>Estimated Average Value of land/property</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
+                                                <input type="text" class="form-control number-format" placeholder="Enter value">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>Tax Rate</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control number-format" placeholder="Enter value">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Side (2/3 width) -->
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Property Tax Revenue Gap Analysis</h6>
+                </div>
+                <div class="card-body">
+                    <!-- Revenue Gap Analysis -->
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="propertyTaxCurrentValue">Current Revenue</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
+                                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="propertyTaxCurrentValue" name="PropertyTax.CurrentValue" value="@Model.PropertyTax.CurrentValue" placeholder="Enter current value" @(isViewMode ? "readonly" : "")>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="propertyTaxPotentialValue">Potential Revenue</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
+                                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="propertyTaxPotentialValue" name="PropertyTax.PotentialValue" value="@Model.PropertyTax.PotentialValue" placeholder="Enter potential value" @(isViewMode ? "readonly" : "")>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="propertyTaxGap">Revenue Gap</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
+                                    <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="propertyTaxGap" name="PropertyTax.Gap" value="@Model.PropertyTax.Gap" readonly>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="propertyTaxDescription">Description</label>
+                                <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="propertyTaxDescription" name="PropertyTax.Description" rows="3" placeholder="Enter description" @(isViewMode ? "readonly" : "")>@Model.PropertyTax.Description</textarea>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="propertyTaxNotes">Notes</label>
+                                <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="propertyTaxNotes" name="PropertyTax.Notes" rows="3" placeholder="Enter notes" @(isViewMode ? "readonly" : "")>@Model.PropertyTax.Notes</textarea>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create New Category Modal -->
+<div class="modal fade" id="createPropertyTaxCategoryModal" tabindex="-1" aria-labelledby="createPropertyTaxCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createPropertyTaxCategoryModalLabel">Create New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newPropertyTaxCategoryNameCreate">Category Name</label>
+                    <input type="text" class="form-control" id="newPropertyTaxCategoryNameCreate" placeholder="Enter category name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="createPropertyTaxCategoryBtn">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rename Category Modal -->
+<div class="modal fade" id="renamePropertyTaxCategoryModal" tabindex="-1" aria-labelledby="renamePropertyTaxCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="renamePropertyTaxCategoryModalLabel">Rename Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newPropertyTaxCategoryName">New Category Name</label>
+                    <input type="text" class="form-control" id="newPropertyTaxCategoryName" placeholder="Enter new category name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="savePropertyTaxCategoryNameBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Category Modal -->
+<div class="modal fade" id="deletePropertyTaxCategoryModal" tabindex="-1" aria-labelledby="deletePropertyTaxCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePropertyTaxCategoryModalLabel">Delete Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the category <span id="propertyTaxCategoryToDeleteName"></span>?</p>
+                <p class="text-danger">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeletePropertyTaxCategoryBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize counter for unique IDs
+        let propertyTaxCategoryCounter = 1;
+        
+        // Variables to store current category being edited/deleted
+        let currentPropertyTaxCategory = null;
+        
+        // Initialize modals
+        const renamePropertyTaxModalElement = document.getElementById('renamePropertyTaxCategoryModal');
+        const deletePropertyTaxModalElement = document.getElementById('deletePropertyTaxCategoryModal');
+        const createPropertyTaxModalElement = document.getElementById('createPropertyTaxCategoryModal');
+        
+        const renamePropertyTaxModal = new bootstrap.Modal(renamePropertyTaxModalElement);
+        const deletePropertyTaxModal = new bootstrap.Modal(deletePropertyTaxModalElement);
+        const createPropertyTaxModal = new bootstrap.Modal(createPropertyTaxModalElement);
+        
+        // Function to clean up all modals and backdrops
+        function cleanupModals() {
+            // Hide all modals
+            if (renamePropertyTaxModal) renamePropertyTaxModal.hide();
+            if (deletePropertyTaxModal) deletePropertyTaxModal.hide();
+            if (createPropertyTaxModal) createPropertyTaxModal.hide();
+            
+            // Remove all backdrops
+            const modalBackdrops = document.querySelectorAll('.modal-backdrop');
+            modalBackdrops.forEach(backdrop => {
+                backdrop.remove();
+            });
+            
+            // Reset body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Hide all modal elements
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+                modal.setAttribute('aria-hidden', 'true');
+                modal.classList.remove('show');
+            });
+        }
+        
+        // Add event listener for when modals are hidden
+        renamePropertyTaxModalElement.addEventListener('hidden.bs.modal', cleanupModals);
+        deletePropertyTaxModalElement.addEventListener('hidden.bs.modal', cleanupModals);
+        createPropertyTaxModalElement.addEventListener('hidden.bs.modal', cleanupModals);
+        
+        // Listen for tab changes to clean up modals
+        document.addEventListener('click', function(e) {
+            // If clicking on a tab or navigation item
+            if (e.target.closest('a[data-bs-toggle="tab"]') || e.target.closest('.nav-link')) {
+                cleanupModals();
+            }
+        });
+        
+        // Initialize number formatting for the input fields
+        const numberFormatInputs = document.querySelectorAll('.number-format');
+        if (numberFormatInputs && numberFormatInputs.length > 0) {
+            numberFormatInputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    const value = parseFloat(this.value.replace(/,/g, '')) || 0;
+                    this.value = value.toLocaleString('en-US');
+                });
+            });
+        }
+        
+        // Add event listeners for existing edit buttons
+        document.querySelectorAll('.edit-category-btn').forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent collapse toggle
+                currentPropertyTaxCategory = this.closest('.category-card');
+                const titleElement = currentPropertyTaxCategory.querySelector('.category-title');
+                const currentName = titleElement.textContent;
+                
+                // Set the current name in the modal input
+                document.getElementById('newPropertyTaxCategoryName').value = currentName;
+                
+                // Show the modal
+                renamePropertyTaxModal.show();
+            });
+        });
+        
+        // Add event listeners for existing remove buttons
+        document.querySelectorAll('.remove-category-btn').forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent collapse toggle
+                currentPropertyTaxCategory = this.closest('.category-card');
+                const titleElement = currentPropertyTaxCategory.querySelector('.category-title');
+                
+                // Set the category name in the modal
+                document.getElementById('propertyTaxCategoryToDeleteName').textContent = titleElement.textContent;
+                
+                // Show the modal
+                deletePropertyTaxModal.show();
+            });
+        });
+        
+        // Add Category button click handler - now just opens the modal
+        document.getElementById('addPropertyTaxCategoryBtn').addEventListener('click', function() {
+            // Clear the input field
+            document.getElementById('newPropertyTaxCategoryNameCreate').value = '';
+            
+            // Show the modal
+            createPropertyTaxModal.show();
+        });
+        
+        // Create Category button click handler
+        document.getElementById('createPropertyTaxCategoryBtn').addEventListener('click', function() {
+            const categoryName = document.getElementById('newPropertyTaxCategoryNameCreate').value.trim();
+            
+            if (!categoryName) {
+                alert('Please enter a category name');
+                return;
+            }
+            
+            // Clone the template
+            const template = document.getElementById('propertyTaxCategoryTemplate');
+            const newCategory = template.querySelector('.category-card').cloneNode(true);
+            
+            // Generate unique IDs
+            const categoryId = 'propertyTaxCategory-' + propertyTaxCategoryCounter;
+            const collapseId = 'propertyTaxCollapse-' + propertyTaxCategoryCounter;
+            
+            // Update IDs and attributes
+            newCategory.id = categoryId;
+            newCategory.querySelector('.card-header').setAttribute('data-bs-target', '#' + collapseId);
+            newCategory.querySelector('.card-header').setAttribute('aria-controls', collapseId);
+            newCategory.querySelector('.collapse').id = collapseId;
+            
+            // Set the user-provided category name
+            newCategory.querySelector('.category-title').textContent = categoryName;
+            
+            // Update input names for form submission
+            const inputs = newCategory.querySelectorAll('input');
+            inputs.forEach(function(input, index) {
+                const fieldName = index === 0 ? 'RegisteredTaxpayers' : 
+                                 index === 1 ? 'CompliantTaxpayers' : 
+                                 index === 2 ? 'AveragePropertyValue' : 
+                                 index === 3 ? 'EstimatedAveragePropertyValue' : 'TaxRate';
+                input.name = `PropertyTax.DynamicCategories[${propertyTaxCategoryCounter - 1}].${fieldName}`;
+            });
+            
+            // Add hidden input for category name
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = `PropertyTax.DynamicCategories[${propertyTaxCategoryCounter - 1}].Name`;
+            hiddenInput.value = categoryName;
+            newCategory.querySelector('.card-body').appendChild(hiddenInput);
+            
+            // Add edit button handler
+            newCategory.querySelector('.edit-category-btn').addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent collapse toggle
+                currentPropertyTaxCategory = newCategory;
+                const titleElement = newCategory.querySelector('.category-title');
+                const currentName = titleElement.textContent;
+                
+                // Set the current name in the modal input
+                document.getElementById('newPropertyTaxCategoryName').value = currentName;
+                
+                // Show the modal
+                renamePropertyTaxModal.show();
+            });
+            
+            // Add remove button handler
+            newCategory.querySelector('.remove-category-btn').addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent collapse toggle
+                currentPropertyTaxCategory = newCategory;
+                const titleElement = newCategory.querySelector('.category-title');
+                
+                // Set the category name in the modal
+                document.getElementById('propertyTaxCategoryToDeleteName').textContent = titleElement.textContent;
+                
+                // Show the modal
+                deletePropertyTaxModal.show();
+            });
+            
+            // Add to container and show
+            document.getElementById('dynamicPropertyTaxCategoriesContainer').appendChild(newCategory);
+            
+            // Increment counter for next category
+            propertyTaxCategoryCounter++;
+            
+            // Close the modal
+            createPropertyTaxModal.hide();
+            
+            // Show the collapse
+            new bootstrap.Collapse(document.getElementById(collapseId)).show();
+        });
+        
+        // Save Category Name button click handler
+        document.getElementById('savePropertyTaxCategoryNameBtn').addEventListener('click', function() {
+            if (currentPropertyTaxCategory) {
+                const newName = document.getElementById('newPropertyTaxCategoryName').value.trim();
+                if (newName) {
+                    // Update the category title
+                    const titleElement = currentPropertyTaxCategory.querySelector('.category-title');
+                    titleElement.textContent = newName;
+                    
+                    // Update the hidden input value if it exists
+                    const hiddenInput = currentPropertyTaxCategory.querySelector('input[type="hidden"]');
+                    if (hiddenInput) {
+                        hiddenInput.value = newName;
+                    }
+                    
+                    // Close the modal
+                    renamePropertyTaxModal.hide();
+                }
+            }
+        });
+        
+        // Confirm Delete Category button click handler
+        document.getElementById('confirmDeletePropertyTaxCategoryBtn').addEventListener('click', function() {
+            if (currentPropertyTaxCategory) {
+                // Remove the category card
+                currentPropertyTaxCategory.remove();
+                
+                // Close the modal
+                deletePropertyTaxModal.hide();
+                
+                // Update indices for remaining dynamic categories
+                updatePropertyTaxDynamicCategoryIndices();
+            }
+        });
+        
+        // Function to update indices for dynamic categories after deletion
+        function updatePropertyTaxDynamicCategoryIndices() {
+            const dynamicCategories = document.getElementById('dynamicPropertyTaxCategoriesContainer').querySelectorAll('.category-card');
+            dynamicCategories.forEach(function(category, index) {
+                const inputs = category.querySelectorAll('input');
+                inputs.forEach(function(input) {
+                    if (input.name.includes('DynamicCategories[')) {
+                        input.name = input.name.replace(/DynamicCategories\[\d+\]/, `DynamicCategories[${index}]`);
+                    }
+                });
+            });
+        }
+        
+        // Toggle chevron icon when collapsing/expanding categories
+        const categoryHeaders = document.querySelectorAll('[data-bs-toggle="collapse"]');
+        
+        categoryHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const chevron = this.querySelector('.fas.fa-chevron-down');
+                const collapseId = this.getAttribute('data-bs-target');
+                const collapseElement = document.querySelector(collapseId);
+                
+                // Check if the collapse is currently shown
+                if (collapseElement.classList.contains('show')) {
+                    chevron.style.transform = 'rotate(0deg)';
+                } else {
+                    chevron.style.transform = 'rotate(180deg)';
+                }
+            });
+        });
+    });
+</script>

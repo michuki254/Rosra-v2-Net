@@ -1,0 +1,116 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+
+<div class="tab-content-container">
+    <h5 class="mb-3">Recommendations</h5>
+    
+    <div class="row g-3">
+        <div class="col-md-12">
+            <div class="form-floating mb-3">
+                <textarea class="form-control" id="recommendationSummary" name="RecommendationSummary" style="height: 80px" placeholder="Summarize your recommendations">@Model.RecommendationSummary</textarea>
+                <label for="recommendationSummary">Recommendation Summary</label>
+            </div>
+        </div>
+        
+        <div class="col-md-12">
+            <label class="form-label">Action Items</label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="actionItemInput" placeholder="Enter an action item">
+                <select class="form-select" id="prioritySelect" style="max-width: 120px;">
+                    <option value="high">High</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="low">Low</option>
+                </select>
+                <button class="btn btn-outline-secondary" type="button" id="addActionItemBtn">Add</button>
+            </div>
+            
+            <ul class="list-group" id="actionItemsList">
+                @for (int i = 0; i < Model.ActionItems.Count; i++)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            @Model.ActionItems[i].Description
+                            <span class="badge @GetPriorityBadgeClass(Model.ActionItems[i].Priority) ms-2">@Model.ActionItems[i].Priority</span>
+                            <input type="hidden" name="ActionItems[@i].Description" value="@Model.ActionItems[i].Description" />
+                            <input type="hidden" name="ActionItems[@i].Priority" value="@Model.ActionItems[i].Priority" />
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger remove-action-item" data-index="@i">×</button>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetPriorityBadgeClass(string priority)
+    {
+        return priority.ToLower() switch
+        {
+            "high" => "bg-danger",
+            "medium" => "bg-warning",
+            "low" => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add action item
+        document.getElementById('addActionItemBtn').addEventListener('click', function() {
+            var input = document.getElementById('actionItemInput');
+            var description = input.value.trim();
+            var prioritySelect = document.getElementById('prioritySelect');
+            var priority = prioritySelect.value;
+            
+            if (description) {
+                var list = document.getElementById('actionItemsList');
+                var index = list.children.length;
+                
+                var badgeClass = getBadgeClass(priority);
+                
+                var li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.innerHTML = '<div>' + description + 
+                    '<span class="badge ' + badgeClass + ' ms-2">' + priority + '</span>' +
+                    '<input type="hidden" name="ActionItems[' + index + '].Description" value="' + description + '" />' +
+                    '<input type="hidden" name="ActionItems[' + index + '].Priority" value="' + priority + '" />' +
+                    '</div>' +
+                    '<button class="btn btn-sm btn-outline-danger remove-action-item" data-index="' + index + '">×</button>';
+                
+                list.appendChild(li);
+                input.value = '';
+                
+                // Add event listener to the new remove button
+                li.querySelector('.remove-action-item').addEventListener('click', removeActionItem);
+            }
+        });
+        
+        // Remove action item
+        var removeButtons = document.querySelectorAll('.remove-action-item');
+        removeButtons.forEach(function(button) {
+            button.addEventListener('click', removeActionItem);
+        });
+        
+        function removeActionItem() {
+            this.closest('li').remove();
+            // Reindex the remaining items
+            var items = document.querySelectorAll('#actionItemsList li');
+            items.forEach(function(item, index) {
+                var hiddenInputs = item.querySelectorAll('input[type="hidden"]');
+                hiddenInputs[0].name = 'ActionItems[' + index + '].Description';
+                hiddenInputs[1].name = 'ActionItems[' + index + '].Priority';
+                item.querySelector('.remove-action-item').dataset.index = index;
+            });
+        }
+        
+        function getBadgeClass(priority) {
+            switch(priority.toLowerCase()) {
+                case 'high': return 'bg-danger';
+                case 'medium': return 'bg-warning';
+                case 'low': return 'bg-success';
+                default: return 'bg-secondary';
+            }
+        }
+    });
+</script>

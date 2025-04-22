@@ -1,0 +1,207 @@
+@model RosraApp.Models.ViewModels.RosraReportViewModel
+@using System.Text.Json
+@{
+    ViewData["Title"] = "View Report";
+    
+    // Helper function to deserialize JSON strings
+    T DeserializeJson<T>(string json) where T : new()
+    {
+        if (string.IsNullOrEmpty(json))
+            return new T();
+        
+        try
+        {
+            return JsonSerializer.Deserialize<T>(json) ?? new T();
+        }
+        catch
+        {
+            return new T();
+        }
+    }
+}
+
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">@Model.Title</h2>
+                <div>
+                    <a asp-controller="Rosra" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Edit Report
+                    </a>
+                    <a href="#" class="btn btn-success export-report" data-id="@Model.Id">
+                        <i class="bi bi-download"></i> Export Report
+                    </a>
+                    <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary ms-2">
+                        <i class="bi bi-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow border-0 rounded-lg mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="m-0">Report Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Project Name:</label>
+                            <p>@(Model.ProjectName ?? "Not specified")</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Estimated Budget:</label>
+                            <p>@(Model.EstimatedBudget.HasValue ? $"${Model.EstimatedBudget:N2}" : "Not specified")</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Created By:</label>
+                            <p>@(Model.UserName ?? "Unknown")</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="fw-bold">Created On:</label>
+                            <p>@Model.CreatedAt.ToString("MMMM dd, yyyy 'at' h:mm tt")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabs for report sections -->
+            <ul class="nav nav-tabs" id="reportTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="potential-tab" data-bs-toggle="tab" data-bs-target="#potential" type="button" role="tab" aria-controls="potential" aria-selected="true">
+                        Potential Estimates
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="gap-tab" data-bs-toggle="tab" data-bs-target="#gap" type="button" role="tab" aria-controls="gap" aria-selected="false">
+                        Gap Analysis
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="causes-tab" data-bs-toggle="tab" data-bs-target="#causes" type="button" role="tab" aria-controls="causes" aria-selected="false">
+                        Causes Analysis
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="recommendations-tab" data-bs-toggle="tab" data-bs-target="#recommendations" type="button" role="tab" aria-controls="recommendations" aria-selected="false">
+                        Recommendations
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content p-4 border border-top-0 rounded-bottom mb-4" id="reportTabsContent">
+                <!-- Potential Estimates Tab -->
+                <div class="tab-pane fade show active" id="potential" role="tabpanel" aria-labelledby="potential-tab">
+                    <h5 class="mb-3">Potential Estimates</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="fw-bold">Project Name:</label>
+                                <p>@(Model.ProjectName ?? "Not specified")</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="fw-bold">Estimated Budget:</label>
+                                <p>@(Model.EstimatedBudget.HasValue ? $"${Model.EstimatedBudget:N2}" : "Not specified")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gap Analysis Tab -->
+                <div class="tab-pane fade" id="gap" role="tabpanel" aria-labelledby="gap-tab">
+                    <h5 class="mb-3">Gap Analysis</h5>
+                    <div class="row">
+                        <!-- Revenue Sources section will be displayed here -->
+                    </div>
+                </div>
+                
+                <!-- Causes Analysis Tab -->
+                <div class="tab-pane fade" id="causes" role="tabpanel" aria-labelledby="causes-tab">
+                    <h5 class="mb-3">Causes Analysis</h5>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="fw-bold">Problem Statement:</label>
+                            <div class="p-3 bg-light rounded">
+                                @Html.Raw(Model.ProblemStatement?.Replace("\n", "<br />") ?? "Not specified")
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="fw-bold">Root Causes:</label>
+                            <ul class="list-group">
+                                @if (Model.RootCauses != null && Model.RootCauses.Any())
+                                {
+                                    @foreach (var cause in Model.RootCauses)
+                                    {
+                                        <li class="list-group-item">@cause</li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="list-group-item">No root causes specified</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recommendations Tab -->
+                <div class="tab-pane fade" id="recommendations" role="tabpanel" aria-labelledby="recommendations-tab">
+                    <h5 class="mb-3">Recommendations</h5>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="fw-bold">Recommendation Summary:</label>
+                            <div class="p-3 bg-light rounded">
+                                @Html.Raw(Model.RecommendationSummary?.Replace("\n", "<br />") ?? "Not specified")
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="fw-bold">Action Items:</label>
+                            <ul class="list-group">
+                                @if (Model.ActionItems != null && Model.ActionItems.Any())
+                                {
+                                    @foreach (var item in Model.ActionItems)
+                                    {
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            @item.Description
+                                            <span class="badge @(item.Priority.ToLower() == "high" ? "bg-danger" : item.Priority.ToLower() == "medium" ? "bg-warning" : "bg-success")">
+                                                @item.Priority
+                                            </span>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="list-group-item">No action items specified</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Export report functionality
+            $('.export-report').click(function(e) {
+                e.preventDefault();
+                alert('Export functionality will be implemented in a future update.');
+            });
+        });
+    </script>
+}
