@@ -309,3 +309,4 @@ C:\Users\dxmic\Desktop\Rosra V2\RosraApp\bin\Debug\net8.0\ru\Microsoft.CodeAnaly
 C:\Users\dxmic\Desktop\Rosra V2\RosraApp\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\Users\dxmic\Desktop\Rosra V2\RosraApp\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\Users\dxmic\Desktop\Rosra V2\RosraApp\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Scripting.resources.dll
+C:\Users\dxmic\Desktop\Rosra V2\RosraApp\obj\Debug\net8.0\RosraApp.sourcelink.json

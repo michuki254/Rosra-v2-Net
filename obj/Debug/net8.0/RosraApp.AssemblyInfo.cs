@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RosraApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2c35210ac4537f7d35bb3d46791d31cd0a2ff36c")]
 [assembly: System.Reflection.AssemblyProductAttribute("RosraApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RosraApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -34,7 +34,7 @@
                     
                     <!-- Add Category Button -->
                     <div class="mt-3 mb-3">
-                        <button type="button" class="btn btn-primary open-modal-only" data-target-modal="createCategoryModal" @(isViewMode ? "disabled" : "")>
+                        <button type="button" class="btn btn-primary" id="openCreateCategoryModalBtn" @(isViewMode ? "disabled" : "")>
                             <i class="fas fa-plus"></i> Add New Category
                         </button>
                     </div>
@@ -195,12 +195,12 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center">
                                                 <h6 class="mb-0 category-title">@category.Name</h6>
-                                                <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                                <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameCategoryModal" @(isViewMode ? "disabled" : "")>
                                                     <i class="fas fa-edit"></i>
                                                 </button>
                                             </div>
                                             <div>
-                                                <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
+                                                <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" @(isViewMode ? "disabled" : "")>
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                                 <i class="fas fa-chevron-down ms-2"></i>
@@ -346,15 +346,16 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteCategoryModalLabel">Confirm Delete</h5>
+                <h5 class="modal-title" id="deleteCategoryModalLabel">Delete Category</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to remove this category? <span id="categoryToDeleteName"></span></p>
+                <p>Are you sure you want to delete the category <span id="categoryToDeleteName"></span>?</p>
+                <p class="text-danger">This action cannot be undone.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteCategoryBtn">Delete</button>
             </div>
         </div>
     </div>
@@ -383,428 +384,262 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    $(document).ready(function() {
         // Initialize counter for unique IDs - start with count of existing dynamic categories
         let categoryCounter = @(Model.ShortTermUserCharge.DynamicCategories != null ? Model.ShortTermUserCharge.DynamicCategories.Count : 0) + 1;
         
         // Variables to store current category being edited/deleted
-        let currentCategoryCard = null;
-        let categoryToDelete = null;
+        let currentCategory = null;
         
-        // Initialize Bootstrap modals
-        const renameModal = new bootstrap.Modal(document.getElementById('renameCategoryModal'));
-        const deleteModal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
-        const createModal = new bootstrap.Modal(document.getElementById('createCategoryModal'));
-        
-        // IMPORTANT: Use a different approach for opening modals
-        document.querySelectorAll('.open-modal-only').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const modalId = this.getAttribute('data-target-modal');
-                const modal = document.getElementById(modalId);
-                
-                if (modal) {
-                    try {
-                        // Try to initialize and show the modal using Bootstrap
-                        const modalInstance = bootstrap.Modal.getInstance(modal);
-                        if (modalInstance) {
-                            modalInstance.show();
-                        } else {
-                            // If no instance exists, create a new one
-                            const newModalInstance = new bootstrap.Modal(modal);
-                            newModalInstance.show();
-                        }
-                        
-                        // Clear any input fields in the modal
-                        const inputField = modal.querySelector('input[type="text"]');
-                        if (inputField) {
-                            inputField.value = '';
-                        }
-                    } catch (error) {
-                        console.error("Error showing modal:", error);
-                        
-                        // Fallback method - directly manipulate DOM
-                        modal.classList.add('show');
-                        modal.style.display = 'block';
-                        
-                        // Add backdrop manually
-                        const backdrop = document.createElement('div');
-                        backdrop.className = 'modal-backdrop fade show';
-                        document.body.appendChild(backdrop);
-                        
-                        // Add modal-open class to body
-                        document.body.classList.add('modal-open');
-                        
-                        // Clear any input fields in the modal
-                        const inputField = modal.querySelector('input[type="text"]');
-                        if (inputField) {
-                            inputField.value = '';
-                        }
-                    }
-                }
-            });
-        });
-        
-        // Ensure we remove any existing event listeners before adding new ones
-        function removeAllEventListeners(element) {
-            if (!element) return;
+        // Function to safely show a modal with fallback methods
+        function showModal(modalId) {
+            const $modal = $('#' + modalId);
             
-            // Clone the element to remove all event listeners
-            const newElement = element.cloneNode(true);
-            if (element.parentNode) {
-                element.parentNode.replaceChild(newElement, element);
+            // Try jQuery modal method first (works with both Bootstrap 4 and 5)
+            try {
+                $modal.modal('show');
+            } catch (e) {
+                console.warn('Error showing modal with jQuery:', e);
+                
+                // Try native Bootstrap 5 API
+                try {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        const modalEl = document.getElementById(modalId);
+                        const bsModal = new bootstrap.Modal(modalEl);
+                        bsModal.show();
+                    } else {
+                        throw new Error('Bootstrap Modal API not available');
+                    }
+                } catch (e2) {
+                    console.warn('Error showing modal with Bootstrap API:', e2);
+                    
+                    // Last resort: show modal manually via DOM
+                    $modal.addClass('show').css('display', 'block');
+                    $('body').addClass('modal-open').append('<div class="modal-backdrop fade show"></div>');
+                }
             }
-            return newElement;
         }
         
-        // Add event listeners for modal cleanup
-        const modalElements = document.querySelectorAll('.modal');
-        modalElements.forEach(modal => {
-            modal.addEventListener('hidden.bs.modal', function() {
-                // Remove all backdrops
-                const modalBackdrops = document.querySelectorAll('.modal-backdrop');
-                modalBackdrops.forEach(backdrop => {
-                    backdrop.remove();
-                });
+        // Function to safely hide a modal with fallback methods
+        function hideModal(modalId) {
+            const $modal = $('#' + modalId);
+            
+            // Try jQuery modal method first
+            try {
+                $modal.modal('hide');
+            } catch (e) {
+                console.warn('Error hiding modal with jQuery:', e);
                 
-                // Reset body
-                document.body.classList.remove('modal-open');
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
-            });
+                // Try native Bootstrap 5 API
+                try {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        const modalEl = document.getElementById(modalId);
+                        const bsModal = bootstrap.Modal.getInstance(modalEl);
+                        if (bsModal) {
+                            bsModal.hide();
+                        } else {
+                            throw new Error('Bootstrap Modal instance not found');
+                        }
+                    } else {
+                        throw new Error('Bootstrap Modal API not available');
+                    }
+                } catch (e2) {
+                    console.warn('Error hiding modal with Bootstrap API:', e2);
+                    
+                    // Last resort: hide modal manually via DOM
+                    $modal.removeClass('show').css('display', 'none');
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open').css('overflow', '');
+                }
+            }
+        }
+        
+        // Handle Add Category button click
+        $('#openCreateCategoryModalBtn').click(function() {
+            // Clear input field
+            $('#newCategoryNameCreate').val('');
+            
+            // Show the modal using our safe method
+            showModal('createCategoryModal');
         });
         
-        // Add event listeners to existing category buttons
-        document.querySelectorAll('.edit-category-btn').forEach(button => {
-            const newButton = removeAllEventListeners(button);
-            newButton.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent collapse toggle
-                currentCategoryCard = this.closest('.category-card');
-                const categoryTitle = currentCategoryCard.querySelector('.category-title').textContent.trim();
-                document.getElementById('newCategoryName').value = categoryTitle;
-                
-                // Show the modal directly
-                try {
-                    const modal = document.getElementById('renameCategoryModal');
-                    const modalInstance = bootstrap.Modal.getInstance(modal);
-                    if (modalInstance) {
-                        modalInstance.show();
-                    } else {
-                        // If no instance exists, create a new one
-                        const newModalInstance = new bootstrap.Modal(modal);
-                        newModalInstance.show();
-                    }
-                } catch (error) {
-                    console.error("Error showing modal:", error);
-                    
-                    // Fallback method - directly manipulate DOM
-                    const modal = document.getElementById('renameCategoryModal');
-                    modal.classList.add('show');
-                    modal.style.display = 'block';
-                    
-                    // Add backdrop manually
-                    const backdrop = document.createElement('div');
-                    backdrop.className = 'modal-backdrop fade show';
-                    document.body.appendChild(backdrop);
-                    
-                    // Add modal-open class to body
-                    document.body.classList.add('modal-open');
+        // Handle Create Category button click
+        $('#createCategoryBtn').click(function() {
+            const categoryName = $('#newCategoryNameCreate').val().trim();
+            
+            if (!categoryName) {
+                alert('Please enter a category name');
+                return;
+            }
+            
+            // Check for duplicate category names
+            let isDuplicate = false;
+            $('.category-title').each(function() {
+                if ($(this).text().trim() === categoryName) {
+                    isDuplicate = true;
+                    return false; // break the loop
                 }
             });
+            
+            if (isDuplicate) {
+                alert('A category with this name already exists. Please use a different name.');
+                return;
+            }
+            
+            // Create the new category
+            createNewCategory(categoryName);
+            
+            // Close the modal
+            hideModal('createCategoryModal');
         });
         
-        document.querySelectorAll('.remove-category-btn').forEach(button => {
-            const newButton = removeAllEventListeners(button);
-            newButton.addEventListener('click', function(e) {
+        // Handle edit button clicks (including dynamically added ones)
+        $(document).on('click', '.edit-category-btn', function(e) {
                 e.stopPropagation(); // Prevent collapse toggle
-                categoryToDelete = this.closest('.category-card');
-                const categoryTitle = categoryToDelete.querySelector('.category-title').textContent.trim();
-                document.getElementById('categoryToDeleteName').textContent = categoryTitle;
+            currentCategory = $(this).closest('.category-card');
+            const currentName = currentCategory.find('.category-title').text().trim();
                 
-                // Show the modal directly
-                try {
-                    const modal = document.getElementById('deleteCategoryModal');
-                    const modalInstance = bootstrap.Modal.getInstance(modal);
-                    if (modalInstance) {
-                        modalInstance.show();
-                    } else {
-                        // If no instance exists, create a new one
-                        const newModalInstance = new bootstrap.Modal(modal);
-                        newModalInstance.show();
-                    }
-                } catch (error) {
-                    console.error("Error showing modal:", error);
-                    
-                    // Fallback method - directly manipulate DOM
-                    const modal = document.getElementById('deleteCategoryModal');
-                    modal.classList.add('show');
-                    modal.style.display = 'block';
-                    
-                    // Add backdrop manually
-                    const backdrop = document.createElement('div');
-                    backdrop.className = 'modal-backdrop fade show';
-                    document.body.appendChild(backdrop);
-                    
-                    // Add modal-open class to body
-                    document.body.classList.add('modal-open');
-                }
-            });
+                // Set the current name in the modal input
+            $('#newCategoryName').val(currentName);
+            
+            // Show the rename modal
+            showModal('renameCategoryModal');
         });
         
-        // Add event listener to the save button in the rename modal
-        const saveCategoryNameBtn = document.getElementById('saveCategoryNameBtn');
-        if (saveCategoryNameBtn) {
-            const newSaveCategoryNameBtn = removeAllEventListeners(saveCategoryNameBtn);
-            newSaveCategoryNameBtn.addEventListener('click', function() {
-                const newName = document.getElementById('newCategoryName').value.trim();
-                if (newName && currentCategoryCard) {
+        // Handle remove button clicks (including dynamically added ones)
+        $(document).on('click', '.remove-category-btn', function(e) {
+            e.stopPropagation(); // Prevent collapse toggle
+            currentCategory = $(this).closest('.category-card');
+            const categoryName = currentCategory.find('.category-title').text().trim();
+            
+            // Set the category name in the modal
+            $('#categoryToDeleteName').text(categoryName);
+            
+            // Show the delete modal
+            showModal('deleteCategoryModal');
+        });
+        
+        // Handle Save Category Name button click
+        $('#saveCategoryNameBtn').click(function() {
+            if (currentCategory) {
+                const newName = $('#newCategoryName').val().trim();
+                if (newName) {
                     // Update the category title
-                    currentCategoryCard.querySelector('.category-title').textContent = newName;
+                    currentCategory.find('.category-title').text(newName);
                     
-                    // Update the hidden input for the category name
-                    const hiddenInput = currentCategoryCard.querySelector('input[type="hidden"]');
-                    if (hiddenInput) {
-                        hiddenInput.value = newName;
-                    }
+                    // Update the hidden input value
+                    currentCategory.find('input[type="hidden"]').val(newName);
                     
                     // Close the modal
-                    renameModal.hide();
+                    hideModal('renameCategoryModal');
                 }
-            });
-        }
+            }
+        });
         
-        // Add event listener to the delete confirmation button
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-        if (confirmDeleteBtn) {
-            const newConfirmDeleteBtn = removeAllEventListeners(confirmDeleteBtn);
-            newConfirmDeleteBtn.addEventListener('click', function(e) {
-                e.preventDefault();
+        // Handle Confirm Delete button click
+        $('#confirmDeleteCategoryBtn').click(function() {
+            if (currentCategory) {
+                // Remove the category card
+                currentCategory.remove();
                 
-                if (categoryToDelete) {
-                    categoryToDelete.remove();
-                    
-                    // Reindex all dynamic categories
-                    updateCategoryIndices();
-                    
-                    // Close the modal properly
-                    const deleteModalElement = document.getElementById('deleteCategoryModal');
-                    if (deleteModalElement) {
-                        const modalInstance = bootstrap.Modal.getInstance(deleteModalElement);
-                        if (modalInstance) {
-                            modalInstance.hide();
-                        }
-                    }
-                    
-                    // Make sure the backdrop is removed
-                    const modalBackdrops = document.querySelectorAll('.modal-backdrop');
-                    modalBackdrops.forEach(backdrop => {
-                        backdrop.remove();
-                    });
-                    
-                    // Reset body
-                    document.body.classList.remove('modal-open');
-                    document.body.style.overflow = '';
-                    document.body.style.paddingRight = '';
-                }
-            });
-        }
-        
-        // Function to update indices for remaining categories
-        function updateCategoryIndices() {
-            const dynamicCategories = document.querySelectorAll('#dynamicCategoriesContainer .category-card');
-            dynamicCategories.forEach((category, index) => {
-                const inputs = category.querySelectorAll('input');
-                inputs.forEach(input => {
-                    if (input.name && input.name.includes('DynamicCategories[')) {
-                        input.name = input.name.replace(/DynamicCategories\[\d+\]/, `DynamicCategories[${index}]`);
-                    }
-                });
-            });
-        }
+                // Close the modal
+                hideModal('deleteCategoryModal');
+                
+                // Update indices for remaining dynamic categories
+                updateDynamicCategoryIndices();
+            }
+        });
         
         // Function to create a new category
         function createNewCategory(categoryName) {
             // Clone the template
-            const template = document.getElementById('categoryTemplate');
-            const newCategory = template.querySelector('.category-card').cloneNode(true);
+            const template = $('#categoryTemplate');
+            const newCategory = template.find('.category-card').clone();
             
             // Generate unique IDs
             const categoryId = 'category-' + categoryCounter;
             const collapseId = 'collapse-' + categoryCounter;
             
             // Update IDs and attributes
-            newCategory.id = categoryId;
-            newCategory.querySelector('.card-header').setAttribute('data-bs-target', '#' + collapseId);
-            newCategory.querySelector('.card-header').setAttribute('aria-controls', collapseId);
-            newCategory.querySelector('.collapse').id = collapseId;
+            newCategory.attr('id', categoryId);
+            newCategory.find('.card-header').attr('data-bs-target', '#' + collapseId);
+            newCategory.find('.card-header').attr('aria-controls', collapseId);
+            newCategory.find('.collapse').attr('id', collapseId);
             
             // Set the user-provided category name
-            newCategory.querySelector('.category-title').textContent = categoryName;
+            newCategory.find('.category-title').text(categoryName);
             
             // Update input names for form submission
-            const inputs = newCategory.querySelectorAll('input');
-            inputs.forEach(function(input, index) {
+            newCategory.find('input').each(function(index) {
                 const fieldName = index === 0 ? 'EstimatedDailyFees' : 
                                 index === 1 ? 'ActualDailyFees' : 
                                 index === 2 ? 'PotentialRatePayable' : 'ActualRatePaid';
-                input.name = `ShortTermUserCharge.DynamicCategories[${categoryCounter - 1}].${fieldName}`;
+                $(this).attr('name', `ShortTermUserCharge.DynamicCategories[${categoryCounter - 1}].${fieldName}`);
             });
             
             // Add hidden input for category name
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = `ShortTermUserCharge.DynamicCategories[${categoryCounter - 1}].Name`;
-            hiddenInput.value = categoryName;
-            newCategory.querySelector('.card-body').appendChild(hiddenInput);
-            
-            // Add edit button handler - use direct function assignment to prevent duplicates
-            const editBtn = newCategory.querySelector('.edit-category-btn');
-            const newEditBtn = removeAllEventListeners(editBtn);
-            newEditBtn.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent collapse toggle
-                currentCategoryCard = newCategory;
-                const titleElement = newCategory.querySelector('.category-title');
-                const currentName = titleElement.textContent;
-                
-                // Set the current name in the modal input
-                document.getElementById('newCategoryName').value = currentName;
-                
-                // Show the modal directly
-                try {
-                    const modal = document.getElementById('renameCategoryModal');
-                    const modalInstance = bootstrap.Modal.getInstance(modal);
-                    if (modalInstance) {
-                        modalInstance.show();
-                    } else {
-                        // If no instance exists, create a new one
-                        const newModalInstance = new bootstrap.Modal(modal);
-                        newModalInstance.show();
-                    }
-                } catch (error) {
-                    console.error("Error showing modal:", error);
-                    
-                    // Fallback method - directly manipulate DOM
-                    const modal = document.getElementById('renameCategoryModal');
-                    modal.classList.add('show');
-                    modal.style.display = 'block';
-                    
-                    // Add backdrop manually
-                    const backdrop = document.createElement('div');
-                    backdrop.className = 'modal-backdrop fade show';
-                    document.body.appendChild(backdrop);
-                    
-                    // Add modal-open class to body
-                    document.body.classList.add('modal-open');
-                }
+            const hiddenInput = $('<input>').attr({
+                type: 'hidden',
+                name: `ShortTermUserCharge.DynamicCategories[${categoryCounter - 1}].Name`,
+                value: categoryName
             });
+            newCategory.find('.card-body').append(hiddenInput);
             
-            // Add remove button handler - use direct function assignment to prevent duplicates
-            const removeBtn = newCategory.querySelector('.remove-category-btn');
-            const newRemoveBtn = removeAllEventListeners(removeBtn);
-            newRemoveBtn.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent collapse toggle
-                categoryToDelete = newCategory;
-                const titleElement = newCategory.querySelector('.category-title');
-                const currentName = titleElement.textContent;
-                
-                // Set the category name in the modal
-                document.getElementById('categoryToDeleteName').textContent = currentName;
-                
-                // Show the modal directly
-                try {
-                    const modal = document.getElementById('deleteCategoryModal');
-                    const modalInstance = bootstrap.Modal.getInstance(modal);
-                    if (modalInstance) {
-                        modalInstance.show();
-                    } else {
-                        // If no instance exists, create a new one
-                        const newModalInstance = new bootstrap.Modal(modal);
-                        newModalInstance.show();
-                    }
-                } catch (error) {
-                    console.error("Error showing modal:", error);
-                    
-                    // Fallback method - directly manipulate DOM
-                    const modal = document.getElementById('deleteCategoryModal');
-                    modal.classList.add('show');
-                    modal.style.display = 'block';
-                    
-                    // Add backdrop manually
-                    const backdrop = document.createElement('div');
-                    backdrop.className = 'modal-backdrop fade show';
-                    document.body.appendChild(backdrop);
-                    
-                    // Add modal-open class to body
-                    document.body.classList.add('modal-open');
-                }
-            });
-            
-            // Add to container and show
-            document.getElementById('dynamicCategoriesContainer').appendChild(newCategory);
-            
-            // Initialize number formatting for the new inputs
-            initializeNumberFormatting(newCategory.querySelectorAll('.number-format'));
-            
-            // Show the collapse
-            const collapseElement = newCategory.querySelector('.collapse');
-            new bootstrap.Collapse(collapseElement).show();
+            // Add to container
+            $('#dynamicCategoriesContainer').append(newCategory);
             
             // Increment counter for next category
             categoryCounter++;
+            
+            // Show the collapse
+            new bootstrap.Collapse(document.getElementById(collapseId)).show();
         }
         
-        // Initialize number formatting
-        function initializeNumberFormatting(elements) {
-            elements.forEach(input => {
-                input.addEventListener('blur', function() {
-                    if (this.value) {
-                        // Parse the input value as a number
-                        const value = parseFloat(this.value.replace(/,/g, ''));
-                        if (!isNaN(value)) {
-                            // Format with commas
-                            this.value = value.toLocaleString('en-US');
-                        }
+        // Function to update indices for dynamic categories after deletion
+        function updateDynamicCategoryIndices() {
+            $('#dynamicCategoriesContainer .category-card').each(function(index) {
+                $(this).find('input').each(function() {
+                    const name = $(this).attr('name');
+                    if (name && name.includes('DynamicCategories[')) {
+                        $(this).attr('name', name.replace(/DynamicCategories\[\d+\]/, `DynamicCategories[${index}]`));
                     }
                 });
             });
         }
         
-        // Initialize number formatting for existing inputs
-        initializeNumberFormatting(document.querySelectorAll('.number-format'));
+        // Initialize number formatting for the input fields
+        $('.number-format').blur(function() {
+            const value = parseFloat($(this).val().replace(/,/g, '')) || 0;
+            $(this).val(value.toLocaleString('en-US'));
+        });
         
-        // Add handler for Create Category button in the modal
-        const createCategoryBtn = document.getElementById('createCategoryBtn');
-        if (createCategoryBtn) {
-            const newCreateCategoryBtn = removeAllEventListeners(createCategoryBtn);
+        // Ensure Bootstrap is properly loaded
+        // If Bootstrap Modal is not working, try initializing it manually
+        if (typeof bootstrap === 'undefined' || typeof bootstrap.Modal === 'undefined') {
+            console.warn('Bootstrap or bootstrap.Modal is not defined. Loading Bootstrap JS...');
             
-            // Add the only event handler we want
-            newCreateCategoryBtn.addEventListener('click', function(e) {
-                e.preventDefault();
+            // Create and append the Bootstrap script
+            const bootstrapScript = document.createElement('script');
+            bootstrapScript.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js';
+            bootstrapScript.integrity = 'sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p';
+            bootstrapScript.crossOrigin = 'anonymous';
+            document.body.appendChild(bootstrapScript);
+            
+            // Reinitialize modals after script loads
+            bootstrapScript.onload = function() {
+                console.log('Bootstrap loaded. Attempting to reinitialize modals...');
                 
-                const categoryName = document.getElementById('newCategoryNameCreate').value.trim();
-                
-                if (!categoryName) {
-                    alert('Please enter a category name');
-                    return;
-                }
-                
-                // Check for duplicate category names
-                const existingCategories = document.querySelectorAll('.category-title');
-                for (let i = 0; i < existingCategories.length; i++) {
-                    if (existingCategories[i].textContent.trim() === categoryName) {
-                        alert('A category with this name already exists. Please use a different name.');
-                        return;
-                    }
-                }
-                
-                // Create the new category
-                createNewCategory(categoryName);
-                
-                // Close the modal
-                createModal.hide();
-            });
+                // Try showing the create modal with timeout to ensure Bootstrap is ready
+                $('#openCreateCategoryModalBtn').off('click').on('click', function() {
+                    $('#newCategoryNameCreate').val('');
+                    setTimeout(function() {
+                        const modal = new bootstrap.Modal(document.getElementById('createCategoryModal'));
+                        modal.show();
+                    }, 100);
+                });
+            };
+        } else {
+            console.log('Bootstrap is properly loaded.');
         }
     });
 </script>
