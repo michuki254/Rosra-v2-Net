@@ -147,6 +147,22 @@ namespace RosraApp.Controllers
         [HttpPost]
         public IActionResult SwitchTab(string tabId, RosraFormViewModel formData)
         {
+            if (!ModelState.IsValid)
+            {
+                // Re-create the ViewModel needed for the Index view
+                var visitedTabs = GetVisitedTabsFromSession();
+                var tabs = CreateTabsViewModelList(tabId, visitedTabs); // Helper method to avoid code duplication
+                SaveVisitedTabsToSession(visitedTabs); // Save updated visited tabs
+
+                var tabsViewModel = new TabsContainerViewModel
+                {
+                    ContainerId = "rosraTabs",
+                    Tabs = tabs,
+                    TabContentModel = formData // formData already contains the invalid data
+                };
+                return View("Index", tabsViewModel);
+            }
+
             // Parse formatted number values from the form
             if (!string.IsNullOrEmpty(Request.Form["Population"]))
             {
@@ -204,6 +220,24 @@ namespace RosraApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveReport(RosraFormViewModel formData, string DynamicCategoriesJson)
         {
+            if (!ModelState.IsValid)
+            {
+                // Re-create the ViewModel needed for the Index view
+                // Determine the active tab, default to "potential-estimates" or the first tab if none specified
+                string activeTab = ViewData["ActiveTab"] as string ?? "potential-estimates";
+                var visitedTabs = GetVisitedTabsFromSession();
+                var tabs = CreateTabsViewModelList(activeTab, visitedTabs); // Helper method
+                SaveVisitedTabsToSession(visitedTabs);
+
+                var tabsViewModel = new TabsContainerViewModel
+                {
+                    ContainerId = "rosraTabs",
+                    Tabs = tabs,
+                    TabContentModel = formData // formData contains the invalid data
+                };
+                return View("Index", tabsViewModel);
+            }
+
             // Parse formatted number values
             decimal actualOsr = 0;
             decimal budgetedOsr = 0;
@@ -643,6 +677,62 @@ namespace RosraApp.Controllers
         {
             var formDataJson = JsonSerializer.Serialize(formData);
             HttpContext.Session.SetString(RosraFormDataKey, formDataJson);
+        }
+
+        // Helper method to create the list of TabViewModels to avoid duplication
+        private List<TabViewModel> CreateTabsViewModelList(string activeTab, List<string> visitedTabs)
+        {
+            var tabs = new List<TabViewModel>
+            {
+                new TabViewModel
+                {
+                    Id = "potential-estimates",
+                    Title = "Potential Estimates",
+                    IsActive = activeTab == "potential-estimates" || string.IsNullOrEmpty(activeTab),
+                    ContentPartialName = "_PotentialEstimates"
+                },
+                new TabViewModel
+                {
+                    Id = "gap-analysis",
+                    Title = "Gap Analysis",
+                    IsActive = activeTab == "gap-analysis",
+                    ContentPartialName = "_GapAnalysis"
+                },
+                new TabViewModel
+                {
+                    Id = "causes-analysis",
+                    Title = "Causes Analysis",
+                    IsActive = activeTab == "causes-analysis",
+                    ContentPartialName = "_CausesAnalysis"
+                },
+                new TabViewModel
+                {
+                    Id = "recommendations",
+                    Title = "Recommendations",
+                    IsActive = activeTab == "recommendations",
+                    ContentPartialName = "_Recommendations"
+                }
+            };
+
+            int activeIndex = 0;
+            for (int i = 0; i < tabs.Count; i++)
+            {
+                if (tabs[i].IsActive)
+                {
+                    activeIndex = i;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < tabs.Count; i++)
+            {
+                tabs[i].IsVisited = i <= activeIndex || visitedTabs.Contains(tabs[i].Id);
+                if (tabs[i].IsActive && !visitedTabs.Contains(tabs[i].Id))
+                {
+                    visitedTabs.Add(tabs[i].Id); // Add to visitedTabs list passed by reference
+                }
+            }
+            return tabs;
         }
         
         // Helper method to ensure PropertyTax values are properly serialized

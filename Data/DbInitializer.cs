@@ -40,34 +40,6 @@ namespace RosraApp.Data
                             logger.LogInformation($"Created role: {roleName}");
                         }
                     }
-
-                    // Create default admin user
-                    var adminUser = await userManager.FindByEmailAsync("admin@rosra.com");
-                    if (adminUser == null)
-                    {
-                        logger.LogInformation("Creating default admin user");
-                        adminUser = new ApplicationUser
-                        {
-                            UserName = "admin@rosra.com",
-                            Email = "admin@rosra.com",
-                            EmailConfirmed = true,
-                            FirstName = "Admin",
-                            LastName = "User",
-                            CreatedAt = DateTime.UtcNow
-                        };
-
-                        var result = await userManager.CreateAsync(adminUser, "Admin@123");
-                        if (result.Succeeded)
-                        {
-                            logger.LogInformation("Adding admin user to Admin role");
-                            await userManager.AddToRoleAsync(adminUser, "Admin");
-                        }
-                        else
-                        {
-                            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                            logger.LogError($"Error creating admin user: {errors}");
-                        }
-                    }
                     
                     logger.LogInformation("Database initialization completed successfully");
                 }
