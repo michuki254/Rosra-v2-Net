@@ -59,6 +59,7 @@
   <data name="SubnationalGov" xml:space="preserve"><value>Gouvernement sous-national</value></data>
   <data name="SelectSng" xml:space="preserve"><value>Sélectionnez un gouvernement sous-national...</value></data>
   <data name="SelectSngForAnalysis" xml:space="preserve"><value>Sélectionnez un gouvernement sous-national pour voir l'analyse de la frontière RPP</value></data>
+  <data name="HierarchyNote" xml:space="preserve"><value>Les exemples sont fournis à titre indicatif et peuvent varier selon les pays. Remplissez le formulaire jusqu'à l'unité gouvernementale pour laquelle l'analyse ROSRA est menée.</value></data>
   <data name="Metric_OSR" xml:space="preserve"><value>Recettes propres (RPP) par habitant</value></data>
   <data name="Metric_GDP" xml:space="preserve"><value>PIB sous-national par habitant</value></data>
   <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Multiplicateur de frontière (moy. top 20% RPP/PIB par habitant)</value></data>

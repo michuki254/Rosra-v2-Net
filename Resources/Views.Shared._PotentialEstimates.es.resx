@@ -59,6 +59,7 @@
   <data name="SubnationalGov" xml:space="preserve"><value>Gobierno subnacional</value></data>
   <data name="SelectSng" xml:space="preserve"><value>Seleccione un gobierno subnacional...</value></data>
   <data name="SelectSngForAnalysis" xml:space="preserve"><value>Seleccione un gobierno subnacional para ver el análisis de frontera IPP</value></data>
+  <data name="HierarchyNote" xml:space="preserve"><value>Los ejemplos son solo ilustrativos y pueden variar según el país. Complete el formulario hasta la unidad gubernamental para la cual se realiza el análisis ROSRA.</value></data>
   <data name="Metric_OSR" xml:space="preserve"><value>Ingresos propios (IPP) per cápita</value></data>
   <data name="Metric_GDP" xml:space="preserve"><value>PIB subnacional per cápita</value></data>
   <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Multiplicador de frontera (prom. top 20% IPP/PIB per cápita)</value></data>
