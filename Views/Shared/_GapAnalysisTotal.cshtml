@@ -115,7 +115,7 @@
                         <div class="col-12">
                             <h6 class="mb-3 fw-light d-flex align-items-center">
                                 <i class="fas fa-chart-bar me-2 text-danger"></i>
-                                Revenue Gap Analysis by Source
+                                @Localizer["RevenueGapAnalysisBySource"]
                                 <span class="badge bg-danger ms-2 largest-gap-badge" style="display: none;">
                                     <i class="fas fa-exclamation-circle me-1"></i>Largest Gap
                                 </span>
@@ -127,7 +127,7 @@
                                     <div class="icon-circle bg-primary-subtle mx-auto mb-2" style="width: 40px; height: 40px; opacity: 0.8;">
                                         <i class="fas fa-building text-primary"></i>
                                     </div>
-                                    <p class="card-subtitle text-muted mb-2 small">Property Tax</p>
+                                    <p class="card-subtitle text-muted mb-2 small">@Localizer["PropertyTax"]</p>
                                     <h5 class="mb-0 fw-bold text-danger" id="gapCard-propertyTax">-</h5>
                                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger largest-gap-indicator" style="display: none;">
                                         <i class="fas fa-crown"></i>
@@ -141,7 +141,7 @@
                                     <div class="icon-circle bg-success-subtle mx-auto mb-2" style="width: 40px; height: 40px; opacity: 0.8;">
                                         <i class="fas fa-certificate text-success"></i>
                                     </div>
-                                    <p class="card-subtitle text-muted mb-2 small">License</p>
+                                    <p class="card-subtitle text-muted mb-2 small">@Localizer["License"]</p>
                                     <h5 class="mb-0 fw-bold text-danger" id="gapCard-license">-</h5>
                                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger largest-gap-indicator" style="display: none;">
                                         <i class="fas fa-crown"></i>
@@ -155,7 +155,7 @@
                                     <div class="icon-circle bg-info-subtle mx-auto mb-2" style="width: 40px; height: 40px; opacity: 0.8;">
                                         <i class="fas fa-clock text-info"></i>
                                     </div>
-                                    <p class="card-subtitle text-muted mb-2 small">Short Term</p>
+                                    <p class="card-subtitle text-muted mb-2 small">@Localizer["ShortTerm"]</p>
                                     <h5 class="mb-0 fw-bold text-danger" id="gapCard-shortTerm">-</h5>
                                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger largest-gap-indicator" style="display: none;">
                                         <i class="fas fa-crown"></i>
@@ -169,7 +169,7 @@
                                     <div class="icon-circle bg-warning-subtle mx-auto mb-2" style="width: 40px; height: 40px; opacity: 0.8;">
                                         <i class="fas fa-calendar-alt text-warning"></i>
                                     </div>
-                                    <p class="card-subtitle text-muted mb-2 small">Long Term</p>
+                                    <p class="card-subtitle text-muted mb-2 small">@Localizer["LongTerm"]</p>
                                     <h5 class="mb-0 fw-bold text-danger" id="gapCard-longTerm">-</h5>
                                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger largest-gap-indicator" style="display: none;">
                                         <i class="fas fa-crown"></i>
@@ -183,7 +183,7 @@
                                     <div class="icon-circle bg-danger-subtle mx-auto mb-2" style="width: 40px; height: 40px; opacity: 0.8;">
                                         <i class="fas fa-random text-danger"></i>
                                     </div>
-                                    <p class="card-subtitle text-muted mb-2 small">Mixed</p>
+                                    <p class="card-subtitle text-muted mb-2 small">@Localizer["Mixed"]</p>
                                     <h5 class="mb-0 fw-bold text-danger" id="gapCard-mixed">-</h5>
                                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger largest-gap-indicator" style="display: none;">
                                         <i class="fas fa-crown"></i>
@@ -197,7 +197,7 @@
                                     <div class="icon-circle bg-white mx-auto mb-2" style="width: 40px; height: 40px;">
                                         <i class="fas fa-exclamation text-danger"></i>
                                     </div>
-                                    <p class="card-subtitle mb-2 small fw-medium text-dark">Total Gap</p>
+                                    <p class="card-subtitle mb-2 small fw-medium text-dark">@Localizer["TotalGap"]</p>
                                     <h5 class="mb-0 fw-bold text-danger" id="gapCard-total">-</h5>
                                 </div>
                             </div>
@@ -211,7 +211,7 @@
                                 <div class="card-header bg-light">
                                     <h6 class="mb-0">
                                         <i class="fas fa-coins me-2 text-success"></i>
-                                        Potential Revenue By Source
+                                        @Localizer["PotentialRevenueBySource"]
                                     </h6>
                                 </div>
                                 <div class="card-body">
@@ -219,11 +219,11 @@
                                         <table class="table table-hover">
                                             <thead class="table-light">
                                                 <tr>
-                                                    <th>Revenue Source</th>
-                                                    <th class="text-end">Current Revenue</th>
-                                                    <th class="text-end">Potential Revenue</th>
-                                                    <th class="text-end">Gap</th>
-                                                    <th class="text-end">% of Potential Realized</th>
+                                                    <th>@Localizer["RevenueSource"]</th>
+                                                    <th class="text-end">@Localizer["CurrentRevenueCol"]</th>
+                                                    <th class="text-end">@Localizer["PotentialRevenueCol"]</th>
+                                                    <th class="text-end">@Localizer["GapCol"]</th>
+                                                    <th class="text-end">@Localizer["PercentOfPotentialRealized"]</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -233,7 +233,7 @@
                                                             <div class="icon-circle bg-primary-subtle me-2" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                                                                 <i class="fas fa-building text-primary"></i>
                                                             </div>
-                                                            <span>Property Tax</span>
+                                                            <span>@Localizer["PropertyTax"]</span>
                                                         </div>
                                                     </td>
                                                     <td class="text-end property-current">-</td>
@@ -247,7 +247,7 @@
                                                             <div class="icon-circle bg-success-subtle me-2" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                                                                 <i class="fas fa-certificate text-success"></i>
                                                             </div>
-                                                            <span>License</span>
+                                                            <span>@Localizer["License"]</span>
                                                         </div>
                                                     </td>
                                                     <td class="text-end license-current">-</td>
@@ -261,7 +261,7 @@
                                                             <div class="icon-circle bg-info-subtle me-2" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                                                                 <i class="fas fa-clock text-info"></i>
                                                             </div>
-                                                            <span>Short Term</span>
+                                                            <span>@Localizer["ShortTerm"]</span>
                                                         </div>
                                                     </td>
                                                     <td class="text-end short-current">-</td>
@@ -275,7 +275,7 @@
                                                             <div class="icon-circle bg-warning-subtle me-2" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                                                                 <i class="fas fa-calendar-alt text-warning"></i>
                                                             </div>
-                                                            <span>Long Term</span>
+                                                            <span>@Localizer["LongTerm"]</span>
                                                         </div>
                                                     </td>
                                                     <td class="text-end long-current">-</td>
@@ -289,7 +289,7 @@
                                                             <div class="icon-circle bg-danger-subtle me-2" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                                                                 <i class="fas fa-random text-danger"></i>
                                                             </div>
-                                                            <span>Mixed</span>
+                                                            <span>@Localizer["Mixed"]</span>
                                                         </div>
                                                     </td>
                                                     <td class="text-end mixed-current">-</td>
@@ -321,7 +321,7 @@
                                 <div class="card-header bg-light">
                                     <h6 class="mb-0">
                                         <i class="fas fa-star me-2 text-warning"></i>
-                                        Top 5 OSR Gap Analysis
+                                        @Localizer["Top5OsrGapAnalysis"]
                                     </h6>
                                 </div>
                                 <div class="card-body">
@@ -329,11 +329,11 @@
                                         <table class="table table-hover">
                                             <thead class="table-light">
                                                 <tr>
-                                                    <th>Revenue Source</th>
-                                                    <th class="text-end">Current Revenue</th>
-                                                    <th class="text-end">Potential Revenue</th>
-                                                    <th class="text-end">Gap</th>
-                                                    <th class="text-end">% of Gap</th>
+                                                    <th>@Localizer["RevenueSource"]</th>
+                                                    <th class="text-end">@Localizer["CurrentRevenueCol"]</th>
+                                                    <th class="text-end">@Localizer["PotentialRevenueCol"]</th>
+                                                    <th class="text-end">@Localizer["GapCol"]</th>
+                                                    <th class="text-end">@Localizer["PercentOfGap"]</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="top5OsrTable">
@@ -360,7 +360,7 @@
                         <div class="card-header bg-light">
                             <h6 class="mb-0 d-flex align-items-center">
                                 <i class="fas fa-chart-bar me-2 text-primary"></i>
-                                Detailed Gap Breakdown by Revenue Type
+                                @Localizer["DetailedGapBreakdownByType"]
                             </h6>
                         </div>
                         <div class="card-body p-0">
@@ -368,13 +368,13 @@
                                 <table class="table table-bordered table-hover mb-0">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>Revenue Source</th>
-                                            <th>Registration Gap</th>
-                                            <th>Compliance Gap</th>
-                                            <th>Assessment Gap</th>
-                                            <th>Rate Gap</th>
-                                            <th>Combined Gap</th>
-                                            <th>Total Gap</th>
+                                            <th>@Localizer["RevenueSource"]</th>
+                                            <th>@Localizer["RegistrationGap"]</th>
+                                            <th>@Localizer["ComplianceGap"]</th>
+                                            <th>@Localizer["AssessmentGap"]</th>
+                                            <th>@Localizer["RateGap"]</th>
+                                            <th>@Localizer["CombinedGap"]</th>
+                                            <th>@Localizer["TotalGap"]</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -384,7 +384,7 @@
                                                     <div class="icon-circle bg-blue me-2">
                                                         <i class="fas fa-building text-white"></i>
                                                     </div>
-                                                    <span>Property Tax</span>
+                                                    <span>@Localizer["PropertyTax"]</span>
                                                 </div>
                                             </td>
                                             <td class="property-registration-gap">$0.00</td>
@@ -400,7 +400,7 @@
                                                     <div class="icon-circle bg-teal me-2">
                                                         <i class="fas fa-id-card text-white"></i>
                                                     </div>
-                                                    <span>License</span>
+                                                    <span>@Localizer["License"]</span>
                                                 </div>
                                             </td>
                                             <td class="license-registration-gap">$0.00</td>
@@ -416,7 +416,7 @@
                                                     <div class="icon-circle bg-cyan me-2">
                                                         <i class="fas fa-clock text-white"></i>
                                                     </div>
-                                                    <span>Short Term</span>
+                                                    <span>@Localizer["ShortTerm"]</span>
                                                 </div>
                                             </td>
                                             <td class="short-registration-gap">$0.00</td>
@@ -432,7 +432,7 @@
                                                     <div class="icon-circle bg-amber me-2">
                                                         <i class="fas fa-calendar-alt text-white"></i>
                                                     </div>
-                                                    <span>Long Term</span>
+                                                    <span>@Localizer["LongTerm"]</span>
                                                 </div>
                                             </td>
                                             <td class="long-registration-gap">$0.00</td>
@@ -448,7 +448,7 @@
                                                     <div class="icon-circle bg-pink me-2">
                                                         <i class="fas fa-chart-pie text-white"></i>
                                                     </div>
-                                                    <span>Mixed</span>
+                                                    <span>@Localizer["Mixed"]</span>
                                                 </div>
                                             </td>
                                             <td class="mixed-registration-gap">-</td>
@@ -461,7 +461,7 @@
                                     </tbody>
                                     <tfoot class="table-secondary">
                                         <tr id="total-row">
-                                            <td class="fw-bold">Total</td>
+                                            <td class="fw-bold">@Localizer["Total"]</td>
                                             <td id="total-registration-gap">0</td>
                                             <td id="total-compliance-gap">0</td>
                                             <td id="total-assessment-gap">0</td>
@@ -482,7 +482,7 @@
                                 <div class="card-header bg-light">
                                     <h6 class="mb-0">
                                         <i class="fas fa-chart-bar me-2 text-danger"></i>
-                                        Total Gap by Revenue Source
+                                        @Localizer["TotalGapByRevenueSource"]
                                     </h6>
                                 </div>
                                 <div class="card-body">
@@ -501,7 +501,7 @@
                                 <div class="card-header bg-light">
                                     <h6 class="mb-0">
                                         <i class="fas fa-chart-bar me-2 text-primary"></i>
-                                        Gap Analysis Visualization
+                                        @Localizer["GapAnalysisVisualization"]
                                     </h6>
                                 </div>
                                 <div class="card-body">
@@ -521,7 +521,7 @@
                                 <div class="card-header bg-light">
                                     <h6 class="mb-0">
                                         <i class="fas fa-chart-pie me-2 text-primary"></i>
-                                        Average Gap Analysis
+                                        @Localizer["AverageGapAnalysis"]
                                     </h6>
                                 </div>
                                 <div class="card-body">
@@ -530,8 +530,8 @@
                                             <span id="averageGapValue" class="fs-3 fw-bold text-white">0%</span>
                                         </div>
                                         <div>
-                                            <h5 class="mb-1">Average Gap Across Top 5 OSRs</h5>
-                                            <p class="mb-1 text-muted">Formula: Total Gap / Total Potential Revenue</p>
+                                            <h5 class="mb-1">@Localizer["AverageGapAcrossTop5"]</h5>
+                                            <p class="mb-1 text-muted">@Localizer["AverageGapFormula"]</p>
                                             <p id="averageGapDescription" class="mb-0 fs-5 fw-bold text-success">Excellent Revenue Collection</p>
                                         </div>
                                     </div>
@@ -545,18 +545,18 @@
                                 <div class="card-header bg-light">
                                     <h6 class="mb-0">
                                         <i class="fas fa-chart-bar me-2 text-primary"></i>
-                                        Total Potential Revenue
+                                        @Localizer["TotalPotentialRevenueHeader"]
                                     </h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-7">
                                             <div class="card-text">
-                                                <h5 class="mb-3">Total Revenue Potential from All Revenue Sources</h5>
-                                                <p class="mb-3">This represents the combined potential revenue from property tax, license, short term, long term, and mixed revenue sources.</p>
+                                                <h5 class="mb-3">@Localizer["TotalRevenuePotentialFromAll"]</h5>
+                                                <p class="mb-3">@Localizer["TotalRevenuePotentialDescription"]</p>
                                                 
                                                 <div class="bg-light p-3 rounded mb-3">
-                                                    <h6 class="text-muted">Potential Revenue</h6>
+                                                    <h6 class="text-muted">@Localizer["PotentialRevenue"]</h6>
                                                     <h3 class="mb-0 text-success" id="top5OSRPotentialCompare">0</h3>
                                                 </div>
                                             </div>
@@ -566,7 +566,7 @@
                                                 <div class="position-relative">
                                                     <div class="p-4 bg-success-subtle rounded-3 text-center">
                                                         <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
-                                                        <h4 class="text-success mb-2">Total Potential</h4>
+                                                        <h4 class="text-success mb-2">@Localizer["TotalPotential"]</h4>
                                                         <h2 id="totalPotentialDisplay" class="display-5 fw-bold text-success">0</h2>
                                                     </div>
                                                 </div>
@@ -583,18 +583,18 @@
                                 <div class="card-header bg-light">
                                     <h6 class="mb-0">
                                         <i class="fas fa-calculator me-2 text-success"></i>
-                                        Total Potential of Other OSRs
+                                        @Localizer["TotalPotentialOtherOSRs"]
                                     </h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-7">
                                             <div class="card-text">
-                                                <h5 class="mb-3">Formula: Other Revenue / (1 - Average Gap)</h5>
-                                                <p class="mb-3">This formula estimates the potential revenue for other sources by applying the same gap ratio observed in the Top 5 OSRs.</p>
+                                                <h5 class="mb-3">@Localizer["OtherOSRFormula"]</h5>
+                                                <p class="mb-3">@Localizer["OtherOSRDescription"]</p>
                                                 
                                                 <div class="bg-light p-3 rounded mb-3">
-                                                    <h6 class="text-muted">Calculation</h6>
+                                                    <h6 class="text-muted">@Localizer["Calculation"]</h6>
                                                     <code id="otherOSRFormula" class="d-block mb-2">0 / (1 - 0%) = 0</code>
                                                     <small class="text-muted">Based on the assumption that the revenue collection efficiency is similar across all revenue sources.</small>
                                                 </div>
@@ -605,7 +605,7 @@
                                                 <div class="col-12">
                                                     <div class="card bg-light border-0">
                                                         <div class="card-body">
-                                                            <h6 class="card-title text-muted mb-2">Current Revenue</h6>
+                                                            <h6 class="card-title text-muted mb-2">@Localizer["CurrentRevenue"]</h6>
                                                             <h3 class="mb-0 text-primary" id="otherOSRCurrent">0</h3>
                                                         </div>
                                                     </div>
@@ -613,7 +613,7 @@
                                                 <div class="col-12">
                                                     <div class="card bg-light border-0">
                                                         <div class="card-body">
-                                                            <h6 class="card-title text-muted mb-2">Estimated Potential Revenue</h6>
+                                                            <h6 class="card-title text-muted mb-2">@Localizer["EstimatedPotentialRevenue"]</h6>
                                                             <h3 class="mb-0 text-success" id="otherOSRPotential">0</h3>
                                                         </div>
                                                     </div>
@@ -621,7 +621,7 @@
                                                 <div class="col-12">
                                                     <div class="card bg-light border-0">
                                                         <div class="card-body">
-                                                            <h6 class="card-title text-muted mb-2">Estimated Gap</h6>
+                                                            <h6 class="card-title text-muted mb-2">@Localizer["EstimatedGap"]</h6>
                                                             <h3 class="mb-0 text-danger" id="otherOSRGap">0</h3>
                                                         </div>
                                                     </div>
@@ -639,18 +639,18 @@
                                 <div class="card-header bg-light">
                                     <h6 class="mb-0">
                                         <i class="fas fa-money-bill-wave me-2 text-success"></i>
-                                        Total OSR Potential
+                                        @Localizer["TotalOSRPotential"]
                                     </h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="card-text">
-                                                <h5 class="mb-3">Formula: Total Potential from All Tabs + Total Potential of Other OSRs</h5>
-                                                <p class="mb-3">This represents the complete potential revenue across all revenue sources, including "Other OSRs" not captured in the main tabs.</p>
+                                                <h5 class="mb-3">@Localizer["TotalOSRPotentialFormula"]</h5>
+                                                <p class="mb-3">@Localizer["TotalOSRPotentialDescription"]</p>
                                                 
                                                 <div class="bg-light p-3 rounded mb-3">
-                                                    <h6 class="text-muted">Calculation</h6>
+                                                    <h6 class="text-muted">@Localizer["Calculation"]</h6>
                                                     <code id="totalOSRFormula" class="d-block mb-2">0 + 0 = 0</code>
                                                 </div>
                                             </div>
@@ -660,7 +660,7 @@
                                                 <div class="col-12">
                                                     <div class="card bg-light border-0">
                                                         <div class="card-body">
-                                                            <h6 class="card-title text-muted mb-2">Total Potential from All Tabs</h6>
+                                                            <h6 class="card-title text-muted mb-2">@Localizer["TotalPotentialFromAllTabs"]</h6>
                                                             <h3 class="mb-0 text-primary" id="top5OSRPotentialDisplay">0</h3>
                                                         </div>
                                                     </div>
@@ -668,7 +668,7 @@
                                                 <div class="col-12">
                                                     <div class="card bg-light border-0">
                                                         <div class="card-body">
-                                                            <h6 class="card-title text-muted mb-2">Total Potential of Other OSRs</h6>
+                                                            <h6 class="card-title text-muted mb-2">@Localizer["TotalPotentialOtherOSRsLabel"]</h6>
                                                             <h3 class="mb-0 text-success" id="otherOSRPotentialDisplay">0</h3>
                                                         </div>
                                                     </div>
@@ -676,7 +676,7 @@
                                                 <div class="col-12">
                                                     <div class="card bg-success-subtle border-0">
                                                         <div class="card-body">
-                                                            <h6 class="card-title text-muted mb-2">Total OSR Potential</h6>
+                                                            <h6 class="card-title text-muted mb-2">@Localizer["TotalOSRPotential"]</h6>
                                                             <h3 class="mb-0 text-success fw-bold" id="totalOSRPotential">0</h3>
                                                         </div>
                                                     </div>
@@ -691,19 +691,19 @@
                         <div class="col-md-4">
                             <div class="form-floating">
                                 <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="totalCurrentValue" name="TotalEstimate.CurrentValue" value="@(Model.TotalEstimate.CurrentValue?.ToString("#,##0.##"))" placeholder="Enter current value" @(isViewMode ? "readonly" : "")>
-                                <label for="totalCurrentValue">Current Value</label>
+                                <label for="totalCurrentValue">@Localizer["CurrentValue"]</label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-floating">
                                 <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="totalPotentialValue" name="TotalEstimate.PotentialValue" value="@(Model.TotalEstimate.PotentialValue?.ToString("#,##0.##"))" placeholder="Enter potential value" @(isViewMode ? "readonly" : "")>
-                                <label for="totalPotentialValue">Potential Value</label>
+                                <label for="totalPotentialValue">@Localizer["PotentialValue"]</label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-floating">
                                 <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="totalGap" name="TotalEstimate.Gap" value="@(Model.TotalEstimate.Gap?.ToString("#,##0.##"))" placeholder="Enter gap" @(isViewMode ? "readonly" : "")>
-                                <label for="totalGap">Gap</label>
+                                <label for="totalGap">@Localizer["Gap"]</label>
                             </div>
                         </div>
                         
@@ -711,7 +711,7 @@
                         <div class="col-md-4">
                             <div class="form-floating">
                                 <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="percentageRealized" readonly>
-                                <label for="percentageRealized">Percentage Realized (%)</label>
+                                <label for="percentageRealized">@Localizer["PercentageRealized"]</label>
                             </div>
                         </div>
                         
@@ -719,7 +719,7 @@
                         <div class="col-md-4">
                             <div class="form-floating">
                                 <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="perCapitaCurrentRevenue" readonly>
-                                <label for="perCapitaCurrentRevenue">Per Capita Current Revenue</label>
+                                <label for="perCapitaCurrentRevenue">@Localizer["PerCapitaCurrentRevenue"]</label>
                             </div>
                         </div>
                         
@@ -727,7 +727,7 @@
                         <div class="col-md-4">
                             <div class="form-floating">
                                 <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="perCapitaPotentialRevenue" readonly>
-                                <label for="perCapitaPotentialRevenue">Per Capita Potential Revenue</label>
+                                <label for="perCapitaPotentialRevenue">@Localizer["PerCapitaPotentialRevenue"]</label>
                             </div>
                         </div>
                     </div>
@@ -737,7 +737,7 @@
                         <div class="col-md-12">
                             <div class="form-floating">
                                 <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="totalNotes" name="TotalEstimate.Notes" style="height: 120px" placeholder="Enter notes" @(isViewMode ? "readonly" : "")>@Model.TotalEstimate.Notes</textarea>
-                                <label for="totalNotes">Notes & Recommendations</label>
+                                <label for="totalNotes">@Localizer["NotesAndRecommendations"]</label>
                             </div>
                         </div>
                     </div>

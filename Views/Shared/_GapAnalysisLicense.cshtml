@@ -28,7 +28,7 @@
                         </label>
                         <input type="text" class="form-control number-format bg-light fw-bold" id="blRegisteredBusinesses"
                                name="License.RegisteredBusinesses" value="@(Model.License.RegisteredBusinesses?.ToString("N0") ?? "451")"
-                               placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                               placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                     </div>
 
                     <div class="mb-3">
@@ -40,7 +40,7 @@
                         <div class="input-group">
                             <input type="number" class="form-control bg-light fw-bold" id="blEstimatedUnregisteredPercent"
                                    name="License.EstimatedUnregisteredPercent" value="@(Model.License.EstimatedUnregisteredPercent ?? 3)"
-                                   placeholder="Enter %" min="0" max="100" step="0.1" @(isViewMode ? "readonly" : "") data-input="true">
+                                   placeholder="@Localizer["EnterPercent"]" min="0" max="100" step="0.1" @(isViewMode ? "readonly" : "") data-input="true">
                             <span class="input-group-text">%</span>
                         </div>
                     </div>
@@ -66,7 +66,7 @@
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format bg-light fw-bold" id="blBilledAmount"
                                    name="License.BilledAmount" value="@(Model.License.BilledAmount?.ToString("N0") ?? "233,073,733")"
-                                   placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                                   placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
 
@@ -80,7 +80,7 @@
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format bg-light fw-bold" id="blOutstandingAmount"
                                    name="License.OutstandingAmount" value="@(Model.License.OutstandingAmount?.ToString("N0") ?? "55,623,018")"
-                                   placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                                   placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
 
@@ -121,7 +121,7 @@
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format bg-light fw-bold" id="blStatutoryAverageBilled"
                                    name="License.StatutoryAverageBilled" value="@(Model.License.StatutoryAverageBilled?.ToString("N0") ?? "680,500")"
-                                   placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                                   placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
 
@@ -134,7 +134,7 @@
                         <div class="input-group">
                             <input type="number" class="form-control bg-light fw-bold" id="blRealisticImprovementPercent"
                                    name="License.RealisticImprovementPercent" value="@(Model.License.RealisticImprovementPercent ?? 15)"
-                                   placeholder="Enter %" min="0" max="100" step="1" @(isViewMode ? "readonly" : "") data-input="true">
+                                   placeholder="@Localizer["EnterPercent"]" min="0" max="100" step="1" @(isViewMode ? "readonly" : "") data-input="true">
                             <span class="input-group-text">%</span>
                         </div>
                     </div>
@@ -246,60 +246,60 @@
                                 <tbody>
                                     <tr class="table-success">
                                         <td>
-                                            Revenue to date
+                                            @Localizer["RevenueToDate_Label"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="This is the cash actually collected so far in the year from registered businesses. It is the 'actual revenue' slice in the chart and the bottom-left cell of the matrix."></i>
+                                               title="@Localizer["RevenueToDate_TableTooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="blTableRevenueToDate">0</td>
                                         <td class="text-end" id="blTableRevenueToDatePct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Compliance Gap
+                                            @Localizer["ComplianceGap"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="The amount already billed to registered businesses that remains unpaid (arrears for the year). Captures non-payment among those on the register at today's billing level. Formula: Outstanding amount."></i>
+                                               title="@Localizer["ComplianceGap_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="blTableComplianceGap">0</td>
                                         <td class="text-end" id="blTableComplianceGapPct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Coverage Gap
+                                            @Localizer["CoverageGap"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Revenue not collected because some active businesses are not registered and therefore were not billed at all—valued at today's average bill. Formula: (Total estimated - Registered) × Average billed amount."></i>
+                                               title="@Localizer["CoverageGap_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="blTableCoverageGap">0</td>
                                         <td class="text-end" id="blTableCoverageGapPct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Liability Gap
+                                            @Localizer["LiabilityGap"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Additional revenue you could obtain from businesses that already pay if billing were improved part-way toward the statutory level (realistic improvement). Formula: Compliant businesses × ΔA."></i>
+                                               title="@Localizer["LiabilityGap_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="blTableLiabilityGap">0</td>
                                         <td class="text-end" id="blTableLiabilityGapPct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Mixed Gap (Compliance + Liability)
+                                            @Localizer["MixedGapComplianceLiability"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Extra revenue that would appear only if both (i) non-payers among the registered start paying AND (ii) billing is raised by the realistic improvement toward the statutory average. Formula: (Registered - Compliant) × ΔA."></i>
+                                               title="@Localizer["MixedGapComplianceLiability_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="blTableMixedGapCompliance">0</td>
                                         <td class="text-end" id="blTableMixedGapCompliancePct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Mixed Gap (Coverage + Liability)
+                                            @Localizer["MixedGapCoverageLiability"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Extra revenue that would appear only if both (i) unregistered businesses are brought onto the register AND (ii) billing is raised by the realistic improvement toward the statutory average. Formula: (Total estimated - Registered) × ΔA."></i>
+                                               title="@Localizer["MixedGapCoverageLiability_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="blTableMixedGapCoverage">0</td>
                                         <td class="text-end" id="blTableMixedGapCoveragePct">0%</td>
                                     </tr>
                                     <tr class="table-secondary fw-bold">
-                                        <td>TOTAL (Potential Revenue)</td>
+                                        <td>@Localizer["TotalPotentialRevenue"]</td>
                                         <td class="text-end" id="blTableTotalPotential">0</td>
                                         <td class="text-end">100%</td>
                                     </tr>
@@ -310,14 +310,14 @@
 
                     <!-- Revenue and Functional Gaps Pie Chart -->
                     <div class="mb-4">
-                        <h6 class="text-center mb-3">Potential Revenue (Actual Revenue + Gap breakdown)</h6>
+                        <h6 class="text-center mb-3">@Localizer["PotentialRevenuePie_Title"]</h6>
                         <div class="d-flex justify-content-center">
                             <div style="height: 300px; width: 450px; position: relative;">
                                 <canvas id="blPotentialRevenueChart"></canvas>
                             </div>
                         </div>
                         <p class="small text-muted mt-2 text-center">
-                            <strong>DESCRIPTION:</strong> This pie chart illustrates the percentage distribution of the total potential revenue from the billing system. It visually shows the share corresponding to the revenue actually collected during the year, as well as the contribution of each type of gap (uncollected or lost revenue) to that total.
+                            <strong>@Localizer["Description_Label"]</strong> @Localizer["PotentialRevenuePie_Description"]
                         </p>
                     </div>
 
@@ -325,31 +325,31 @@
 
                     <!-- Matrix Gap Analysis Dashboard -->
                     <div class="mb-4">
-                        <h6 class="text-center mb-3">Business License Gap Analysis - Dashboard</h6>
+                        <h6 class="text-center mb-3">@Localizer["MatrixDashboard_Title"]</h6>
                         <div class="row g-3 align-items-stretch">
                             <!-- Matrix Visualization -->
                             <div class="col-12">
                                 <div class="matrix-container position-relative" style="height: 320px; min-height: 320px; border-radius: 8px; overflow: hidden; background: #fff;">
                                     <!-- Y-axis Title (rotated) -->
                                     <div class="position-absolute d-flex align-items-center justify-content-center" style="left: 0; top: 0; bottom: 30px; width: 20px; background: #f8f9fa;">
-                                        <span style="transform: rotate(-90deg); white-space: nowrap; font-size: 0.6rem; color: #666;"># of Businesses</span>
+                                        <span style="transform: rotate(-90deg); white-space: nowrap; font-size: 0.6rem; color: #666;">@Localizer["Matrix_YAxisTitle"]</span>
                                     </div>
 
                                     <!-- Y-axis Labels Container - labels positioned at row BOUNDARIES -->
                                     <div class="matrix-y-labels position-absolute" id="blMatrixYLabelsContainer" style="left: 20px; top: 0; bottom: 30px; width: 55px; font-size: 0.6rem; background: #f8f9fa;">
                                         <!-- Estimated label at TOP boundary (top of matrix) -->
                                         <div class="y-label-item" id="blYLabelEstimated" style="position: absolute; right: 3px; top: 0; text-align: right; transform: translateY(-50%);">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Estimated</small>
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Matrix_Estimated"]</small>
                                             <span id="blMatrixEstimatedLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
                                         </div>
                                         <!-- Registered label at boundary between Row1 and Row2 -->
                                         <div class="y-label-item" id="blYLabelRegistered" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%);">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Registered</small>
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Matrix_Registered"]</small>
                                             <span id="blMatrixRegisteredLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
                                         </div>
                                         <!-- Compliant label at boundary between Row2 and Row3 -->
                                         <div class="y-label-item" id="blYLabelCompliant" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%);">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Compliant</small>
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Matrix_Compliant"]</small>
                                             <span id="blMatrixCompliantLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
                                         </div>
                                     </div>
@@ -361,14 +361,14 @@
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixCoverageGap"
                                                  style="background-color: #FF9800; color: white; flex: 1; min-width: 60px;">
                                                 <div class="text-center p-1">
-                                                    <small style="font-size: 0.7rem;">Coverage Gap</small><br>
+                                                    <small style="font-size: 0.7rem;">@Localizer["Matrix_CoverageGap"]</small><br>
                                                     <span id="blMatrixCoverageGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixMixedCoverage"
                                                  style="background-color: #E91E63; color: white; flex: 1; min-width: 60px;">
                                                 <div class="text-center p-1">
-                                                    <small style="font-size: 0.7rem;">Mixed (Cov.+Liab.)</small><br>
+                                                    <small style="font-size: 0.7rem;">@Localizer["Matrix_MixedCovLiab"]</small><br>
                                                     <span id="blMatrixMixedCoverageVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
@@ -378,14 +378,14 @@
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixComplianceGap"
                                                  style="background-color: #F44336; color: white; flex: 1; min-width: 60px;">
                                                 <div class="text-center p-1">
-                                                    <small style="font-size: 0.7rem;">Compliance Gap</small><br>
+                                                    <small style="font-size: 0.7rem;">@Localizer["Matrix_ComplianceGap"]</small><br>
                                                     <span id="blMatrixComplianceGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixMixedCompliance"
                                                  style="background-color: #9C27B0; color: white; flex: 1; min-width: 60px;">
                                                 <div class="text-center p-1">
-                                                    <small style="font-size: 0.7rem;">Mixed (Comp.+Liab.)</small><br>
+                                                    <small style="font-size: 0.7rem;">@Localizer["Matrix_MixedCompLiab"]</small><br>
                                                     <span id="blMatrixMixedComplianceVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
@@ -395,14 +395,14 @@
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixActualRevenue"
                                                  style="background-color: #4CAF50; color: white; flex: 1; min-width: 60px;">
                                                 <div class="text-center p-1">
-                                                    <small style="font-size: 0.7rem;">Actual Revenue</small><br>
+                                                    <small style="font-size: 0.7rem;">@Localizer["Matrix_ActualRevenue"]</small><br>
                                                     <span id="blMatrixActualRevenueVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixLiabilityGap"
                                                  style="background-color: #2196F3; color: white; flex: 1; min-width: 60px;">
                                                 <div class="text-center p-1">
-                                                    <small style="font-size: 0.7rem;">Liability Gap</small><br>
+                                                    <small style="font-size: 0.7rem;">@Localizer["Matrix_LiabilityGap"]</small><br>
                                                     <span id="blMatrixLiabilityGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
@@ -417,12 +417,12 @@
                                         </div>
                                         <!-- X-axis label at column boundary (between left and right columns) -->
                                         <div class="x-label-item" id="blXLabelAvgBilled" style="position: absolute; bottom: 2px; transform: translateX(-50%); text-align: center; font-size: 0.6rem;">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Avg. Billed</small>
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Matrix_AvgBilled"]</small>
                                             <span id="blMatrixAvgBilledLabel" class="fw-bold" style="font-size: 0.65rem;">@currencySymbol 0</span>
                                         </div>
                                         <!-- X-axis label at right edge -->
                                         <div class="x-label-item" id="blXLabelAchievable" style="position: absolute; right: 0; bottom: 2px; transform: translateX(0%); text-align: right; font-size: 0.6rem;">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Achievable Avg.</small>
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Matrix_AchievableAvg"]</small>
                                             <span id="blMatrixAchievableLabel" class="fw-bold" style="font-size: 0.65rem;">@currencySymbol 0</span>
                                         </div>
                                     </div>
@@ -430,7 +430,7 @@
                             </div>
                         </div><!-- end row -->
                         <p class="small text-muted mt-3 text-center">
-                            <strong>DESCRIPTION:</strong> This matrix visualization shows the business license gap analysis across two dimensions: the number of businesses (vertical axis from Compliant to Estimated) and the billing level (horizontal axis from average billed to achievable billing). Each colored cell represents a different type of gap or revenue component.
+                            <strong>@Localizer["Description_Label"]</strong> @Localizer["MatrixDashboard_Description"]
                         </p>
                     </div>
 
@@ -438,64 +438,64 @@
 
                     <!-- Gap Breakdown Table -->
                     <div class="mb-4">
-                        <h6 class="text-center mb-3">Gap Breakdown (<span class="currency-label">@currencySymbol</span>)</h6>
+                        <h6 class="text-center mb-3">@Localizer["GapBreakdown_Title"] (<span class="currency-label">@currencySymbol</span>)</h6>
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered table-striped table-hover">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th>Functional Gaps</th>
-                                        <th class="text-end">Amount (<span class="currency-label">@currencySymbol</span>)</th>
-                                        <th class="text-end">Share (%)</th>
+                                        <th>@Localizer["Table_FunctionalGaps"]</th>
+                                        <th class="text-end">@Localizer["Table_Amount"] (<span class="currency-label">@currencySymbol</span>)</th>
+                                        <th class="text-end">@Localizer["Table_Share"]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td>
-                                            Compliance Gap
+                                            @Localizer["ComplianceGap"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="The amount already billed to registered businesses that remains unpaid (arrears for the year). Captures non-payment among those on the register at today's billing level."></i>
+                                               title="@Localizer["ComplianceGap_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="blGapComplianceGap">0</td>
                                         <td class="text-end" id="blGapComplianceGapPct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Coverage Gap
+                                            @Localizer["CoverageGap"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Revenue not collected because some active businesses are not registered and therefore were not billed at all—valued at today's average bill."></i>
+                                               title="@Localizer["CoverageGap_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="blGapCoverageGap">0</td>
                                         <td class="text-end" id="blGapCoverageGapPct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Liability Gap
+                                            @Localizer["LiabilityGap"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Additional revenue you could obtain from businesses that already pay if billing were improved part-way toward the statutory level (realistic improvement)."></i>
+                                               title="@Localizer["LiabilityGap_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="blGapLiabilityGap">0</td>
                                         <td class="text-end" id="blGapLiabilityGapPct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Mixed Gap (Compliance + Liability)
+                                            @Localizer["MixedGapComplianceLiability"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Extra revenue that would appear only if both (i) non-payers among the registered start paying AND (ii) billing is raised by the realistic improvement toward the statutory average."></i>
+                                               title="@Localizer["MixedGapComplianceLiability_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="blGapMixedGapCompliance">0</td>
                                         <td class="text-end" id="blGapMixedGapCompliancePct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Mixed Gap (Coverage + Liability)
+                                            @Localizer["MixedGapCoverageLiability"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Extra revenue that would appear only if both (i) unregistered businesses are brought onto the register AND (ii) billing is raised by the realistic improvement toward the statutory average."></i>
+                                               title="@Localizer["MixedGapCoverageLiability_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="blGapMixedGapCoverage">0</td>
                                         <td class="text-end" id="blGapMixedGapCoveragePct">0%</td>
                                     </tr>
                                     <tr class="table-secondary fw-bold">
-                                        <td>Total Functional Gap</td>
+                                        <td>@Localizer["TotalFunctionalGap"]</td>
                                         <td class="text-end" id="blTableTotalFunctionalGap">0</td>
                                         <td class="text-end">100%</td>
                                     </tr>
@@ -506,14 +506,14 @@
 
                     <!-- Gap Breakdown Pie Chart -->
                     <div class="mb-4">
-                        <h6 class="text-center mb-3">Gap Breakdown</h6>
+                        <h6 class="text-center mb-3">@Localizer["GapBreakdownPie_Title"]</h6>
                         <div class="d-flex justify-content-center">
                             <div style="height: 300px; width: 450px; position: relative;">
                                 <canvas id="blGapBreakdownChart"></canvas>
                             </div>
                         </div>
                         <p class="small text-muted mt-2 text-center">
-                            <strong>DESCRIPTION:</strong> This pie chart illustrates the percentage distribution of the revenue gaps. It visually shows the contribution of each type of gap to the total uncollected revenue, helping to identify which gaps are the most significant.
+                            <strong>@Localizer["Description_Label"]</strong> @Localizer["GapBreakdownPie_Description"]
                         </p>
                     </div>
                 </div>
