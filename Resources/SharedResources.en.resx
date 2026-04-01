@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Navigation -->
+  <data name="Nav_Home" xml:space="preserve"><value>Home</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>About</value></data>
+  <data name="Nav_WhatIsRosra" xml:space="preserve"><value>What is ROSRA?</value></data>
+  <data name="Nav_WhatIsOsr" xml:space="preserve"><value>What is OSR?</value></data>
+  <data name="Nav_WhyUnHabitat" xml:space="preserve"><value>Why UN-Habitat?</value></data>
+  <data name="Nav_WhyOptimize" xml:space="preserve"><value>Why Optimize OSR</value></data>
+  <data name="Nav_IncreasesResources" xml:space="preserve"><value>Increases Resources</value></data>
+  <data name="Nav_IncreasesAutonomy" xml:space="preserve"><value>Increases Autonomy</value></data>
+  <data name="Nav_StrengthensContract" xml:space="preserve"><value>Strengthens Social Contract</value></data>
+  <data name="Nav_ImprovesCapacity" xml:space="preserve"><value>Improves Capacity</value></data>
+  <data name="Nav_EnablesLeveraging" xml:space="preserve"><value>Enables Leveraging</value></data>
+  <data name="Nav_IncreasesCreditworthiness" xml:space="preserve"><value>Increases Creditworthiness</value></data>
+  <data name="Nav_HowItWorks" xml:space="preserve"><value>How It Works</value></data>
+  <data name="Nav_WhoIsRosraFor" xml:space="preserve"><value>Who is ROSRA For?</value></data>
+  <data name="Nav_AnalysisProcess" xml:space="preserve"><value>Analysis Process</value></data>
+  <data name="Nav_DataRequirements" xml:space="preserve"><value>Data Requirements</value></data>
+  <data name="Nav_DataPrivacy" xml:space="preserve"><value>Data Privacy</value></data>
+  <data name="Nav_Resources" xml:space="preserve"><value>Resources</value></data>
+  <data name="Nav_SampleReport" xml:space="preserve"><value>Sample Report</value></data>
+  <data name="Nav_Testimonials" xml:space="preserve"><value>Testimonials</value></data>
+  <data name="Nav_UnHabitatWebsite" xml:space="preserve"><value>UN-Habitat Website</value></data>
+  <data name="Nav_Sdg11" xml:space="preserve"><value>SDG 11</value></data>
+  <data name="Nav_Admin" xml:space="preserve"><value>Admin</value></data>
+  <data name="Nav_Dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="Nav_ManageUsers" xml:space="preserve"><value>Manage Users</value></data>
+  <data name="Nav_DataUpload" xml:space="preserve"><value>Data Upload</value></data>
+  <data name="Nav_CreateRole" xml:space="preserve"><value>Create Role</value></data>
+  <data name="Nav_MyDashboard" xml:space="preserve"><value>My Dashboard</value></data>
+  <data name="Nav_Logout" xml:space="preserve"><value>Logout</value></data>
+  <data name="Nav_Login" xml:space="preserve"><value>Login</value></data>
+  <data name="Nav_CreateReport" xml:space="preserve"><value>Create Report</value></data>
+
+  <!-- Footer -->
+  <data name="Footer_Copyright" xml:space="preserve"><value>© 2025 - RosraApp - Empowering local governments through data-driven OSR optimization</value></data>
+  <data name="Footer_Privacy" xml:space="preserve"><value>Privacy</value></data>
+  <data name="Footer_ContactUs" xml:space="preserve"><value>Contact Us</value></data>
+  <data name="Footer_SdgGoals" xml:space="preserve"><value>SDG Goals</value></data>
+
+  <!-- Common -->
+  <data name="Common_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Common_Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Common_Export" xml:space="preserve"><value>Export</value></data>
+  <data name="Common_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Common_Back" xml:space="preserve"><value>Back</value></data>
+  <data name="Common_Next" xml:space="preserve"><value>Next</value></data>
+  <data name="Common_Yes" xml:space="preserve"><value>Yes</value></data>
+  <data name="Common_No" xml:space="preserve"><value>No</value></data>
+
+  <!-- Language Names -->
+  <data name="Lang_English" xml:space="preserve"><value>English</value></data>
+  <data name="Lang_French" xml:space="preserve"><value>Français</value></data>
+  <data name="Lang_Spanish" xml:space="preserve"><value>Español</value></data>
+</root>

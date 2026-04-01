@@ -1,4 +1,5 @@
 @model RosraApp.Models.ViewModels.TabsContainerViewModel
+@inject IHtmlLocalizer<RosraApp.Resources.RosraResources> RosraLocalizer
 
 @{
     ViewData["Title"] = "Rosra";
@@ -620,7 +621,7 @@
             {
                 <div class="sidebar-section">
                     <div class="sidebar-section-header">
-                        <i class="bi bi-diagram-3"></i>Analysis Type
+                        <i class="bi bi-diagram-3"></i>@RosraLocalizer["Sidebar_AnalysisType"]
                     </div>
                     <nav class="sidebar-nav">
                         @foreach (var umbrellaTab in Model.UmbrellaTabs)
@@ -644,17 +645,17 @@
             {
                 <div class="sidebar-section">
                     <div class="sidebar-section-header">
-                        <i class="bi bi-info-circle"></i>Report Info
+                        <i class="bi bi-info-circle"></i>@RosraLocalizer["Sidebar_ReportInfo"]
                     </div>
                     <div style="font-size: 0.85rem; color: #666;">
-                        <div><strong>Title:</strong> @Model.TabContentModel.Title</div>
+                        <div><strong>@RosraLocalizer["Sidebar_Title"]</strong> @Model.TabContentModel.Title</div>
                         @if (!string.IsNullOrEmpty(Model.TabContentModel.Country))
                         {
-                            <div><strong>Country:</strong> @Model.TabContentModel.Country</div>
+                            <div><strong>@RosraLocalizer["Sidebar_Country"]</strong> @Model.TabContentModel.Country</div>
                         }
                         @if (!string.IsNullOrEmpty(Model.TabContentModel.Region))
                         {
-                            <div><strong>Region:</strong> @Model.TabContentModel.Region</div>
+                            <div><strong>@RosraLocalizer["Sidebar_Region"]</strong> @Model.TabContentModel.Region</div>
                         }
                     </div>
                 </div>
@@ -665,42 +666,42 @@
             <!-- Report Actions Section -->
             <div class="sidebar-section">
                 <div class="sidebar-section-header">
-                    <i class="bi bi-lightning-charge"></i>Report Actions
+                    <i class="bi bi-lightning-charge"></i>@RosraLocalizer["Sidebar_ReportActions"]
                 </div>
                 @if (!isViewMode)
                 {
                     <a asp-controller="Rosra" asp-action="NewReport" class="sidebar-btn sidebar-btn-primary">
-                        <span>+ New Report</span>
+                        <span>@RosraLocalizer["Sidebar_NewReport"]</span>
                     </a>
                     <button type="button" id="saveReportBtn" class="sidebar-btn sidebar-btn-secondary">
-                        <span>@(Model.TabContentModel.Id > 0 ? "+ Update Report" : "+ Save Report")</span>
+                        <span>@(Model.TabContentModel.Id > 0 ? RosraLocalizer["Sidebar_UpdateReport"].Value : RosraLocalizer["Sidebar_SaveReport"].Value)</span>
                     </button>
                     <div class="sidebar-dropdown dropdown">
                         <button type="button" class="sidebar-btn sidebar-btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span>+ Export</span>
+                            <span>@RosraLocalizer["Sidebar_Export"]</span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><button type="button" class="dropdown-item" id="exportPdfBtn"><i class="bi bi-file-pdf text-danger me-2"></i>Export as PDF</button></li>
-                            <li><button type="button" class="dropdown-item" id="exportExcelBtn"><i class="bi bi-file-earmark-excel text-success me-2"></i>Export as Excel</button></li>
+                            <li><button type="button" class="dropdown-item" id="exportPdfBtn"><i class="bi bi-file-pdf text-danger me-2"></i>@RosraLocalizer["Sidebar_ExportPdf"]</button></li>
+                            <li><button type="button" class="dropdown-item" id="exportExcelBtn"><i class="bi bi-file-earmark-excel text-success me-2"></i>@RosraLocalizer["Sidebar_ExportExcel"]</button></li>
                         </ul>
                     </div>
                 }
                 else
                 {
                     <a asp-controller="Rosra" asp-action="Edit" asp-route-id="@Model.TabContentModel.Id" class="sidebar-btn sidebar-btn-primary">
-                        <span>+ Edit Report</span>
+                        <span>@RosraLocalizer["Sidebar_EditReport"]</span>
                     </a>
                     <div class="sidebar-dropdown dropdown">
                         <button type="button" class="sidebar-btn sidebar-btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span>+ Export</span>
+                            <span>@RosraLocalizer["Sidebar_Export"]</span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><button type="button" class="dropdown-item" id="viewExportPdfBtn"><i class="bi bi-file-pdf text-danger me-2"></i>Export as PDF</button></li>
-                            <li><button type="button" class="dropdown-item" id="viewExportExcelBtn"><i class="bi bi-file-earmark-excel text-success me-2"></i>Export as Excel</button></li>
+                            <li><button type="button" class="dropdown-item" id="viewExportPdfBtn"><i class="bi bi-file-pdf text-danger me-2"></i>@RosraLocalizer["Sidebar_ExportPdf"]</button></li>
+                            <li><button type="button" class="dropdown-item" id="viewExportExcelBtn"><i class="bi bi-file-earmark-excel text-success me-2"></i>@RosraLocalizer["Sidebar_ExportExcel"]</button></li>
                         </ul>
                     </div>
                     <a asp-controller="Dashboard" asp-action="Index" class="sidebar-btn sidebar-btn-outline">
-                        <span>+ Back to Dashboard</span>
+                        <span>@RosraLocalizer["Sidebar_BackToDashboard"]</span>
                     </a>
                 }
             </div>
@@ -755,7 +756,7 @@
         <div class="separator-line"></div>
         <div class="separator-content">
             <i class="bi bi-building"></i>
-            <span>End of Analysis</span>
+            <span>@RosraLocalizer["Sidebar_EndOfAnalysis"]</span>
         </div>
         <div class="separator-line"></div>
     </div>

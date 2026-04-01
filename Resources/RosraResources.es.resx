@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Sidebar -->
+  <data name="Sidebar_AnalysisType" xml:space="preserve"><value>Tipo de análisis</value></data>
+  <data name="Sidebar_ReportInfo" xml:space="preserve"><value>Información del informe</value></data>
+  <data name="Sidebar_Title" xml:space="preserve"><value>Título:</value></data>
+  <data name="Sidebar_Country" xml:space="preserve"><value>País:</value></data>
+  <data name="Sidebar_Region" xml:space="preserve"><value>Región:</value></data>
+  <data name="Sidebar_ReportActions" xml:space="preserve"><value>Acciones del informe</value></data>
+  <data name="Sidebar_NewReport" xml:space="preserve"><value>+ Nuevo informe</value></data>
+  <data name="Sidebar_SaveReport" xml:space="preserve"><value>+ Guardar informe</value></data>
+  <data name="Sidebar_UpdateReport" xml:space="preserve"><value>+ Actualizar informe</value></data>
+  <data name="Sidebar_Export" xml:space="preserve"><value>+ Exportar</value></data>
+  <data name="Sidebar_ExportPdf" xml:space="preserve"><value>Exportar como PDF</value></data>
+  <data name="Sidebar_ExportExcel" xml:space="preserve"><value>Exportar como Excel</value></data>
+  <data name="Sidebar_EditReport" xml:space="preserve"><value>+ Editar informe</value></data>
+  <data name="Sidebar_BackToDashboard" xml:space="preserve"><value>+ Volver al panel</value></data>
+  <data name="Sidebar_EndOfAnalysis" xml:space="preserve"><value>Fin del análisis</value></data>
+
+  <!-- Tabs -->
+  <data name="Tab_TopDown" xml:space="preserve"><value>Análisis descendente</value></data>
+  <data name="Tab_BottomUp" xml:space="preserve"><value>Análisis ascendente</value></data>
+</root>

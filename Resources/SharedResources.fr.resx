@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+
+  <!-- Navigation -->
+  <data name="Nav_Home" xml:space="preserve"><value>Accueil</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>À propos</value></data>
+  <data name="Nav_WhatIsRosra" xml:space="preserve"><value>Qu'est-ce que ROSRA ?</value></data>
+  <data name="Nav_WhatIsOsr" xml:space="preserve"><value>Qu'est-ce que les RPP ?</value></data>
+  <data name="Nav_WhyUnHabitat" xml:space="preserve"><value>Pourquoi ONU-Habitat ?</value></data>
+  <data name="Nav_WhyOptimize" xml:space="preserve"><value>Pourquoi optimiser les RPP</value></data>
+  <data name="Nav_IncreasesResources" xml:space="preserve"><value>Augmente les ressources</value></data>
+  <data name="Nav_IncreasesAutonomy" xml:space="preserve"><value>Renforce l'autonomie</value></data>
+  <data name="Nav_StrengthensContract" xml:space="preserve"><value>Renforce le contrat social</value></data>
+  <data name="Nav_ImprovesCapacity" xml:space="preserve"><value>Améliore les capacités</value></data>
+  <data name="Nav_EnablesLeveraging" xml:space="preserve"><value>Favorise l'effet de levier</value></data>
+  <data name="Nav_IncreasesCreditworthiness" xml:space="preserve"><value>Améliore la solvabilité</value></data>
+  <data name="Nav_HowItWorks" xml:space="preserve"><value>Comment ça marche</value></data>
+  <data name="Nav_WhoIsRosraFor" xml:space="preserve"><value>À qui s'adresse ROSRA ?</value></data>
+  <data name="Nav_AnalysisProcess" xml:space="preserve"><value>Processus d'analyse</value></data>
+  <data name="Nav_DataRequirements" xml:space="preserve"><value>Données requises</value></data>
+  <data name="Nav_DataPrivacy" xml:space="preserve"><value>Confidentialité des données</value></data>
+  <data name="Nav_Resources" xml:space="preserve"><value>Ressources</value></data>
+  <data name="Nav_SampleReport" xml:space="preserve"><value>Exemple de rapport</value></data>
+  <data name="Nav_Testimonials" xml:space="preserve"><value>Témoignages</value></data>
+  <data name="Nav_UnHabitatWebsite" xml:space="preserve"><value>Site Web ONU-Habitat</value></data>
+  <data name="Nav_Sdg11" xml:space="preserve"><value>ODD 11</value></data>
+  <data name="Nav_Admin" xml:space="preserve"><value>Administration</value></data>
+  <data name="Nav_Dashboard" xml:space="preserve"><value>Tableau de bord</value></data>
+  <data name="Nav_ManageUsers" xml:space="preserve"><value>Gérer les utilisateurs</value></data>
+  <data name="Nav_DataUpload" xml:space="preserve"><value>Téléchargement de données</value></data>
+  <data name="Nav_CreateRole" xml:space="preserve"><value>Créer un rôle</value></data>
+  <data name="Nav_MyDashboard" xml:space="preserve"><value>Mon tableau de bord</value></data>
+  <data name="Nav_Logout" xml:space="preserve"><value>Déconnexion</value></data>
+  <data name="Nav_Login" xml:space="preserve"><value>Connexion</value></data>
+  <data name="Nav_CreateReport" xml:space="preserve"><value>Créer un rapport</value></data>
+
+  <!-- Footer -->
+  <data name="Footer_Copyright" xml:space="preserve"><value>© 2025 - RosraApp - Autonomiser les gouvernements locaux grâce à l'optimisation des RPP basée sur les données</value></data>
+  <data name="Footer_Privacy" xml:space="preserve"><value>Confidentialité</value></data>
+  <data name="Footer_ContactUs" xml:space="preserve"><value>Nous contacter</value></data>
+  <data name="Footer_SdgGoals" xml:space="preserve"><value>Objectifs ODD</value></data>
+
+  <!-- Common -->
+  <data name="Common_Save" xml:space="preserve"><value>Enregistrer</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>Annuler</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Supprimer</value></data>
+  <data name="Common_Edit" xml:space="preserve"><value>Modifier</value></data>
+  <data name="Common_Export" xml:space="preserve"><value>Exporter</value></data>
+  <data name="Common_Close" xml:space="preserve"><value>Fermer</value></data>
+  <data name="Common_Back" xml:space="preserve"><value>Retour</value></data>
+  <data name="Common_Next" xml:space="preserve"><value>Suivant</value></data>
+  <data name="Common_Yes" xml:space="preserve"><value>Oui</value></data>
+  <data name="Common_No" xml:space="preserve"><value>Non</value></data>
+
+  <!-- Language Names -->
+  <data name="Lang_English" xml:space="preserve"><value>English</value></data>
+  <data name="Lang_French" xml:space="preserve"><value>Français</value></data>
+  <data name="Lang_Spanish" xml:space="preserve"><value>Español</value></data>
+</root>

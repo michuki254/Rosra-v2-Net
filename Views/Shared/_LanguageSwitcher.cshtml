@@ -1,0 +1,44 @@
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<RosraApp.Resources.SharedResources> SharedLocalizer
+
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCulture?.RequestCulture?.UICulture?.TwoLetterISOLanguageName ?? "en";
+
+    var languages = new[]
+    {
+        new { Code = "en", Name = "EN", FullName = "English", Flag = "🇬🇧" },
+        new { Code = "fr", Name = "FR", FullName = "Français", Flag = "🇫🇷" },
+        new { Code = "es", Name = "ES", FullName = "Español", Flag = "🇪🇸" }
+    };
+
+    var current = languages.FirstOrDefault(l => l.Code == currentCulture) ?? languages[0];
+}
+
+<div class="dropdown language-switcher">
+    <button class="btn btn-sm language-btn dropdown-toggle" type="button"
+            data-bs-toggle="dropdown" aria-expanded="false">
+        <span class="lang-flag">@current.Flag</span>
+        <span class="lang-code">@current.Name</span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end language-dropdown">
+        @foreach (var lang in languages)
+        {
+            <li>
+                <form asp-controller="Culture" asp-action="SetLanguage" method="post">
+                    <input type="hidden" name="culture" value="@lang.Code" />
+                    <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                    <button type="submit" class="dropdown-item @(lang.Code == currentCulture ? "active" : "")">
+                        <span class="lang-flag">@lang.Flag</span>
+                        <span class="lang-name">@lang.FullName</span>
+                        @if (lang.Code == currentCulture)
+                        {
+                            <i class="fas fa-check ms-auto"></i>
+                        }
+                    </button>
+                </form>
+            </li>
+        }
+    </ul>
+</div>
