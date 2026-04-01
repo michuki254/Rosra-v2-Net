@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Intro Section -->
+  <data name="Intro_Text" xml:space="preserve"><value>Fill in the requested inputs for each OSR stream. Add or remove streams as needed to match your context. Once you have entered all available data, go to the Prioritisation tab to see the headline results and start sequencing streams for reform planning.</value></data>
+
+  <!-- Tab Management -->
+  <data name="RenameTab_Tooltip" xml:space="preserve"><value>Rename this tab</value></data>
+  <data name="RemoveStream_Tooltip" xml:space="preserve"><value>Remove stream</value></data>
+  <data name="AddStream" xml:space="preserve"><value>Add Stream</value></data>
+  <data name="AddStream_Tooltip" xml:space="preserve"><value>Add a new revenue stream</value></data>
+
+  <!-- Add Stream Modal -->
+  <data name="AddStreamModal_Title" xml:space="preserve"><value>Add New Revenue Stream</value></data>
+  <data name="AddStreamModal_StreamName" xml:space="preserve"><value>Stream Name</value></data>
+  <data name="AddStreamModal_Placeholder" xml:space="preserve"><value>e.g., Parking Fees, Market Stall Fees, Advertising Permits...</value></data>
+  <data name="AddStreamModal_Helper" xml:space="preserve"><value>Enter a descriptive name for this revenue stream</value></data>
+  <data name="AddStreamModal_QuickTemplates" xml:space="preserve"><value>Quick Templates</value></data>
+  <data name="Template_ParkingFees" xml:space="preserve"><value>Parking Fees</value></data>
+  <data name="Template_MarketStallFees" xml:space="preserve"><value>Market Stall Fees</value></data>
+  <data name="Template_AdvertisingPermits" xml:space="preserve"><value>Advertising Permits</value></data>
+  <data name="Template_UserFees" xml:space="preserve"><value>User Fees</value></data>
+  <data name="Template_BuildingPermits" xml:space="preserve"><value>Building Permits</value></data>
+
+  <!-- Delete Stream Modal -->
+  <data name="DeleteStreamModal_Title" xml:space="preserve"><value>Delete Stream</value></data>
+  <data name="DeleteStreamModal_Confirm" xml:space="preserve"><value>Are you sure you want to delete the stream</value></data>
+  <data name="DeleteStreamModal_Warning" xml:space="preserve"><value>This action cannot be undone. All data for this stream will be lost.</value></data>
+
+  <!-- Rename Stream Modal -->
+  <data name="RenameStreamModal_Title" xml:space="preserve"><value>Rename Revenue Stream</value></data>
+  <data name="RenameStreamModal_NewName" xml:space="preserve"><value>New Name</value></data>
+  <data name="RenameStreamModal_Placeholder" xml:space="preserve"><value>Enter new name for this stream</value></data>
+  <data name="RenameStreamModal_Helper" xml:space="preserve"><value>This changes only the display name, not the underlying data type.</value></data>
+</root>

@@ -75,4 +75,33 @@
   <data name="Lang_English" xml:space="preserve"><value>English</value></data>
   <data name="Lang_French" xml:space="preserve"><value>Français</value></data>
   <data name="Lang_Spanish" xml:space="preserve"><value>Español</value></data>
+
+  <!-- JavaScript Alert/Confirm Strings -->
+  <data name="JS_PleaseEnterName" xml:space="preserve"><value>Veuillez entrer un nom.</value></data>
+  <data name="JS_CategoryExists" xml:space="preserve"><value>Une catégorie avec ce nom existe déjà.</value></data>
+  <data name="JS_ErrorOccurred" xml:space="preserve"><value>Une erreur s'est produite. Veuillez réessayer.</value></data>
+  <data name="JS_ConfirmDelete" xml:space="preserve"><value>Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.</value></data>
+  <data name="JS_ConfirmReset" xml:space="preserve"><value>Êtes-vous sûr de vouloir réinitialiser toute la progression ? Cette action est irréversible.</value></data>
+  <data name="JS_ConfirmClear" xml:space="preserve"><value>Êtes-vous sûr de vouloir effacer toutes les sélections ?</value></data>
+  <data name="JS_CopiedToClipboard" xml:space="preserve"><value>Copié dans le presse-papiers !</value></data>
+  <data name="JS_SelectCountryFirst" xml:space="preserve"><value>Veuillez d'abord sélectionner un pays.</value></data>
+  <data name="JS_SelectFileFirst" xml:space="preserve"><value>Veuillez d'abord sélectionner un fichier.</value></data>
+  <data name="JS_InvalidCsvFormat" xml:space="preserve"><value>Format CSV invalide. Colonnes attendues : SNG, OSR, GCP.</value></data>
+  <data name="JS_DataUploadSuccess" xml:space="preserve"><value>Données téléchargées avec succès.</value></data>
+  <data name="JS_NoDataAvailable" xml:space="preserve"><value>Aucune donnée disponible.</value></data>
+
+  <!-- Chart Labels -->
+  <data name="Chart_CurrentRevenue" xml:space="preserve"><value>Recettes actuelles</value></data>
+  <data name="Chart_PotentialRevenue" xml:space="preserve"><value>Recettes potentielles</value></data>
+  <data name="Chart_RevenueGap" xml:space="preserve"><value>Écart de recettes</value></data>
+  <data name="Chart_ComplianceGap" xml:space="preserve"><value>Écart de conformité</value></data>
+  <data name="Chart_CoverageGap" xml:space="preserve"><value>Écart de couverture</value></data>
+  <data name="Chart_ValuationGap" xml:space="preserve"><value>Écart d'évaluation</value></data>
+  <data name="Chart_LiabilityGap" xml:space="preserve"><value>Écart de responsabilité</value></data>
+  <data name="Chart_MixedGap" xml:space="preserve"><value>Écart mixte</value></data>
+  <data name="Chart_TotalGap" xml:space="preserve"><value>Écart total</value></data>
+  <data name="Chart_Peers" xml:space="preserve"><value>Pairs</value></data>
+  <data name="Chart_Frontier" xml:space="preserve"><value>Frontière (moy. top 20%)</value></data>
+  <data name="Chart_Actual" xml:space="preserve"><value>Réel</value></data>
+  <data name="Chart_Estimated" xml:space="preserve"><value>Estimé</value></data>
 </root>

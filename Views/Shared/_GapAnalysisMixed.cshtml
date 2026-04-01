@@ -12,59 +12,59 @@
         <div class="col-md-4">
             <div class="card mb-3">
                 <div class="card-header bg-light">
-                    <h6 class="mb-0">Mixed Information</h6>
+                    <h6 class="mb-0">@Localizer["MixedInformation"]</h6>
                 </div>
                 <div class="card-body">
-                    <h6 class="mb-3">Daily Users</h6>
+                    <h6 class="mb-3">@Localizer["DailyUsers"]</h6>
                     <div class="mb-3">
                         <div class="form-group">
-                            <label for="estimatedDailyUsers">Estimated Number of Daily Users</label>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="estimatedDailyUsers" name="MixedUserCharge.EstimatedDailyUsers" value="@Model.MixedUserCharge.EstimatedDailyUsers" placeholder="Enter estimated number of daily users" @(isViewMode ? "readonly" : "")>
+                            <label for="estimatedDailyUsers">@Localizer["EstimatedDailyUsers"]</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="estimatedDailyUsers" name="MixedUserCharge.EstimatedDailyUsers" value="@Model.MixedUserCharge.EstimatedDailyUsers" placeholder="@Localizer["EnterEstimatedDailyUsers"]" @(isViewMode ? "readonly" : "")>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-group">
-                            <label for="actualDailyUsers">Actual Daily Users</label>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualDailyUsers" name="MixedUserCharge.ActualDailyUsers" value="@Model.MixedUserCharge.ActualDailyUsers" placeholder="Enter actual daily users" @(isViewMode ? "readonly" : "")>
+                            <label for="actualDailyUsers">@Localizer["ActualDailyUsers"]</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualDailyUsers" name="MixedUserCharge.ActualDailyUsers" value="@Model.MixedUserCharge.ActualDailyUsers" placeholder="@Localizer["EnterActualDailyUsers"]" @(isViewMode ? "readonly" : "")>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-group">
-                            <label for="averageDailyUserFee">Average Daily User Fee</label>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="averageDailyUserFee" name="MixedUserCharge.AverageDailyUserFee" value="@Model.MixedUserCharge.AverageDailyUserFee" placeholder="Enter average daily user fee" @(isViewMode ? "readonly" : "")>
+                            <label for="averageDailyUserFee">@Localizer["AverageDailyUserFee"]</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="averageDailyUserFee" name="MixedUserCharge.AverageDailyUserFee" value="@Model.MixedUserCharge.AverageDailyUserFee" placeholder="@Localizer["EnterAverageDailyUserFee"]" @(isViewMode ? "readonly" : "")>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-group">
-                            <label for="actualDailyUserFee">Actual Daily User Fee</label>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualDailyUserFee" name="MixedUserCharge.ActualDailyUserFee" value="@Model.MixedUserCharge.ActualDailyUserFee" placeholder="Enter actual daily user fee" @(isViewMode ? "readonly" : "")>
+                            <label for="actualDailyUserFee">@Localizer["ActualDailyUserFee"]</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualDailyUserFee" name="MixedUserCharge.ActualDailyUserFee" value="@Model.MixedUserCharge.ActualDailyUserFee" placeholder="@Localizer["EnterActualDailyUserFee"]" @(isViewMode ? "readonly" : "")>
                         </div>
                     </div>
                     
                     <hr class="my-4">
-                    <h6 class="mb-3">Monthly Users</h6>
+                    <h6 class="mb-3">@Localizer["MonthlyUsers"]</h6>
                     <div class="mb-3">
                         <div class="form-group">
-                            <label for="numberOfAvailableMonthlyUsers">Number of Available Monthly Users</label>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="numberOfAvailableMonthlyUsers" name="MixedUserCharge.NumberOfAvailableMonthlyUsers" value="@Model.MixedUserCharge.NumberOfAvailableMonthlyUsers" placeholder="Enter number of available monthly users" @(isViewMode ? "readonly" : "")>
+                            <label for="numberOfAvailableMonthlyUsers">@Localizer["NumberOfAvailableMonthlyUsers"]</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="numberOfAvailableMonthlyUsers" name="MixedUserCharge.NumberOfAvailableMonthlyUsers" value="@Model.MixedUserCharge.NumberOfAvailableMonthlyUsers" placeholder="@Localizer["EnterAvailableMonthlyUsers"]" @(isViewMode ? "readonly" : "")>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-group">
-                            <label for="numberOfPayingMonthlyUsers">Number of Paying Monthly Users</label>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="numberOfPayingMonthlyUsers" name="MixedUserCharge.NumberOfPayingMonthlyUsers" value="@Model.MixedUserCharge.NumberOfPayingMonthlyUsers" placeholder="Enter number of paying monthly users" @(isViewMode ? "readonly" : "")>
+                            <label for="numberOfPayingMonthlyUsers">@Localizer["NumberOfPayingMonthlyUsers"]</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="numberOfPayingMonthlyUsers" name="MixedUserCharge.NumberOfPayingMonthlyUsers" value="@Model.MixedUserCharge.NumberOfPayingMonthlyUsers" placeholder="@Localizer["EnterPayingMonthlyUsers"]" @(isViewMode ? "readonly" : "")>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-group">
-                            <label for="averageMonthlyRate">Average Monthly Rate</label>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="averageMonthlyRate" name="MixedUserCharge.AverageMonthlyRate" value="@Model.MixedUserCharge.AverageMonthlyRate" placeholder="Enter average monthly rate" @(isViewMode ? "readonly" : "")>
+                            <label for="averageMonthlyRate">@Localizer["AverageMonthlyRate"]</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="averageMonthlyRate" name="MixedUserCharge.AverageMonthlyRate" value="@Model.MixedUserCharge.AverageMonthlyRate" placeholder="@Localizer["EnterAverageMonthlyRate"]" @(isViewMode ? "readonly" : "")>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-group">
-                            <label for="actualMonthlyRate">Actual Monthly Rate</label>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualMonthlyRate" name="MixedUserCharge.ActualMonthlyRate" value="@Model.MixedUserCharge.ActualMonthlyRate" placeholder="Enter actual monthly rate" @(isViewMode ? "readonly" : "")>
+                            <label for="actualMonthlyRate">@Localizer["ActualMonthlyRate"]</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualMonthlyRate" name="MixedUserCharge.ActualMonthlyRate" value="@Model.MixedUserCharge.ActualMonthlyRate" placeholder="@Localizer["EnterActualMonthlyRate"]" @(isViewMode ? "readonly" : "")>
                         </div>
                     </div>
                     
@@ -82,7 +82,7 @@
         <div class="col-md-8">
             <div class="card mb-3">
                 <div class="card-header bg-light">
-                    <h6 class="mb-0">Mixed Details</h6>
+                    <h6 class="mb-0">@Localizer["MixedDetails"]</h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
@@ -103,7 +103,7 @@
             <!-- Gap Analysis Summary Card -->
             <div class="card mb-3">
                 <div class="card-header bg-primary text-white">
-                    <h6 class="mb-0">Gap Analysis Summary</h6>
+                    <h6 class="mb-0">@Localizer["GapAnalysisSummary"]</h6>
                 </div>
                 <div class="card-body p-3">
                     <div class="row mb-4 d-none">
@@ -189,7 +189,7 @@
                                         </div>
                                     </div>
                                     <h2 class="fw-bold" id="actualRevenueMixedSimple">0</h2>
-                                    <p class="text-muted mb-0">Current collected revenue</p>
+                                    <p class="text-muted mb-0">@Localizer["CurrentCollectedRevenue"]</p>
                                 </div>
                             </div>
                         </div>
@@ -206,7 +206,7 @@
                                         </div>
                                     </div>
                                     <h2 class="fw-bold" id="potentialRevenueMixedSimple">0</h2>
-                                    <p class="text-muted mb-0">Maximum possible revenue</p>
+                                    <p class="text-muted mb-0">@Localizer["MaximumPossibleRevenue"]</p>
                                 </div>
                             </div>
                         </div>
@@ -223,7 +223,7 @@
                                         </div>
                                     </div>
                                     <h2 class="fw-bold" id="totalGapMixedSimple">0</h2>
-                                    <p class="text-muted mb-0">Revenue gap to be addressed</p>
+                                    <p class="text-muted mb-0">@Localizer["RevenueGapToBeAddressed"]</p>
                                 </div>
                             </div>
                         </div>
@@ -240,7 +240,7 @@
                                         </div>
                                     </div>
                                     <h2 class="fw-bold"><span id="percentageLeveragedMixedSimple">0</span> %</h2>
-                                    <p class="text-muted mb-0">Percentage of potential collected</p>
+                                    <p class="text-muted mb-0">@Localizer["PercentageOfPotentialCollected"]</p>
                                 </div>
                             </div>
                         </div>
@@ -261,7 +261,7 @@
                                         </div>
                                     </div>
                                     <h2 class="fw-bold" id="complianceGapMixedClean">$0.00</h2>
-                                    <p class="text-muted mb-0">Gap due to fewer users than potential</p>
+                                    <p class="text-muted mb-0">@Localizer["GapDueToFewerUsers"]</p>
                                 </div>
                             </div>
                         </div>
@@ -278,7 +278,7 @@
                                         </div>
                                     </div>
                                     <h2 class="fw-bold" id="rateGapMixedClean">$0.00</h2>
-                                    <p class="text-muted mb-0">Gap due to lower rates</p>
+                                    <p class="text-muted mb-0">@Localizer["GapDueToLowerRates"]</p>
                                 </div>
                             </div>
                         </div>
@@ -295,7 +295,7 @@
                                         </div>
                                     </div>
                                     <h2 class="fw-bold" id="combinedGapsMixedClean">$0.00</h2>
-                                    <p class="text-muted mb-0">Other uncategorized gaps</p>
+                                    <p class="text-muted mb-0">@Localizer["OtherUncategorizedGaps"]</p>
                                 </div>
                             </div>
                         </div>
@@ -315,7 +315,7 @@
                                         <span class="text-primary fw-bold mb-1" id="dailyGapMixedClean">Daily: $0.00</span>
                                         <span class="text-purple fw-bold" id="monthlyGapMixedClean">Monthly: $0.00</span>
                                     </div>
-                                    <p class="text-muted mt-2 mb-0">Daily vs Monthly gaps</p>
+                                    <p class="text-muted mt-2 mb-0">@Localizer["DailyVsMonthlyGaps"]</p>
                                 </div>
                             </div>
                         </div>
@@ -535,16 +535,16 @@
                     <!-- Category Gaps Analysis Card -->
                     <div class="card mb-3">
                         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">Mixed User Fee Gaps Analysis</h6>
-                            <span class="badge bg-light text-primary rounded-pill">2 types</span>
+                            <h6 class="mb-0">@Localizer["MixedUserFeeGapsAnalysis"]</h6>
+                            <span class="badge bg-light text-primary rounded-pill">@Localizer["TwoTypes"]</span>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="modern-table">
                                     <thead>
                                         <tr>
-                                            <th>GAP TYPE</th>
-                                            <th class="text-end">AMOUNT</th>
+                                            <th>@Localizer["GapType"]</th>
+                                            <th class="text-end">@Localizer["AmountCol"]</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -555,8 +555,8 @@
                                                         <i class="fas fa-sun text-primary"></i>
                                                     </div>
                                                     <div>
-                                                        <span class="fw-medium">Daily User Fee Gap</span>
-                                                        <small class="d-block text-muted">Daily revenue potential gap</small>
+                                                        <span class="fw-medium">@Localizer["DailyUserFeeGap"]</span>
+                                                        <small class="d-block text-muted">@Localizer["DailyRevenuePotentialGap"]</small>
                                                     </div>
                                                 </div>
                                             </td>
@@ -569,8 +569,8 @@
                                                         <i class="fas fa-calendar-alt text-success"></i>
                                                     </div>
                                                     <div>
-                                                        <span class="fw-medium">Monthly User Fee Gap</span>
-                                                        <small class="d-block text-muted">Monthly revenue potential gap</small>
+                                                        <span class="fw-medium">@Localizer["MonthlyUserFeeGap"]</span>
+                                                        <small class="d-block text-muted">@Localizer["MonthlyRevenuePotentialGap"]</small>
                                                     </div>
                                                 </div>
                                             </td>
@@ -583,8 +583,8 @@
                                                         <i class="fas fa-arrow-trend-up text-danger"></i>
                                                     </div>
                                                     <div>
-                                                        <span class="fw-medium">Largest Gap</span>
-                                                        <small class="d-block text-muted">Highest value difference</small>
+                                                        <span class="fw-medium">@Localizer["LargestGap"]</span>
+                                                        <small class="d-block text-muted">@Localizer["HighestValueDifference"]</small>
                                                     </div>
                                                 </div>
                                             </td>

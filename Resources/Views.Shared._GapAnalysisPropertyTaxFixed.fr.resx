@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Data Entry Section -->
+  <data name="DataEntry_Title" xml:space="preserve"><value>Saisie des informations requises + Indicateurs calculés</value></data>
+  <data name="DataEntry_Instructions" xml:space="preserve"><value>Pour une exécution correcte de l'analyse, vous devez remplir uniquement les cellules grisées et en gras.</value></data>
+
+  <!-- Input Labels -->
+  <data name="RegisteredProperties" xml:space="preserve"><value>Propriétés enregistrées</value></data>
+  <data name="RegisteredProperties_Tooltip" xml:space="preserve"><value>Nombre total de propriétés actuellement inscrites au registre officiel de l'impôt foncier / cadastre.</value></data>
+  <data name="NonRegisteredProperties" xml:space="preserve"><value>Propriétés non enregistrées</value></data>
+  <data name="NonRegisteredProperties_Tooltip" xml:space="preserve"><value>Estimation des propriétés non inscrites au registre fiscal. Si inconnu, cochez « Je n'ai pas de chiffre précis » pour saisir un pourcentage des propriétés enregistrées.</value></data>
+  <data name="EstimateCheckbox" xml:space="preserve"><value>Je n'ai pas de chiffre précis (utiliser une estimation)</value></data>
+  <data name="EstimateAsPercent" xml:space="preserve"><value>Estimer en % des propriétés enregistrées</value></data>
+  <data name="EstimatePercentHelper" xml:space="preserve"><value>ex. 5 % signifie Non enregistrées = Enregistrées × 0,05</value></data>
+  <data name="EstimatedProperties" xml:space="preserve"><value>Propriétés estimées</value></data>
+  <data name="EstimatedProperties_Tooltip" xml:space="preserve"><value>Total estimé des propriétés imposables dans la juridiction = Enregistrées + Non enregistrées.</value></data>
+  <data name="CompliantProperties" xml:space="preserve"><value>Propriétés conformes</value></data>
+  <data name="CompliantProperties_Tooltip" xml:space="preserve"><value>Estimation par formule proxy tenant compte des paiements partiels sur l'exercice fiscal. Suppose que la proportion de propriétés conformes est égale à la proportion des recettes collectées.</value></data>
+  <data name="CompliantProperties_Formula" xml:space="preserve"><value>= Enregistrées × (Recettes à ce jour / Montant facturé)</value></data>
+  <data name="TotalFiscalBase" xml:space="preserve"><value>Base fiscale totale</value></data>
+  <data name="TotalFiscalBase_Tooltip" xml:space="preserve"><value>Valeur totale de toutes les propriétés enregistrées et imposables selon leur évaluation fiscale (estimée). Il s'agit de la base fiscale officiellement enregistrée utilisée pour les calculs de l'impôt foncier.</value></data>
+  <data name="TotalMarketValue" xml:space="preserve"><value>Valeur marchande totale</value></data>
+  <data name="TotalMarketValue_Tooltip" xml:space="preserve"><value>Estimation de la valeur marchande totale de toutes les propriétés imposables aux prix réels du marché. Si inconnue, cochez « Je n'ai pas de données sur la valeur marchande » pour saisir un pourcentage estimé au-dessus des valeurs fiscales.</value></data>
+  <data name="MarketValueEstimateCheckbox" xml:space="preserve"><value>Je n'ai pas de données sur la valeur marchande (utiliser une estimation)</value></data>
+  <data name="MarketValueHigherBy" xml:space="preserve"><value>La valeur marchande est supérieure à la base fiscale de :</value></data>
+  <data name="MarketValueEstimateHelper" xml:space="preserve"><value>ex. 30 % signifie Valeur marchande = Base fiscale × 1,30</value></data>
+  <data name="BilledAmount" xml:space="preserve"><value>Montant facturé</value></data>
+  <data name="BilledAmount_Tooltip" xml:space="preserve"><value>Montant officiellement mis en recouvrement (facturé) pour l'année analysée.</value></data>
+  <data name="OutstandingAmount" xml:space="preserve"><value>Montant impayé</value></data>
+  <data name="OutstandingAmount_Tooltip" xml:space="preserve"><value>Part des charges de l'année en cours restant impayée. Ne doit PAS inclure les arriérés des années précédentes. Si le montant exact n'est pas disponible, fournissez une estimation raisonnable.</value></data>
+  <data name="RevenueToDate" xml:space="preserve"><value>Recettes à ce jour</value></data>
+  <data name="RevenueToDate_Tooltip" xml:space="preserve"><value>Calcul automatique. Total des recettes collectées = Montant facturé moins Impayés. Mise à jour dynamique.</value></data>
+  <data name="RevenueToDate_Formula" xml:space="preserve"><value>= Montant facturé - Montant impayé</value></data>
+  <data name="EnterValue" xml:space="preserve"><value>Saisir la valeur</value></data>
+
+  <!-- Average Values Section -->
+  <data name="AvgValues_Title" xml:space="preserve"><value>Valeurs moyennes utiles requises pour l'analyse</value></data>
+  <data name="AvgTaxableValue" xml:space="preserve"><value>Valeur imposable moyenne (enregistrée)</value></data>
+  <data name="AvgTaxableValue_Tooltip" xml:space="preserve"><value>Évaluation officielle moyenne par propriété, déterminée par le cadastre. Base d'application des taux d'imposition.</value></data>
+  <data name="AvgMarketValue" xml:space="preserve"><value>Valeur marchande moyenne (enregistrée)</value></data>
+  <data name="AvgMarketValue_Tooltip" xml:space="preserve"><value>Estimation de la valeur moyenne d'une propriété si elle était évaluée aux niveaux du marché. Reflète la base d'imposition théorique dans un scénario d'évaluation idéal.</value></data>
+  <data name="EffectiveTaxRate" xml:space="preserve"><value>Taux d'imposition effectif</value></data>
+  <data name="EffectiveTaxRate_Tooltip" xml:space="preserve"><value>Taux effectif réel calculé à partir des recettes collectées. Reflète la sous-évaluation, les exonérations et les limites de conformité.</value></data>
+  <data name="AvgBilledAmount" xml:space="preserve"><value>Montant moyen facturé</value></data>
+  <data name="AvgBilledAmount_Tooltip" xml:space="preserve"><value>Facturation estimée par propriété sur la base des valeurs estimées actuelles et du taux d'imposition effectif.</value></data>
+  <data name="PotentialBilling" xml:space="preserve"><value>Facturation potentielle (base marché)</value></data>
+  <data name="PotentialBilling_Tooltip" xml:space="preserve"><value>Facturation maximale théorique par propriété en supposant une évaluation à la valeur marchande intégrale.</value></data>
+
+  <!-- KPI Section -->
+  <data name="KPI_Title" xml:space="preserve"><value>Indicateurs clés de performance (ICP)</value></data>
+  <data name="ComplianceRatio" xml:space="preserve"><value>Ratio de conformité</value></data>
+  <data name="ComplianceRatio_Tooltip" xml:space="preserve"><value>Indicateur proxy de la performance du système de conformité. Mesure la proportion des montants facturés effectivement collectés. >80 % Vert, 60-80 % Jaune, &lt;60 % Rouge.</value></data>
+  <data name="ComplianceRatio_Formula" xml:space="preserve"><value>Recettes à ce jour / Montant facturé</value></data>
+  <data name="CoverageRatio" xml:space="preserve"><value>Ratio de couverture</value></data>
+  <data name="CoverageRatio_Tooltip" xml:space="preserve"><value>Indicateur proxy de la performance du système de couverture. Mesure la proportion des propriétés totales enregistrées. >80 % Vert, 60-80 % Jaune, &lt;60 % Rouge.</value></data>
+  <data name="CoverageRatio_Formula" xml:space="preserve"><value>Propriétés enregistrées / Propriétés estimées</value></data>
+  <data name="ValuationRatio" xml:space="preserve"><value>Ratio d'évaluation</value></data>
+  <data name="ValuationRatio_Tooltip" xml:space="preserve"><value>Indicateur proxy de la performance du système d'évaluation. Mesure la proximité entre les évaluations fiscales et les valeurs marchandes. >80 % Vert, 60-80 % Jaune, &lt;60 % Rouge.</value></data>
+  <data name="ValuationRatio_Formula" xml:space="preserve"><value>Base fiscale totale / Valeur marchande totale</value></data>
+
+  <!-- Results Section -->
+  <data name="Results_Title" xml:space="preserve"><value>Représentation graphique des données analysées</value></data>
+
+  <!-- Potential Revenue Table -->
+  <data name="PotentialRevenue_Title" xml:space="preserve"><value>Ventilation des recettes potentielles (Recettes réelles + Ventilation des écarts adm.)</value></data>
+  <data name="Table_RevenueAndGaps" xml:space="preserve"><value>Recettes et écarts administratifs</value></data>
+  <data name="Table_Amount" xml:space="preserve"><value>Montant</value></data>
+  <data name="Table_Share" xml:space="preserve"><value>Part (%)</value></data>
+  <data name="RevenueToDate_Label" xml:space="preserve"><value>Recettes à ce jour</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>Écart de conformité</value></data>
+  <data name="ComplianceGap_Tooltip" xml:space="preserve"><value>La proportion de propriétés enregistrées qui ne paient pas l'impôt ou ne s'acquittent pas de leur obligation. Reflète les faiblesses en matière d'application, de facturation et de recouvrement. L'écart de conformité est égal au montant impayé.</value></data>
+  <data name="CoverageGap" xml:space="preserve"><value>Écart de couverture</value></data>
+  <data name="CoverageGap_Tooltip" xml:space="preserve"><value>La proportion des propriétés estimées totales non inscrites au système d'impôt foncier. Cet écart indique un manque d'identification des propriétés et d'inclusion dans la base de données fiscale. L'écart est quantifié en multipliant le nombre de propriétés non enregistrées par le montant moyen facturé par propriété enregistrée.</value></data>
+  <data name="ValuationGap" xml:space="preserve"><value>Écart d'évaluation</value></data>
+  <data name="ValuationGap_Tooltip" xml:space="preserve"><value>L'écart d'évaluation estime les recettes supplémentaires qui pourraient être facturées aux propriétés conformes si elles étaient évaluées à la valeur marchande plutôt qu'à des évaluations fiscales sous-estimées. Il reflète les faiblesses du cadre d'évaluation et l'obsolescence des registres fonciers.</value></data>
+  <data name="MixedGapReg" xml:space="preserve"><value>Écart mixte (éval./couv. enreg.)</value></data>
+  <data name="MixedGapReg_Tooltip" xml:space="preserve"><value>Cet écart mixte capture la perte de recettes liée aux propriétés non conformes enregistrées mais ne payant pas, et dont les valeurs sont également inférieures au marché. Il illustre l'effet combiné du défaut d'application et de la sous-évaluation.</value></data>
+  <data name="MixedGapUnreg" xml:space="preserve"><value>Écart mixte (éval./non couv. non enreg.)</value></data>
+  <data name="MixedGapUnreg_Tooltip" xml:space="preserve"><value>Cet écart mixte estime les recettes manquées des propriétés non enregistrées évaluées aux niveaux du marché. Il capture la perte totale de recettes due à la fois au manque d'enregistrement et à la sous-évaluation.</value></data>
+  <data name="TotalPotentialRevenue" xml:space="preserve"><value>TOTAL (Recettes potentielles)</value></data>
+
+  <!-- Matrix Dashboard -->
+  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Analyse des écarts de l'impôt foncier - Tableau de bord</value></data>
+  <data name="Matrix_YAxisTitle" xml:space="preserve"><value>Nbre de propriétés</value></data>
+  <data name="Matrix_Estimated" xml:space="preserve"><value>Estimées</value></data>
+  <data name="Matrix_Registered" xml:space="preserve"><value>Enregistrées</value></data>
+  <data name="Matrix_Compliant" xml:space="preserve"><value>Conformes</value></data>
+  <data name="Matrix_CoverageGap" xml:space="preserve"><value>Écart de couverture</value></data>
+  <data name="Matrix_MixedGapUnreg" xml:space="preserve"><value>Écart mixte (Non enreg.)</value></data>
+  <data name="Matrix_ComplianceGap" xml:space="preserve"><value>Écart de conformité</value></data>
+  <data name="Matrix_MixedGapReg" xml:space="preserve"><value>Écart mixte (Enreg.)</value></data>
+  <data name="Matrix_ActualRevenue" xml:space="preserve"><value>Recettes réelles</value></data>
+  <data name="Matrix_ValuationGap" xml:space="preserve"><value>Écart d'évaluation</value></data>
+  <data name="Matrix_AvgBilled" xml:space="preserve"><value>Moy. facturée</value></data>
+  <data name="Matrix_AchievableAvg" xml:space="preserve"><value>Moy. atteignable</value></data>
+  <data name="MatrixDashboard_Description" xml:space="preserve"><value>Cette matrice présente l'analyse des écarts de l'impôt foncier selon deux dimensions : le nombre de propriétés (axe vertical, de Conformes à Estimées) et le niveau de facturation (axe horizontal, de la facturation moyenne à la facturation atteignable basée sur le marché). Chaque cellule colorée représente un type d'écart ou de composante de recettes. La même ventilation est présentée dans le diagramme circulaire ci-dessous.</value></data>
+
+  <!-- Pie Charts -->
+  <data name="RevenueAndAdmGaps_Title" xml:space="preserve"><value>Recettes et écarts administratifs</value></data>
+  <data name="RevenueAndAdmGaps_Description" xml:space="preserve"><value>Ce diagramme circulaire illustre les mêmes informations que la matrice ci-dessus sous forme de pourcentages. Il montre la part des recettes potentielles totales correspondant aux recettes effectivement collectées, ainsi que la contribution de chaque type d'écart administratif (recettes non collectées ou perdues) à ce total.</value></data>
+
+  <!-- Administrative Gap Breakdown Table -->
+  <data name="AdmGapBreakdown_Title" xml:space="preserve"><value>Ventilation des écarts administratifs</value></data>
+  <data name="Table_AdmGaps" xml:space="preserve"><value>Écarts administratifs</value></data>
+  <data name="ValuationAssessmentGap" xml:space="preserve"><value>Écart d'évaluation/estimation</value></data>
+  <data name="MixedGapValReg" xml:space="preserve"><value>Écart mixte (éval./enreg.)</value></data>
+  <data name="MixedGapValUnreg" xml:space="preserve"><value>Écart mixte (éval./non enreg.)</value></data>
+  <data name="TotalAdmGap" xml:space="preserve"><value>Total des écarts administratifs</value></data>
+
+  <!-- Administrative Gaps Pie Chart -->
+  <data name="AdmGapsPie_Title" xml:space="preserve"><value>Ventilation des écarts administratifs</value></data>
+  <data name="AdmGapsPie_Description" xml:space="preserve"><value>Ce diagramme circulaire illustre la répartition en pourcentage des écarts de recettes. Il montre visuellement la contribution de chaque type d'écart au total des recettes non collectées, aidant à identifier les écarts les plus significatifs.</value></data>
+
+  <!-- Common -->
+  <data name="Description_Label" xml:space="preserve"><value>DESCRIPTION :</value></data>
+</root>

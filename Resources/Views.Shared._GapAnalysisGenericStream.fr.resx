@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Stream Header -->
+  <data name="EnterStreamName" xml:space="preserve"><value>Saisir le nom du flux...</value></data>
+  <data name="ClickToEditStreamName" xml:space="preserve"><value>Cliquer pour modifier le nom du flux</value></data>
+  <data name="DeleteStream" xml:space="preserve"><value>Supprimer le flux</value></data>
+  <data name="DeleteThisStream" xml:space="preserve"><value>Supprimer ce flux</value></data>
+
+  <!-- Required Data Card -->
+  <data name="EntryOfRequiredInfo" xml:space="preserve"><value>Saisie des informations requises + Indicateurs calcul&#233;s</value></data>
+  <data name="EntryOfRequiredInfo_Help" xml:space="preserve"><value>Pour une ex&#233;cution correcte de l'analyse, vous devez remplir uniquement les cellules gris&#233;es et en gras.</value></data>
+
+  <!-- User Input Fields -->
+  <data name="RegisteredUnits" xml:space="preserve"><value>Unit&#233;s enregistr&#233;es</value></data>
+  <data name="RegisteredUnits_Tooltip" xml:space="preserve"><value>Nombre total d'unit&#233;s (entreprises, clients, &#233;tals, permis, etc.) actuellement inscrites au registre officiel pour ce flux de recettes.</value></data>
+  <data name="EstUnregisteredPercent" xml:space="preserve"><value>% estim&#233; non enregistr&#233;</value></data>
+  <data name="EstUnregisteredPercent_Tooltip" xml:space="preserve"><value>Meilleure estimation du nombre d'unit&#233;s actives non inscrites au registre. Saisir en pourcentage (par ex. 5 pour 5 %).</value></data>
+  <data name="TotalEstimatedUnits" xml:space="preserve"><value>Total des unit&#233;s estim&#233;es</value></data>
+  <data name="TotalEstimatedUnits_Tooltip" xml:space="preserve"><value>Total des unit&#233;s estim&#233;es = Unit&#233;s enregistr&#233;es x (1 + % estim&#233; non enregistr&#233;/100).</value></data>
+  <data name="CompliantUnits" xml:space="preserve"><value>Unit&#233;s conformes</value></data>
+  <data name="CompliantUnits_Tooltip" xml:space="preserve"><value>Estim&#233; par formule indirecte : Enregistr&#233;es x (Recettes &#224; ce jour / Montant factur&#233;).</value></data>
+  <data name="CompliantUnits_Formula" xml:space="preserve"><value>= Enregistr&#233;es x (Recettes &#224; ce jour / Montant factur&#233;)</value></data>
+  <data name="BilledAmount" xml:space="preserve"><value>Montant factur&#233;</value></data>
+  <data name="BilledAmount_Tooltip" xml:space="preserve"><value>Montant total officiellement mis en recouvrement (factur&#233;) pour l'ann&#233;e d'analyse.</value></data>
+  <data name="OutstandingAmount" xml:space="preserve"><value>Montant impay&#233;</value></data>
+  <data name="OutstandingAmount_Tooltip" xml:space="preserve"><value>Part des charges de l'ann&#233;e en cours restant impay&#233;e. Ne doit PAS inclure les arri&#233;r&#233;s des ann&#233;es pr&#233;c&#233;dentes.</value></data>
+  <data name="RevenueToDate" xml:space="preserve"><value>Recettes &#224; ce jour</value></data>
+  <data name="RevenueToDate_Tooltip" xml:space="preserve"><value>Calcul automatique. Total des recettes collect&#233;es = Montant factur&#233; moins Montant impay&#233;.</value></data>
+  <data name="RevenueToDate_Formula" xml:space="preserve"><value>= Montant factur&#233; - Montant impay&#233;</value></data>
+  <data name="EnterValue" xml:space="preserve"><value>Saisir une valeur</value></data>
+
+  <!-- Useful Average Values Card -->
+  <data name="UsefulAverageValues" xml:space="preserve"><value>Valeurs moyennes utiles requises pour l'analyse</value></data>
+  <data name="StatutoryAvgBilled" xml:space="preserve"><value>Moy. l&#233;gale factur&#233;e</value></data>
+  <data name="StatutoryAvgBilled_Tooltip" xml:space="preserve"><value>La facture moyenne par unit&#233; implicite du bar&#232;me officiel tel qu'inscrit dans la loi, sans application d'exon&#233;rations, remises ou exemptions.</value></data>
+  <data name="RealisticImprovementPercent" xml:space="preserve"><value>% d'am&#233;lioration r&#233;aliste</value></data>
+  <data name="RealisticImprovementPercent_Tooltip" xml:space="preserve"><value>La part de l'&#233;cart entre la facture moyenne actuelle et la moyenne l&#233;gale que vous estimez pouvoir r&#233;duire de mani&#232;re r&#233;aliste par des r&#233;formes politiques ou administratives (0-100).</value></data>
+  <data name="AverageBilledAmount" xml:space="preserve"><value>Montant moyen factur&#233;</value></data>
+  <data name="AverageBilledAmount_Tooltip" xml:space="preserve"><value>Facture moyenne actuelle par unit&#233; enregistr&#233;e = Montant factur&#233; / Unit&#233;s enregistr&#233;es.</value></data>
+  <data name="AchievableAvgBill" xml:space="preserve"><value>Moy. r&#233;alisable factur&#233;e</value></data>
+  <data name="AchievableAvgBill_Tooltip" xml:space="preserve"><value>Facture moyenne cible r&#233;alisable par des r&#233;formes = Moy. factur&#233;e + (% am&#233;lioration x (L&#233;gale - Moy. factur&#233;e)).</value></data>
+  <data name="DeltaA" xml:space="preserve"><value>Delta A (&#916;A)</value></data>
+  <data name="DeltaA_Tooltip" xml:space="preserve"><value>Am&#233;lioration de la facturation par unit&#233; r&#233;alisable par des r&#233;formes : Moy. r&#233;alisable - Montant moyen factur&#233;.</value></data>
+
+  <!-- KPI Ratios Card -->
+  <data name="KPIRatios" xml:space="preserve"><value>Ratios des indicateurs cl&#233;s de performance (ICP)</value></data>
+  <data name="ComplianceRatio" xml:space="preserve"><value>Ratio de conformit&#233;</value></data>
+  <data name="ComplianceRatio_Tooltip" xml:space="preserve"><value>Indicateur indirect de la performance du syst&#232;me de conformit&#233;. Mesure la proportion des montants factur&#233;s effectivement collect&#233;s. >80 % Vert, 60-80 % Jaune, &lt;60 % Rouge.</value></data>
+  <data name="ComplianceRatio_Formula" xml:space="preserve"><value>Recettes &#224; ce jour / Montant factur&#233;</value></data>
+  <data name="CoverageRatio" xml:space="preserve"><value>Ratio de couverture</value></data>
+  <data name="CoverageRatio_Tooltip" xml:space="preserve"><value>Indicateur indirect de la performance du syst&#232;me de couverture. Mesure la proportion des unit&#233;s totales enregistr&#233;es. >80 % Vert, 60-80 % Jaune, &lt;60 % Rouge.</value></data>
+  <data name="CoverageRatio_Formula" xml:space="preserve"><value>Unit&#233;s enregistr&#233;es / Total des unit&#233;s estim&#233;es</value></data>
+
+  <!-- Results Section -->
+  <data name="GraphicalRepresentation" xml:space="preserve"><value>Repr&#233;sentation graphique des donn&#233;es analys&#233;es</value></data>
+
+  <!-- Potential Revenue Breakdown Table -->
+  <data name="PotentialRevenueBreakdown" xml:space="preserve"><value>Ventilation des recettes potentielles (Recettes r&#233;elles + ventilation des &#233;carts adm.)</value></data>
+  <data name="RevenueAndAdminGaps" xml:space="preserve"><value>Recettes et &#233;carts administratifs</value></data>
+  <data name="Amount" xml:space="preserve"><value>Montant</value></data>
+  <data name="SharePercent" xml:space="preserve"><value>Part (%)</value></data>
+  <data name="RevenueToDateLabel" xml:space="preserve"><value>Recettes &#224; ce jour</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>&#201;cart de conformit&#233;</value></data>
+  <data name="ComplianceGap_Tooltip" xml:space="preserve"><value>La proportion d'unit&#233;s enregistr&#233;es qui ne paient pas ou ne remplissent pas leur obligation. Refl&#232;te les faiblesses en mati&#232;re d'application, de facturation et de recouvrement. &#201;gal au montant impay&#233;.</value></data>
+  <data name="CoverageGap" xml:space="preserve"><value>&#201;cart de couverture</value></data>
+  <data name="CoverageGap_Tooltip" xml:space="preserve"><value>Recettes perdues du fait des unit&#233;s non enregistr&#233;es. Quantifi&#233; en multipliant les unit&#233;s non enregistr&#233;es par le montant moyen factur&#233;.</value></data>
+  <data name="LiabilityGap" xml:space="preserve"><value>&#201;cart de redevance</value></data>
+  <data name="LiabilityGap_Tooltip" xml:space="preserve"><value>Recettes suppl&#233;mentaires r&#233;alisables aupr&#232;s des unit&#233;s conformes gr&#226;ce &#224; une meilleure facturation (facture moyenne r&#233;alisable par rapport &#224; la moyenne actuelle).</value></data>
+  <data name="MixedGapCompLiab" xml:space="preserve"><value>&#201;cart mixte (Conf.+Red.)</value></data>
+  <data name="MixedGapCompLiab_Tooltip" xml:space="preserve"><value>Perte de recettes due aux unit&#233;s enregistr&#233;es non conformes combin&#233;e &#224; une sous-facturation. Montre l'effet combin&#233; de l'&#233;chec d'application et de la faible facturation.</value></data>
+  <data name="MixedGapCovLiab" xml:space="preserve"><value>&#201;cart mixte (Couv.+Red.)</value></data>
+  <data name="MixedGapCovLiab_Tooltip" xml:space="preserve"><value>Recettes manqu&#233;es des unit&#233;s non enregistr&#233;es &#233;valu&#233;es aux niveaux de facturation r&#233;alisables. Capture la perte totale de recettes due &#224; l'absence d'enregistrement et &#224; la sous-facturation.</value></data>
+  <data name="TotalPotentialRevenue" xml:space="preserve"><value>TOTAL (Recettes potentielles)</value></data>
+
+  <!-- Pie Chart Section -->
+  <data name="RevenueAndAdminGapsChart" xml:space="preserve"><value>Recettes et &#233;carts administratifs</value></data>
+  <data name="PieChartDescription" xml:space="preserve"><value>Ce diagramme circulaire illustre la r&#233;partition en pourcentage des recettes potentielles totales du syst&#232;me de facturation. Il montre visuellement la part correspondant aux recettes effectivement collect&#233;es au cours de l'ann&#233;e, ainsi que la contribution de chaque type d'&#233;cart (recettes non collect&#233;es ou perdues) &#224; ce total.</value></data>
+  <data name="Description" xml:space="preserve"><value>DESCRIPTION :</value></data>
+
+  <!-- Matrix Section -->
+  <data name="GapAnalysisDashboard" xml:space="preserve"><value>Analyse des &#233;carts - Tableau de bord</value></data>
+  <data name="NumberOfUnits" xml:space="preserve"><value>Nbre d'unit&#233;s</value></data>
+  <data name="Estimated" xml:space="preserve"><value>Estim&#233;es</value></data>
+  <data name="Registered" xml:space="preserve"><value>Enregistr&#233;es</value></data>
+  <data name="Compliant" xml:space="preserve"><value>Conformes</value></data>
+  <data name="AvgBilled" xml:space="preserve"><value>Moy. factur&#233;e</value></data>
+  <data name="AchievableAvg" xml:space="preserve"><value>Moy. r&#233;alisable</value></data>
+  <data name="ActualRevenue" xml:space="preserve"><value>Recettes r&#233;elles</value></data>
+  <data name="MatrixDescription" xml:space="preserve"><value>Cette visualisation matricielle pr&#233;sente l'analyse des &#233;carts selon deux dimensions : le nombre d'unit&#233;s (axe vertical, des conformes aux estim&#233;es) et le niveau de facturation (axe horizontal, de la facturation moyenne &#224; la facturation r&#233;alisable). Chaque cellule color&#233;e repr&#233;sente un type diff&#233;rent d'&#233;cart ou de composante de recettes.</value></data>
+
+  <!-- Administrative Gap Breakdown Table -->
+  <data name="AdminGapBreakdown" xml:space="preserve"><value>Ventilation des &#233;carts administratifs</value></data>
+  <data name="AdministrativeGaps" xml:space="preserve"><value>&#201;carts administratifs</value></data>
+  <data name="ComplianceGapAdmin_Tooltip" xml:space="preserve"><value>La proportion d'unit&#233;s enregistr&#233;es qui ne paient pas. Refl&#232;te les faiblesses en mati&#232;re d'application, de facturation et de recouvrement.</value></data>
+  <data name="CoverageGapAdmin_Tooltip" xml:space="preserve"><value>La proportion du total des unit&#233;s estim&#233;es qui ne sont pas enregistr&#233;es. Indique un manque d'identification et d'inclusion dans la base de donn&#233;es.</value></data>
+  <data name="LiabilityGapAdmin_Tooltip" xml:space="preserve"><value>Am&#233;lioration des recettes r&#233;alisable aupr&#232;s des unit&#233;s conformes gr&#226;ce &#224; de meilleures pratiques de facturation.</value></data>
+  <data name="MixedGapCompLiabAdmin_Tooltip" xml:space="preserve"><value>Perte de recettes due aux unit&#233;s enregistr&#233;es non conformes qui sont &#233;galement sous-factur&#233;es.</value></data>
+  <data name="MixedGapCovLiabAdmin_Tooltip" xml:space="preserve"><value>Recettes manqu&#233;es des unit&#233;s non enregistr&#233;es &#233;valu&#233;es aux niveaux de facturation r&#233;alisables.</value></data>
+  <data name="TotalAdminGap" xml:space="preserve"><value>Total des &#233;carts administratifs</value></data>
+
+  <!-- Breakdown Pie Chart -->
+  <data name="BreakdownAdminGaps" xml:space="preserve"><value>Ventilation des &#233;carts administratifs</value></data>
+  <data name="BreakdownPieChartDescription" xml:space="preserve"><value>Ce diagramme circulaire illustre la r&#233;partition en pourcentage des &#233;carts de recettes. Il montre visuellement la contribution de chaque type d'&#233;cart au total des recettes non collect&#233;es, aidant &#224; identifier les &#233;carts les plus significatifs.</value></data>
+</root>

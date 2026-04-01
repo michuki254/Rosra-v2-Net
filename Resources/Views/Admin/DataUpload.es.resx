@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Page Header -->
+  <data name="PageTitle" xml:space="preserve"><value>Carga de datos</value></data>
+  <data name="PageSubtitle" xml:space="preserve"><value>Importar datos para las bases de datos PeerSNG y Pa&#237;ses</value></data>
+  <data name="BackToDashboard" xml:space="preserve"><value>Volver al panel</value></data>
+
+  <!-- Dataset Selector -->
+  <data name="SelectDataset" xml:space="preserve"><value>Seleccionar conjunto de datos a cargar</value></data>
+  <data name="SelectDatasetDescription" xml:space="preserve"><value>Elija el tipo de datos que desea importar al sistema</value></data>
+  <data name="SelectADataset" xml:space="preserve"><value>-- Seleccionar un conjunto de datos --</value></data>
+  <data name="PeerSNGOption" xml:space="preserve"><value>Datos PeerSNG (47 condados de Kenia)</value></data>
+  <data name="CountryOption" xml:space="preserve"><value>Datos por pa&#237;s (137+ pa&#237;ses en el mundo)</value></data>
+
+  <!-- PeerSNG Upload -->
+  <data name="PeerSNGDataUpload" xml:space="preserve"><value>Carga de datos PeerSNG</value></data>
+  <data name="PeerSNGDescription" xml:space="preserve"><value>Cargar datos para los 47 condados de Kenia</value></data>
+  <data name="DownloadTemplate" xml:space="preserve"><value>Descargar plantilla</value></data>
+  <data name="Important" xml:space="preserve"><value>Importante:</value></data>
+  <data name="PeerSNGHelpText" xml:space="preserve"><value>Aseg&#250;rese de que su archivo CSV tenga exactamente 4 columnas en el orden correcto. La primera fila debe contener los encabezados de columna. Mult y ValidMult se calculan autom&#225;ticamente.</value></data>
+  <data name="CSVFormatRequirements" xml:space="preserve"><value>Requisitos de formato CSV</value></data>
+  <data name="Columns" xml:space="preserve"><value>columnas</value></data>
+  <data name="ClickToExpandCollapse" xml:space="preserve"><value>Clic para expandir/contraer</value></data>
+  <data name="Column" xml:space="preserve"><value>Columna</value></data>
+  <data name="Name" xml:space="preserve"><value>Nombre</value></data>
+  <data name="TypeHeader" xml:space="preserve"><value>Tipo</value></data>
+  <data name="Example" xml:space="preserve"><value>Ejemplo</value></data>
+  <data name="Required" xml:space="preserve"><value>REQUERIDO</value></data>
+  <data name="Optional" xml:space="preserve"><value>OPCIONAL</value></data>
+  <data name="CalculatedFields" xml:space="preserve"><value>Campos calculados (generados autom&#225;ticamente):</value></data>
+  <data name="ClickToUpload" xml:space="preserve"><value>Clic para cargar o arrastrar y soltar</value></data>
+  <data name="CSVFileOnly" xml:space="preserve"><value>Solo archivos CSV (Tama&#241;o m&#225;x.: 10 MB)</value></data>
+  <data name="UploadPeerSNGData" xml:space="preserve"><value>Cargar datos PeerSNG</value></data>
+
+  <!-- Country Data Upload -->
+  <data name="CountryDataUpload" xml:space="preserve"><value>Carga de datos por pa&#237;s</value></data>
+  <data name="CountryDescription" xml:space="preserve"><value>Cargar datos para 137+ pa&#237;ses en el mundo</value></data>
+  <data name="CountryHelpText" xml:space="preserve"><value>Este conjunto de datos tiene 16 columnas incluyendo informaci&#243;n de moneda. Las columnas num&#233;ricas pueden estar vac&#237;as para pa&#237;ses con datos incompletos. Aseg&#250;rese de seguir el orden exacto.</value></data>
+  <data name="UploadCountryData" xml:space="preserve"><value>Cargar datos por pa&#237;s</value></data>
+
+  <!-- Toast -->
+  <data name="Notification" xml:space="preserve"><value>Notificaci&#243;n</value></data>
+</root>

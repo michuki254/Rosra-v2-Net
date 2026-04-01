@@ -17,17 +17,17 @@
             <div class="stream-name-editor">
                 <input type="text" class="form-control form-control-lg border-0 fw-bold"
                        id="@(streamId)Name" name="GenericStreams[@streamIndex].StreamName"
-                       value="@Model.StreamName" placeholder="Enter stream name..."
+                       value="@Model.StreamName" placeholder="@Localizer["EnterStreamName"]"
                        style="font-size: 1.25rem; background: transparent; width: auto; min-width: 250px;"
                        @(isViewMode ? "readonly" : "")>
-                <small class="text-muted ms-2">Click to edit stream name</small>
+                <small class="text-muted ms-2">@Localizer["ClickToEditStreamName"]</small>
             </div>
         </div>
         @if (!isViewMode)
         {
             <button type="button" class="btn btn-outline-danger btn-sm delete-stream-btn"
                     data-stream-index="@streamIndex" title="Delete this stream">
-                <i class="bi bi-trash"></i> Delete Stream
+                <i class="bi bi-trash"></i> @Localizer["DeleteStream"]
             </button>
         }
     </div>
@@ -42,28 +42,28 @@
             <!-- Required Data + Derived Metrics -->
             <div class="card mb-3 shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h6 class="mb-0"><i class="bi bi-input-cursor-text me-2"></i>Entry of required information + Processed Metrics</h6>
+                    <h6 class="mb-0"><i class="bi bi-input-cursor-text me-2"></i>@Localizer["EntryOfRequiredInfo"]</h6>
                 </div>
                 <div class="card-body">
-                    <p class="small text-muted mb-3">For proper execution of the analysis, you are required to complete only the cells shaded in gray and in bold.</p>
+                    <p class="small text-muted mb-3">@Localizer["EntryOfRequiredInfo_Help"]</p>
 
                     <!-- User Input Fields -->
                     <div class="mb-3">
                         <label for="@(streamId)RegisteredUnits" class="form-label fw-bold">
-                            Registered Units
+                            @Localizer["RegisteredUnits"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Total number of units (businesses, customers, stalls, permits, etc.) currently in the official register for this revenue stream."></i>
+                               title="@Localizer["RegisteredUnits_Tooltip"]"></i>
                         </label>
                         <input type="text" class="form-control number-format bg-light fw-bold" id="@(streamId)RegisteredUnits"
                                name="GenericStreams[@streamIndex].RegisteredUnits" value="@(Model.RegisteredUnits?.ToString("N0") ?? "")"
-                               placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                               placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                     </div>
 
                     <div class="mb-3">
                         <label for="@(streamId)EstimatedUnregisteredPercent" class="form-label fw-bold">
-                            Est. % Unregistered
+                            @Localizer["EstUnregisteredPercent"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Best estimate of how many active units are not on the register. Enter as percentage (e.g., 5 for 5%)."></i>
+                               title="@Localizer["EstUnregisteredPercent_Tooltip"]"></i>
                         </label>
                         <div class="input-group">
                             <input type="text" class="form-control number-format bg-light fw-bold" id="@(streamId)EstimatedUnregisteredPercent"
@@ -75,9 +75,9 @@
 
                     <div class="mb-3">
                         <label for="@(streamId)TotalEstimatedUnits" class="form-label text-primary">
-                            Total Estimated Units
+                            @Localizer["TotalEstimatedUnits"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Total estimated units = Registered Units × (1 + Est. % Unregistered/100)."></i>
+                               title="@Localizer["TotalEstimatedUnits_Tooltip"]"></i>
                         </label>
                         <input type="text" class="form-control number-format" id="@(streamId)TotalEstimatedUnits"
                                readonly value="0" style="background-color: #e8f4fc;">
@@ -85,55 +85,55 @@
 
                     <div class="mb-3">
                         <label for="@(streamId)CompliantUnits" class="form-label text-primary">
-                            Compliant Units
+                            @Localizer["CompliantUnits"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Estimated using proxy formula: Registered × (Revenue to Date / Billed Amount)."></i>
+                               title="@Localizer["CompliantUnits_Tooltip"]"></i>
                         </label>
                         <input type="text" class="form-control number-format" id="@(streamId)CompliantUnits"
                                readonly value="0" style="background-color: #e8f4fc;">
-                        <small class="text-muted">= Registered × (Revenue to Date / Billed Amount)</small>
+                        <small class="text-muted">@Localizer["CompliantUnits_Formula"]</small>
                     </div>
 
                     <div class="mb-3">
                         <label for="@(streamId)BilledAmount" class="form-label fw-bold">
-                            Billed Amount (<span class="currency-label">@currencySymbol</span>)
+                            @Localizer["BilledAmount"] (<span class="currency-label">@currencySymbol</span>)
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Total amount officially charged for collection (billed) for the analysis year."></i>
+                               title="@Localizer["BilledAmount_Tooltip"]"></i>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format bg-light fw-bold" id="@(streamId)BilledAmount"
                                    name="GenericStreams[@streamIndex].BilledAmount" value="@(Model.BilledAmount?.ToString("N0") ?? "")"
-                                   placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                                   placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="@(streamId)OutstandingAmount" class="form-label fw-bold">
-                            Outstanding Amount (<span class="currency-label">@currencySymbol</span>)
+                            @Localizer["OutstandingAmount"] (<span class="currency-label">@currencySymbol</span>)
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Portion of current year charges that remain unpaid. Should NOT include arrears from previous years."></i>
+                               title="@Localizer["OutstandingAmount_Tooltip"]"></i>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format bg-light fw-bold" id="@(streamId)OutstandingAmount"
                                    name="GenericStreams[@streamIndex].OutstandingAmount" value="@(Model.OutstandingAmount?.ToString("N0") ?? "")"
-                                   placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                                   placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="@(streamId)RevenueToDate" class="form-label text-primary">
-                            Revenue to Date (<span class="currency-label">@currencySymbol</span>)
+                            @Localizer["RevenueToDate"] (<span class="currency-label">@currencySymbol</span>)
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Auto-calculated. Total revenue collected = Billed Amount minus Outstanding."></i>
+                               title="@Localizer["RevenueToDate_Tooltip"]"></i>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format" id="@(streamId)RevenueToDate"
                                    readonly value="0" style="background-color: #e8f4fc;">
                         </div>
-                        <small class="text-muted">= Billed Amount - Outstanding Amount</small>
+                        <small class="text-muted">@Localizer["RevenueToDate_Formula"]</small>
                     </div>
                 </div>
             </div>
@@ -141,28 +141,28 @@
             <!-- Useful Average Values -->
             <div class="card mb-3 shadow-sm">
                 <div class="card-header bg-info text-white">
-                    <h6 class="mb-0"><i class="bi bi-calculator me-2"></i>Useful Average Values required for the Analysis</h6>
+                    <h6 class="mb-0"><i class="bi bi-calculator me-2"></i>@Localizer["UsefulAverageValues"]</h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
                         <label for="@(streamId)StatutoryAverageBilled" class="form-label fw-bold">
-                            Statutory Avg. Billed (<span class="currency-label">@currencySymbol</span>)
+                            @Localizer["StatutoryAvgBilled"] (<span class="currency-label">@currencySymbol</span>)
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="The average bill per unit implied by the official fee schedule as written in law, without applying waivers, discounts, or exemptions."></i>
+                               title="@Localizer["StatutoryAvgBilled_Tooltip"]"></i>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format bg-light fw-bold" id="@(streamId)StatutoryAverageBilled"
                                    name="GenericStreams[@streamIndex].StatutoryAverageBilled" value="@(Model.StatutoryAverageBilled?.ToString("N0") ?? "")"
-                                   placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                                   placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="@(streamId)RealisticImprovementPercent" class="form-label fw-bold">
-                            Realistic Improvement %
+                            @Localizer["RealisticImprovementPercent"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="The share of the gap between today's average bill and the statutory average that you believe can realistically be closed through policy or administrative reforms (0-100)."></i>
+                               title="@Localizer["RealisticImprovementPercent_Tooltip"]"></i>
                         </label>
                         <div class="input-group">
                             <input type="text" class="form-control number-format bg-light fw-bold" id="@(streamId)RealisticImprovementPercent"
@@ -174,9 +174,9 @@
 
                     <div class="mb-2">
                         <label class="form-label small text-primary">
-                            Average Billed Amount
+                            @Localizer["AverageBilledAmount"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Current average bill per registered unit = Billed Amount / Registered Units."></i>
+                               title="@Localizer["AverageBilledAmount_Tooltip"]"></i>
                         </label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
@@ -186,9 +186,9 @@
 
                     <div class="mb-2">
                         <label class="form-label small text-primary">
-                            Achievable Avg. Bill
+                            @Localizer["AchievableAvgBill"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Target average bill achievable through reforms = Avg Billed + (Improvement% × (Statutory - Avg Billed))."></i>
+                               title="@Localizer["AchievableAvgBill_Tooltip"]"></i>
                         </label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
@@ -198,9 +198,9 @@
 
                     <div class="mb-2">
                         <label class="form-label small text-primary">
-                            Delta A (ΔA)
+                            @Localizer["DeltaA"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Per-unit billing improvement achievable through reforms: Achievable Avg. Bill - Average Billed Amount."></i>
+                               title="@Localizer["DeltaA_Tooltip"]"></i>
                         </label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
@@ -213,37 +213,37 @@
             <!-- KPI Ratios -->
             <div class="card mb-3 shadow-sm">
                 <div class="card-header bg-warning">
-                    <h6 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>Key Performance Indicators (KPI) Ratios</h6>
+                    <h6 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>@Localizer["KPIRatios"]</h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <label class="form-label small mb-0">
-                                Compliance Ratio
+                                @Localizer["ComplianceRatio"]
                                 <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                   title="Proxy indicator of compliance system performance. Measures proportion of billed amounts actually collected. >80% Green, 60-80% Yellow, <60% Red."></i>
+                                   title="@Localizer["ComplianceRatio_Tooltip"]"></i>
                             </label>
                             <span id="@(streamId)ComplianceRatioValue" class="badge bg-success">0%</span>
                         </div>
                         <div class="progress" style="height: 20px;">
                             <div class="progress-bar" role="progressbar" id="@(streamId)ComplianceRatioBar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <small class="text-muted">Revenue to Date / Billed Amount</small>
+                        <small class="text-muted">@Localizer["ComplianceRatio_Formula"]</small>
                     </div>
 
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <label class="form-label small mb-0">
-                                Coverage Ratio
+                                @Localizer["CoverageRatio"]
                                 <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                   title="Proxy indicator of coverage system performance. Measures proportion of total units registered. >80% Green, 60-80% Yellow, <60% Red."></i>
+                                   title="@Localizer["CoverageRatio_Tooltip"]"></i>
                             </label>
                             <span id="@(streamId)CoverageRatioValue" class="badge bg-info">0%</span>
                         </div>
                         <div class="progress" style="height: 20px;">
                             <div class="progress-bar" role="progressbar" id="@(streamId)CoverageRatioBar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <small class="text-muted">Registered Units / Total Estimated Units</small>
+                        <small class="text-muted">@Localizer["CoverageRatio_Formula"]</small>
                     </div>
                 </div>
             </div>
@@ -253,74 +253,74 @@
         <div class="col-lg-8">
             <div class="card mb-3 shadow-sm">
                 <div class="card-header bg-success text-white">
-                    <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Graphical Representation of Analyzed Data</h6>
+                    <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>@Localizer["GraphicalRepresentation"]</h6>
                 </div>
                 <div class="card-body">
                     <!-- Potential Revenue Breakdown Table -->
                     <div class="mb-4">
-                        <h6 class="text-center mb-3">Potential Revenue Breakdown (Actual Revenue + Adm. Gap breakdown)</h6>
+                        <h6 class="text-center mb-3">@Localizer["PotentialRevenueBreakdown"]</h6>
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered table-striped table-hover">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th>Revenue & Administrative Gaps</th>
-                                        <th class="text-end">Amount (<span class="currency-label">@currencySymbol</span>)</th>
-                                        <th class="text-end">Share (%)</th>
+                                        <th>@Localizer["RevenueAndAdminGaps"]</th>
+                                        <th class="text-end">@Localizer["Amount"] (<span class="currency-label">@currencySymbol</span>)</th>
+                                        <th class="text-end">@Localizer["SharePercent"]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr class="table-success">
-                                        <td>Revenue to date</td>
+                                        <td>@Localizer["RevenueToDateLabel"]</td>
                                         <td class="text-end" id="@(streamId)TableRevenueToDate">0</td>
                                         <td class="text-end" id="@(streamId)TableRevenueToDatePct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Compliance Gap
+                                            @Localizer["ComplianceGap"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="The proportion of registered units that do not pay or fulfill their liability. Reflects weaknesses in enforcement, billing, and payment collection. Equals Outstanding Amount."></i>
+                                               title="@Localizer["ComplianceGap_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="@(streamId)TableComplianceGap">0</td>
                                         <td class="text-end" id="@(streamId)TableComplianceGapPct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Coverage Gap
+                                            @Localizer["CoverageGap"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Revenue lost from unregistered units. Quantified by multiplying unregistered units by average billed amount."></i>
+                                               title="@Localizer["CoverageGap_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="@(streamId)TableCoverageGap">0</td>
                                         <td class="text-end" id="@(streamId)TableCoverageGapPct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Liability Gap
+                                            @Localizer["LiabilityGap"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Additional revenue achievable from compliant units through improved billing (using achievable average bill vs current average)."></i>
+                                               title="@Localizer["LiabilityGap_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="@(streamId)TableLiabilityGap">0</td>
                                         <td class="text-end" id="@(streamId)TableLiabilityGapPct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Mixed Gap (Comp.+Liab.)
+                                            @Localizer["MixedGapCompLiab"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Revenue loss from non-compliant registered units combined with under-billing. Shows compounded effect of enforcement failure and low billing."></i>
+                                               title="@Localizer["MixedGapCompLiab_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="@(streamId)TableMixedCompliance">0</td>
                                         <td class="text-end" id="@(streamId)TableMixedCompliancePct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Mixed Gap (Cov.+Liab.)
+                                            @Localizer["MixedGapCovLiab"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Revenue missed from unregistered units valued at achievable billing levels. Captures full revenue loss from both lack of registry and under-billing."></i>
+                                               title="@Localizer["MixedGapCovLiab_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="@(streamId)TableMixedCoverage">0</td>
                                         <td class="text-end" id="@(streamId)TableMixedCoveragePct">0%</td>
                                     </tr>
                                     <tr class="table-secondary fw-bold">
-                                        <td>TOTAL (Potential Revenue)</td>
+                                        <td>@Localizer["TotalPotentialRevenue"]</td>
                                         <td class="text-end" id="@(streamId)TableTotalPotential">0</td>
                                         <td class="text-end">100%</td>
                                     </tr>
@@ -331,14 +331,14 @@
 
                     <!-- Revenue and Administrative Gaps Pie Chart -->
                     <div class="mb-4">
-                        <h6 class="text-center mb-3">Revenue and Administrative Gaps</h6>
+                        <h6 class="text-center mb-3">@Localizer["RevenueAndAdminGapsChart"]</h6>
                         <div class="d-flex justify-content-center">
                             <div style="height: 300px; width: 450px; position: relative;">
                                 <canvas id="@(streamId)PotentialRevenueChart"></canvas>
                             </div>
                         </div>
                         <p class="small text-muted mt-2 text-center">
-                            <strong>DESCRIPTION:</strong> This pie chart illustrates the percentage distribution of the total potential revenue from the billing system. It visually shows the share corresponding to the revenue actually collected during the year, as well as the contribution of each type of gap (uncollected or lost revenue) to that total.
+                            <strong>@Localizer["Description"]</strong> @Localizer["PieChartDescription"]
                         </p>
                     </div>
 
@@ -346,31 +346,31 @@
 
                     <!-- Matrix Gap Analysis Dashboard -->
                     <div class="mb-4">
-                        <h6 class="text-center mb-3">@Model.StreamName Gap Analysis - Dashboard</h6>
+                        <h6 class="text-center mb-3">@Model.StreamName @Localizer["GapAnalysisDashboard"]</h6>
                         <div class="row g-3 align-items-stretch">
                             <!-- Matrix Visualization -->
                             <div class="col-12">
                                 <div class="matrix-container position-relative" style="height: 320px; min-height: 320px; border-radius: 8px; overflow: hidden; background: #fff;">
                                     <!-- Y-axis Title (rotated) -->
                                     <div class="position-absolute d-flex align-items-center justify-content-center" style="left: 0; top: 0; bottom: 30px; width: 20px; background: #f8f9fa;">
-                                        <span style="transform: rotate(-90deg); white-space: nowrap; font-size: 0.6rem; color: #666;"># of Units</span>
+                                        <span style="transform: rotate(-90deg); white-space: nowrap; font-size: 0.6rem; color: #666;">@Localizer["NumberOfUnits"]</span>
                                     </div>
 
                                     <!-- Y-axis Labels Container - labels positioned at row BOUNDARIES -->
                                     <div class="matrix-y-labels position-absolute" id="@(streamId)MatrixYLabelsContainer" style="left: 20px; top: 0; bottom: 30px; width: 55px; font-size: 0.6rem; background: #f8f9fa; position: relative;">
                                         <!-- Estimated label at TOP boundary (top of matrix) -->
                                         <div class="y-label-item" id="@(streamId)YLabelEstimated" style="position: absolute; right: 3px; top: 0; text-align: right; transform: translateY(-50%);">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Estimated</small>
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Estimated"]</small>
                                             <span id="@(streamId)MatrixEstimatedLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
                                         </div>
                                         <!-- Registered label at boundary between Row1 and Row2 -->
                                         <div class="y-label-item" id="@(streamId)YLabelRegistered" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%);">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Registered</small>
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Registered"]</small>
                                             <span id="@(streamId)MatrixRegisteredLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
                                         </div>
                                         <!-- Compliant label at boundary between Row2 and Row3 -->
                                         <div class="y-label-item" id="@(streamId)YLabelCompliant" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%);">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Compliant</small>
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Compliant"]</small>
                                             <span id="@(streamId)MatrixCompliantLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
                                         </div>
                                     </div>
@@ -382,14 +382,14 @@
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="@(streamId)MatrixCoverageGap"
                                                  style="background-color: #FF9800; color: white; flex: 1; min-width: 60px;">
                                                 <div class="text-center p-1">
-                                                    <small style="font-size: 0.7rem;">Coverage Gap</small><br>
+                                                    <small style="font-size: 0.7rem;">@Localizer["CoverageGap"]</small><br>
                                                     <span id="@(streamId)MatrixCoverageGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="@(streamId)MatrixMixedCoverage"
                                                  style="background-color: #E91E63; color: white; flex: 1; min-width: 60px;">
                                                 <div class="text-center p-1">
-                                                    <small style="font-size: 0.7rem;">Mixed (Cov.+Liab.)</small><br>
+                                                    <small style="font-size: 0.7rem;">@Localizer["MixedGapCovLiab"]</small><br>
                                                     <span id="@(streamId)MatrixMixedCoverageVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
@@ -399,14 +399,14 @@
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="@(streamId)MatrixComplianceGap"
                                                  style="background-color: #F44336; color: white; flex: 1; min-width: 60px;">
                                                 <div class="text-center p-1">
-                                                    <small style="font-size: 0.7rem;">Compliance Gap</small><br>
+                                                    <small style="font-size: 0.7rem;">@Localizer["ComplianceGap"]</small><br>
                                                     <span id="@(streamId)MatrixComplianceGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="@(streamId)MatrixMixedCompliance"
                                                  style="background-color: #9C27B0; color: white; flex: 1; min-width: 60px;">
                                                 <div class="text-center p-1">
-                                                    <small style="font-size: 0.7rem;">Mixed (Comp.+Liab.)</small><br>
+                                                    <small style="font-size: 0.7rem;">@Localizer["MixedGapCompLiab"]</small><br>
                                                     <span id="@(streamId)MatrixMixedComplianceVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
@@ -416,14 +416,14 @@
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="@(streamId)MatrixActualRevenue"
                                                  style="background-color: #4CAF50; color: white; flex: 1; min-width: 60px;">
                                                 <div class="text-center p-1">
-                                                    <small style="font-size: 0.7rem;">Actual Revenue</small><br>
+                                                    <small style="font-size: 0.7rem;">@Localizer["ActualRevenue"]</small><br>
                                                     <span id="@(streamId)MatrixActualRevenueVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="@(streamId)MatrixLiabilityGap"
                                                  style="background-color: #2196F3; color: white; flex: 1; min-width: 60px;">
                                                 <div class="text-center p-1">
-                                                    <small style="font-size: 0.7rem;">Liability Gap</small><br>
+                                                    <small style="font-size: 0.7rem;">@Localizer["LiabilityGap"]</small><br>
                                                     <span id="@(streamId)MatrixLiabilityGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
@@ -438,12 +438,12 @@
                                         </div>
                                         <!-- X-axis label at column boundary (between left and right columns) -->
                                         <div class="x-label-item" id="@(streamId)XLabelAvgBilled" style="position: absolute; bottom: 2px; transform: translateX(-50%); text-align: center; font-size: 0.6rem;">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Avg. Billed</small>
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["AvgBilled"]</small>
                                             <span id="@(streamId)MatrixAvgBilledLabel" class="fw-bold" style="font-size: 0.65rem;">@currencySymbol 0</span>
                                         </div>
                                         <!-- X-axis label at right edge -->
                                         <div class="x-label-item" id="@(streamId)XLabelAchievable" style="position: absolute; right: 0; bottom: 2px; transform: translateX(0%); text-align: right; font-size: 0.6rem;">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Achievable Avg.</small>
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["AchievableAvg"]</small>
                                             <span id="@(streamId)MatrixAchievableLabel" class="fw-bold" style="font-size: 0.65rem;">@currencySymbol 0</span>
                                         </div>
                                     </div>
@@ -451,7 +451,7 @@
                             </div>
                         </div><!-- end row -->
                         <p class="small text-muted mt-3 text-center">
-                            <strong>DESCRIPTION:</strong> This matrix visualization shows the gap analysis across two dimensions: the number of units (vertical axis from Compliant to Estimated) and the billing level (horizontal axis from average billed to achievable billing). Each colored cell represents a different type of gap or revenue component.
+                            <strong>@Localizer["Description"]</strong> @Localizer["MatrixDescription"]
                         </p>
                     </div>
 
@@ -459,64 +459,64 @@
 
                     <!-- Administrative Gap Breakdown Table -->
                     <div class="mb-4">
-                        <h6 class="text-center mb-3">Administrative Gap Breakdown (<span class="currency-label">@currencySymbol</span>)</h6>
+                        <h6 class="text-center mb-3">@Localizer["AdminGapBreakdown"] (<span class="currency-label">@currencySymbol</span>)</h6>
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered table-striped table-hover">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th>Administrative Gaps</th>
-                                        <th class="text-end">Amount (<span class="currency-label">@currencySymbol</span>)</th>
-                                        <th class="text-end">Share (%)</th>
+                                        <th>@Localizer["AdministrativeGaps"]</th>
+                                        <th class="text-end">@Localizer["Amount"] (<span class="currency-label">@currencySymbol</span>)</th>
+                                        <th class="text-end">@Localizer["SharePercent"]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td>
-                                            Compliance Gap
+                                            @Localizer["ComplianceGap"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="The proportion of registered units that do not pay. Reflects weaknesses in enforcement, billing, and payment collection systems."></i>
+                                               title="@Localizer["ComplianceGapAdmin_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="@(streamId)GapComplianceGap">0</td>
                                         <td class="text-end" id="@(streamId)GapComplianceGapPct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Coverage Gap
+                                            @Localizer["CoverageGap"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="The proportion of total estimated units that are not registered. Indicates lack of identification and inclusion in the database."></i>
+                                               title="@Localizer["CoverageGapAdmin_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="@(streamId)GapCoverageGap">0</td>
                                         <td class="text-end" id="@(streamId)GapCoverageGapPct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Liability Gap
+                                            @Localizer["LiabilityGap"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Revenue improvement achievable from compliant units through better billing practices."></i>
+                                               title="@Localizer["LiabilityGapAdmin_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="@(streamId)GapLiabilityGap">0</td>
                                         <td class="text-end" id="@(streamId)GapLiabilityGapPct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Mixed Gap (Comp.+Liab.)
+                                            @Localizer["MixedGapCompLiab"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Revenue loss from non-compliant registered units that are also under-billed."></i>
+                                               title="@Localizer["MixedGapCompLiabAdmin_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="@(streamId)GapMixedCompliance">0</td>
                                         <td class="text-end" id="@(streamId)GapMixedCompliancePct">0%</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Mixed Gap (Cov.+Liab.)
+                                            @Localizer["MixedGapCovLiab"]
                                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="Revenue missed from unregistered units valued at achievable billing levels."></i>
+                                               title="@Localizer["MixedGapCovLiabAdmin_Tooltip"]"></i>
                                         </td>
                                         <td class="text-end" id="@(streamId)GapMixedCoverage">0</td>
                                         <td class="text-end" id="@(streamId)GapMixedCoveragePct">0%</td>
                                     </tr>
                                     <tr class="table-secondary fw-bold">
-                                        <td>Total Administrative Gap</td>
+                                        <td>@Localizer["TotalAdminGap"]</td>
                                         <td class="text-end" id="@(streamId)TotalFunctionalGap">0</td>
                                         <td class="text-end">100%</td>
                                     </tr>
@@ -527,14 +527,14 @@
 
                     <!-- Breakdown of Administrative Gaps Pie Chart -->
                     <div class="mb-4">
-                        <h6 class="text-center mb-3">Breakdown of Administrative Gaps</h6>
+                        <h6 class="text-center mb-3">@Localizer["BreakdownAdminGaps"]</h6>
                         <div class="d-flex justify-content-center">
                             <div style="height: 300px; width: 450px; position: relative;">
                                 <canvas id="@(streamId)GapBreakdownChart"></canvas>
                             </div>
                         </div>
                         <p class="small text-muted mt-2 text-center">
-                            <strong>DESCRIPTION:</strong> This pie chart illustrates the percentage distribution of the revenue gaps. It visually shows the contribution of each type of gap to the total uncollected revenue, helping to identify which gaps are the most significant.
+                            <strong>@Localizer["Description"]</strong> @Localizer["BreakdownPieChartDescription"]
                         </p>
                     </div>
                 </div>

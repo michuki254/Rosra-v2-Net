@@ -14,17 +14,17 @@
             <!-- Required Data + Derived Metrics -->
             <div class="card mb-3 shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h6 class="mb-0"><i class="bi bi-input-cursor-text me-2"></i>Entry of required information + Processed Metrics</h6>
+                    <h6 class="mb-0"><i class="bi bi-input-cursor-text me-2"></i>@Localizer["DataEntry_Title"]</h6>
                 </div>
                 <div class="card-body">
-                    <p class="small text-muted mb-3">For proper execution of the analysis, you are required to complete only the cells shaded in gray and in bold.</p>
+                    <p class="small text-muted mb-3">@Localizer["DataEntry_Instructions"]</p>
 
                     <!-- User Input Fields (6 inputs) -->
                     <div class="mb-3">
                         <label for="blRegisteredBusinesses" class="form-label fw-bold">
-                            Registered Businesses
+                            @Localizer["RegisteredBusinesses"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="How many businesses are currently on the municipal register for this revenue stream."></i>
+                               title="@Localizer["RegisteredBusinesses_Tooltip"]"></i>
                         </label>
                         <input type="text" class="form-control number-format bg-light fw-bold" id="blRegisteredBusinesses"
                                name="License.RegisteredBusinesses" value="@(Model.License.RegisteredBusinesses?.ToString("N0") ?? "451")"
@@ -33,9 +33,9 @@
 
                     <div class="mb-3">
                         <label for="blEstimatedUnregisteredPercent" class="form-label fw-bold">
-                            Estimated % Unregistered Businesses
+                            @Localizer["EstimatedUnregisteredPercent"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Best estimate of how many active businesses are not on the register."></i>
+                               title="@Localizer["EstimatedUnregisteredPercent_Tooltip"]"></i>
                         </label>
                         <div class="input-group">
                             <input type="number" class="form-control bg-light fw-bold" id="blEstimatedUnregisteredPercent"
@@ -47,20 +47,20 @@
 
                     <div class="mb-3">
                         <label for="blTotalEstimatedBusinesses" class="form-label text-primary">
-                            Total Estimated Businesses
+                            @Localizer["TotalEstimatedBusinesses"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Total estimated active businesses in the jurisdiction. Formula: Registered × (1 + Unregistered %)"></i>
+                               title="@Localizer["TotalEstimatedBusinesses_Tooltip"]"></i>
                         </label>
                         <input type="text" class="form-control number-format" id="blTotalEstimatedBusinesses"
                                readonly value="0" style="background-color: #e8f4fc;">
-                        <small class="text-muted">= Registered × (1 + Unregistered %)</small>
+                        <small class="text-muted">@Localizer["TotalEstimatedBusinesses_Formula"]</small>
                     </div>
 
                     <div class="mb-3">
                         <label for="blBilledAmount" class="form-label fw-bold">
-                            Billed Amount (<span class="currency-label">@currencySymbol</span>)
+                            @Localizer["BilledAmount"] (<span class="currency-label">@currencySymbol</span>)
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Total value of invoices/assessments issued to registered businesses during the year."></i>
+                               title="@Localizer["BilledAmount_Tooltip"]"></i>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
@@ -72,9 +72,9 @@
 
                     <div class="mb-3">
                         <label for="blOutstandingAmount" class="form-label fw-bold">
-                            Outstanding Amount (<span class="currency-label">@currencySymbol</span>)
+                            @Localizer["OutstandingAmount"] (<span class="currency-label">@currencySymbol</span>)
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Total billed but not yet paid (arrears on the current year bill). Also equals the pure compliance gap at current fees."></i>
+                               title="@Localizer["OutstandingAmount_Tooltip"]"></i>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
@@ -86,9 +86,9 @@
 
                     <div class="mb-3">
                         <label for="blRevenueToDate" class="form-label text-primary">
-                            Revenue to Date (<span class="currency-label">@currencySymbol</span>)
+                            @Localizer["RevenueToDate"] (<span class="currency-label">@currencySymbol</span>)
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="What has actually been collected in cash so far in the year. Formula: Billed - Outstanding."></i>
+                               title="@Localizer["RevenueToDate_Tooltip"]"></i>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
@@ -96,26 +96,26 @@
                                    name="License.RevenueToDate" value="@Model.License.RevenueToDate"
                                    readonly style="background-color: #e8f4fc;">
                         </div>
-                        <small class="text-muted">= Billed Amount - Outstanding Amount</small>
+                        <small class="text-muted">@Localizer["RevenueToDate_Formula"]</small>
                     </div>
 
                     <div class="mb-3">
                         <label for="blCompliantBusinesses" class="form-label text-primary">
-                            Compliant Businesses
+                            @Localizer["CompliantBusinesses"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Estimated using proxy formula: Registered × (Revenue to Date / Billed). Accounts for partial payments across fiscal year."></i>
+                               title="@Localizer["CompliantBusinesses_Tooltip"]"></i>
                         </label>
                         <input type="text" class="form-control number-format" id="blCompliantBusinesses"
                                name="License.CompliantBusinesses" value="@Model.License.CompliantBusinesses"
                                readonly style="background-color: #e8f4fc;">
-                        <small class="text-muted">= Registered × (Revenue to Date / Billed Amount)</small>
+                        <small class="text-muted">@Localizer["CompliantBusinesses_Formula"]</small>
                     </div>
 
                     <div class="mb-3">
                         <label for="blStatutoryAverageBilled" class="form-label fw-bold">
-                            Statutory Average Billed Amount (<span class="currency-label">@currencySymbol</span>)
+                            @Localizer["StatutoryAverageBilled"] (<span class="currency-label">@currencySymbol</span>)
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="The average annual bill implied by the official fee schedule as written in law, without applying waivers, discounts, or exemptions. It represents the policy reference level."></i>
+                               title="@Localizer["StatutoryAverageBilled_Tooltip"]"></i>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
@@ -127,9 +127,9 @@
 
                     <div class="mb-3">
                         <label for="blRealisticImprovementPercent" class="form-label fw-bold">
-                            Realistic Improvement %
+                            @Localizer["RealisticImprovementPercent"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="The share of the gap between today's average bill and the statutory average that you believe can realistically be closed through policy or administrative reforms (not full enforcement). Input as % (0-100)."></i>
+                               title="@Localizer["RealisticImprovementPercent_Tooltip"]"></i>
                         </label>
                         <div class="input-group">
                             <input type="number" class="form-control bg-light fw-bold" id="blRealisticImprovementPercent"
@@ -144,14 +144,14 @@
             <!-- Useful Average Values -->
             <div class="card mb-3 shadow-sm">
                 <div class="card-header bg-info text-white">
-                    <h6 class="mb-0"><i class="bi bi-calculator me-2"></i>Useful Average Values for Analysis</h6>
+                    <h6 class="mb-0"><i class="bi bi-calculator me-2"></i>@Localizer["AvgValues_Title"]</h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-2">
                         <label class="form-label small text-primary">
-                            Average Billed Amount
+                            @Localizer["AvgBilledAmount"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="The mean annual bill actually issued to each registered business under today's billing practice. It's the anchor for the 'today' side of the matrix. Formula: Billed amount ÷ Registered businesses."></i>
+                               title="@Localizer["AvgBilledAmount_Tooltip"]"></i>
                         </label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
@@ -161,9 +161,9 @@
 
                     <div class="mb-2">
                         <label class="form-label small text-primary">
-                            Achievable Average Bill (Potential)
+                            @Localizer["AchievableAvgBill"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="The projected average bill after applying the realistic improvement toward the statutory level. Powers the right-hand 'liability' column of the matrix. Formula: Avg Billed + (Realistic improvement % × (Statutory Avg - Avg Billed))."></i>
+                               title="@Localizer["AchievableAvgBill_Tooltip"]"></i>
                         </label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
@@ -173,9 +173,9 @@
 
                     <div class="mb-2">
                         <label class="form-label small text-primary">
-                            ΔA (Delta A - Billing Improvement)
+                            @Localizer["DeltaA"]
                             <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="The achievable increase in billing per business. Formula: Realistic improvement % × MAX(0, Statutory average − Average billed)."></i>
+                               title="@Localizer["DeltaA_Tooltip"]"></i>
                         </label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
@@ -188,37 +188,37 @@
             <!-- KPI Ratios -->
             <div class="card mb-3 shadow-sm">
                 <div class="card-header bg-warning">
-                    <h6 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>Key Performance Indicators (KPI) Ratios</h6>
+                    <h6 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>@Localizer["KPI_Title"]</h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <label class="form-label small mb-0">
-                                Compliance Ratio
+                                @Localizer["ComplianceRatio"]
                                 <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                   title="Provides a proxy indicator of the compliance system performance for this stream. Formula: Revenue to Date / Billed Amount. >80% Green, 60-80% Yellow, <60% Red."></i>
+                                   title="@Localizer["ComplianceRatio_Tooltip"]"></i>
                             </label>
                             <span id="blComplianceRatioValue" class="badge bg-success">0%</span>
                         </div>
                         <div class="progress" style="height: 20px;">
                             <div class="progress-bar" role="progressbar" id="blComplianceRatioBar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <small class="text-muted">Revenue to Date / Billed Amount</small>
+                        <small class="text-muted">@Localizer["ComplianceRatio_Formula"]</small>
                     </div>
 
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <label class="form-label small mb-0">
-                                Coverage Ratio
+                                @Localizer["CoverageRatio"]
                                 <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                   title="Provides a proxy indicator of the coverage system performance for this stream. Formula: Registered / Total Estimated businesses. >80% Green, 60-80% Yellow, <60% Red."></i>
+                                   title="@Localizer["CoverageRatio_Tooltip"]"></i>
                             </label>
                             <span id="blCoverageRatioValue" class="badge bg-info">0%</span>
                         </div>
                         <div class="progress" style="height: 20px;">
                             <div class="progress-bar" role="progressbar" id="blCoverageRatioBar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <small class="text-muted">Registered Businesses / Total Estimated Businesses</small>
+                        <small class="text-muted">@Localizer["CoverageRatio_Formula"]</small>
                     </div>
                 </div>
             </div>
@@ -228,19 +228,19 @@
         <div class="col-lg-8">
             <div class="card mb-3 shadow-sm">
                 <div class="card-header bg-success text-white">
-                    <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Graphical Representation of Analyzed Data</h6>
+                    <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>@Localizer["Results_Title"]</h6>
                 </div>
                 <div class="card-body">
                     <!-- Potential Revenue Breakdown Table -->
                     <div class="mb-4">
-                        <h6 class="text-center mb-3">Potential Revenue Breakdown (Actual Revenue + Gap breakdown)</h6>
+                        <h6 class="text-center mb-3">@Localizer["PotentialRevenue_Title"]</h6>
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered table-striped table-hover">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th>Revenue & Functional Gaps</th>
-                                        <th class="text-end">Amount (<span class="currency-label">@currencySymbol</span>)</th>
-                                        <th class="text-end">Share (%)</th>
+                                        <th>@Localizer["Table_RevenueAndGaps"]</th>
+                                        <th class="text-end">@Localizer["Table_Amount"] (<span class="currency-label">@currencySymbol</span>)</th>
+                                        <th class="text-end">@Localizer["Table_Share"]</th>
                                     </tr>
                                 </thead>
                                 <tbody>

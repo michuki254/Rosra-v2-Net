@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Card Headers -->
+  <data name="MixedInformation" xml:space="preserve"><value>Informations mixtes</value></data>
+  <data name="MixedDetails" xml:space="preserve"><value>D&#233;tails mixtes</value></data>
+  <data name="GapAnalysisSummary" xml:space="preserve"><value>R&#233;sum&#233; de l'analyse des &#233;carts</value></data>
+
+  <!-- Daily Users Section -->
+  <data name="DailyUsers" xml:space="preserve"><value>Utilisateurs journaliers</value></data>
+  <data name="EstimatedDailyUsers" xml:space="preserve"><value>Nombre estim&#233; d'utilisateurs journaliers</value></data>
+  <data name="ActualDailyUsers" xml:space="preserve"><value>Utilisateurs journaliers r&#233;els</value></data>
+  <data name="AverageDailyUserFee" xml:space="preserve"><value>Redevance journali&#232;re moyenne par utilisateur</value></data>
+  <data name="ActualDailyUserFee" xml:space="preserve"><value>Redevance journali&#232;re r&#233;elle par utilisateur</value></data>
+
+  <!-- Monthly Users Section -->
+  <data name="MonthlyUsers" xml:space="preserve"><value>Utilisateurs mensuels</value></data>
+  <data name="NumberOfAvailableMonthlyUsers" xml:space="preserve"><value>Nombre d'utilisateurs mensuels disponibles</value></data>
+  <data name="NumberOfPayingMonthlyUsers" xml:space="preserve"><value>Nombre d'utilisateurs mensuels payants</value></data>
+  <data name="AverageMonthlyRate" xml:space="preserve"><value>Taux mensuel moyen</value></data>
+  <data name="ActualMonthlyRate" xml:space="preserve"><value>Taux mensuel r&#233;el</value></data>
+
+  <!-- Placeholders -->
+  <data name="EnterEstimatedDailyUsers" xml:space="preserve"><value>Saisir le nombre estim&#233; d'utilisateurs journaliers</value></data>
+  <data name="EnterActualDailyUsers" xml:space="preserve"><value>Saisir les utilisateurs journaliers r&#233;els</value></data>
+  <data name="EnterAverageDailyUserFee" xml:space="preserve"><value>Saisir la redevance journali&#232;re moyenne</value></data>
+  <data name="EnterActualDailyUserFee" xml:space="preserve"><value>Saisir la redevance journali&#232;re r&#233;elle</value></data>
+  <data name="EnterAvailableMonthlyUsers" xml:space="preserve"><value>Saisir le nombre d'utilisateurs mensuels disponibles</value></data>
+  <data name="EnterPayingMonthlyUsers" xml:space="preserve"><value>Saisir le nombre d'utilisateurs mensuels payants</value></data>
+  <data name="EnterAverageMonthlyRate" xml:space="preserve"><value>Saisir le taux mensuel moyen</value></data>
+  <data name="EnterActualMonthlyRate" xml:space="preserve"><value>Saisir le taux mensuel r&#233;el</value></data>
+
+  <!-- Description / Notes -->
+  <data name="Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Notes" xml:space="preserve"><value>Notes</value></data>
+
+  <!-- Gap Summary Cards -->
+  <data name="ActualRevenueUpper" xml:space="preserve"><value>RECETTES</value></data>
+  <data name="RevenueUpper" xml:space="preserve"><value>R&#201;ELLES</value></data>
+  <data name="PotentialUpper" xml:space="preserve"><value>RECETTES</value></data>
+  <data name="TotalUpper" xml:space="preserve"><value>&#201;CART</value></data>
+  <data name="GapUpper" xml:space="preserve"><value>TOTAL</value></data>
+  <data name="LeveragedUpper" xml:space="preserve"><value>MOBILIS&#201;</value></data>
+  <data name="CurrentCollectedRevenue" xml:space="preserve"><value>Recettes actuellement collect&#233;es</value></data>
+  <data name="MaximumPossibleRevenue" xml:space="preserve"><value>Recettes maximales possibles</value></data>
+  <data name="RevenueGapToBeAddressed" xml:space="preserve"><value>&#201;cart de recettes &#224; combler</value></data>
+  <data name="PercentageOfPotentialCollected" xml:space="preserve"><value>Pourcentage du potentiel collect&#233;</value></data>
+
+  <!-- Detailed Gap Cards -->
+  <data name="ComplianceUpper" xml:space="preserve"><value>&#201;CART DE</value></data>
+  <data name="RateUpper" xml:space="preserve"><value>&#201;CART DE</value></data>
+  <data name="CombinedUpper" xml:space="preserve"><value>&#201;CARTS</value></data>
+  <data name="GapsUpper" xml:space="preserve"><value>CONFORMIT&#201;</value></data>
+  <data name="BreakdownUpper" xml:space="preserve"><value>VENTILATION</value></data>
+  <data name="GapDueToFewerUsers" xml:space="preserve"><value>&#201;cart d&#251; &#224; moins d'utilisateurs que le potentiel</value></data>
+  <data name="GapDueToLowerRates" xml:space="preserve"><value>&#201;cart d&#251; &#224; des taux inf&#233;rieurs</value></data>
+  <data name="OtherUncategorizedGaps" xml:space="preserve"><value>Autres &#233;carts non cat&#233;goris&#233;s</value></data>
+  <data name="DailyVsMonthlyGaps" xml:space="preserve"><value>&#201;carts journaliers vs mensuels</value></data>
+
+  <!-- Formula Details -->
+  <data name="FormulaDetails" xml:space="preserve"><value>D&#233;tails des formules</value></data>
+  <data name="ActualRevenueTitle" xml:space="preserve"><value>Recettes r&#233;elles</value></data>
+  <data name="TotalPotentialRevenue" xml:space="preserve"><value>Total des recettes potentielles</value></data>
+  <data name="TotalGapMixedUserFees" xml:space="preserve"><value>&#201;cart total redevances mixtes</value></data>
+  <data name="PercentOfPotentialLeveraged" xml:space="preserve"><value>% du potentiel mobilis&#233;</value></data>
+  <data name="Where" xml:space="preserve"><value>O&#249; :</value></data>
+  <data name="SimpleDifferenceBetween" xml:space="preserve"><value>Diff&#233;rence simple entre :</value></data>
+  <data name="Interpretation" xml:space="preserve"><value>Interpr&#233;tation :</value></data>
+
+  <!-- Breakdown Formulas -->
+  <data name="BreakdownFormulas" xml:space="preserve"><value>Formules de ventilation</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>&#201;cart de conformit&#233;</value></data>
+  <data name="RateGap" xml:space="preserve"><value>&#201;cart de taux</value></data>
+  <data name="CombinedGaps" xml:space="preserve"><value>&#201;carts combin&#233;s</value></data>
+  <data name="GapBreakdown" xml:space="preserve"><value>Ventilation des &#233;carts</value></data>
+  <data name="DailyGap" xml:space="preserve"><value>&#201;cart journalier :</value></data>
+  <data name="MonthlyGap" xml:space="preserve"><value>&#201;cart mensuel :</value></data>
+
+  <!-- Mixed User Fee Gaps Analysis -->
+  <data name="MixedUserFeeGapsAnalysis" xml:space="preserve"><value>Analyse des &#233;carts de redevances mixtes</value></data>
+  <data name="GapType" xml:space="preserve"><value>TYPE D'&#201;CART</value></data>
+  <data name="AmountCol" xml:space="preserve"><value>MONTANT</value></data>
+  <data name="DailyUserFeeGap" xml:space="preserve"><value>&#201;cart redevance journali&#232;re</value></data>
+  <data name="DailyRevenuePotentialGap" xml:space="preserve"><value>&#201;cart de potentiel de recettes journali&#232;res</value></data>
+  <data name="MonthlyUserFeeGap" xml:space="preserve"><value>&#201;cart redevance mensuelle</value></data>
+  <data name="MonthlyRevenuePotentialGap" xml:space="preserve"><value>&#201;cart de potentiel de recettes mensuelles</value></data>
+  <data name="LargestGap" xml:space="preserve"><value>&#201;cart le plus important</value></data>
+  <data name="HighestValueDifference" xml:space="preserve"><value>Diff&#233;rence de valeur la plus &#233;lev&#233;e</value></data>
+  <data name="TwoTypes" xml:space="preserve"><value>2 types</value></data>
+
+  <!-- Gap Visualization -->
+  <data name="GapAnalysis" xml:space="preserve"><value>Analyse des &#233;carts</value></data>
+  <data name="Chart" xml:space="preserve"><value>Graphique</value></data>
+  <data name="TotalGapMixedFees" xml:space="preserve"><value>&#201;cart total redevances mixtes</value></data>
+  <data name="Breakdown" xml:space="preserve"><value>Ventilation</value></data>
+  <data name="ActualRevenue" xml:space="preserve"><value>Recettes r&#233;elles</value></data>
+</root>

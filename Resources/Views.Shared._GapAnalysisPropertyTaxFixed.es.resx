@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Data Entry Section -->
+  <data name="DataEntry_Title" xml:space="preserve"><value>Ingreso de información requerida + Indicadores calculados</value></data>
+  <data name="DataEntry_Instructions" xml:space="preserve"><value>Para la correcta ejecución del análisis, solo debe completar las celdas sombreadas en gris y en negrita.</value></data>
+
+  <!-- Input Labels -->
+  <data name="RegisteredProperties" xml:space="preserve"><value>Propiedades registradas</value></data>
+  <data name="RegisteredProperties_Tooltip" xml:space="preserve"><value>Número total de propiedades actualmente inscritas en el registro oficial del impuesto predial / catastro.</value></data>
+  <data name="NonRegisteredProperties" xml:space="preserve"><value>Propiedades no registradas</value></data>
+  <data name="NonRegisteredProperties_Tooltip" xml:space="preserve"><value>Estimación de propiedades no inscritas en el registro fiscal. Si se desconoce, marque "No tengo un número específico" para ingresar un porcentaje de las propiedades registradas.</value></data>
+  <data name="EstimateCheckbox" xml:space="preserve"><value>No tengo un número específico (usar estimación)</value></data>
+  <data name="EstimateAsPercent" xml:space="preserve"><value>Estimar como % de las propiedades registradas</value></data>
+  <data name="EstimatePercentHelper" xml:space="preserve"><value>ej., 5% significa No registradas = Registradas × 0.05</value></data>
+  <data name="EstimatedProperties" xml:space="preserve"><value>Propiedades estimadas</value></data>
+  <data name="EstimatedProperties_Tooltip" xml:space="preserve"><value>Total estimado de propiedades gravables en la jurisdicción = Registradas + No registradas.</value></data>
+  <data name="CompliantProperties" xml:space="preserve"><value>Propiedades en cumplimiento</value></data>
+  <data name="CompliantProperties_Tooltip" xml:space="preserve"><value>Estimación mediante fórmula proxy que considera los pagos parciales durante el ejercicio fiscal. Supone que la proporción de propiedades en cumplimiento es igual a la proporción de ingresos recaudados.</value></data>
+  <data name="CompliantProperties_Formula" xml:space="preserve"><value>= Registradas × (Ingresos a la fecha / Monto facturado)</value></data>
+  <data name="TotalFiscalBase" xml:space="preserve"><value>Base fiscal total</value></data>
+  <data name="TotalFiscalBase_Tooltip" xml:space="preserve"><value>Valor total de todas las propiedades registradas y gravables según su valuación fiscal (catastral). Es la base fiscal oficialmente registrada utilizada para los cálculos del impuesto predial.</value></data>
+  <data name="TotalMarketValue" xml:space="preserve"><value>Valor de mercado total</value></data>
+  <data name="TotalMarketValue_Tooltip" xml:space="preserve"><value>Estimación del valor de mercado total de todas las propiedades gravables a precios reales de mercado. Si se desconoce, marque "No tengo datos de valor de mercado" para ingresar un porcentaje estimado por encima de los valores fiscales.</value></data>
+  <data name="MarketValueEstimateCheckbox" xml:space="preserve"><value>No tengo datos de valor de mercado (usar estimación)</value></data>
+  <data name="MarketValueHigherBy" xml:space="preserve"><value>El valor de mercado es superior a la base fiscal en:</value></data>
+  <data name="MarketValueEstimateHelper" xml:space="preserve"><value>ej., 30% significa Valor de mercado = Base fiscal × 1.30</value></data>
+  <data name="BilledAmount" xml:space="preserve"><value>Monto facturado</value></data>
+  <data name="BilledAmount_Tooltip" xml:space="preserve"><value>Monto oficialmente puesto a cobro (facturado) para el año bajo análisis.</value></data>
+  <data name="OutstandingAmount" xml:space="preserve"><value>Monto pendiente</value></data>
+  <data name="OutstandingAmount_Tooltip" xml:space="preserve"><value>Porción de los cargos del año en curso que permanece sin pagar. NO debe incluir atrasos de años anteriores. Si no se dispone del dato exacto, proporcione una estimación razonable.</value></data>
+  <data name="RevenueToDate" xml:space="preserve"><value>Ingresos a la fecha</value></data>
+  <data name="RevenueToDate_Tooltip" xml:space="preserve"><value>Cálculo automático. Total de ingresos recaudados = Monto facturado menos Pendiente. Se actualiza dinámicamente.</value></data>
+  <data name="RevenueToDate_Formula" xml:space="preserve"><value>= Monto facturado - Monto pendiente</value></data>
+  <data name="EnterValue" xml:space="preserve"><value>Ingrese el valor</value></data>
+
+  <!-- Average Values Section -->
+  <data name="AvgValues_Title" xml:space="preserve"><value>Valores promedio útiles requeridos para el análisis</value></data>
+  <data name="AvgTaxableValue" xml:space="preserve"><value>Valor imponible promedio (registrado)</value></data>
+  <data name="AvgTaxableValue_Tooltip" xml:space="preserve"><value>Valuación oficial promedio por propiedad, determinada por el catastro. Base para la aplicación de tasas impositivas.</value></data>
+  <data name="AvgMarketValue" xml:space="preserve"><value>Valor de mercado promedio (registrado)</value></data>
+  <data name="AvgMarketValue_Tooltip" xml:space="preserve"><value>Estimación del valor promedio de una propiedad si fuera valuada a niveles de mercado. Refleja la base imponible teórica bajo una valuación ideal.</value></data>
+  <data name="EffectiveTaxRate" xml:space="preserve"><value>Tasa impositiva efectiva</value></data>
+  <data name="EffectiveTaxRate_Tooltip" xml:space="preserve"><value>Tasa efectiva real calculada a partir de los ingresos recaudados. Refleja la subvaluación, exenciones y limitaciones de cumplimiento.</value></data>
+  <data name="AvgBilledAmount" xml:space="preserve"><value>Monto promedio facturado</value></data>
+  <data name="AvgBilledAmount_Tooltip" xml:space="preserve"><value>Facturación estimada por propiedad basada en los valores catastrales actuales y la tasa impositiva efectiva.</value></data>
+  <data name="PotentialBilling" xml:space="preserve"><value>Facturación potencial (base de mercado)</value></data>
+  <data name="PotentialBilling_Tooltip" xml:space="preserve"><value>Facturación máxima teórica por propiedad asumiendo valuación a valor de mercado completo.</value></data>
+
+  <!-- KPI Section -->
+  <data name="KPI_Title" xml:space="preserve"><value>Indicadores clave de desempeño (ICD)</value></data>
+  <data name="ComplianceRatio" xml:space="preserve"><value>Ratio de cumplimiento</value></data>
+  <data name="ComplianceRatio_Tooltip" xml:space="preserve"><value>Indicador proxy del desempeño del sistema de cumplimiento. Mide la proporción de montos facturados efectivamente recaudados. >80% Verde, 60-80% Amarillo, &lt;60% Rojo.</value></data>
+  <data name="ComplianceRatio_Formula" xml:space="preserve"><value>Ingresos a la fecha / Monto facturado</value></data>
+  <data name="CoverageRatio" xml:space="preserve"><value>Ratio de cobertura</value></data>
+  <data name="CoverageRatio_Tooltip" xml:space="preserve"><value>Indicador proxy del desempeño del sistema de cobertura. Mide la proporción de propiedades totales registradas. >80% Verde, 60-80% Amarillo, &lt;60% Rojo.</value></data>
+  <data name="CoverageRatio_Formula" xml:space="preserve"><value>Propiedades registradas / Propiedades estimadas</value></data>
+  <data name="ValuationRatio" xml:space="preserve"><value>Ratio de valuación</value></data>
+  <data name="ValuationRatio_Tooltip" xml:space="preserve"><value>Indicador proxy del desempeño del sistema de valuación. Mide la proximidad entre las valuaciones fiscales y los valores de mercado. >80% Verde, 60-80% Amarillo, &lt;60% Rojo.</value></data>
+  <data name="ValuationRatio_Formula" xml:space="preserve"><value>Base fiscal total / Valor de mercado total</value></data>
+
+  <!-- Results Section -->
+  <data name="Results_Title" xml:space="preserve"><value>Representación gráfica de los datos analizados</value></data>
+
+  <!-- Potential Revenue Table -->
+  <data name="PotentialRevenue_Title" xml:space="preserve"><value>Desglose de ingresos potenciales (Ingresos reales + Desglose de brechas adm.)</value></data>
+  <data name="Table_RevenueAndGaps" xml:space="preserve"><value>Ingresos y brechas administrativas</value></data>
+  <data name="Table_Amount" xml:space="preserve"><value>Monto</value></data>
+  <data name="Table_Share" xml:space="preserve"><value>Participación (%)</value></data>
+  <data name="RevenueToDate_Label" xml:space="preserve"><value>Ingresos a la fecha</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>Brecha de cumplimiento</value></data>
+  <data name="ComplianceGap_Tooltip" xml:space="preserve"><value>La proporción de propiedades registradas que no pagan el impuesto o no cumplen con su obligación. Refleja debilidades en la aplicación, facturación y sistemas de cobro. La brecha de cumplimiento es igual al monto pendiente.</value></data>
+  <data name="CoverageGap" xml:space="preserve"><value>Brecha de cobertura</value></data>
+  <data name="CoverageGap_Tooltip" xml:space="preserve"><value>La proporción de propiedades estimadas totales no inscritas en el sistema de impuesto predial. Esta brecha indica falta de identificación de propiedades e inclusión en la base de datos fiscal. La brecha se cuantifica multiplicando el número de propiedades no registradas por el monto promedio facturado por propiedad registrada.</value></data>
+  <data name="ValuationGap" xml:space="preserve"><value>Brecha de valuación</value></data>
+  <data name="ValuationGap_Tooltip" xml:space="preserve"><value>La brecha de valuación estima cuántos más ingresos podrían facturarse a las propiedades en cumplimiento si fueran valuadas a valor de mercado en lugar de valuaciones fiscales subvaluadas. Refleja debilidades en el marco de valuación y registros de propiedades desactualizados.</value></data>
+  <data name="MixedGapReg" xml:space="preserve"><value>Brecha mixta (val./cob. reg.)</value></data>
+  <data name="MixedGapReg_Tooltip" xml:space="preserve"><value>Esta brecha mixta captura la pérdida de ingresos de propiedades no conformes registradas pero que no pagan, y cuyos valores también están por debajo del mercado. Muestra el efecto combinado del incumplimiento y la subvaluación.</value></data>
+  <data name="MixedGapUnreg" xml:space="preserve"><value>Brecha mixta (val./no cub. no reg.)</value></data>
+  <data name="MixedGapUnreg_Tooltip" xml:space="preserve"><value>Esta brecha mixta estima los ingresos no percibidos de propiedades no registradas valuadas a niveles de mercado. Captura la pérdida total de ingresos debida tanto a la falta de registro como a la subvaluación.</value></data>
+  <data name="TotalPotentialRevenue" xml:space="preserve"><value>TOTAL (Ingresos potenciales)</value></data>
+
+  <!-- Matrix Dashboard -->
+  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Análisis de brechas del impuesto predial - Tablero</value></data>
+  <data name="Matrix_YAxisTitle" xml:space="preserve"><value>N.° de propiedades</value></data>
+  <data name="Matrix_Estimated" xml:space="preserve"><value>Estimadas</value></data>
+  <data name="Matrix_Registered" xml:space="preserve"><value>Registradas</value></data>
+  <data name="Matrix_Compliant" xml:space="preserve"><value>En cumplimiento</value></data>
+  <data name="Matrix_CoverageGap" xml:space="preserve"><value>Brecha de cobertura</value></data>
+  <data name="Matrix_MixedGapUnreg" xml:space="preserve"><value>Brecha mixta (No reg.)</value></data>
+  <data name="Matrix_ComplianceGap" xml:space="preserve"><value>Brecha de cumplimiento</value></data>
+  <data name="Matrix_MixedGapReg" xml:space="preserve"><value>Brecha mixta (Reg.)</value></data>
+  <data name="Matrix_ActualRevenue" xml:space="preserve"><value>Ingresos reales</value></data>
+  <data name="Matrix_ValuationGap" xml:space="preserve"><value>Brecha de valuación</value></data>
+  <data name="Matrix_AvgBilled" xml:space="preserve"><value>Prom. facturado</value></data>
+  <data name="Matrix_AchievableAvg" xml:space="preserve"><value>Prom. alcanzable</value></data>
+  <data name="MatrixDashboard_Description" xml:space="preserve"><value>Esta matriz presenta el análisis de brechas del impuesto predial en dos dimensiones: el número de propiedades (eje vertical, de En cumplimiento a Estimadas) y el nivel de facturación (eje horizontal, de la facturación promedio a la facturación alcanzable basada en el mercado). Cada celda coloreada representa un tipo diferente de brecha o componente de ingresos. El mismo desglose se presenta en el gráfico circular a continuación.</value></data>
+
+  <!-- Pie Charts -->
+  <data name="RevenueAndAdmGaps_Title" xml:space="preserve"><value>Ingresos y brechas administrativas</value></data>
+  <data name="RevenueAndAdmGaps_Description" xml:space="preserve"><value>Este gráfico circular ilustra la misma información que la matriz anterior en forma de porcentajes. Muestra la participación de los ingresos potenciales totales correspondientes a los ingresos efectivamente recaudados, así como la contribución de cada tipo de brecha administrativa (ingresos no recaudados o perdidos) a ese total.</value></data>
+
+  <!-- Administrative Gap Breakdown Table -->
+  <data name="AdmGapBreakdown_Title" xml:space="preserve"><value>Desglose de brechas administrativas</value></data>
+  <data name="Table_AdmGaps" xml:space="preserve"><value>Brechas administrativas</value></data>
+  <data name="ValuationAssessmentGap" xml:space="preserve"><value>Brecha de valuación/estimación</value></data>
+  <data name="MixedGapValReg" xml:space="preserve"><value>Brecha mixta (val./reg.)</value></data>
+  <data name="MixedGapValUnreg" xml:space="preserve"><value>Brecha mixta (val./no reg.)</value></data>
+  <data name="TotalAdmGap" xml:space="preserve"><value>Total de brechas administrativas</value></data>
+
+  <!-- Administrative Gaps Pie Chart -->
+  <data name="AdmGapsPie_Title" xml:space="preserve"><value>Desglose de brechas administrativas</value></data>
+  <data name="AdmGapsPie_Description" xml:space="preserve"><value>Este gráfico circular ilustra la distribución porcentual de las brechas de ingresos. Muestra visualmente la contribución de cada tipo de brecha al total de ingresos no recaudados, ayudando a identificar cuáles brechas son las más significativas.</value></data>
+
+  <!-- Common -->
+  <data name="Description_Label" xml:space="preserve"><value>DESCRIPCIÓN:</value></data>
+</root>

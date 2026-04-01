@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Card Headers -->
+  <data name="ShortTermInformation" xml:space="preserve"><value>Short Term Information</value></data>
+  <data name="ShortTermDetails" xml:space="preserve"><value>Short Term Details</value></data>
+  <data name="GapAnalysisSummary" xml:space="preserve"><value>Gap Analysis Summary</value></data>
+
+  <!-- Form Labels -->
+  <data name="EstimatedDailyFees" xml:space="preserve"><value>Estimated Number of Daily Fees</value></data>
+  <data name="ActualDailyFees" xml:space="preserve"><value>Actual Number of Daily Fees</value></data>
+  <data name="PotentialRatePayable" xml:space="preserve"><value>Potential Rate payable by Leasees</value></data>
+  <data name="ActualRatePaid" xml:space="preserve"><value>Actual Rate paid by Leasees</value></data>
+  <data name="EnterValue" xml:space="preserve"><value>Enter value</value></data>
+
+  <!-- Placeholders -->
+  <data name="EnterEstimatedDailyFees" xml:space="preserve"><value>Enter estimated number of daily fees</value></data>
+  <data name="EnterActualDailyFees" xml:space="preserve"><value>Enter actual number of daily fees</value></data>
+
+  <!-- Categories -->
+  <data name="Categories" xml:space="preserve"><value>Categories</value></data>
+  <data name="AddCategory" xml:space="preserve"><value>Add Category</value></data>
+  <data name="NewCategory" xml:space="preserve"><value>New Category</value></data>
+  <data name="DeleteCategory" xml:space="preserve"><value>Delete Category</value></data>
+
+  <!-- Description / Notes -->
+  <data name="Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Notes" xml:space="preserve"><value>Notes</value></data>
+
+  <!-- Gap Summary Cards -->
+  <data name="ActualRevenue" xml:space="preserve"><value>ACTUAL REVENUE</value></data>
+  <data name="CurrentCollectedRevenue" xml:space="preserve"><value>Current collected revenue</value></data>
+  <data name="PotentialRevenue" xml:space="preserve"><value>POTENTIAL REVENUE</value></data>
+  <data name="MaximumPossibleRevenue" xml:space="preserve"><value>Maximum possible revenue</value></data>
+  <data name="TotalGap" xml:space="preserve"><value>TOTAL GAP</value></data>
+  <data name="RevenueGapToBeAddressed" xml:space="preserve"><value>Revenue gap to be addressed</value></data>
+  <data name="PotentialLeveraged" xml:space="preserve"><value>POTENTIAL LEVERAGED</value></data>
+  <data name="PercentageOfPotentialCollected" xml:space="preserve"><value>Percentage of potential collected</value></data>
+
+  <!-- Formula Details -->
+  <data name="FormulaDetails" xml:space="preserve"><value>Formula Details</value></data>
+  <data name="ActualRevenueTitle" xml:space="preserve"><value>Actual Revenue</value></data>
+  <data name="TotalPotentialRevenue" xml:space="preserve"><value>Total Potential Revenue</value></data>
+  <data name="TotalGapShortTermFees" xml:space="preserve"><value>Total Gap Short-term Fees</value></data>
+  <data name="PercentOfPotentialLeveraged" xml:space="preserve"><value>% of Potential Leveraged</value></data>
+  <data name="Where" xml:space="preserve"><value>Where:</value></data>
+  <data name="SimpleDifferenceBetween" xml:space="preserve"><value>Simple difference between:</value></data>
+  <data name="Interpretation" xml:space="preserve"><value>Interpretation:</value></data>
+  <data name="FullPotentialLeveraged" xml:space="preserve"><value>100% = Full potential leveraged</value></data>
+  <data name="SignificantOpportunity" xml:space="preserve"><value>&lt; 50% = Significant opportunity for improvement</value></data>
+  <data name="CriticalLeakage" xml:space="preserve"><value>&lt; 25% = Critical revenue leakage</value></data>
+
+  <!-- Revenue Detail Cards -->
+  <data name="SumActualFormula" xml:space="preserve"><value>Sum of (Actual Daily Fees x Actual Rate x 365)</value></data>
+  <data name="SumPotentialFormula" xml:space="preserve"><value>Sum of (Estimated Daily Fees x Potential Rate x 365)</value></data>
+  <data name="PotentialMinusActual" xml:space="preserve"><value>Potential Revenue - Actual Revenue</value></data>
+  <data name="ActualDivPotential" xml:space="preserve"><value>Actual Revenue / Potential Revenue</value></data>
+
+  <!-- Category Gaps -->
+  <data name="CategoryGaps" xml:space="preserve"><value>Category Gaps</value></data>
+  <data name="Category" xml:space="preserve"><value>Category</value></data>
+  <data name="PotentialRevenueCol" xml:space="preserve"><value>Potential Revenue</value></data>
+  <data name="ActualRevenueCol" xml:space="preserve"><value>Actual Revenue</value></data>
+  <data name="Gap" xml:space="preserve"><value>Gap</value></data>
+  <data name="PercentLeveraged" xml:space="preserve"><value>% Leveraged</value></data>
+
+  <!-- Detailed Gap Analysis -->
+  <data name="DetailedGapAnalysis" xml:space="preserve"><value>Detailed Gap Analysis</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>COMPLIANCE GAP</value></data>
+  <data name="GapDueToNonCompliance" xml:space="preserve"><value>Gap due to non-compliance</value></data>
+  <data name="RateGap" xml:space="preserve"><value>RATE GAP</value></data>
+  <data name="GapDueToLowerRates" xml:space="preserve"><value>Gap due to lower rates</value></data>
+  <data name="CombinedGaps" xml:space="preserve"><value>COMBINED GAPS</value></data>
+  <data name="OtherUncategorizedGaps" xml:space="preserve"><value>Other uncategorized gaps</value></data>
+
+  <!-- Gap Components Formulas -->
+  <data name="GapComponentsFormulas" xml:space="preserve"><value>Gap Components Formulas</value></data>
+  <data name="ComplianceGapTitle" xml:space="preserve"><value>Compliance Gap</value></data>
+  <data name="RateGapTitle" xml:space="preserve"><value>Rate Gap</value></data>
+  <data name="CombinedGapsTitle" xml:space="preserve"><value>Combined Gaps</value></data>
+
+  <!-- Gap Visualization -->
+  <data name="GapVisualization" xml:space="preserve"><value>Gap Visualization</value></data>
+  <data name="OverallGapAnalysis" xml:space="preserve"><value>Overall Gap Analysis</value></data>
+  <data name="Chart" xml:space="preserve"><value>Chart</value></data>
+  <data name="Breakdown" xml:space="preserve"><value>Breakdown</value></data>
+</root>

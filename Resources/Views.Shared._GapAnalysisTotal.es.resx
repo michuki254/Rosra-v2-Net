@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Main Header -->
+  <data name="TotalRevenueGapAnalysis" xml:space="preserve"><value>An&#225;lisis total de brechas de ingresos</value></data>
+  <data name="DescriptionLabel" xml:space="preserve"><value>Descripci&#243;n</value></data>
+
+  <!-- Revenue Summary Cards -->
+  <data name="TotalCurrentRevenue" xml:space="preserve"><value>Total de ingresos actuales</value></data>
+  <data name="Actual" xml:space="preserve"><value>Real</value></data>
+  <data name="CurrentRevenue" xml:space="preserve"><value>Ingresos actuales</value></data>
+  <data name="TotalPotentialRevenue" xml:space="preserve"><value>Total de ingresos potenciales</value></data>
+  <data name="Potential" xml:space="preserve"><value>Potencial</value></data>
+  <data name="PotentialRevenue" xml:space="preserve"><value>Ingresos potenciales</value></data>
+  <data name="TotalRevenueGap" xml:space="preserve"><value>Brecha total de ingresos</value></data>
+  <data name="GapBadge" xml:space="preserve"><value>Brecha</value></data>
+  <data name="RevenueGap" xml:space="preserve"><value>Brecha de ingresos</value></data>
+
+  <!-- Largest Gap Highlight -->
+  <data name="LargestRevenueGap" xml:space="preserve"><value>Mayor brecha de ingresos</value></data>
+  <data name="LargestGapDescription" xml:space="preserve"><value>La fuente de ingresos {0} representa la mayor oportunidad con una brecha de {1}.</value></data>
+  <data name="LargestGap" xml:space="preserve"><value>Mayor brecha</value></data>
+
+  <!-- Revenue Gap by Source -->
+  <data name="RevenueGapAnalysisBySource" xml:space="preserve"><value>An&#225;lisis de brechas de ingresos por fuente</value></data>
+  <data name="PropertyTax" xml:space="preserve"><value>Impuesto predial</value></data>
+  <data name="License" xml:space="preserve"><value>Licencia</value></data>
+  <data name="ShortTerm" xml:space="preserve"><value>Corto plazo</value></data>
+  <data name="LongTerm" xml:space="preserve"><value>Largo plazo</value></data>
+  <data name="Mixed" xml:space="preserve"><value>Mixto</value></data>
+  <data name="TotalGap" xml:space="preserve"><value>Brecha total</value></data>
+
+  <!-- Potential Revenue By Source Table -->
+  <data name="PotentialRevenueBySource" xml:space="preserve"><value>Ingresos potenciales por fuente</value></data>
+  <data name="RevenueSource" xml:space="preserve"><value>Fuente de ingresos</value></data>
+  <data name="CurrentRevenueCol" xml:space="preserve"><value>Ingresos actuales</value></data>
+  <data name="PotentialRevenueCol" xml:space="preserve"><value>Ingresos potenciales</value></data>
+  <data name="GapCol" xml:space="preserve"><value>Brecha</value></data>
+  <data name="PercentOfPotentialRealized" xml:space="preserve"><value>% del potencial realizado</value></data>
+  <data name="Total" xml:space="preserve"><value>Total</value></data>
+
+  <!-- Top 5 OSR Gap Analysis -->
+  <data name="Top5OsrGapAnalysis" xml:space="preserve"><value>An&#225;lisis de brechas de las 5 principales RPP</value></data>
+  <data name="PercentOfGap" xml:space="preserve"><value>% de la brecha</value></data>
+
+  <!-- Detailed Gap Breakdown -->
+  <data name="DetailedGapBreakdownByType" xml:space="preserve"><value>Desglose detallado de brechas por tipo de ingreso</value></data>
+  <data name="RegistrationGap" xml:space="preserve"><value>Brecha de registro</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>Brecha de cumplimiento</value></data>
+  <data name="AssessmentGap" xml:space="preserve"><value>Brecha de evaluaci&#243;n</value></data>
+  <data name="RateGap" xml:space="preserve"><value>Brecha de tarifa</value></data>
+  <data name="CombinedGap" xml:space="preserve"><value>Brecha combinada</value></data>
+
+  <!-- Charts -->
+  <data name="TotalGapByRevenueSource" xml:space="preserve"><value>Brecha total por fuente de ingresos</value></data>
+  <data name="GapAnalysisVisualization" xml:space="preserve"><value>Visualizaci&#243;n del an&#225;lisis de brechas</value></data>
+
+  <!-- Average Gap Analysis -->
+  <data name="AverageGapAnalysis" xml:space="preserve"><value>An&#225;lisis de brecha promedio</value></data>
+  <data name="AverageGapAcrossTop5" xml:space="preserve"><value>Brecha promedio de las 5 principales RPP</value></data>
+  <data name="AverageGapFormula" xml:space="preserve"><value>F&#243;rmula: Brecha total / Total de ingresos potenciales</value></data>
+  <data name="ExcellentRevenueCollection" xml:space="preserve"><value>Excelente recaudaci&#243;n de ingresos</value></data>
+
+  <!-- Total Potential Revenue Section -->
+  <data name="TotalPotentialRevenueHeader" xml:space="preserve"><value>Total de ingresos potenciales</value></data>
+  <data name="TotalRevenuePotentialFromAll" xml:space="preserve"><value>Potencial total de ingresos de todas las fuentes</value></data>
+  <data name="TotalRevenuePotentialDescription" xml:space="preserve"><value>Esto representa los ingresos potenciales combinados del impuesto predial, licencias, tarifas de corto plazo, largo plazo y mixtas.</value></data>
+  <data name="TotalPotential" xml:space="preserve"><value>Potencial total</value></data>
+
+  <!-- Other OSR Potential -->
+  <data name="TotalPotentialOtherOSRs" xml:space="preserve"><value>Potencial total de otras RPP</value></data>
+  <data name="OtherOSRFormula" xml:space="preserve"><value>F&#243;rmula: Otros ingresos / (1 - Brecha promedio)</value></data>
+  <data name="OtherOSRDescription" xml:space="preserve"><value>Esta f&#243;rmula estima los ingresos potenciales de otras fuentes aplicando el mismo ratio de brecha observado en las 5 principales RPP.</value></data>
+  <data name="Calculation" xml:space="preserve"><value>C&#225;lculo</value></data>
+  <data name="EstimatedPotentialRevenue" xml:space="preserve"><value>Ingresos potenciales estimados</value></data>
+  <data name="EstimatedGap" xml:space="preserve"><value>Brecha estimada</value></data>
+
+  <!-- Total OSR Potential -->
+  <data name="TotalOSRPotential" xml:space="preserve"><value>Potencial total de RPP</value></data>
+  <data name="TotalOSRPotentialFormula" xml:space="preserve"><value>F&#243;rmula: Potencial total de todas las pesta&#241;as + Potencial total de otras RPP</value></data>
+  <data name="TotalOSRPotentialDescription" xml:space="preserve"><value>Esto representa el potencial completo de ingresos de todas las fuentes, incluyendo las "Otras RPP" no capturadas en las pesta&#241;as principales.</value></data>
+  <data name="TotalPotentialFromAllTabs" xml:space="preserve"><value>Potencial total de todas las pesta&#241;as</value></data>
+  <data name="TotalPotentialOtherOSRsLabel" xml:space="preserve"><value>Potencial total de otras RPP</value></data>
+
+  <!-- Bottom Form Fields -->
+  <data name="CurrentValue" xml:space="preserve"><value>Valor actual</value></data>
+  <data name="PotentialValue" xml:space="preserve"><value>Valor potencial</value></data>
+  <data name="Gap" xml:space="preserve"><value>Brecha</value></data>
+  <data name="PercentageRealized" xml:space="preserve"><value>Porcentaje realizado (%)</value></data>
+  <data name="PerCapitaCurrentRevenue" xml:space="preserve"><value>Ingresos actuales per c&#225;pita</value></data>
+  <data name="PerCapitaPotentialRevenue" xml:space="preserve"><value>Ingresos potenciales per c&#225;pita</value></data>
+  <data name="NotesAndRecommendations" xml:space="preserve"><value>Notas y recomendaciones</value></data>
+</root>

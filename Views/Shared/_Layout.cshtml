@@ -273,6 +273,50 @@
             </div>
         </div>
     </footer>
+    @* Global JS translations injected from server-side resources *@
+    <script>
+        window.AppTranslations = {
+            common: {
+                save: '@Html.Raw(SharedLocalizer["Common_Save"].Value)',
+                cancel: '@Html.Raw(SharedLocalizer["Common_Cancel"].Value)',
+                delete_: '@Html.Raw(SharedLocalizer["Common_Delete"].Value)',
+                edit: '@Html.Raw(SharedLocalizer["Common_Edit"].Value)',
+                close: '@Html.Raw(SharedLocalizer["Common_Close"].Value)',
+                yes: '@Html.Raw(SharedLocalizer["Common_Yes"].Value)',
+                no: '@Html.Raw(SharedLocalizer["Common_No"].Value)',
+                export_: '@Html.Raw(SharedLocalizer["Common_Export"].Value)',
+            },
+            alerts: {
+                pleaseEnterName: '@Html.Raw(SharedLocalizer["JS_PleaseEnterName"].Value)',
+                categoryExists: '@Html.Raw(SharedLocalizer["JS_CategoryExists"].Value)',
+                errorOccurred: '@Html.Raw(SharedLocalizer["JS_ErrorOccurred"].Value)',
+                confirmDelete: '@Html.Raw(SharedLocalizer["JS_ConfirmDelete"].Value)',
+                confirmReset: '@Html.Raw(SharedLocalizer["JS_ConfirmReset"].Value)',
+                confirmClear: '@Html.Raw(SharedLocalizer["JS_ConfirmClear"].Value)',
+                copiedToClipboard: '@Html.Raw(SharedLocalizer["JS_CopiedToClipboard"].Value)',
+                selectCountryFirst: '@Html.Raw(SharedLocalizer["JS_SelectCountryFirst"].Value)',
+                selectFileFirst: '@Html.Raw(SharedLocalizer["JS_SelectFileFirst"].Value)',
+                invalidCsvFormat: '@Html.Raw(SharedLocalizer["JS_InvalidCsvFormat"].Value)',
+                dataUploadSuccess: '@Html.Raw(SharedLocalizer["JS_DataUploadSuccess"].Value)',
+                noDataAvailable: '@Html.Raw(SharedLocalizer["JS_NoDataAvailable"].Value)',
+            },
+            chart: {
+                currentRevenue: '@Html.Raw(SharedLocalizer["Chart_CurrentRevenue"].Value)',
+                potentialRevenue: '@Html.Raw(SharedLocalizer["Chart_PotentialRevenue"].Value)',
+                revenueGap: '@Html.Raw(SharedLocalizer["Chart_RevenueGap"].Value)',
+                complianceGap: '@Html.Raw(SharedLocalizer["Chart_ComplianceGap"].Value)',
+                coverageGap: '@Html.Raw(SharedLocalizer["Chart_CoverageGap"].Value)',
+                valuationGap: '@Html.Raw(SharedLocalizer["Chart_ValuationGap"].Value)',
+                liabilityGap: '@Html.Raw(SharedLocalizer["Chart_LiabilityGap"].Value)',
+                mixedGap: '@Html.Raw(SharedLocalizer["Chart_MixedGap"].Value)',
+                totalGap: '@Html.Raw(SharedLocalizer["Chart_TotalGap"].Value)',
+                peers: '@Html.Raw(SharedLocalizer["Chart_Peers"].Value)',
+                frontier: '@Html.Raw(SharedLocalizer["Chart_Frontier"].Value)',
+                actual: '@Html.Raw(SharedLocalizer["Chart_Actual"].Value)',
+                estimated: '@Html.Raw(SharedLocalizer["Chart_Estimated"].Value)',
+            }
+        };
+    </script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/rosraStateManager.js" asp-append-version="true"></script>

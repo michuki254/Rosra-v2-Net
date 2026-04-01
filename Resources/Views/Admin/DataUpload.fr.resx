@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Page Header -->
+  <data name="PageTitle" xml:space="preserve"><value>T&#233;l&#233;versement de donn&#233;es</value></data>
+  <data name="PageSubtitle" xml:space="preserve"><value>Importer des donn&#233;es pour les bases PeerSNG et Pays</value></data>
+  <data name="BackToDashboard" xml:space="preserve"><value>Retour au tableau de bord</value></data>
+
+  <!-- Dataset Selector -->
+  <data name="SelectDataset" xml:space="preserve"><value>S&#233;lectionner le jeu de donn&#233;es &#224; t&#233;l&#233;verser</value></data>
+  <data name="SelectDatasetDescription" xml:space="preserve"><value>Choisissez le type de donn&#233;es que vous souhaitez importer dans le syst&#232;me</value></data>
+  <data name="SelectADataset" xml:space="preserve"><value>-- S&#233;lectionner un jeu de donn&#233;es --</value></data>
+  <data name="PeerSNGOption" xml:space="preserve"><value>Donn&#233;es PeerSNG (47 comt&#233;s du Kenya)</value></data>
+  <data name="CountryOption" xml:space="preserve"><value>Donn&#233;es par pays (137+ pays dans le monde)</value></data>
+
+  <!-- PeerSNG Upload -->
+  <data name="PeerSNGDataUpload" xml:space="preserve"><value>T&#233;l&#233;versement des donn&#233;es PeerSNG</value></data>
+  <data name="PeerSNGDescription" xml:space="preserve"><value>T&#233;l&#233;verser les donn&#233;es pour les 47 comt&#233;s du Kenya</value></data>
+  <data name="DownloadTemplate" xml:space="preserve"><value>T&#233;l&#233;charger le mod&#232;le</value></data>
+  <data name="Important" xml:space="preserve"><value>Important :</value></data>
+  <data name="PeerSNGHelpText" xml:space="preserve"><value>Assurez-vous que votre fichier CSV contient exactement 4 colonnes dans le bon ordre. La premi&#232;re ligne doit contenir les en-t&#234;tes de colonnes. Mult et ValidMult sont calcul&#233;s automatiquement.</value></data>
+  <data name="CSVFormatRequirements" xml:space="preserve"><value>Exigences de format CSV</value></data>
+  <data name="Columns" xml:space="preserve"><value>colonnes</value></data>
+  <data name="ClickToExpandCollapse" xml:space="preserve"><value>Cliquer pour d&#233;velopper/r&#233;duire</value></data>
+  <data name="Column" xml:space="preserve"><value>Colonne</value></data>
+  <data name="Name" xml:space="preserve"><value>Nom</value></data>
+  <data name="TypeHeader" xml:space="preserve"><value>Type</value></data>
+  <data name="Example" xml:space="preserve"><value>Exemple</value></data>
+  <data name="Required" xml:space="preserve"><value>REQUIS</value></data>
+  <data name="Optional" xml:space="preserve"><value>FACULTATIF</value></data>
+  <data name="CalculatedFields" xml:space="preserve"><value>Champs calcul&#233;s (g&#233;n&#233;r&#233;s automatiquement) :</value></data>
+  <data name="ClickToUpload" xml:space="preserve"><value>Cliquer pour t&#233;l&#233;verser ou glisser-d&#233;poser</value></data>
+  <data name="CSVFileOnly" xml:space="preserve"><value>Fichier CSV uniquement (Taille max. : 10 Mo)</value></data>
+  <data name="UploadPeerSNGData" xml:space="preserve"><value>T&#233;l&#233;verser les donn&#233;es PeerSNG</value></data>
+
+  <!-- Country Data Upload -->
+  <data name="CountryDataUpload" xml:space="preserve"><value>T&#233;l&#233;versement des donn&#233;es par pays</value></data>
+  <data name="CountryDescription" xml:space="preserve"><value>T&#233;l&#233;verser les donn&#233;es pour 137+ pays dans le monde</value></data>
+  <data name="CountryHelpText" xml:space="preserve"><value>Ce jeu de donn&#233;es comporte 16 colonnes incluant les informations sur la devise. Les colonnes num&#233;riques peuvent &#234;tre vides pour les pays dont les donn&#233;es sont incompl&#232;tes. Veillez &#224; respecter l'ordre exact.</value></data>
+  <data name="UploadCountryData" xml:space="preserve"><value>T&#233;l&#233;verser les donn&#233;es par pays</value></data>
+
+  <!-- Toast -->
+  <data name="Notification" xml:space="preserve"><value>Notification</value></data>
+</root>

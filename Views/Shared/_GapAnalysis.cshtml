@@ -558,7 +558,7 @@
     <div class="gap-analysis-intro-section">
         <div class="intro-text-box">
             <i class="bi bi-info-circle-fill intro-icon"></i>
-            <p class="intro-text">Fill in the requested inputs for each OSR stream. Add or remove streams as needed to match your context. Once you have entered all available data, go to the Prioritisation tab to see the headline results and start sequencing streams for reform planning.</p>
+            <p class="intro-text">@Localizer["Intro_Text"]</p>
         </div>
     </div>
 
@@ -570,7 +570,7 @@
             <span class="stream-name-label" id="propertyTaxLabel">@Model.PropertyTaxDisplayName</span>
             @if (!isViewMode)
             {
-                <span class="rename-tab-btn" onclick="event.stopPropagation(); openRenameModal('property-tax', '@Model.PropertyTaxDisplayName');" title="Rename this tab">
+                <span class="rename-tab-btn" onclick="event.stopPropagation(); openRenameModal('property-tax', '@Model.PropertyTaxDisplayName');" title="@Localizer["RenameTab_Tooltip"]">
                     <i class="bi bi-pencil"></i>
                 </span>
             }
@@ -583,7 +583,7 @@
             <span class="stream-name-label" id="businessLicenseLabel">@Model.BusinessLicenseDisplayName</span>
             @if (!isViewMode)
             {
-                <span class="rename-tab-btn" onclick="event.stopPropagation(); openRenameModal('license', '@Model.BusinessLicenseDisplayName');" title="Rename this tab">
+                <span class="rename-tab-btn" onclick="event.stopPropagation(); openRenameModal('license', '@Model.BusinessLicenseDisplayName');" title="@Localizer["RenameTab_Tooltip"]">
                     <i class="bi bi-pencil"></i>
                 </span>
             }
@@ -602,7 +602,7 @@
                         <span class="stream-name-label">@stream.StreamName</span>
                         @if (!isViewMode)
                         {
-                            <span class="close-tab" onclick="event.stopPropagation(); deleteStream(@i);" title="Remove stream">&times;</span>
+                            <span class="close-tab" onclick="event.stopPropagation(); deleteStream(@i);" title="@Localizer["RemoveStream_Tooltip"]">&times;</span>
                         }
                     </button>
                 }
@@ -612,9 +612,9 @@
         <!-- Add Stream Button -->
         @if (!isViewMode)
         {
-            <button type="button" class="add-stream-btn" onclick="openAddStreamModal()" title="Add a new revenue stream">
+            <button type="button" class="add-stream-btn" onclick="openAddStreamModal()" title="@Localizer["AddStream_Tooltip"]">
                 <i class="bi bi-plus-circle"></i>
-                Add Stream
+                @Localizer["AddStream"]
             </button>
         }
     </div>
@@ -654,41 +654,41 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addStreamModalLabel">
-                    <i class="bi bi-plus-circle me-2"></i>Add New Revenue Stream
+                    <i class="bi bi-plus-circle me-2"></i>@Localizer["AddStreamModal_Title"]
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label for="newStreamName" class="form-label">Stream Name</label>
-                    <input type="text" class="form-control" id="newStreamName" placeholder="e.g., Parking Fees, Market Stall Fees, Advertising Permits...">
-                    <small class="text-muted">Enter a descriptive name for this revenue stream</small>
+                    <label for="newStreamName" class="form-label">@Localizer["AddStreamModal_StreamName"]</label>
+                    <input type="text" class="form-control" id="newStreamName" placeholder="@Localizer["AddStreamModal_Placeholder"]">
+                    <small class="text-muted">@Localizer["AddStreamModal_Helper"]</small>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Quick Templates</label>
+                    <label class="form-label">@Localizer["AddStreamModal_QuickTemplates"]</label>
                     <div class="d-flex flex-wrap gap-2">
                         <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="Parking Fees">
-                            <i class="bi bi-p-circle"></i> Parking Fees
+                            <i class="bi bi-p-circle"></i> @Localizer["Template_ParkingFees"]
                         </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="Market Stall Fees">
-                            <i class="bi bi-shop"></i> Market Stall Fees
+                            <i class="bi bi-shop"></i> @Localizer["Template_MarketStallFees"]
                         </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="Advertising Permits">
-                            <i class="bi bi-megaphone"></i> Advertising Permits
+                            <i class="bi bi-megaphone"></i> @Localizer["Template_AdvertisingPermits"]
                         </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="User Fees">
-                            <i class="bi bi-people"></i> User Fees
+                            <i class="bi bi-people"></i> @Localizer["Template_UserFees"]
                         </button>
                         <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="Building Permits">
-                            <i class="bi bi-building"></i> Building Permits
+                            <i class="bi bi-building"></i> @Localizer["Template_BuildingPermits"]
                         </button>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@SharedLocalizer["Common_Cancel"]</button>
                 <button type="button" class="btn btn-primary" onclick="addNewStream()">
-                    <i class="bi bi-plus-circle me-1"></i>Add Stream
+                    <i class="bi bi-plus-circle me-1"></i>@Localizer["AddStream"]
                 </button>
             </div>
         </div>
@@ -701,18 +701,18 @@
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="deleteStreamModalLabel">
-                    <i class="bi bi-trash me-2"></i>Delete Stream
+                    <i class="bi bi-trash me-2"></i>@Localizer["DeleteStreamModal_Title"]
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete the stream "<strong id="deleteStreamName"></strong>"?</p>
-                <p class="text-danger"><small>This action cannot be undone. All data for this stream will be lost.</small></p>
+                <p>@Localizer["DeleteStreamModal_Confirm"] "<strong id="deleteStreamName"></strong>"?</p>
+                <p class="text-danger"><small>@Localizer["DeleteStreamModal_Warning"]</small></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@SharedLocalizer["Common_Cancel"]</button>
                 <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
-                    <i class="bi bi-trash me-1"></i>Delete
+                    <i class="bi bi-trash me-1"></i>@SharedLocalizer["Common_Delete"]
                 </button>
             </div>
         </div>
@@ -725,21 +725,21 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="renameStreamModalLabel">
-                    <i class="bi bi-pencil-square me-2"></i>Rename Revenue Stream
+                    <i class="bi bi-pencil-square me-2"></i>@Localizer["RenameStreamModal_Title"]
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label for="renameStreamInput" class="form-label">New Name</label>
-                    <input type="text" class="form-control" id="renameStreamInput" placeholder="Enter new name for this stream">
-                    <small class="text-muted">This changes only the display name, not the underlying data type.</small>
+                    <label for="renameStreamInput" class="form-label">@Localizer["RenameStreamModal_NewName"]</label>
+                    <input type="text" class="form-control" id="renameStreamInput" placeholder="@Localizer["RenameStreamModal_Placeholder"]">
+                    <small class="text-muted">@Localizer["RenameStreamModal_Helper"]</small>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@SharedLocalizer["Common_Cancel"]</button>
                 <button type="button" class="btn btn-primary" id="confirmRenameBtn">
-                    <i class="bi bi-check-circle me-1"></i>Save
+                    <i class="bi bi-check-circle me-1"></i>@SharedLocalizer["Common_Save"]
                 </button>
             </div>
         </div>

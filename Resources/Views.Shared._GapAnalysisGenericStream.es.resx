@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Stream Header -->
+  <data name="EnterStreamName" xml:space="preserve"><value>Ingrese el nombre del flujo...</value></data>
+  <data name="ClickToEditStreamName" xml:space="preserve"><value>Haga clic para editar el nombre del flujo</value></data>
+  <data name="DeleteStream" xml:space="preserve"><value>Eliminar flujo</value></data>
+  <data name="DeleteThisStream" xml:space="preserve"><value>Eliminar este flujo</value></data>
+
+  <!-- Required Data Card -->
+  <data name="EntryOfRequiredInfo" xml:space="preserve"><value>Ingreso de informaci&#243;n requerida + M&#233;tricas calculadas</value></data>
+  <data name="EntryOfRequiredInfo_Help" xml:space="preserve"><value>Para la correcta ejecuci&#243;n del an&#225;lisis, solo debe completar las celdas sombreadas en gris y en negrita.</value></data>
+
+  <!-- User Input Fields -->
+  <data name="RegisteredUnits" xml:space="preserve"><value>Unidades registradas</value></data>
+  <data name="RegisteredUnits_Tooltip" xml:space="preserve"><value>N&#250;mero total de unidades (empresas, clientes, puestos, permisos, etc.) actualmente inscritas en el registro oficial para este flujo de ingresos.</value></data>
+  <data name="EstUnregisteredPercent" xml:space="preserve"><value>% est. no registradas</value></data>
+  <data name="EstUnregisteredPercent_Tooltip" xml:space="preserve"><value>Mejor estimaci&#243;n de cu&#225;ntas unidades activas no est&#225;n en el registro. Ingrese como porcentaje (por ej., 5 para 5%).</value></data>
+  <data name="TotalEstimatedUnits" xml:space="preserve"><value>Total de unidades estimadas</value></data>
+  <data name="TotalEstimatedUnits_Tooltip" xml:space="preserve"><value>Total de unidades estimadas = Unidades registradas x (1 + % est. no registradas/100).</value></data>
+  <data name="CompliantUnits" xml:space="preserve"><value>Unidades en cumplimiento</value></data>
+  <data name="CompliantUnits_Tooltip" xml:space="preserve"><value>Estimado mediante f&#243;rmula indirecta: Registradas x (Ingresos a la fecha / Monto facturado).</value></data>
+  <data name="CompliantUnits_Formula" xml:space="preserve"><value>= Registradas x (Ingresos a la fecha / Monto facturado)</value></data>
+  <data name="BilledAmount" xml:space="preserve"><value>Monto facturado</value></data>
+  <data name="BilledAmount_Tooltip" xml:space="preserve"><value>Monto total oficialmente cobrado (facturado) para el a&#241;o de an&#225;lisis.</value></data>
+  <data name="OutstandingAmount" xml:space="preserve"><value>Monto pendiente</value></data>
+  <data name="OutstandingAmount_Tooltip" xml:space="preserve"><value>Porci&#243;n de los cargos del a&#241;o en curso que permanecen impagos. NO debe incluir atrasos de a&#241;os anteriores.</value></data>
+  <data name="RevenueToDate" xml:space="preserve"><value>Ingresos a la fecha</value></data>
+  <data name="RevenueToDate_Tooltip" xml:space="preserve"><value>C&#225;lculo autom&#225;tico. Total de ingresos recaudados = Monto facturado menos Monto pendiente.</value></data>
+  <data name="RevenueToDate_Formula" xml:space="preserve"><value>= Monto facturado - Monto pendiente</value></data>
+  <data name="EnterValue" xml:space="preserve"><value>Ingrese un valor</value></data>
+
+  <!-- Useful Average Values Card -->
+  <data name="UsefulAverageValues" xml:space="preserve"><value>Valores promedio &#250;tiles requeridos para el an&#225;lisis</value></data>
+  <data name="StatutoryAvgBilled" xml:space="preserve"><value>Prom. legal facturado</value></data>
+  <data name="StatutoryAvgBilled_Tooltip" xml:space="preserve"><value>La factura promedio por unidad impl&#237;cita en el arancel oficial seg&#250;n la ley, sin aplicar exoneraciones, descuentos o exenciones.</value></data>
+  <data name="RealisticImprovementPercent" xml:space="preserve"><value>% de mejora realista</value></data>
+  <data name="RealisticImprovementPercent_Tooltip" xml:space="preserve"><value>La proporci&#243;n de la brecha entre la factura promedio actual y el promedio legal que considera que puede cerrarse de manera realista mediante reformas pol&#237;ticas o administrativas (0-100).</value></data>
+  <data name="AverageBilledAmount" xml:space="preserve"><value>Monto promedio facturado</value></data>
+  <data name="AverageBilledAmount_Tooltip" xml:space="preserve"><value>Factura promedio actual por unidad registrada = Monto facturado / Unidades registradas.</value></data>
+  <data name="AchievableAvgBill" xml:space="preserve"><value>Prom. alcanzable facturado</value></data>
+  <data name="AchievableAvgBill_Tooltip" xml:space="preserve"><value>Factura promedio objetivo alcanzable mediante reformas = Prom. facturado + (% mejora x (Legal - Prom. facturado)).</value></data>
+  <data name="DeltaA" xml:space="preserve"><value>Delta A (&#916;A)</value></data>
+  <data name="DeltaA_Tooltip" xml:space="preserve"><value>Mejora de facturaci&#243;n por unidad alcanzable mediante reformas: Prom. alcanzable - Monto promedio facturado.</value></data>
+
+  <!-- KPI Ratios Card -->
+  <data name="KPIRatios" xml:space="preserve"><value>Ratios de indicadores clave de desempe&#241;o (ICD)</value></data>
+  <data name="ComplianceRatio" xml:space="preserve"><value>Ratio de cumplimiento</value></data>
+  <data name="ComplianceRatio_Tooltip" xml:space="preserve"><value>Indicador indirecto del desempe&#241;o del sistema de cumplimiento. Mide la proporci&#243;n de montos facturados efectivamente recaudados. >80% Verde, 60-80% Amarillo, &lt;60% Rojo.</value></data>
+  <data name="ComplianceRatio_Formula" xml:space="preserve"><value>Ingresos a la fecha / Monto facturado</value></data>
+  <data name="CoverageRatio" xml:space="preserve"><value>Ratio de cobertura</value></data>
+  <data name="CoverageRatio_Tooltip" xml:space="preserve"><value>Indicador indirecto del desempe&#241;o del sistema de cobertura. Mide la proporci&#243;n de unidades totales registradas. >80% Verde, 60-80% Amarillo, &lt;60% Rojo.</value></data>
+  <data name="CoverageRatio_Formula" xml:space="preserve"><value>Unidades registradas / Total de unidades estimadas</value></data>
+
+  <!-- Results Section -->
+  <data name="GraphicalRepresentation" xml:space="preserve"><value>Representaci&#243;n gr&#225;fica de los datos analizados</value></data>
+
+  <!-- Potential Revenue Breakdown Table -->
+  <data name="PotentialRevenueBreakdown" xml:space="preserve"><value>Desglose de ingresos potenciales (Ingresos reales + desglose de brechas adm.)</value></data>
+  <data name="RevenueAndAdminGaps" xml:space="preserve"><value>Ingresos y brechas administrativas</value></data>
+  <data name="Amount" xml:space="preserve"><value>Monto</value></data>
+  <data name="SharePercent" xml:space="preserve"><value>Participaci&#243;n (%)</value></data>
+  <data name="RevenueToDateLabel" xml:space="preserve"><value>Ingresos a la fecha</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>Brecha de cumplimiento</value></data>
+  <data name="ComplianceGap_Tooltip" xml:space="preserve"><value>La proporci&#243;n de unidades registradas que no pagan o no cumplen su obligaci&#243;n. Refleja debilidades en la aplicaci&#243;n, facturaci&#243;n y recaudaci&#243;n. Equivale al monto pendiente.</value></data>
+  <data name="CoverageGap" xml:space="preserve"><value>Brecha de cobertura</value></data>
+  <data name="CoverageGap_Tooltip" xml:space="preserve"><value>Ingresos perdidos por unidades no registradas. Se cuantifica multiplicando las unidades no registradas por el monto promedio facturado.</value></data>
+  <data name="LiabilityGap" xml:space="preserve"><value>Brecha de obligaci&#243;n tributaria</value></data>
+  <data name="LiabilityGap_Tooltip" xml:space="preserve"><value>Ingresos adicionales alcanzables de unidades en cumplimiento mediante una mejor facturaci&#243;n (factura promedio alcanzable vs promedio actual).</value></data>
+  <data name="MixedGapCompLiab" xml:space="preserve"><value>Brecha mixta (Cumpl.+Oblig.)</value></data>
+  <data name="MixedGapCompLiab_Tooltip" xml:space="preserve"><value>P&#233;rdida de ingresos por unidades registradas no cumplidoras combinada con subfacturaci&#243;n. Muestra el efecto compuesto de la falta de cumplimiento y la baja facturaci&#243;n.</value></data>
+  <data name="MixedGapCovLiab" xml:space="preserve"><value>Brecha mixta (Cob.+Oblig.)</value></data>
+  <data name="MixedGapCovLiab_Tooltip" xml:space="preserve"><value>Ingresos no percibidos de unidades no registradas valoradas a niveles de facturaci&#243;n alcanzables. Captura la p&#233;rdida total por falta de registro y subfacturaci&#243;n.</value></data>
+  <data name="TotalPotentialRevenue" xml:space="preserve"><value>TOTAL (Ingresos potenciales)</value></data>
+
+  <!-- Pie Chart Section -->
+  <data name="RevenueAndAdminGapsChart" xml:space="preserve"><value>Ingresos y brechas administrativas</value></data>
+  <data name="PieChartDescription" xml:space="preserve"><value>Este gr&#225;fico circular ilustra la distribuci&#243;n porcentual de los ingresos potenciales totales del sistema de facturaci&#243;n. Muestra visualmente la participaci&#243;n correspondiente a los ingresos efectivamente recaudados durante el a&#241;o, as&#237; como la contribuci&#243;n de cada tipo de brecha (ingresos no recaudados o perdidos) a ese total.</value></data>
+  <data name="Description" xml:space="preserve"><value>DESCRIPCI&#211;N:</value></data>
+
+  <!-- Matrix Section -->
+  <data name="GapAnalysisDashboard" xml:space="preserve"><value>An&#225;lisis de brechas - Panel de control</value></data>
+  <data name="NumberOfUnits" xml:space="preserve"><value>N.&#176; de unidades</value></data>
+  <data name="Estimated" xml:space="preserve"><value>Estimadas</value></data>
+  <data name="Registered" xml:space="preserve"><value>Registradas</value></data>
+  <data name="Compliant" xml:space="preserve"><value>En cumplimiento</value></data>
+  <data name="AvgBilled" xml:space="preserve"><value>Prom. facturado</value></data>
+  <data name="AchievableAvg" xml:space="preserve"><value>Prom. alcanzable</value></data>
+  <data name="ActualRevenue" xml:space="preserve"><value>Ingresos reales</value></data>
+  <data name="MatrixDescription" xml:space="preserve"><value>Esta visualizaci&#243;n matricial muestra el an&#225;lisis de brechas en dos dimensiones: el n&#250;mero de unidades (eje vertical desde En cumplimiento hasta Estimadas) y el nivel de facturaci&#243;n (eje horizontal desde facturado promedio hasta facturaci&#243;n alcanzable). Cada celda coloreada representa un tipo diferente de brecha o componente de ingresos.</value></data>
+
+  <!-- Administrative Gap Breakdown Table -->
+  <data name="AdminGapBreakdown" xml:space="preserve"><value>Desglose de brechas administrativas</value></data>
+  <data name="AdministrativeGaps" xml:space="preserve"><value>Brechas administrativas</value></data>
+  <data name="ComplianceGapAdmin_Tooltip" xml:space="preserve"><value>La proporci&#243;n de unidades registradas que no pagan. Refleja debilidades en la aplicaci&#243;n, facturaci&#243;n y recaudaci&#243;n.</value></data>
+  <data name="CoverageGapAdmin_Tooltip" xml:space="preserve"><value>La proporci&#243;n del total de unidades estimadas que no est&#225;n registradas. Indica falta de identificaci&#243;n e inclusi&#243;n en la base de datos.</value></data>
+  <data name="LiabilityGapAdmin_Tooltip" xml:space="preserve"><value>Mejora de ingresos alcanzable de unidades en cumplimiento mediante mejores pr&#225;cticas de facturaci&#243;n.</value></data>
+  <data name="MixedGapCompLiabAdmin_Tooltip" xml:space="preserve"><value>P&#233;rdida de ingresos por unidades registradas no cumplidoras que tambi&#233;n est&#225;n subfacturadas.</value></data>
+  <data name="MixedGapCovLiabAdmin_Tooltip" xml:space="preserve"><value>Ingresos no percibidos de unidades no registradas valoradas a niveles de facturaci&#243;n alcanzables.</value></data>
+  <data name="TotalAdminGap" xml:space="preserve"><value>Total de brechas administrativas</value></data>
+
+  <!-- Breakdown Pie Chart -->
+  <data name="BreakdownAdminGaps" xml:space="preserve"><value>Desglose de brechas administrativas</value></data>
+  <data name="BreakdownPieChartDescription" xml:space="preserve"><value>Este gr&#225;fico circular ilustra la distribuci&#243;n porcentual de las brechas de ingresos. Muestra visualmente la contribuci&#243;n de cada tipo de brecha al total de ingresos no recaudados, ayudando a identificar cu&#225;les son las brechas m&#225;s significativas.</value></data>
+</root>

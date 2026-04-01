@@ -1,12 +1,20 @@
 using ClosedXML.Excel;
+using Microsoft.Extensions.Localization;
 using RosraApp.Models.ViewModels;
+using RosraApp.Resources;
 using System.Text.Json;
 
 namespace RosraApp.Services
 {
     public class ExcelExportService
     {
+        private readonly IStringLocalizer<ExportResources> _l;
         private string _currencySymbol = "$";
+
+        public ExcelExportService(IStringLocalizer<ExportResources> localizer)
+        {
+            _l = localizer;
+        }
 
         public byte[] GenerateExcelReport(RosraFormViewModel model, string title = "ROSRA Analysis Report")
         {

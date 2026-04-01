@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Card Headers -->
+  <data name="MixedInformation" xml:space="preserve"><value>Mixed Information</value></data>
+  <data name="MixedDetails" xml:space="preserve"><value>Mixed Details</value></data>
+  <data name="GapAnalysisSummary" xml:space="preserve"><value>Gap Analysis Summary</value></data>
+
+  <!-- Daily Users Section -->
+  <data name="DailyUsers" xml:space="preserve"><value>Daily Users</value></data>
+  <data name="EstimatedDailyUsers" xml:space="preserve"><value>Estimated Number of Daily Users</value></data>
+  <data name="ActualDailyUsers" xml:space="preserve"><value>Actual Daily Users</value></data>
+  <data name="AverageDailyUserFee" xml:space="preserve"><value>Average Daily User Fee</value></data>
+  <data name="ActualDailyUserFee" xml:space="preserve"><value>Actual Daily User Fee</value></data>
+
+  <!-- Monthly Users Section -->
+  <data name="MonthlyUsers" xml:space="preserve"><value>Monthly Users</value></data>
+  <data name="NumberOfAvailableMonthlyUsers" xml:space="preserve"><value>Number of Available Monthly Users</value></data>
+  <data name="NumberOfPayingMonthlyUsers" xml:space="preserve"><value>Number of Paying Monthly Users</value></data>
+  <data name="AverageMonthlyRate" xml:space="preserve"><value>Average Monthly Rate</value></data>
+  <data name="ActualMonthlyRate" xml:space="preserve"><value>Actual Monthly Rate</value></data>
+
+  <!-- Placeholders -->
+  <data name="EnterEstimatedDailyUsers" xml:space="preserve"><value>Enter estimated number of daily users</value></data>
+  <data name="EnterActualDailyUsers" xml:space="preserve"><value>Enter actual daily users</value></data>
+  <data name="EnterAverageDailyUserFee" xml:space="preserve"><value>Enter average daily user fee</value></data>
+  <data name="EnterActualDailyUserFee" xml:space="preserve"><value>Enter actual daily user fee</value></data>
+  <data name="EnterAvailableMonthlyUsers" xml:space="preserve"><value>Enter number of available monthly users</value></data>
+  <data name="EnterPayingMonthlyUsers" xml:space="preserve"><value>Enter number of paying monthly users</value></data>
+  <data name="EnterAverageMonthlyRate" xml:space="preserve"><value>Enter average monthly rate</value></data>
+  <data name="EnterActualMonthlyRate" xml:space="preserve"><value>Enter actual monthly rate</value></data>
+
+  <!-- Description / Notes -->
+  <data name="Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Notes" xml:space="preserve"><value>Notes</value></data>
+
+  <!-- Gap Summary Cards (top level) -->
+  <data name="ActualRevenueUpper" xml:space="preserve"><value>ACTUAL</value></data>
+  <data name="RevenueUpper" xml:space="preserve"><value>REVENUE</value></data>
+  <data name="PotentialUpper" xml:space="preserve"><value>POTENTIAL</value></data>
+  <data name="TotalUpper" xml:space="preserve"><value>TOTAL</value></data>
+  <data name="GapUpper" xml:space="preserve"><value>GAP</value></data>
+  <data name="LeveragedUpper" xml:space="preserve"><value>LEVERAGED</value></data>
+  <data name="CurrentCollectedRevenue" xml:space="preserve"><value>Current collected revenue</value></data>
+  <data name="MaximumPossibleRevenue" xml:space="preserve"><value>Maximum possible revenue</value></data>
+  <data name="RevenueGapToBeAddressed" xml:space="preserve"><value>Revenue gap to be addressed</value></data>
+  <data name="PercentageOfPotentialCollected" xml:space="preserve"><value>Percentage of potential collected</value></data>
+
+  <!-- Detailed Gap Cards -->
+  <data name="ComplianceUpper" xml:space="preserve"><value>COMPLIANCE</value></data>
+  <data name="RateUpper" xml:space="preserve"><value>RATE</value></data>
+  <data name="CombinedUpper" xml:space="preserve"><value>COMBINED</value></data>
+  <data name="GapsUpper" xml:space="preserve"><value>GAPS</value></data>
+  <data name="BreakdownUpper" xml:space="preserve"><value>BREAKDOWN</value></data>
+  <data name="GapDueToFewerUsers" xml:space="preserve"><value>Gap due to fewer users than potential</value></data>
+  <data name="GapDueToLowerRates" xml:space="preserve"><value>Gap due to lower rates</value></data>
+  <data name="OtherUncategorizedGaps" xml:space="preserve"><value>Other uncategorized gaps</value></data>
+  <data name="DailyVsMonthlyGaps" xml:space="preserve"><value>Daily vs Monthly gaps</value></data>
+
+  <!-- Formula Details -->
+  <data name="FormulaDetails" xml:space="preserve"><value>Formula Details</value></data>
+  <data name="ActualRevenueTitle" xml:space="preserve"><value>Actual Revenue</value></data>
+  <data name="TotalPotentialRevenue" xml:space="preserve"><value>Total Potential Revenue</value></data>
+  <data name="TotalGapMixedUserFees" xml:space="preserve"><value>Total Gap Mixed User Fees</value></data>
+  <data name="PercentOfPotentialLeveraged" xml:space="preserve"><value>% of Potential Leveraged</value></data>
+  <data name="Where" xml:space="preserve"><value>Where:</value></data>
+  <data name="SimpleDifferenceBetween" xml:space="preserve"><value>Simple difference between:</value></data>
+  <data name="Interpretation" xml:space="preserve"><value>Interpretation:</value></data>
+
+  <!-- Breakdown Formulas -->
+  <data name="BreakdownFormulas" xml:space="preserve"><value>Breakdown Formulas</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>Compliance Gap</value></data>
+  <data name="RateGap" xml:space="preserve"><value>Rate Gap</value></data>
+  <data name="CombinedGaps" xml:space="preserve"><value>Combined Gaps</value></data>
+  <data name="GapBreakdown" xml:space="preserve"><value>Gap Breakdown</value></data>
+  <data name="DailyGap" xml:space="preserve"><value>Daily Gap:</value></data>
+  <data name="MonthlyGap" xml:space="preserve"><value>Monthly Gap:</value></data>
+
+  <!-- Mixed User Fee Gaps Analysis -->
+  <data name="MixedUserFeeGapsAnalysis" xml:space="preserve"><value>Mixed User Fee Gaps Analysis</value></data>
+  <data name="GapType" xml:space="preserve"><value>GAP TYPE</value></data>
+  <data name="AmountCol" xml:space="preserve"><value>AMOUNT</value></data>
+  <data name="DailyUserFeeGap" xml:space="preserve"><value>Daily User Fee Gap</value></data>
+  <data name="DailyRevenuePotentialGap" xml:space="preserve"><value>Daily revenue potential gap</value></data>
+  <data name="MonthlyUserFeeGap" xml:space="preserve"><value>Monthly User Fee Gap</value></data>
+  <data name="MonthlyRevenuePotentialGap" xml:space="preserve"><value>Monthly revenue potential gap</value></data>
+  <data name="LargestGap" xml:space="preserve"><value>Largest Gap</value></data>
+  <data name="HighestValueDifference" xml:space="preserve"><value>Highest value difference</value></data>
+  <data name="TwoTypes" xml:space="preserve"><value>2 types</value></data>
+
+  <!-- Gap Visualization -->
+  <data name="GapAnalysis" xml:space="preserve"><value>Gap Analysis</value></data>
+  <data name="Chart" xml:space="preserve"><value>Chart</value></data>
+  <data name="TotalGapMixedFees" xml:space="preserve"><value>Total Gap Mixed Fees</value></data>
+  <data name="Breakdown" xml:space="preserve"><value>Breakdown</value></data>
+  <data name="ActualRevenue" xml:space="preserve"><value>Actual Revenue</value></data>
+</root>

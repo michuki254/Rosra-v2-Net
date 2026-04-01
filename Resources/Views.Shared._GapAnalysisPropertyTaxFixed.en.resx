@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Data Entry Section -->
+  <data name="DataEntry_Title" xml:space="preserve"><value>Entry of required information + Processed Metrics</value></data>
+  <data name="DataEntry_Instructions" xml:space="preserve"><value>For proper execution of the analysis, you are required to complete only the cells shaded in gray and in bold.</value></data>
+
+  <!-- Input Labels -->
+  <data name="RegisteredProperties" xml:space="preserve"><value>Registered Properties</value></data>
+  <data name="RegisteredProperties_Tooltip" xml:space="preserve"><value>Total number of properties currently listed in the official property tax register/cadastre.</value></data>
+  <data name="NonRegisteredProperties" xml:space="preserve"><value>Non-registered Properties</value></data>
+  <data name="NonRegisteredProperties_Tooltip" xml:space="preserve"><value>Estimated properties not in the tax register. If unknown, check 'I don't have a specific number' to enter a percentage of registered properties.</value></data>
+  <data name="EstimateCheckbox" xml:space="preserve"><value>I don't have a specific number (use estimate)</value></data>
+  <data name="EstimateAsPercent" xml:space="preserve"><value>Estimate as % of Registered Properties</value></data>
+  <data name="EstimatePercentHelper" xml:space="preserve"><value>e.g., 5% means Non-registered = Registered × 0.05</value></data>
+  <data name="EstimatedProperties" xml:space="preserve"><value>Estimated Properties</value></data>
+  <data name="EstimatedProperties_Tooltip" xml:space="preserve"><value>Total estimated taxable properties in the jurisdiction = Registered + Non-registered.</value></data>
+  <data name="CompliantProperties" xml:space="preserve"><value>Compliant Properties</value></data>
+  <data name="CompliantProperties_Tooltip" xml:space="preserve"><value>Estimated using proxy formula to account for partial payments across fiscal year. Assumes proportion of compliant properties equals proportion of revenue collected.</value></data>
+  <data name="CompliantProperties_Formula" xml:space="preserve"><value>= Registered × (Revenue to Date / Billed Amount)</value></data>
+  <data name="TotalFiscalBase" xml:space="preserve"><value>Total Fiscal Base</value></data>
+  <data name="TotalFiscalBase_Tooltip" xml:space="preserve"><value>Total value of all registered and taxable properties based on their fiscal (assessed) valuation. This is the officially recorded fiscal base used for property tax calculations.</value></data>
+  <data name="TotalMarketValue" xml:space="preserve"><value>Total Market Value</value></data>
+  <data name="TotalMarketValue_Tooltip" xml:space="preserve"><value>Estimated total market value of all taxable properties at real market prices. If unknown, check 'I don't have market value data' to enter estimated percentage above fiscal values.</value></data>
+  <data name="MarketValueEstimateCheckbox" xml:space="preserve"><value>I don't have market value data (use estimate)</value></data>
+  <data name="MarketValueHigherBy" xml:space="preserve"><value>Market value is higher than Fiscal Base by:</value></data>
+  <data name="MarketValueEstimateHelper" xml:space="preserve"><value>e.g., 30% means Market Value = Fiscal Base × 1.30</value></data>
+  <data name="BilledAmount" xml:space="preserve"><value>Billed Amount</value></data>
+  <data name="BilledAmount_Tooltip" xml:space="preserve"><value>Amount officially charged for collection (billed) for the year under analysis.</value></data>
+  <data name="OutstandingAmount" xml:space="preserve"><value>Outstanding Amount</value></data>
+  <data name="OutstandingAmount_Tooltip" xml:space="preserve"><value>Portion of current year charges that remain unpaid. Should NOT include arrears from previous years. If exact data unavailable, provide reasonable estimate.</value></data>
+  <data name="RevenueToDate" xml:space="preserve"><value>Revenue to Date</value></data>
+  <data name="RevenueToDate_Tooltip" xml:space="preserve"><value>Auto-calculated. Total revenue collected = Billed Amount minus Outstanding. Updates dynamically.</value></data>
+  <data name="RevenueToDate_Formula" xml:space="preserve"><value>= Billed Amount - Outstanding Amount</value></data>
+  <data name="EnterValue" xml:space="preserve"><value>Enter value</value></data>
+
+  <!-- Average Values Section -->
+  <data name="AvgValues_Title" xml:space="preserve"><value>Useful Average Values required for the Analysis</value></data>
+  <data name="AvgTaxableValue" xml:space="preserve"><value>Average taxable value (registered)</value></data>
+  <data name="AvgTaxableValue_Tooltip" xml:space="preserve"><value>Average official valuation per property, determined by cadastre. Base for applying tax rates.</value></data>
+  <data name="AvgMarketValue" xml:space="preserve"><value>Average Market Value (registered)</value></data>
+  <data name="AvgMarketValue_Tooltip" xml:space="preserve"><value>Estimate of average property value if assessed at market levels. Reflects theoretical tax base under ideal valuation.</value></data>
+  <data name="EffectiveTaxRate" xml:space="preserve"><value>Effective tax rate</value></data>
+  <data name="EffectiveTaxRate_Tooltip" xml:space="preserve"><value>Actual effective rate from real revenue collected. Reflects under-assessment, exemptions, and compliance limitations.</value></data>
+  <data name="AvgBilledAmount" xml:space="preserve"><value>Average billed amount</value></data>
+  <data name="AvgBilledAmount_Tooltip" xml:space="preserve"><value>Estimated billing per property based on current assessed values and effective tax rate.</value></data>
+  <data name="PotentialBilling" xml:space="preserve"><value>Potential billing (market basis)</value></data>
+  <data name="PotentialBilling_Tooltip" xml:space="preserve"><value>Theoretical maximum billing per property assuming full market value assessment.</value></data>
+
+  <!-- KPI Section -->
+  <data name="KPI_Title" xml:space="preserve"><value>Key Performance Indicators (KPI) Ratios</value></data>
+  <data name="ComplianceRatio" xml:space="preserve"><value>Compliance Ratio</value></data>
+  <data name="ComplianceRatio_Tooltip" xml:space="preserve"><value>Proxy indicator of compliance system performance. Measures proportion of billed amounts actually collected. >80% Green, 60-80% Yellow, &lt;60% Red.</value></data>
+  <data name="ComplianceRatio_Formula" xml:space="preserve"><value>Revenue to Date / Billed Amount</value></data>
+  <data name="CoverageRatio" xml:space="preserve"><value>Coverage Ratio</value></data>
+  <data name="CoverageRatio_Tooltip" xml:space="preserve"><value>Proxy indicator of coverage system performance. Measures proportion of total properties registered. >80% Green, 60-80% Yellow, &lt;60% Red.</value></data>
+  <data name="CoverageRatio_Formula" xml:space="preserve"><value>Registered Properties / Estimated Properties</value></data>
+  <data name="ValuationRatio" xml:space="preserve"><value>Valuation Ratio</value></data>
+  <data name="ValuationRatio_Tooltip" xml:space="preserve"><value>Proxy indicator of valuation system performance. Measures how closely fiscal assessments match market values. >80% Green, 60-80% Yellow, &lt;60% Red.</value></data>
+  <data name="ValuationRatio_Formula" xml:space="preserve"><value>Total Fiscal Base / Total Market Value</value></data>
+
+  <!-- Results Section -->
+  <data name="Results_Title" xml:space="preserve"><value>Graphical Representation of Analyzed Data</value></data>
+
+  <!-- Potential Revenue Table -->
+  <data name="PotentialRevenue_Title" xml:space="preserve"><value>Potential Revenue Breakdown (Actual Revenue + Adm. Gap breakdown)</value></data>
+  <data name="Table_RevenueAndGaps" xml:space="preserve"><value>Revenue &amp; Administrative Gaps</value></data>
+  <data name="Table_Amount" xml:space="preserve"><value>Amount</value></data>
+  <data name="Table_Share" xml:space="preserve"><value>Share (%)</value></data>
+  <data name="RevenueToDate_Label" xml:space="preserve"><value>Revenue to date</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>Compliance Gap</value></data>
+  <data name="ComplianceGap_Tooltip" xml:space="preserve"><value>The proportion of registered properties that do not pay the tax or fulfill their liability. It reflects weaknesses in enforcement, billing, and payment collection systems. The compliance gap equals Outstanding.</value></data>
+  <data name="CoverageGap" xml:space="preserve"><value>Coverage Gap</value></data>
+  <data name="CoverageGap_Tooltip" xml:space="preserve"><value>The proportion of total estimated properties that are not registered in the property tax system. This gap indicates lack of property identification and inclusion in the fiscal database. The gap is quantified by multiplying the number of unregistered properties by the average billed amount per registered property.</value></data>
+  <data name="ValuationGap" xml:space="preserve"><value>Valuation Gap</value></data>
+  <data name="ValuationGap_Tooltip" xml:space="preserve"><value>The valuation gap estimates how much more revenue could be billed to compliant properties if they were assessed at market value instead of undervalued fiscal assessments. It reflects weaknesses in the valuation framework and outdated property records.</value></data>
+  <data name="MixedGapReg" xml:space="preserve"><value>Mixed Gap (val./cov. reg.)</value></data>
+  <data name="MixedGapReg_Tooltip" xml:space="preserve"><value>This mixed gap captures the revenue loss from non-compliant properties that are registered but do not pay - and whose values are also below market. It shows the compounded effect of enforcement failure and undervaluation.</value></data>
+  <data name="MixedGapUnreg" xml:space="preserve"><value>Mixed Gap (val./uncov. unreg.)</value></data>
+  <data name="MixedGapUnreg_Tooltip" xml:space="preserve"><value>This mixed gap estimates the revenue missed from unregistered properties valued at market levels. It captures the full revenue loss due to both lack of registry and undervaluation.</value></data>
+  <data name="TotalPotentialRevenue" xml:space="preserve"><value>TOTAL (Potential Revenue)</value></data>
+
+  <!-- Matrix Dashboard -->
+  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Property Tax Gap Analysis - Dashboard</value></data>
+  <data name="Matrix_YAxisTitle" xml:space="preserve"><value># of Properties</value></data>
+  <data name="Matrix_Estimated" xml:space="preserve"><value>Estimated</value></data>
+  <data name="Matrix_Registered" xml:space="preserve"><value>Registered</value></data>
+  <data name="Matrix_Compliant" xml:space="preserve"><value>Compliant</value></data>
+  <data name="Matrix_CoverageGap" xml:space="preserve"><value>Coverage Gap</value></data>
+  <data name="Matrix_MixedGapUnreg" xml:space="preserve"><value>Mixed Gap (Unreg.)</value></data>
+  <data name="Matrix_ComplianceGap" xml:space="preserve"><value>Compliance Gap</value></data>
+  <data name="Matrix_MixedGapReg" xml:space="preserve"><value>Mixed Gap (Reg.)</value></data>
+  <data name="Matrix_ActualRevenue" xml:space="preserve"><value>Actual Revenue</value></data>
+  <data name="Matrix_ValuationGap" xml:space="preserve"><value>Valuation Gap</value></data>
+  <data name="Matrix_AvgBilled" xml:space="preserve"><value>Avg. Billed</value></data>
+  <data name="Matrix_AchievableAvg" xml:space="preserve"><value>Achievable Avg.</value></data>
+  <data name="MatrixDashboard_Description" xml:space="preserve"><value>This matrix visualization shows the property tax gap analysis across two dimensions: the number of properties (vertical axis from Compliant to Estimated) and the billing level (horizontal axis from average billed to achievable market-based billing). Each colored cell represents a different type of gap or revenue component. The same breakdown is also shown in the pie chart below.</value></data>
+
+  <!-- Pie Charts -->
+  <data name="RevenueAndAdmGaps_Title" xml:space="preserve"><value>Revenue and Administrative Gaps</value></data>
+  <data name="RevenueAndAdmGaps_Description" xml:space="preserve"><value>This pie chart illustrates the same information as the matrix above in percentage form. It shows the share of total potential revenue corresponding to the revenue actually collected, as well as the contribution of each type of administrative gap (uncollected or lost revenue) to that total.</value></data>
+
+  <!-- Administrative Gap Breakdown Table -->
+  <data name="AdmGapBreakdown_Title" xml:space="preserve"><value>Administrative Gap Breakdown</value></data>
+  <data name="Table_AdmGaps" xml:space="preserve"><value>Administrative Gaps</value></data>
+  <data name="ValuationAssessmentGap" xml:space="preserve"><value>Valuation/assessment Gap</value></data>
+  <data name="MixedGapValReg" xml:space="preserve"><value>Mixed Gap (val./reg.)</value></data>
+  <data name="MixedGapValUnreg" xml:space="preserve"><value>Mixed Gap (val./unreg.)</value></data>
+  <data name="TotalAdmGap" xml:space="preserve"><value>Total Administrative Gap</value></data>
+
+  <!-- Administrative Gaps Pie Chart -->
+  <data name="AdmGapsPie_Title" xml:space="preserve"><value>Breakdown of Administrative Gaps</value></data>
+  <data name="AdmGapsPie_Description" xml:space="preserve"><value>This pie chart illustrates the percentage distribution of the revenue gaps. It visually shows the contribution of each type of gap to the total uncollected revenue, helping to identify which gaps are the most significant.</value></data>
+
+  <!-- Common -->
+  <data name="Description_Label" xml:space="preserve"><value>DESCRIPTION:</value></data>
+</root>

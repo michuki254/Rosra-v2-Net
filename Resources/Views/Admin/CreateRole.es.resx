@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Page Header -->
+  <data name="PageTitle" xml:space="preserve"><value>Gesti&#243;n de roles</value></data>
+  <data name="PageSubtitle" xml:space="preserve"><value>Crear y gestionar roles de usuario para el control de acceso</value></data>
+  <data name="BackToDashboard" xml:space="preserve"><value>Volver al panel</value></data>
+
+  <!-- Create Role Form -->
+  <data name="CreateNewRole" xml:space="preserve"><value>Crear nuevo rol</value></data>
+  <data name="CreateNewRoleDescription" xml:space="preserve"><value>Agregar un nuevo rol para asignar a los usuarios</value></data>
+  <data name="RoleName" xml:space="preserve"><value>Nombre del rol</value></data>
+  <data name="RoleNamePlaceholder" xml:space="preserve"><value>por ej., Moderador, Lector, Editor</value></data>
+  <data name="Permissions" xml:space="preserve"><value>Permisos</value></data>
+  <data name="SelectAll" xml:space="preserve"><value>Seleccionar todo</value></data>
+  <data name="ClearAll" xml:space="preserve"><value>Limpiar todo</value></data>
+  <data name="Permission" xml:space="preserve"><value>permiso</value></data>
+  <data name="Permissions_Plural" xml:space="preserve"><value>permisos</value></data>
+  <data name="NoPermissionsFound" xml:space="preserve"><value>No se encontraron permisos. Aseg&#250;rese de que los permisos est&#233;n inicializados en la base de datos.</value></data>
+  <data name="CreateRole" xml:space="preserve"><value>Crear rol</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Cancelar</value></data>
+
+  <!-- Existing Roles Table -->
+  <data name="ExistingRoles" xml:space="preserve"><value>Roles existentes</value></data>
+  <data name="RoleNameHeader" xml:space="preserve"><value>Nombre del rol</value></data>
+  <data name="Type" xml:space="preserve"><value>Tipo</value></data>
+  <data name="Users" xml:space="preserve"><value>Usuarios</value></data>
+  <data name="Actions" xml:space="preserve"><value>Acciones</value></data>
+  <data name="SystemRole" xml:space="preserve"><value>Rol del sistema</value></data>
+  <data name="CustomRole" xml:space="preserve"><value>Rol personalizado</value></data>
+  <data name="UserSingular" xml:space="preserve"><value>usuario</value></data>
+  <data name="UserPlural" xml:space="preserve"><value>usuarios</value></data>
+  <data name="PermissionsButton" xml:space="preserve"><value>Permisos</value></data>
+  <data name="Protected" xml:space="preserve"><value>Protegido</value></data>
+  <data name="SystemRolesCannotBeDeleted" xml:space="preserve"><value>Los roles del sistema no se pueden eliminar</value></data>
+  <data name="HasUsers" xml:space="preserve"><value>Tiene usuarios</value></data>
+  <data name="CannotDeleteRoleWithUsers" xml:space="preserve"><value>No se puede eliminar un rol con usuarios asignados</value></data>
+  <data name="Delete" xml:space="preserve"><value>Eliminar</value></data>
+  <data name="NoRolesFound" xml:space="preserve"><value>No se encontraron roles. Cree su primer rol arriba.</value></data>
+  <data name="Notification" xml:space="preserve"><value>Notificaci&#243;n</value></data>
+</root>

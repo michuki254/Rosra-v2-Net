@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Intro Section -->
+  <data name="Intro_Text" xml:space="preserve"><value>Remplissez les données requises pour chaque source de recettes propres. Ajoutez ou supprimez des sources selon votre contexte. Une fois toutes les données disponibles saisies, consultez l'onglet Priorisation pour voir les résultats principaux et commencer le séquençage des réformes.</value></data>
+
+  <!-- Tab Management -->
+  <data name="RenameTab_Tooltip" xml:space="preserve"><value>Renommer cet onglet</value></data>
+  <data name="RemoveStream_Tooltip" xml:space="preserve"><value>Supprimer la source</value></data>
+  <data name="AddStream" xml:space="preserve"><value>Ajouter une source</value></data>
+  <data name="AddStream_Tooltip" xml:space="preserve"><value>Ajouter une nouvelle source de revenus</value></data>
+
+  <!-- Add Stream Modal -->
+  <data name="AddStreamModal_Title" xml:space="preserve"><value>Ajouter une nouvelle source de revenus</value></data>
+  <data name="AddStreamModal_StreamName" xml:space="preserve"><value>Nom de la source</value></data>
+  <data name="AddStreamModal_Placeholder" xml:space="preserve"><value>ex. Droits de stationnement, Droits de marché, Permis de publicité...</value></data>
+  <data name="AddStreamModal_Helper" xml:space="preserve"><value>Saisissez un nom descriptif pour cette source de revenus</value></data>
+  <data name="AddStreamModal_QuickTemplates" xml:space="preserve"><value>Modèles rapides</value></data>
+  <data name="Template_ParkingFees" xml:space="preserve"><value>Droits de stationnement</value></data>
+  <data name="Template_MarketStallFees" xml:space="preserve"><value>Droits de marché</value></data>
+  <data name="Template_AdvertisingPermits" xml:space="preserve"><value>Permis de publicité</value></data>
+  <data name="Template_UserFees" xml:space="preserve"><value>Redevances d'utilisation</value></data>
+  <data name="Template_BuildingPermits" xml:space="preserve"><value>Permis de construire</value></data>
+
+  <!-- Delete Stream Modal -->
+  <data name="DeleteStreamModal_Title" xml:space="preserve"><value>Supprimer la source</value></data>
+  <data name="DeleteStreamModal_Confirm" xml:space="preserve"><value>Êtes-vous sûr de vouloir supprimer la source</value></data>
+  <data name="DeleteStreamModal_Warning" xml:space="preserve"><value>Cette action est irréversible. Toutes les données de cette source seront perdues.</value></data>
+
+  <!-- Rename Stream Modal -->
+  <data name="RenameStreamModal_Title" xml:space="preserve"><value>Renommer la source de revenus</value></data>
+  <data name="RenameStreamModal_NewName" xml:space="preserve"><value>Nouveau nom</value></data>
+  <data name="RenameStreamModal_Placeholder" xml:space="preserve"><value>Saisissez le nouveau nom de cette source</value></data>
+  <data name="RenameStreamModal_Helper" xml:space="preserve"><value>Ceci modifie uniquement le nom affiché, pas le type de données sous-jacent.</value></data>
+</root>

@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Data Upload";
+    ViewData["Title"] = Localizer["PageTitle"].Value;
 }
 
 @section Styles {
@@ -414,22 +414,22 @@
     <!-- Header -->
     <div class="page-header d-flex justify-content-between align-items-center">
         <div>
-            <h1>Data Upload</h1>
-            <p>Import data for PeerSNG and Country databases</p>
+            <h1>@Localizer["PageTitle"]</h1>
+            <p>@Localizer["PageSubtitle"]</p>
         </div>
         <a asp-action="Index" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+            <i class="bi bi-arrow-left me-2"></i> @Localizer["BackToDashboard"]
         </a>
     </div>
 
     <!-- Dataset Selector -->
     <div class="dataset-selector">
-        <h6><i class="bi bi-database-fill"></i> Select Dataset to Upload</h6>
-        <p class="selector-description">Choose which type of data you want to import into the system</p>
+        <h6><i class="bi bi-database-fill"></i> @Localizer["SelectDataset"]</h6>
+        <p class="selector-description">@Localizer["SelectDatasetDescription"]</p>
         <select class="dataset-dropdown" id="datasetSelector" onchange="showSelectedDataset()">
-            <option value="">-- Select a dataset --</option>
-            <option value="peer">PeerSNG Data (47 Kenyan Counties)</option>
-            <option value="country">Country Data (137+ Countries Worldwide)</option>
+            <option value="">@Localizer["SelectADataset"]</option>
+            <option value="peer">@Localizer["PeerSNGOption"]</option>
+            <option value="country">@Localizer["CountryOption"]</option>
         </select>
     </div>
 
@@ -441,37 +441,37 @@
                     <i class="bi bi-diagram-3"></i>
                 </div>
                 <div class="card-title-text">
-                    <h5>PeerSNG Data Upload</h5>
-                    <p>Upload data for 47 Kenyan counties</p>
+                    <h5>@Localizer["PeerSNGDataUpload"]</h5>
+                    <p>@Localizer["PeerSNGDescription"]</p>
                 </div>
             </div>
             <button class="download-template-btn" onclick="downloadPeerTemplate()">
-                <i class="bi bi-download"></i> Download Template
+                <i class="bi bi-download"></i> @Localizer["DownloadTemplate"]
             </button>
         </div>
 
         <div class="help-tip">
             <i class="bi bi-info-circle-fill help-tip-icon"></i>
             <div class="help-tip-content">
-                <strong>Important:</strong>
-                <p>Make sure your CSV file has exactly 4 columns in the correct order. The first row should contain column headers. Mult and ValidMult are calculated automatically.</p>
+                <strong>@Localizer["Important"]</strong>
+                <p>@Localizer["PeerSNGHelpText"]</p>
             </div>
         </div>
 
         <div class="format-table">
             <div class="format-table-header" onclick="toggleFormatTable('peer')">
-                <h6><i class="bi bi-chevron-down"></i> CSV Format Requirements (4 columns)</h6>
-                <span style="font-size: 0.75rem; color: #868e96;">Click to expand/collapse</span>
+                <h6><i class="bi bi-chevron-down"></i> @Localizer["CSVFormatRequirements"] (4 @Localizer["Columns"])</h6>
+                <span style="font-size: 0.75rem; color: #868e96;">@Localizer["ClickToExpandCollapse"]</span>
             </div>
             <div class="format-table-content" id="peerFormatTable">
                 <table>
                     <thead>
                         <tr>
-                            <th>Column</th>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Example</th>
-                            <th>Required</th>
+                            <th>@Localizer["Column"]</th>
+                            <th>@Localizer["Name"]</th>
+                            <th>@Localizer["TypeHeader"]</th>
+                            <th>@Localizer["Example"]</th>
+                            <th>@Localizer["Required"]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -480,35 +480,35 @@
                             <td>SNG</td>
                             <td>Text</td>
                             <td>Nairobi</td>
-                            <td><span class="required-badge">REQUIRED</span></td>
+                            <td><span class="required-badge">@Localizer["Required"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>2</strong></td>
                             <td>OSR</td>
                             <td>Decimal</td>
                             <td>6733.3</td>
-                            <td><span class="required-badge">REQUIRED</span></td>
+                            <td><span class="required-badge">@Localizer["Required"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>3</strong></td>
                             <td>GCP</td>
                             <td>Decimal</td>
                             <td>2682701</td>
-                            <td><span class="required-badge">REQUIRED</span></td>
+                            <td><span class="required-badge">@Localizer["Required"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>4</strong></td>
                             <td>Include</td>
                             <td>0, 1, true, or false</td>
                             <td>1</td>
-                            <td><span class="required-badge">REQUIRED</span></td>
+                            <td><span class="required-badge">@Localizer["Required"]</span></td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="mt-3 p-2" style="background: #e7f5ff; border-radius: 6px;">
                     <small class="text-muted">
                         <i class="bi bi-calculator me-1"></i>
-                        <strong>Calculated fields (auto-generated):</strong><br>
+                        <strong>@Localizer["CalculatedFields"]</strong><br>
                         <code>Mult = OSR / GCP</code><br>
                         <code>ValidMult = Mult (only if Include=1 and Mult > 0)</code>
                     </small>
@@ -518,8 +518,8 @@
 
         <div class="upload-area" id="peerUploadArea" onclick="document.getElementById('peerFileInput').click()">
             <i class="bi bi-cloud-upload-fill upload-icon"></i>
-            <div class="upload-text">Click to upload or drag and drop</div>
-            <div class="upload-hint">CSV file only (Max size: 10MB)</div>
+            <div class="upload-text">@Localizer["ClickToUpload"]</div>
+            <div class="upload-hint">@Localizer["CSVFileOnly"]</div>
         </div>
 
         <input type="file" id="peerFileInput" class="file-input" accept=".csv" />
@@ -544,7 +544,7 @@
         </div>
 
         <button class="upload-btn" id="peerUploadBtn" onclick="uploadPeerData()" disabled>
-            <i class="bi bi-upload me-2"></i> Upload PeerSNG Data
+            <i class="bi bi-upload me-2"></i> @Localizer["UploadPeerSNGData"]
         </button>
     </div>
 
@@ -556,37 +556,37 @@
                     <i class="bi bi-globe"></i>
                 </div>
                 <div class="card-title-text">
-                    <h5>Country Data Upload</h5>
-                    <p>Upload data for 137+ countries worldwide</p>
+                    <h5>@Localizer["CountryDataUpload"]</h5>
+                    <p>@Localizer["CountryDescription"]</p>
                 </div>
             </div>
             <button class="download-template-btn" onclick="downloadCountryTemplate()">
-                <i class="bi bi-download"></i> Download Template
+                <i class="bi bi-download"></i> @Localizer["DownloadTemplate"]
             </button>
         </div>
 
         <div class="help-tip">
             <i class="bi bi-info-circle-fill help-tip-icon"></i>
             <div class="help-tip-content">
-                <strong>Important:</strong>
-                <p>This dataset has 16 columns including currency information. Numeric columns can be empty for countries with incomplete data. Make sure to follow the exact order.</p>
+                <strong>@Localizer["Important"]</strong>
+                <p>@Localizer["CountryHelpText"]</p>
             </div>
         </div>
 
         <div class="format-table">
             <div class="format-table-header" onclick="toggleFormatTable('country')">
-                <h6><i class="bi bi-chevron-down"></i> CSV Format Requirements (16 columns)</h6>
-                <span style="font-size: 0.75rem; color: #868e96;">Click to expand/collapse</span>
+                <h6><i class="bi bi-chevron-down"></i> @Localizer["CSVFormatRequirements"] (16 @Localizer["Columns"])</h6>
+                <span style="font-size: 0.75rem; color: #868e96;">@Localizer["ClickToExpandCollapse"]</span>
             </div>
             <div class="format-table-content" id="countryFormatTable">
                 <table>
                     <thead>
                         <tr>
-                            <th>Column</th>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Example</th>
-                            <th>Required</th>
+                            <th>@Localizer["Column"]</th>
+                            <th>@Localizer["Name"]</th>
+                            <th>@Localizer["TypeHeader"]</th>
+                            <th>@Localizer["Example"]</th>
+                            <th>@Localizer["Required"]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -595,112 +595,112 @@
                             <td>Country</td>
                             <td>Text</td>
                             <td>Kenya</td>
-                            <td><span class="required-badge">REQUIRED</span></td>
+                            <td><span class="required-badge">@Localizer["Required"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>2</strong></td>
                             <td>Currency Code</td>
                             <td>Text</td>
                             <td>KES</td>
-                            <td><span class="required-badge">REQUIRED</span></td>
+                            <td><span class="required-badge">@Localizer["Required"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>3</strong></td>
                             <td>Currency Symbol</td>
                             <td>Text</td>
                             <td>KSh</td>
-                            <td><span class="required-badge">REQUIRED</span></td>
+                            <td><span class="required-badge">@Localizer["Required"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>4</strong></td>
                             <td>SNG Total Revenue % GDP</td>
                             <td>Decimal</td>
                             <td>3.0814</td>
-                            <td><span class="optional-badge">OPTIONAL</span></td>
+                            <td><span class="optional-badge">@Localizer["Optional"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>5</strong></td>
                             <td>SNG Grants/Subsidies % GDP</td>
                             <td>Decimal</td>
                             <td>2.4068</td>
-                            <td><span class="optional-badge">OPTIONAL</span></td>
+                            <td><span class="optional-badge">@Localizer["Optional"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>6</strong></td>
                             <td>OSR % GDP</td>
                             <td>Decimal</td>
                             <td>0.6746</td>
-                            <td><span class="optional-badge">OPTIONAL</span></td>
+                            <td><span class="optional-badge">@Localizer["Optional"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>7</strong></td>
                             <td>GDP Nominal USD</td>
                             <td>Decimal</td>
                             <td>113163994491.19</td>
-                            <td><span class="optional-badge">OPTIONAL</span></td>
+                            <td><span class="optional-badge">@Localizer["Optional"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>8</strong></td>
                             <td>Population Total</td>
                             <td>Long Integer</td>
                             <td>54027487</td>
-                            <td><span class="optional-badge">OPTIONAL</span></td>
+                            <td><span class="optional-badge">@Localizer["Optional"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>9</strong></td>
                             <td>OSR Per Capita Proxy USD</td>
                             <td>Decimal</td>
                             <td>14.13</td>
-                            <td><span class="optional-badge">OPTIONAL</span></td>
+                            <td><span class="optional-badge">@Localizer["Optional"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>10</strong></td>
                             <td>Government Type</td>
                             <td>Text</td>
                             <td>Unitary</td>
-                            <td><span class="optional-badge">OPTIONAL</span></td>
+                            <td><span class="optional-badge">@Localizer["Optional"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>11</strong></td>
                             <td>OSR Data Complete</td>
                             <td>Text</td>
                             <td>Yes</td>
-                            <td><span class="optional-badge">OPTIONAL</span></td>
+                            <td><span class="optional-badge">@Localizer["Optional"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>12</strong></td>
                             <td>Income Level</td>
                             <td>Text</td>
                             <td>Lower-middle</td>
-                            <td><span class="optional-badge">OPTIONAL</span></td>
+                            <td><span class="optional-badge">@Localizer["Optional"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>13</strong></td>
                             <td>Income Group</td>
                             <td>Text</td>
                             <td>Lower-middle income</td>
-                            <td><span class="optional-badge">OPTIONAL</span></td>
+                            <td><span class="optional-badge">@Localizer["Optional"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>14</strong></td>
                             <td>SNG Total Rev Per Capita USD</td>
                             <td>Decimal</td>
                             <td>64.52</td>
-                            <td><span class="optional-badge">OPTIONAL</span></td>
+                            <td><span class="optional-badge">@Localizer["Optional"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>15</strong></td>
                             <td>Revenue Autonomy</td>
                             <td>Decimal</td>
                             <td>0.218929610</td>
-                            <td><span class="optional-badge">OPTIONAL</span></td>
+                            <td><span class="optional-badge">@Localizer["Optional"]</span></td>
                         </tr>
                         <tr>
                             <td><strong>16</strong></td>
                             <td>OSR Per Capita Derived USD</td>
                             <td>Decimal</td>
                             <td>14.13</td>
-                            <td><span class="optional-badge">OPTIONAL</span></td>
+                            <td><span class="optional-badge">@Localizer["Optional"]</span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -709,8 +709,8 @@
 
         <div class="upload-area" id="countryUploadArea" onclick="document.getElementById('countryFileInput').click()">
             <i class="bi bi-cloud-upload-fill upload-icon"></i>
-            <div class="upload-text">Click to upload or drag and drop</div>
-            <div class="upload-hint">CSV file only (Max size: 10MB)</div>
+            <div class="upload-text">@Localizer["ClickToUpload"]</div>
+            <div class="upload-hint">@Localizer["CSVFileOnly"]</div>
         </div>
 
         <input type="file" id="countryFileInput" class="file-input" accept=".csv" />
@@ -735,7 +735,7 @@
         </div>
 
         <button class="upload-btn" id="countryUploadBtn" onclick="uploadCountryData()" disabled>
-            <i class="bi bi-upload me-2"></i> Upload Country Data
+            <i class="bi bi-upload me-2"></i> @Localizer["UploadCountryData"]
         </button>
     </div>
 </div>
@@ -744,7 +744,7 @@
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
     <div id="toast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
-            <strong class="me-auto" id="toast-title">Notification</strong>
+            <strong class="me-auto" id="toast-title">@Localizer["Notification"]</strong>
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body" id="toast-message"></div>

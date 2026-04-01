@@ -52,6 +52,10 @@ builder.Services.AddAuthorization(options =>
 // Register the permission authorization handler
 builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
+// Register export services for DI (so they can receive IStringLocalizer)
+builder.Services.AddScoped<RosraApp.Services.ReportExportService>();
+builder.Services.AddScoped<RosraApp.Services.ExcelExportService>();
+
 // Add session services
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

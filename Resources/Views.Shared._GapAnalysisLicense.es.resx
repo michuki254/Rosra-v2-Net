@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Data Entry Section -->
+  <data name="DataEntry_Title" xml:space="preserve"><value>Ingreso de información requerida + Indicadores calculados</value></data>
+  <data name="DataEntry_Instructions" xml:space="preserve"><value>Para la correcta ejecución del análisis, solo debe completar las celdas sombreadas en gris y en negrita.</value></data>
+
+  <!-- Input Labels -->
+  <data name="RegisteredBusinesses" xml:space="preserve"><value>Empresas registradas</value></data>
+  <data name="RegisteredBusinesses_Tooltip" xml:space="preserve"><value>Cantidad de empresas actualmente inscritas en el registro municipal para esta fuente de ingresos.</value></data>
+  <data name="EstimatedUnregisteredPercent" xml:space="preserve"><value>% estimado de empresas no registradas</value></data>
+  <data name="EstimatedUnregisteredPercent_Tooltip" xml:space="preserve"><value>Mejor estimación de cuántas empresas activas no están en el registro.</value></data>
+  <data name="TotalEstimatedBusinesses" xml:space="preserve"><value>Total estimado de empresas</value></data>
+  <data name="TotalEstimatedBusinesses_Tooltip" xml:space="preserve"><value>Total estimado de empresas activas en la jurisdicción. Fórmula: Registradas × (1 + % no registradas)</value></data>
+  <data name="TotalEstimatedBusinesses_Formula" xml:space="preserve"><value>= Registradas × (1 + % no registradas)</value></data>
+  <data name="BilledAmount" xml:space="preserve"><value>Monto facturado</value></data>
+  <data name="BilledAmount_Tooltip" xml:space="preserve"><value>Valor total de facturas/avalúos emitidos a empresas registradas durante el año.</value></data>
+  <data name="OutstandingAmount" xml:space="preserve"><value>Monto pendiente</value></data>
+  <data name="OutstandingAmount_Tooltip" xml:space="preserve"><value>Total facturado pero aún no pagado (atrasos en la factura del año en curso). También equivale a la brecha de cumplimiento pura a las tarifas actuales.</value></data>
+  <data name="RevenueToDate" xml:space="preserve"><value>Ingresos a la fecha</value></data>
+  <data name="RevenueToDate_Tooltip" xml:space="preserve"><value>Lo que se ha recaudado efectivamente en efectivo en lo que va del año. Fórmula: Facturado - Pendiente.</value></data>
+  <data name="RevenueToDate_Formula" xml:space="preserve"><value>= Monto facturado - Monto pendiente</value></data>
+  <data name="CompliantBusinesses" xml:space="preserve"><value>Empresas en cumplimiento</value></data>
+  <data name="CompliantBusinesses_Tooltip" xml:space="preserve"><value>Estimación mediante fórmula proxy: Registradas × (Ingresos a la fecha / Facturado). Considera los pagos parciales durante el ejercicio fiscal.</value></data>
+  <data name="CompliantBusinesses_Formula" xml:space="preserve"><value>= Registradas × (Ingresos a la fecha / Monto facturado)</value></data>
+  <data name="StatutoryAverageBilled" xml:space="preserve"><value>Monto promedio facturado reglamentario</value></data>
+  <data name="StatutoryAverageBilled_Tooltip" xml:space="preserve"><value>La factura anual promedio según el arancel oficial establecido por ley, sin aplicar exenciones, descuentos ni dispensas. Representa el nivel de referencia de la política.</value></data>
+  <data name="RealisticImprovementPercent" xml:space="preserve"><value>% de mejora realista</value></data>
+  <data name="RealisticImprovementPercent_Tooltip" xml:space="preserve"><value>La proporción de la brecha entre la factura promedio actual y el promedio reglamentario que usted cree que se puede cerrar de manera realista mediante reformas políticas o administrativas (no por aplicación total). Ingrese como % (0-100).</value></data>
+  <data name="EnterValue" xml:space="preserve"><value>Ingrese el valor</value></data>
+  <data name="EnterPercent" xml:space="preserve"><value>Ingrese el %</value></data>
+
+  <!-- Average Values Section -->
+  <data name="AvgValues_Title" xml:space="preserve"><value>Valores promedio útiles para el análisis</value></data>
+  <data name="AvgBilledAmount" xml:space="preserve"><value>Monto promedio facturado</value></data>
+  <data name="AvgBilledAmount_Tooltip" xml:space="preserve"><value>La factura anual promedio efectivamente emitida a cada empresa registrada según la práctica de facturación actual. Es el ancla del lado "actual" de la matriz. Fórmula: Monto facturado ÷ Empresas registradas.</value></data>
+  <data name="AchievableAvgBill" xml:space="preserve"><value>Factura promedio alcanzable (potencial)</value></data>
+  <data name="AchievableAvgBill_Tooltip" xml:space="preserve"><value>La factura promedio proyectada tras aplicar la mejora realista hacia el nivel reglamentario. Alimenta la columna derecha de "pasivo" de la matriz. Fórmula: Prom. facturado + (% mejora realista × (Prom. reglamentario - Prom. facturado)).</value></data>
+  <data name="DeltaA" xml:space="preserve"><value>Delta A - Mejora de facturación</value></data>
+  <data name="DeltaA_Tooltip" xml:space="preserve"><value>El aumento alcanzable en la facturación por empresa. Fórmula: % mejora realista × MÁX(0, Promedio reglamentario − Promedio facturado).</value></data>
+
+  <!-- KPI Section -->
+  <data name="KPI_Title" xml:space="preserve"><value>Indicadores clave de desempeño (ICD)</value></data>
+  <data name="ComplianceRatio" xml:space="preserve"><value>Ratio de cumplimiento</value></data>
+  <data name="ComplianceRatio_Tooltip" xml:space="preserve"><value>Proporciona un indicador proxy del desempeño del sistema de cumplimiento para esta fuente. Fórmula: Ingresos a la fecha / Monto facturado. >80% Verde, 60-80% Amarillo, &lt;60% Rojo.</value></data>
+  <data name="ComplianceRatio_Formula" xml:space="preserve"><value>Ingresos a la fecha / Monto facturado</value></data>
+  <data name="CoverageRatio" xml:space="preserve"><value>Ratio de cobertura</value></data>
+  <data name="CoverageRatio_Tooltip" xml:space="preserve"><value>Proporciona un indicador proxy del desempeño del sistema de cobertura para esta fuente. Fórmula: Registradas / Total estimado de empresas. >80% Verde, 60-80% Amarillo, &lt;60% Rojo.</value></data>
+  <data name="CoverageRatio_Formula" xml:space="preserve"><value>Empresas registradas / Total estimado de empresas</value></data>
+
+  <!-- Results Section -->
+  <data name="Results_Title" xml:space="preserve"><value>Representación gráfica de los datos analizados</value></data>
+
+  <!-- Potential Revenue Table -->
+  <data name="PotentialRevenue_Title" xml:space="preserve"><value>Desglose de ingresos potenciales (Ingresos reales + Desglose de brechas)</value></data>
+  <data name="Table_RevenueAndGaps" xml:space="preserve"><value>Ingresos y brechas funcionales</value></data>
+  <data name="Table_Amount" xml:space="preserve"><value>Monto</value></data>
+  <data name="Table_Share" xml:space="preserve"><value>Participación (%)</value></data>
+  <data name="RevenueToDate_Label" xml:space="preserve"><value>Ingresos a la fecha</value></data>
+  <data name="RevenueToDate_TableTooltip" xml:space="preserve"><value>Es el efectivo realmente recaudado en lo que va del año de las empresas registradas. Es la porción de "ingresos reales" en el gráfico y la celda inferior izquierda de la matriz.</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>Brecha de cumplimiento</value></data>
+  <data name="ComplianceGap_Tooltip" xml:space="preserve"><value>El monto ya facturado a empresas registradas que permanece impago (atrasos del año). Captura el incumplimiento entre los inscritos en el registro al nivel de facturación actual. Fórmula: Monto pendiente.</value></data>
+  <data name="CoverageGap" xml:space="preserve"><value>Brecha de cobertura</value></data>
+  <data name="CoverageGap_Tooltip" xml:space="preserve"><value>Ingresos no recaudados porque algunas empresas activas no están registradas y por lo tanto no fueron facturadas, valoradas a la factura promedio actual. Fórmula: (Total estimado - Registradas) × Monto promedio facturado.</value></data>
+  <data name="LiabilityGap" xml:space="preserve"><value>Brecha de pasivo</value></data>
+  <data name="LiabilityGap_Tooltip" xml:space="preserve"><value>Ingresos adicionales que se podrían obtener de empresas que ya pagan si la facturación se mejorara parcialmente hacia el nivel reglamentario (mejora realista). Fórmula: Empresas en cumplimiento × ΔA.</value></data>
+  <data name="MixedGapComplianceLiability" xml:space="preserve"><value>Brecha mixta (Cumplimiento + Pasivo)</value></data>
+  <data name="MixedGapComplianceLiability_Tooltip" xml:space="preserve"><value>Ingresos adicionales que surgirían solo si (i) los no pagadores entre los registrados comienzan a pagar Y (ii) la facturación se eleva mediante la mejora realista hacia el promedio reglamentario. Fórmula: (Registradas - En cumplimiento) × ΔA.</value></data>
+  <data name="MixedGapCoverageLiability" xml:space="preserve"><value>Brecha mixta (Cobertura + Pasivo)</value></data>
+  <data name="MixedGapCoverageLiability_Tooltip" xml:space="preserve"><value>Ingresos adicionales que surgirían solo si (i) las empresas no registradas se inscriben en el registro Y (ii) la facturación se eleva mediante la mejora realista hacia el promedio reglamentario. Fórmula: (Total estimado - Registradas) × ΔA.</value></data>
+  <data name="TotalPotentialRevenue" xml:space="preserve"><value>TOTAL (Ingresos potenciales)</value></data>
+
+  <!-- Pie Chart -->
+  <data name="PotentialRevenuePie_Title" xml:space="preserve"><value>Ingresos potenciales (Ingresos reales + Desglose de brechas)</value></data>
+  <data name="PotentialRevenuePie_Description" xml:space="preserve"><value>Este gráfico circular ilustra la distribución porcentual de los ingresos potenciales totales del sistema de facturación. Muestra visualmente la participación correspondiente a los ingresos efectivamente recaudados durante el año, así como la contribución de cada tipo de brecha (ingresos no recaudados o perdidos) a ese total.</value></data>
+
+  <!-- Matrix Dashboard -->
+  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Análisis de brechas de licencias comerciales - Tablero</value></data>
+  <data name="Matrix_YAxisTitle" xml:space="preserve"><value>N.° de empresas</value></data>
+  <data name="Matrix_Estimated" xml:space="preserve"><value>Estimadas</value></data>
+  <data name="Matrix_Registered" xml:space="preserve"><value>Registradas</value></data>
+  <data name="Matrix_Compliant" xml:space="preserve"><value>En cumplimiento</value></data>
+  <data name="Matrix_CoverageGap" xml:space="preserve"><value>Brecha de cobertura</value></data>
+  <data name="Matrix_MixedCovLiab" xml:space="preserve"><value>Mixta (Cob.+Pasivo)</value></data>
+  <data name="Matrix_ComplianceGap" xml:space="preserve"><value>Brecha de cumplimiento</value></data>
+  <data name="Matrix_MixedCompLiab" xml:space="preserve"><value>Mixta (Cump.+Pasivo)</value></data>
+  <data name="Matrix_ActualRevenue" xml:space="preserve"><value>Ingresos reales</value></data>
+  <data name="Matrix_LiabilityGap" xml:space="preserve"><value>Brecha de pasivo</value></data>
+  <data name="Matrix_AvgBilled" xml:space="preserve"><value>Prom. facturado</value></data>
+  <data name="Matrix_AchievableAvg" xml:space="preserve"><value>Prom. alcanzable</value></data>
+  <data name="MatrixDashboard_Description" xml:space="preserve"><value>Esta matriz presenta el análisis de brechas de licencias comerciales en dos dimensiones: el número de empresas (eje vertical, de En cumplimiento a Estimadas) y el nivel de facturación (eje horizontal, de la facturación promedio a la facturación alcanzable). Cada celda coloreada representa un tipo diferente de brecha o componente de ingresos.</value></data>
+
+  <!-- Gap Breakdown Table -->
+  <data name="GapBreakdown_Title" xml:space="preserve"><value>Desglose de brechas</value></data>
+  <data name="Table_FunctionalGaps" xml:space="preserve"><value>Brechas funcionales</value></data>
+  <data name="TotalFunctionalGap" xml:space="preserve"><value>Total de brechas funcionales</value></data>
+
+  <!-- Gap Breakdown Pie Chart -->
+  <data name="GapBreakdownPie_Title" xml:space="preserve"><value>Desglose de brechas</value></data>
+  <data name="GapBreakdownPie_Description" xml:space="preserve"><value>Este gráfico circular ilustra la distribución porcentual de las brechas de ingresos. Muestra visualmente la contribución de cada tipo de brecha al total de ingresos no recaudados, ayudando a identificar cuáles brechas son las más significativas.</value></data>
+
+  <!-- Common -->
+  <data name="Description_Label" xml:space="preserve"><value>DESCRIPCIÓN:</value></data>
+</root>

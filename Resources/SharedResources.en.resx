@@ -87,4 +87,33 @@
   <data name="Lang_English" xml:space="preserve"><value>English</value></data>
   <data name="Lang_French" xml:space="preserve"><value>Français</value></data>
   <data name="Lang_Spanish" xml:space="preserve"><value>Español</value></data>
+
+  <!-- JavaScript Alert/Confirm Strings -->
+  <data name="JS_PleaseEnterName" xml:space="preserve"><value>Please enter a name.</value></data>
+  <data name="JS_CategoryExists" xml:space="preserve"><value>A category with this name already exists.</value></data>
+  <data name="JS_ErrorOccurred" xml:space="preserve"><value>An error occurred. Please try again.</value></data>
+  <data name="JS_ConfirmDelete" xml:space="preserve"><value>Are you sure you want to delete this item? This action cannot be undone.</value></data>
+  <data name="JS_ConfirmReset" xml:space="preserve"><value>Are you sure you want to reset all progress? This cannot be undone.</value></data>
+  <data name="JS_ConfirmClear" xml:space="preserve"><value>Are you sure you want to clear all selections?</value></data>
+  <data name="JS_CopiedToClipboard" xml:space="preserve"><value>Copied to clipboard!</value></data>
+  <data name="JS_SelectCountryFirst" xml:space="preserve"><value>Please select a country first.</value></data>
+  <data name="JS_SelectFileFirst" xml:space="preserve"><value>Please select a file first.</value></data>
+  <data name="JS_InvalidCsvFormat" xml:space="preserve"><value>Invalid CSV format. Expected columns: SNG, OSR, GCP.</value></data>
+  <data name="JS_DataUploadSuccess" xml:space="preserve"><value>Data uploaded successfully.</value></data>
+  <data name="JS_NoDataAvailable" xml:space="preserve"><value>No data available.</value></data>
+
+  <!-- Chart Labels -->
+  <data name="Chart_CurrentRevenue" xml:space="preserve"><value>Current Revenue</value></data>
+  <data name="Chart_PotentialRevenue" xml:space="preserve"><value>Potential Revenue</value></data>
+  <data name="Chart_RevenueGap" xml:space="preserve"><value>Revenue Gap</value></data>
+  <data name="Chart_ComplianceGap" xml:space="preserve"><value>Compliance Gap</value></data>
+  <data name="Chart_CoverageGap" xml:space="preserve"><value>Coverage Gap</value></data>
+  <data name="Chart_ValuationGap" xml:space="preserve"><value>Valuation Gap</value></data>
+  <data name="Chart_LiabilityGap" xml:space="preserve"><value>Liability Gap</value></data>
+  <data name="Chart_MixedGap" xml:space="preserve"><value>Mixed Gap</value></data>
+  <data name="Chart_TotalGap" xml:space="preserve"><value>Total Gap</value></data>
+  <data name="Chart_Peers" xml:space="preserve"><value>Peers</value></data>
+  <data name="Chart_Frontier" xml:space="preserve"><value>Frontier (Top-20% avg)</value></data>
+  <data name="Chart_Actual" xml:space="preserve"><value>Actual</value></data>
+  <data name="Chart_Estimated" xml:space="preserve"><value>Estimated</value></data>
 </root>

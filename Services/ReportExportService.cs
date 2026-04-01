@@ -1,15 +1,23 @@
+using Microsoft.Extensions.Localization;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using RosraApp.Models.ViewModels;
+using RosraApp.Resources;
 using System.Text.Json;
 
 namespace RosraApp.Services
 {
     public class ReportExportService
     {
+        private readonly IStringLocalizer<ExportResources> _l;
         private Dictionary<string, byte[]> _chartImages = new();
         private string _currencySymbol = "$";
+
+        public ReportExportService(IStringLocalizer<ExportResources> localizer)
+        {
+            _l = localizer;
+        }
 
         public byte[] GeneratePdfReport(RosraFormViewModel model, string title = "ROSRA Analysis Report")
         {

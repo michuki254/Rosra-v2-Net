@@ -16,30 +16,30 @@
         <div class="col-md-4">
             <div class="card mb-3">
                 <div class="card-header bg-light">
-                    <h6 class="mb-0">Short Term Information</h6>
+                    <h6 class="mb-0">@Localizer["ShortTermInformation"]</h6>
                 </div>
                 <div class="card-body">
                     <!-- Original fields -->
                     <div class="mb-3">
                         <div class="form-group">
-                            <label for="estimatedDailyFees">Estimated Number of Daily Fees</label>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="estimatedDailyFees" name="ShortTermUserCharge.EstimatedDailyFees" value="@(Model.ShortTermUserCharge.EstimatedDailyFees)" placeholder="Enter estimated number of daily fees" @(isViewMode ? "readonly" : "")>
+                            <label for="estimatedDailyFees">@Localizer["EstimatedDailyFees"]</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="estimatedDailyFees" name="ShortTermUserCharge.EstimatedDailyFees" value="@(Model.ShortTermUserCharge.EstimatedDailyFees)" placeholder="@Localizer["EnterEstimatedDailyFees"]" @(isViewMode ? "readonly" : "")>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-group">
-                            <label for="actualDailyFees">Actual Number of Daily Fees</label>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualDailyFees" name="ShortTermUserCharge.ActualDailyFees" value="@(Model.ShortTermUserCharge.ActualDailyFees)" placeholder="Enter actual number of daily fees" @(isViewMode ? "readonly" : "")>
+                            <label for="actualDailyFees">@Localizer["ActualDailyFees"]</label>
+                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualDailyFees" name="ShortTermUserCharge.ActualDailyFees" value="@(Model.ShortTermUserCharge.ActualDailyFees)" placeholder="@Localizer["EnterActualDailyFees"]" @(isViewMode ? "readonly" : "")>
                         </div>
                     </div>
                     
                     <hr class="my-4">
-                    <h6 class="mb-3">Categories</h6>
-                    
+                    <h6 class="mb-3">@Localizer["Categories"]</h6>
+
                     <!-- Add Category Button -->
                     <div class="mt-3 mb-3">
                         <button type="button" class="btn btn-outline-primary rounded-pill shadow-sm" id="addCategoryBtn" data-bs-toggle="modal" data-bs-target="#addShortTermCategoryModal" @(isViewMode ? "disabled" : "")>
-                            <i class="fas fa-plus me-1"></i> Add Category
+                            <i class="fas fa-plus me-1"></i> @Localizer["AddCategory"]
                         </button>
                     </div>
                     
@@ -65,25 +65,25 @@
                             <div class="card-body">
                                 <div class="mb-3">
                                     <div class="form-group">
-                                        <label>Estimated Number of Daily Fees</label>
+                                        <label>@Localizer["EstimatedDailyFees"]</label>
                                         <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="ShortTermUserCharge.EstimatedDailyFeesCategoryA" value="@Model.ShortTermUserCharge.EstimatedDailyFeesCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-group">
-                                        <label>Actual Number of Daily Fees</label>
+                                        <label>@Localizer["ActualDailyFees"]</label>
                                         <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="ShortTermUserCharge.ActualDailyFeesCategoryA" value="@Model.ShortTermUserCharge.ActualDailyFeesCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-group">
-                                        <label>Potential Rate payable by Leasees</label>
+                                        <label>@Localizer["PotentialRatePayable"]</label>
                                         <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="ShortTermUserCharge.PotentialRatePayableByCategoryA" value="@Model.ShortTermUserCharge.PotentialRatePayableByCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-group">
-                                        <label>Actual Rate paid by Leasees</label>
+                                        <label>@Localizer["ActualRatePaid"]</label>
                                         <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="ShortTermUserCharge.ActualRatePaidByCategoryA" value="@Model.ShortTermUserCharge.ActualRatePaidByCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                     </div>
                                 </div>
@@ -113,25 +113,25 @@
                             <div class="card-body">
                                 <div class="mb-3">
                                     <div class="form-group">
-                                        <label>Estimated Number of Daily Fees</label>
+                                        <label>@Localizer["EstimatedDailyFees"]</label>
                                         <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="ShortTermUserCharge.EstimatedDailyFeesCategoryB" value="@Model.ShortTermUserCharge.EstimatedDailyFeesCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-group">
-                                        <label>Actual Number of Daily Fees</label>
+                                        <label>@Localizer["ActualDailyFees"]</label>
                                         <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="ShortTermUserCharge.ActualDailyFeesCategoryB" value="@Model.ShortTermUserCharge.ActualDailyFeesCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-group">
-                                        <label>Potential Rate payable by Leasees</label>
+                                        <label>@Localizer["PotentialRatePayable"]</label>
                                         <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="ShortTermUserCharge.PotentialRatePayableByCategoryB" value="@Model.ShortTermUserCharge.PotentialRatePayableByCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-group">
-                                        <label>Actual Rate paid by Leasees</label>
+                                        <label>@Localizer["ActualRatePaid"]</label>
                                         <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="ShortTermUserCharge.ActualRatePaidByCategoryB" value="@Model.ShortTermUserCharge.ActualRatePaidByCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                     </div>
                                 </div>
@@ -161,25 +161,25 @@
                             <div class="card-body">
                                 <div class="mb-3">
                                     <div class="form-group">
-                                        <label>Estimated Number of Daily Fees</label>
+                                        <label>@Localizer["EstimatedDailyFees"]</label>
                                         <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="ShortTermUserCharge.EstimatedDailyFeesCategoryC" value="@Model.ShortTermUserCharge.EstimatedDailyFeesCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-group">
-                                        <label>Actual Number of Daily Fees</label>
+                                        <label>@Localizer["ActualDailyFees"]</label>
                                         <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="ShortTermUserCharge.ActualDailyFeesCategoryC" value="@Model.ShortTermUserCharge.ActualDailyFeesCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-group">
-                                        <label>Potential Rate payable by Leasees</label>
+                                        <label>@Localizer["PotentialRatePayable"]</label>
                                         <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="ShortTermUserCharge.PotentialRatePayableByCategoryC" value="@Model.ShortTermUserCharge.PotentialRatePayableByCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-group">
-                                        <label>Actual Rate paid by Leasees</label>
+                                        <label>@Localizer["ActualRatePaid"]</label>
                                         <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="ShortTermUserCharge.ActualRatePaidByCategoryC" value="@Model.ShortTermUserCharge.ActualRatePaidByCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                     </div>
                                 </div>
@@ -215,25 +215,25 @@
                                         <div class="card-body">
                                             <div class="mb-3">
                                                 <div class="form-group">
-                                                    <label>Estimated Number of Daily Fees</label>
+                                                    <label>@Localizer["EstimatedDailyFees"]</label>
                                                     <input type="text" class="form-control number-format" name="ShortTermUserCharge.DynamicCategories[@(Model.ShortTermUserCharge.DynamicCategories.IndexOf(category))].EstimatedDailyFees" value="@category.EstimatedDailyFees" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                                 </div>
                                             </div>
                                             <div class="mb-3">
                                                 <div class="form-group">
-                                                    <label>Actual Number of Daily Fees</label>
+                                                    <label>@Localizer["ActualDailyFees"]</label>
                                                     <input type="text" class="form-control number-format" name="ShortTermUserCharge.DynamicCategories[@(Model.ShortTermUserCharge.DynamicCategories.IndexOf(category))].ActualDailyFees" value="@category.ActualDailyFees" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                                 </div>
                                             </div>
                                             <div class="mb-3">
                                                 <div class="form-group">
-                                                    <label>Potential Rate payable by Leasees</label>
+                                                    <label>@Localizer["PotentialRatePayable"]</label>
                                                     <input type="text" class="form-control number-format" name="ShortTermUserCharge.DynamicCategories[@(Model.ShortTermUserCharge.DynamicCategories.IndexOf(category))].PotentialRatePayable" value="@category.PotentialRatePayable" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                                 </div>
                                             </div>
                                             <div class="mb-3">
                                                 <div class="form-group">
-                                                    <label>Actual Rate paid by Leasees</label>
+                                                    <label>@Localizer["ActualRatePaid"]</label>
                                                     <input type="text" class="form-control number-format" name="ShortTermUserCharge.DynamicCategories[@(Model.ShortTermUserCharge.DynamicCategories.IndexOf(category))].ActualRatePaid" value="@category.ActualRatePaid" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
                                                 </div>
                                             </div>
@@ -268,25 +268,25 @@
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <div class="form-group">
-                                            <label>Estimated Number of Daily Fees</label>
+                                            <label>@Localizer["EstimatedDailyFees"]</label>
                                             <input type="text" class="form-control number-format" placeholder="Enter value">
                                         </div>
                                     </div>
                                     <div class="mb-3">
                                         <div class="form-group">
-                                            <label>Actual Number of Daily Fees</label>
+                                            <label>@Localizer["ActualDailyFees"]</label>
                                             <input type="text" class="form-control number-format" placeholder="Enter value">
                                         </div>
                                     </div>
                                     <div class="mb-3">
                                         <div class="form-group">
-                                            <label>Potential Rate payable by Leasees</label>
+                                            <label>@Localizer["PotentialRatePayable"]</label>
                                             <input type="text" class="form-control number-format" placeholder="Enter value">
                                         </div>
                                     </div>
                                     <div class="mb-3">
                                         <div class="form-group">
-                                            <label>Actual Rate paid by Leasees</label>
+                                            <label>@Localizer["ActualRatePaid"]</label>
                                             <input type="text" class="form-control number-format" placeholder="Enter value">
                                         </div>
                                     </div>
@@ -302,7 +302,7 @@
         <div class="col-md-8">
             <div class="card mb-3">
                 <div class="card-header bg-light">
-                    <h6 class="mb-0">Short Term Details</h6>
+                    <h6 class="mb-0">@Localizer["ShortTermDetails"]</h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
@@ -323,7 +323,7 @@
             <!-- Gap Analysis Summary Card -->
             <div class="card mb-3">
                 <div class="card-header bg-primary text-white">
-                    <h6 class="mb-0">Gap Analysis Summary</h6>
+                    <h6 class="mb-0">@Localizer["GapAnalysisSummary"]</h6>
         </div>
                 <div class="card-body p-3">
                     <div class="row mb-4">
@@ -334,10 +334,10 @@
                                         <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
                                             <i class="fas fa-dollar-sign text-white"></i>
                                         </div>
-                                        <span class="text-muted text-uppercase small">ACTUAL REVENUE</span>
+                                        <span class="text-muted text-uppercase small">@Localizer["ActualRevenue"]</span>
                                     </div>
                                     <h3 class="mb-1 fw-bold" id="actualRevenue">0.0</h3>
-                                    <p class="text-muted small mb-0">Current collected revenue</p>
+                                    <p class="text-muted small mb-0">@Localizer["CurrentCollectedRevenue"]</p>
                                 </div>
                             </div>
                         </div>
@@ -348,10 +348,10 @@
                                         <div class="rounded-circle bg-danger d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
                                             <i class="fas fa-chart-line text-white"></i>
                                         </div>
-                                        <span class="text-muted text-uppercase small">POTENTIAL REVENUE</span>
+                                        <span class="text-muted text-uppercase small">@Localizer["PotentialRevenue"]</span>
                                     </div>
                                     <h3 class="mb-1 fw-bold" id="potentialRevenue">0.0</h3>
-                                    <p class="text-muted small mb-0">Maximum possible revenue</p>
+                                    <p class="text-muted small mb-0">@Localizer["MaximumPossibleRevenue"]</p>
                                 </div>
                             </div>
                         </div>
@@ -362,10 +362,10 @@
                                         <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
                                             <i class="fas fa-calculator text-white"></i>
                                         </div>
-                                        <span class="text-muted text-uppercase small">TOTAL GAP</span>
+                                        <span class="text-muted text-uppercase small">@Localizer["TotalGap"]</span>
                                     </div>
                                     <h3 class="mb-1 fw-bold" id="totalGap">0.0</h3>
-                                    <p class="text-muted small mb-0">Revenue gap to be addressed</p>
+                                    <p class="text-muted small mb-0">@Localizer["RevenueGapToBeAddressed"]</p>
                                 </div>
                             </div>
                         </div>
@@ -376,10 +376,10 @@
                                         <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
                                             <i class="fas fa-percentage text-white"></i>
                                         </div>
-                                        <span class="text-muted text-uppercase small">POTENTIAL LEVERAGED</span>
+                                        <span class="text-muted text-uppercase small">@Localizer["PotentialLeveraged"]</span>
                                     </div>
                                     <h3 class="mb-1 fw-bold"><span id="percentageLeveraged">0.0</span> %</h3>
-                                    <p class="text-muted small mb-0">Percentage of potential collected</p>
+                                    <p class="text-muted small mb-0">@Localizer["PercentageOfPotentialCollected"]</p>
                                 </div>
                             </div>
                         </div>
@@ -587,10 +587,10 @@
                                     <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
                                         <i class="fas fa-users text-white"></i>
                                     </div>
-                                    <span class="text-muted text-uppercase small">COMPLIANCE GAP</span>
+                                    <span class="text-muted text-uppercase small">@Localizer["ComplianceGap"]</span>
                                 </div>
                                 <h3 class="mb-1 fw-bold" id="complianceGapSummary">0.0</h3>
-                                <p class="text-muted small mb-0">Gap due to non-compliance</p>
+                                <p class="text-muted small mb-0">@Localizer["GapDueToNonCompliance"]</p>
                             </div>
                         </div>
                     </div>
@@ -601,10 +601,10 @@
                                     <div class="rounded-circle bg-orange d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px; background-color: #fd7e14;">
                                         <i class="fas fa-tag text-white"></i>
                                     </div>
-                                    <span class="text-muted text-uppercase small">RATE GAP</span>
+                                    <span class="text-muted text-uppercase small">@Localizer["RateGap"]</span>
                                 </div>
                                 <h3 class="mb-1 fw-bold" id="rateGapSummary">0.0</h3>
-                                <p class="text-muted small mb-0">Gap due to lower rates</p>
+                                <p class="text-muted small mb-0">@Localizer["GapDueToLowerRates"]</p>
                             </div>
                         </div>
                     </div>
@@ -615,10 +615,10 @@
                                     <div class="rounded-circle bg-danger d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
                                         <i class="fas fa-layer-group text-white"></i>
                                     </div>
-                                    <span class="text-muted text-uppercase small">COMBINED GAPS</span>
+                                    <span class="text-muted text-uppercase small">@Localizer["CombinedGaps"]</span>
                                 </div>
                                 <h3 class="mb-1 fw-bold" id="combinedGapsSummary">0.0</h3>
-                                <p class="text-muted small mb-0">Other uncategorized gaps</p>
+                                <p class="text-muted small mb-0">@Localizer["OtherUncategorizedGaps"]</p>
                             </div>
                         </div>
                     </div>

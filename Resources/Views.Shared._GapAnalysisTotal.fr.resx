@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Main Header -->
+  <data name="TotalRevenueGapAnalysis" xml:space="preserve"><value>Analyse totale des &#233;carts de recettes</value></data>
+  <data name="DescriptionLabel" xml:space="preserve"><value>Description</value></data>
+
+  <!-- Revenue Summary Cards -->
+  <data name="TotalCurrentRevenue" xml:space="preserve"><value>Total des recettes actuelles</value></data>
+  <data name="Actual" xml:space="preserve"><value>R&#233;el</value></data>
+  <data name="CurrentRevenue" xml:space="preserve"><value>Recettes actuelles</value></data>
+  <data name="TotalPotentialRevenue" xml:space="preserve"><value>Total des recettes potentielles</value></data>
+  <data name="Potential" xml:space="preserve"><value>Potentiel</value></data>
+  <data name="PotentialRevenue" xml:space="preserve"><value>Recettes potentielles</value></data>
+  <data name="TotalRevenueGap" xml:space="preserve"><value>&#201;cart total de recettes</value></data>
+  <data name="GapBadge" xml:space="preserve"><value>&#201;cart</value></data>
+  <data name="RevenueGap" xml:space="preserve"><value>&#201;cart de recettes</value></data>
+
+  <!-- Largest Gap Highlight -->
+  <data name="LargestRevenueGap" xml:space="preserve"><value>&#201;cart de recettes le plus important</value></data>
+  <data name="LargestGapDescription" xml:space="preserve"><value>La source de recettes {0} repr&#233;sente la plus grande opportunit&#233; avec un &#233;cart de {1}.</value></data>
+  <data name="LargestGap" xml:space="preserve"><value>&#201;cart le plus important</value></data>
+
+  <!-- Revenue Gap by Source -->
+  <data name="RevenueGapAnalysisBySource" xml:space="preserve"><value>Analyse des &#233;carts de recettes par source</value></data>
+  <data name="PropertyTax" xml:space="preserve"><value>Imp&#244;t foncier</value></data>
+  <data name="License" xml:space="preserve"><value>Licence</value></data>
+  <data name="ShortTerm" xml:space="preserve"><value>Court terme</value></data>
+  <data name="LongTerm" xml:space="preserve"><value>Long terme</value></data>
+  <data name="Mixed" xml:space="preserve"><value>Mixte</value></data>
+  <data name="TotalGap" xml:space="preserve"><value>&#201;cart total</value></data>
+
+  <!-- Potential Revenue By Source Table -->
+  <data name="PotentialRevenueBySource" xml:space="preserve"><value>Recettes potentielles par source</value></data>
+  <data name="RevenueSource" xml:space="preserve"><value>Source de recettes</value></data>
+  <data name="CurrentRevenueCol" xml:space="preserve"><value>Recettes actuelles</value></data>
+  <data name="PotentialRevenueCol" xml:space="preserve"><value>Recettes potentielles</value></data>
+  <data name="GapCol" xml:space="preserve"><value>&#201;cart</value></data>
+  <data name="PercentOfPotentialRealized" xml:space="preserve"><value>% du potentiel r&#233;alis&#233;</value></data>
+  <data name="Total" xml:space="preserve"><value>Total</value></data>
+
+  <!-- Top 5 OSR Gap Analysis -->
+  <data name="Top5OsrGapAnalysis" xml:space="preserve"><value>Analyse des &#233;carts des 5 principales RSP</value></data>
+  <data name="PercentOfGap" xml:space="preserve"><value>% de l'&#233;cart</value></data>
+
+  <!-- Detailed Gap Breakdown -->
+  <data name="DetailedGapBreakdownByType" xml:space="preserve"><value>Ventilation d&#233;taill&#233;e des &#233;carts par type de recettes</value></data>
+  <data name="RegistrationGap" xml:space="preserve"><value>&#201;cart d'enregistrement</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>&#201;cart de conformit&#233;</value></data>
+  <data name="AssessmentGap" xml:space="preserve"><value>&#201;cart d'&#233;valuation</value></data>
+  <data name="RateGap" xml:space="preserve"><value>&#201;cart de taux</value></data>
+  <data name="CombinedGap" xml:space="preserve"><value>&#201;cart combin&#233;</value></data>
+
+  <!-- Charts -->
+  <data name="TotalGapByRevenueSource" xml:space="preserve"><value>&#201;cart total par source de recettes</value></data>
+  <data name="GapAnalysisVisualization" xml:space="preserve"><value>Visualisation de l'analyse des &#233;carts</value></data>
+
+  <!-- Average Gap Analysis -->
+  <data name="AverageGapAnalysis" xml:space="preserve"><value>Analyse de l'&#233;cart moyen</value></data>
+  <data name="AverageGapAcrossTop5" xml:space="preserve"><value>&#201;cart moyen des 5 principales RSP</value></data>
+  <data name="AverageGapFormula" xml:space="preserve"><value>Formule : &#201;cart total / Total des recettes potentielles</value></data>
+  <data name="ExcellentRevenueCollection" xml:space="preserve"><value>Excellente collecte des recettes</value></data>
+
+  <!-- Total Potential Revenue Section -->
+  <data name="TotalPotentialRevenueHeader" xml:space="preserve"><value>Total des recettes potentielles</value></data>
+  <data name="TotalRevenuePotentialFromAll" xml:space="preserve"><value>Potentiel total de recettes de toutes les sources</value></data>
+  <data name="TotalRevenuePotentialDescription" xml:space="preserve"><value>Ceci repr&#233;sente les recettes potentielles combin&#233;es de l'imp&#244;t foncier, des licences, des redevances court terme, long terme et mixtes.</value></data>
+  <data name="TotalPotential" xml:space="preserve"><value>Potentiel total</value></data>
+
+  <!-- Other OSR Potential -->
+  <data name="TotalPotentialOtherOSRs" xml:space="preserve"><value>Potentiel total des autres RSP</value></data>
+  <data name="OtherOSRFormula" xml:space="preserve"><value>Formule : Autres recettes / (1 - &#201;cart moyen)</value></data>
+  <data name="OtherOSRDescription" xml:space="preserve"><value>Cette formule estime les recettes potentielles des autres sources en appliquant le m&#234;me ratio d'&#233;cart observ&#233; dans les 5 principales RSP.</value></data>
+  <data name="Calculation" xml:space="preserve"><value>Calcul</value></data>
+  <data name="EstimatedPotentialRevenue" xml:space="preserve"><value>Recettes potentielles estim&#233;es</value></data>
+  <data name="EstimatedGap" xml:space="preserve"><value>&#201;cart estim&#233;</value></data>
+
+  <!-- Total OSR Potential -->
+  <data name="TotalOSRPotential" xml:space="preserve"><value>Potentiel total des RSP</value></data>
+  <data name="TotalOSRPotentialFormula" xml:space="preserve"><value>Formule : Potentiel total de tous les onglets + Potentiel total des autres RSP</value></data>
+  <data name="TotalOSRPotentialDescription" xml:space="preserve"><value>Ceci repr&#233;sente le potentiel complet de recettes de toutes les sources, y compris les &#171; Autres RSP &#187; non captur&#233;es dans les onglets principaux.</value></data>
+  <data name="TotalPotentialFromAllTabs" xml:space="preserve"><value>Potentiel total de tous les onglets</value></data>
+  <data name="TotalPotentialOtherOSRsLabel" xml:space="preserve"><value>Potentiel total des autres RSP</value></data>
+
+  <!-- Bottom Form Fields -->
+  <data name="CurrentValue" xml:space="preserve"><value>Valeur actuelle</value></data>
+  <data name="PotentialValue" xml:space="preserve"><value>Valeur potentielle</value></data>
+  <data name="Gap" xml:space="preserve"><value>&#201;cart</value></data>
+  <data name="PercentageRealized" xml:space="preserve"><value>Pourcentage r&#233;alis&#233; (%)</value></data>
+  <data name="PerCapitaCurrentRevenue" xml:space="preserve"><value>Recettes actuelles par habitant</value></data>
+  <data name="PerCapitaPotentialRevenue" xml:space="preserve"><value>Recettes potentielles par habitant</value></data>
+  <data name="NotesAndRecommendations" xml:space="preserve"><value>Notes et recommandations</value></data>
+</root>

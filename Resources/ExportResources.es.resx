@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"><xsd:complexType><xsd:choice maxOccurs="unbounded">
+      <xsd:element name="data"><xsd:complexType><xsd:sequence>
+        <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+      </xsd:sequence><xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" /><xsd:attribute name="xml:space" use="optional" /></xsd:complexType></xsd:element>
+    </xsd:choice></xsd:complexType></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="ExecutiveSummary" xml:space="preserve"><value>Resumen ejecutivo</value></data>
+  <data name="TopDownAnalysis" xml:space="preserve"><value>Análisis descendente de la frontera</value></data>
+  <data name="GapAnalysis" xml:space="preserve"><value>Análisis de brechas por flujo de ingresos</value></data>
+  <data name="Prioritization" xml:space="preserve"><value>Resultados de la priorización</value></data>
+  <data name="SelectedSolutions" xml:space="preserve"><value>Soluciones seleccionadas</value></data>
+  <data name="Recommendations" xml:space="preserve"><value>Recomendaciones y plan de acción</value></data>
+  <data name="LocationInfo" xml:space="preserve"><value>Información de ubicación</value></data>
+  <data name="FinancialDetails" xml:space="preserve"><value>Detalles financieros</value></data>
+  <data name="Country" xml:space="preserve"><value>País</value></data>
+  <data name="Region" xml:space="preserve"><value>Región/Estado</value></data>
+  <data name="City" xml:space="preserve"><value>Ciudad</value></data>
+  <data name="Currency" xml:space="preserve"><value>Moneda</value></data>
+  <data name="FinancialYear" xml:space="preserve"><value>Año fiscal</value></data>
+  <data name="IncomeLevel" xml:space="preserve"><value>Nivel de ingresos</value></data>
+  <data name="GovernmentType" xml:space="preserve"><value>Tipo de gobierno</value></data>
+  <data name="RevenueOverview" xml:space="preserve"><value>Resumen de ingresos</value></data>
+  <data name="Metric" xml:space="preserve"><value>Indicador</value></data>
+  <data name="Value" xml:space="preserve"><value>Valor</value></data>
+  <data name="TotalCurrentRevenue" xml:space="preserve"><value>Total de ingresos actuales</value></data>
+  <data name="EstimatedPotential" xml:space="preserve"><value>Potencial total estimado</value></data>
+  <data name="TotalEstimatedGap" xml:space="preserve"><value>Brecha total estimada</value></data>
+  <data name="Component" xml:space="preserve"><value>Componente</value></data>
+  <data name="Amount" xml:space="preserve"><value>Monto</value></data>
+  <data name="SharePercent" xml:space="preserve"><value>Participación %</value></data>
+  <data name="RevenueToDate" xml:space="preserve"><value>Ingresos a la fecha</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>Brecha de cumplimiento</value></data>
+  <data name="CoverageGap" xml:space="preserve"><value>Brecha de cobertura</value></data>
+  <data name="LiabilityGap" xml:space="preserve"><value>Brecha de responsabilidad</value></data>
+  <data name="MixedCompLiab" xml:space="preserve"><value>Mixta (Cump.+Resp.)</value></data>
+  <data name="MixedCovLiab" xml:space="preserve"><value>Mixta (Cob.+Resp.)</value></data>
+  <data name="TotalPotential" xml:space="preserve"><value>POTENCIAL TOTAL</value></data>
+  <data name="Rank" xml:space="preserve"><value>Rango</value></data>
+  <data name="RevenueStream" xml:space="preserve"><value>Flujo de ingresos</value></data>
+  <data name="TotalGap" xml:space="preserve"><value>Brecha total</value></data>
+  <data name="ID" xml:space="preserve"><value>ID</value></data>
+  <data name="Solution" xml:space="preserve"><value>Solución</value></data>
+  <data name="StreamGap" xml:space="preserve"><value>Flujo / Brecha</value></data>
+  <data name="Timeline" xml:space="preserve"><value>Cronograma</value></data>
+  <data name="Summary" xml:space="preserve"><value>Resumen</value></data>
+  <data name="ActionItems" xml:space="preserve"><value>Puntos de acción</value></data>
+  <data name="AnalysisResult" xml:space="preserve"><value>Resultado del análisis</value></data>
+  <data name="TotalGapSummary" xml:space="preserve"><value>Resumen de brecha total</value></data>
+  <data name="ChartNotAvailable" xml:space="preserve"><value>Gráfico no disponible — visite la pestaña para generarlo</value></data>
+  <data name="NoFrontierData" xml:space="preserve"><value>No hay datos de análisis de frontera disponibles.</value></data>
+  <data name="NoRecommendations" xml:space="preserve"><value>Aún no se han ingresado recomendaciones.</value></data>
+  <data name="CompleteWorkflow" xml:space="preserve"><value>Complete el proceso de análisis para generar recomendaciones.</value></data>
+  <data name="GeneratedBy" xml:space="preserve"><value>Generado por la aplicación ROSRA - ONU-Hábitat</value></data>
+  <data name="Page" xml:space="preserve"><value>Página</value></data>
+  <data name="Of" xml:space="preserve"><value>de</value></data>
+  <data name="Sheet_Summary" xml:space="preserve"><value>Resumen</value></data>
+  <data name="Sheet_TopDown" xml:space="preserve"><value>Análisis descendente</value></data>
+  <data name="Sheet_Gap" xml:space="preserve"><value>Brecha</value></data>
+  <data name="Sheet_Prioritization" xml:space="preserve"><value>Priorización</value></data>
+  <data name="Sheet_Solutions" xml:space="preserve"><value>Soluciones seleccionadas</value></data>
+</root>

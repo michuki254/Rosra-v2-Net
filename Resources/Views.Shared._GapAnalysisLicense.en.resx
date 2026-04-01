@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Data Entry Section -->
+  <data name="DataEntry_Title" xml:space="preserve"><value>Entry of required information + Processed Metrics</value></data>
+  <data name="DataEntry_Instructions" xml:space="preserve"><value>For proper execution of the analysis, you are required to complete only the cells shaded in gray and in bold.</value></data>
+
+  <!-- Input Labels -->
+  <data name="RegisteredBusinesses" xml:space="preserve"><value>Registered Businesses</value></data>
+  <data name="RegisteredBusinesses_Tooltip" xml:space="preserve"><value>How many businesses are currently on the municipal register for this revenue stream.</value></data>
+  <data name="EstimatedUnregisteredPercent" xml:space="preserve"><value>Estimated % Unregistered Businesses</value></data>
+  <data name="EstimatedUnregisteredPercent_Tooltip" xml:space="preserve"><value>Best estimate of how many active businesses are not on the register.</value></data>
+  <data name="TotalEstimatedBusinesses" xml:space="preserve"><value>Total Estimated Businesses</value></data>
+  <data name="TotalEstimatedBusinesses_Tooltip" xml:space="preserve"><value>Total estimated active businesses in the jurisdiction. Formula: Registered × (1 + Unregistered %)</value></data>
+  <data name="TotalEstimatedBusinesses_Formula" xml:space="preserve"><value>= Registered × (1 + Unregistered %)</value></data>
+  <data name="BilledAmount" xml:space="preserve"><value>Billed Amount</value></data>
+  <data name="BilledAmount_Tooltip" xml:space="preserve"><value>Total value of invoices/assessments issued to registered businesses during the year.</value></data>
+  <data name="OutstandingAmount" xml:space="preserve"><value>Outstanding Amount</value></data>
+  <data name="OutstandingAmount_Tooltip" xml:space="preserve"><value>Total billed but not yet paid (arrears on the current year bill). Also equals the pure compliance gap at current fees.</value></data>
+  <data name="RevenueToDate" xml:space="preserve"><value>Revenue to Date</value></data>
+  <data name="RevenueToDate_Tooltip" xml:space="preserve"><value>What has actually been collected in cash so far in the year. Formula: Billed - Outstanding.</value></data>
+  <data name="RevenueToDate_Formula" xml:space="preserve"><value>= Billed Amount - Outstanding Amount</value></data>
+  <data name="CompliantBusinesses" xml:space="preserve"><value>Compliant Businesses</value></data>
+  <data name="CompliantBusinesses_Tooltip" xml:space="preserve"><value>Estimated using proxy formula: Registered × (Revenue to Date / Billed). Accounts for partial payments across fiscal year.</value></data>
+  <data name="CompliantBusinesses_Formula" xml:space="preserve"><value>= Registered × (Revenue to Date / Billed Amount)</value></data>
+  <data name="StatutoryAverageBilled" xml:space="preserve"><value>Statutory Average Billed Amount</value></data>
+  <data name="StatutoryAverageBilled_Tooltip" xml:space="preserve"><value>The average annual bill implied by the official fee schedule as written in law, without applying waivers, discounts, or exemptions. It represents the policy reference level.</value></data>
+  <data name="RealisticImprovementPercent" xml:space="preserve"><value>Realistic Improvement %</value></data>
+  <data name="RealisticImprovementPercent_Tooltip" xml:space="preserve"><value>The share of the gap between today's average bill and the statutory average that you believe can realistically be closed through policy or administrative reforms (not full enforcement). Input as % (0-100).</value></data>
+  <data name="EnterValue" xml:space="preserve"><value>Enter value</value></data>
+  <data name="EnterPercent" xml:space="preserve"><value>Enter %</value></data>
+
+  <!-- Average Values Section -->
+  <data name="AvgValues_Title" xml:space="preserve"><value>Useful Average Values for Analysis</value></data>
+  <data name="AvgBilledAmount" xml:space="preserve"><value>Average Billed Amount</value></data>
+  <data name="AvgBilledAmount_Tooltip" xml:space="preserve"><value>The mean annual bill actually issued to each registered business under today's billing practice. It's the anchor for the 'today' side of the matrix. Formula: Billed amount / Registered businesses.</value></data>
+  <data name="AchievableAvgBill" xml:space="preserve"><value>Achievable Average Bill (Potential)</value></data>
+  <data name="AchievableAvgBill_Tooltip" xml:space="preserve"><value>The projected average bill after applying the realistic improvement toward the statutory level. Powers the right-hand 'liability' column of the matrix. Formula: Avg Billed + (Realistic improvement % x (Statutory Avg - Avg Billed)).</value></data>
+  <data name="DeltaA" xml:space="preserve"><value>Delta A - Billing Improvement</value></data>
+  <data name="DeltaA_Tooltip" xml:space="preserve"><value>The achievable increase in billing per business. Formula: Realistic improvement % x MAX(0, Statutory average - Average billed).</value></data>
+
+  <!-- KPI Section -->
+  <data name="KPI_Title" xml:space="preserve"><value>Key Performance Indicators (KPI) Ratios</value></data>
+  <data name="ComplianceRatio" xml:space="preserve"><value>Compliance Ratio</value></data>
+  <data name="ComplianceRatio_Tooltip" xml:space="preserve"><value>Provides a proxy indicator of the compliance system performance for this stream. Formula: Revenue to Date / Billed Amount. >80% Green, 60-80% Yellow, &lt;60% Red.</value></data>
+  <data name="ComplianceRatio_Formula" xml:space="preserve"><value>Revenue to Date / Billed Amount</value></data>
+  <data name="CoverageRatio" xml:space="preserve"><value>Coverage Ratio</value></data>
+  <data name="CoverageRatio_Tooltip" xml:space="preserve"><value>Provides a proxy indicator of the coverage system performance for this stream. Formula: Registered / Total Estimated businesses. >80% Green, 60-80% Yellow, &lt;60% Red.</value></data>
+  <data name="CoverageRatio_Formula" xml:space="preserve"><value>Registered Businesses / Total Estimated Businesses</value></data>
+
+  <!-- Results Section -->
+  <data name="Results_Title" xml:space="preserve"><value>Graphical Representation of Analyzed Data</value></data>
+
+  <!-- Potential Revenue Table -->
+  <data name="PotentialRevenue_Title" xml:space="preserve"><value>Potential Revenue Breakdown (Actual Revenue + Gap breakdown)</value></data>
+  <data name="Table_RevenueAndGaps" xml:space="preserve"><value>Revenue &amp; Functional Gaps</value></data>
+  <data name="Table_Amount" xml:space="preserve"><value>Amount</value></data>
+  <data name="Table_Share" xml:space="preserve"><value>Share (%)</value></data>
+  <data name="RevenueToDate_Label" xml:space="preserve"><value>Revenue to date</value></data>
+  <data name="RevenueToDate_TableTooltip" xml:space="preserve"><value>This is the cash actually collected so far in the year from registered businesses. It is the 'actual revenue' slice in the chart and the bottom-left cell of the matrix.</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>Compliance Gap</value></data>
+  <data name="ComplianceGap_Tooltip" xml:space="preserve"><value>The amount already billed to registered businesses that remains unpaid (arrears for the year). Captures non-payment among those on the register at today's billing level. Formula: Outstanding amount.</value></data>
+  <data name="CoverageGap" xml:space="preserve"><value>Coverage Gap</value></data>
+  <data name="CoverageGap_Tooltip" xml:space="preserve"><value>Revenue not collected because some active businesses are not registered and therefore were not billed at all--valued at today's average bill. Formula: (Total estimated - Registered) x Average billed amount.</value></data>
+  <data name="LiabilityGap" xml:space="preserve"><value>Liability Gap</value></data>
+  <data name="LiabilityGap_Tooltip" xml:space="preserve"><value>Additional revenue you could obtain from businesses that already pay if billing were improved part-way toward the statutory level (realistic improvement). Formula: Compliant businesses x Delta A.</value></data>
+  <data name="MixedGapComplianceLiability" xml:space="preserve"><value>Mixed Gap (Compliance + Liability)</value></data>
+  <data name="MixedGapComplianceLiability_Tooltip" xml:space="preserve"><value>Extra revenue that would appear only if both (i) non-payers among the registered start paying AND (ii) billing is raised by the realistic improvement toward the statutory average. Formula: (Registered - Compliant) x Delta A.</value></data>
+  <data name="MixedGapCoverageLiability" xml:space="preserve"><value>Mixed Gap (Coverage + Liability)</value></data>
+  <data name="MixedGapCoverageLiability_Tooltip" xml:space="preserve"><value>Extra revenue that would appear only if both (i) unregistered businesses are brought onto the register AND (ii) billing is raised by the realistic improvement toward the statutory average. Formula: (Total estimated - Registered) x Delta A.</value></data>
+  <data name="TotalPotentialRevenue" xml:space="preserve"><value>TOTAL (Potential Revenue)</value></data>
+
+  <!-- Pie Chart -->
+  <data name="PotentialRevenuePie_Title" xml:space="preserve"><value>Potential Revenue (Actual Revenue + Gap breakdown)</value></data>
+  <data name="PotentialRevenuePie_Description" xml:space="preserve"><value>This pie chart illustrates the percentage distribution of the total potential revenue from the billing system. It visually shows the share corresponding to the revenue actually collected during the year, as well as the contribution of each type of gap (uncollected or lost revenue) to that total.</value></data>
+
+  <!-- Matrix Dashboard -->
+  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Business License Gap Analysis - Dashboard</value></data>
+  <data name="Matrix_YAxisTitle" xml:space="preserve"><value># of Businesses</value></data>
+  <data name="Matrix_Estimated" xml:space="preserve"><value>Estimated</value></data>
+  <data name="Matrix_Registered" xml:space="preserve"><value>Registered</value></data>
+  <data name="Matrix_Compliant" xml:space="preserve"><value>Compliant</value></data>
+  <data name="Matrix_CoverageGap" xml:space="preserve"><value>Coverage Gap</value></data>
+  <data name="Matrix_MixedCovLiab" xml:space="preserve"><value>Mixed (Cov.+Liab.)</value></data>
+  <data name="Matrix_ComplianceGap" xml:space="preserve"><value>Compliance Gap</value></data>
+  <data name="Matrix_MixedCompLiab" xml:space="preserve"><value>Mixed (Comp.+Liab.)</value></data>
+  <data name="Matrix_ActualRevenue" xml:space="preserve"><value>Actual Revenue</value></data>
+  <data name="Matrix_LiabilityGap" xml:space="preserve"><value>Liability Gap</value></data>
+  <data name="Matrix_AvgBilled" xml:space="preserve"><value>Avg. Billed</value></data>
+  <data name="Matrix_AchievableAvg" xml:space="preserve"><value>Achievable Avg.</value></data>
+  <data name="MatrixDashboard_Description" xml:space="preserve"><value>This matrix visualization shows the business license gap analysis across two dimensions: the number of businesses (vertical axis from Compliant to Estimated) and the billing level (horizontal axis from average billed to achievable billing). Each colored cell represents a different type of gap or revenue component.</value></data>
+
+  <!-- Gap Breakdown Table -->
+  <data name="GapBreakdown_Title" xml:space="preserve"><value>Gap Breakdown</value></data>
+  <data name="Table_FunctionalGaps" xml:space="preserve"><value>Functional Gaps</value></data>
+  <data name="TotalFunctionalGap" xml:space="preserve"><value>Total Functional Gap</value></data>
+
+  <!-- Gap Breakdown Pie Chart -->
+  <data name="GapBreakdownPie_Title" xml:space="preserve"><value>Gap Breakdown</value></data>
+  <data name="GapBreakdownPie_Description" xml:space="preserve"><value>This pie chart illustrates the percentage distribution of the revenue gaps. It visually shows the contribution of each type of gap to the total uncollected revenue, helping to identify which gaps are the most significant.</value></data>
+
+  <!-- Common -->
+  <data name="Description_Label" xml:space="preserve"><value>DESCRIPTION:</value></data>
+</root>

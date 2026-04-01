@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Card Headers -->
+  <data name="LongTermInformation" xml:space="preserve"><value>Informations long terme</value></data>
+  <data name="LongTermDetails" xml:space="preserve"><value>D&#233;tails long terme</value></data>
+  <data name="GapAnalysisSummary" xml:space="preserve"><value>R&#233;sum&#233; de l'analyse des &#233;carts</value></data>
+
+  <!-- Form Labels -->
+  <data name="EstimatedMonthlyLeasees" xml:space="preserve"><value>Nombre estim&#233; de preneurs mensuels</value></data>
+  <data name="ActualMonthlyLeasees" xml:space="preserve"><value>Nombre r&#233;el de preneurs mensuels</value></data>
+  <data name="PotentialRatePayable" xml:space="preserve"><value>Taux potentiel payable par les preneurs</value></data>
+  <data name="ActualRatePaid" xml:space="preserve"><value>Taux r&#233;el pay&#233; par les preneurs</value></data>
+  <data name="EnterValue" xml:space="preserve"><value>Saisir une valeur</value></data>
+
+  <!-- Placeholders -->
+  <data name="EnterEstimatedMonthlyLeasees" xml:space="preserve"><value>Saisir le nombre estim&#233; de preneurs mensuels</value></data>
+  <data name="EnterActualMonthlyLeasees" xml:space="preserve"><value>Saisir le nombre r&#233;el de preneurs mensuels</value></data>
+
+  <!-- Categories -->
+  <data name="Categories" xml:space="preserve"><value>Cat&#233;gories</value></data>
+  <data name="AddCategory" xml:space="preserve"><value>Ajouter une cat&#233;gorie</value></data>
+  <data name="NewCategory" xml:space="preserve"><value>Nouvelle cat&#233;gorie</value></data>
+  <data name="DeleteCategory" xml:space="preserve"><value>Supprimer la cat&#233;gorie</value></data>
+
+  <!-- Description / Notes -->
+  <data name="Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Notes" xml:space="preserve"><value>Notes</value></data>
+
+  <!-- Gap Summary Cards -->
+  <data name="ActualRevenue" xml:space="preserve"><value>RECETTES R&#201;ELLES</value></data>
+  <data name="CurrentCollectedRevenue" xml:space="preserve"><value>Recettes actuellement collect&#233;es</value></data>
+  <data name="PotentialRevenue" xml:space="preserve"><value>RECETTES POTENTIELLES</value></data>
+  <data name="MaximumPossibleRevenue" xml:space="preserve"><value>Recettes maximales possibles</value></data>
+  <data name="TotalGap" xml:space="preserve"><value>&#201;CART TOTAL</value></data>
+  <data name="RevenueGapToBeAddressed" xml:space="preserve"><value>&#201;cart de recettes &#224; combler</value></data>
+  <data name="PotentialLeveraged" xml:space="preserve"><value>POTENTIEL MOBILIS&#201;</value></data>
+  <data name="PercentageOfPotentialCollected" xml:space="preserve"><value>Pourcentage du potentiel collect&#233;</value></data>
+
+  <!-- Formula Details -->
+  <data name="FormulaDetails" xml:space="preserve"><value>D&#233;tails des formules</value></data>
+  <data name="ActualRevenueTitle" xml:space="preserve"><value>Recettes r&#233;elles</value></data>
+  <data name="TotalPotentialRevenue" xml:space="preserve"><value>Total des recettes potentielles</value></data>
+  <data name="TotalGapLongTermFees" xml:space="preserve"><value>&#201;cart total redevances long terme</value></data>
+  <data name="PercentOfPotentialLeveraged" xml:space="preserve"><value>% du potentiel mobilis&#233;</value></data>
+  <data name="Where" xml:space="preserve"><value>O&#249; :</value></data>
+  <data name="SimpleDifferenceBetween" xml:space="preserve"><value>Diff&#233;rence simple entre :</value></data>
+  <data name="Interpretation" xml:space="preserve"><value>Interpr&#233;tation :</value></data>
+  <data name="FullPotentialLeveraged" xml:space="preserve"><value>100 % = Potentiel enti&#232;rement mobilis&#233;</value></data>
+  <data name="SignificantOpportunity" xml:space="preserve"><value>&lt; 50 % = Opportunit&#233; significative d'am&#233;lioration</value></data>
+  <data name="CriticalLeakage" xml:space="preserve"><value>&lt; 25 % = Fuite critique de recettes</value></data>
+
+  <!-- Revenue Detail Cards -->
+  <data name="SumActualFormula" xml:space="preserve"><value>Somme de (Preneurs mensuels r&#233;els x Taux r&#233;el x 12)</value></data>
+  <data name="SumPotentialFormula" xml:space="preserve"><value>Somme de (Preneurs mensuels estim&#233;s x Taux potentiel x 12)</value></data>
+  <data name="PotentialMinusActual" xml:space="preserve"><value>Recettes potentielles - Recettes r&#233;elles</value></data>
+  <data name="ActualDivPotential" xml:space="preserve"><value>Recettes r&#233;elles / Recettes potentielles</value></data>
+
+  <!-- Detailed Gap Analysis -->
+  <data name="DetailedGapAnalysis" xml:space="preserve"><value>Analyse d&#233;taill&#233;e des &#233;carts</value></data>
+  <data name="ComplianceGap" xml:space="preserve"><value>&#201;CART DE CONFORMIT&#201;</value></data>
+  <data name="GapDueToNonCompliance" xml:space="preserve"><value>&#201;cart d&#251; &#224; la non-conformit&#233;</value></data>
+  <data name="RateGap" xml:space="preserve"><value>&#201;CART DE TAUX</value></data>
+  <data name="GapDueToLowerRates" xml:space="preserve"><value>&#201;cart d&#251; &#224; des taux inf&#233;rieurs</value></data>
+  <data name="CombinedGaps" xml:space="preserve"><value>&#201;CARTS COMBIN&#201;S</value></data>
+  <data name="OtherUncategorizedGaps" xml:space="preserve"><value>Autres &#233;carts non cat&#233;goris&#233;s</value></data>
+
+  <!-- Gap Components Formulas -->
+  <data name="GapComponentsFormulas" xml:space="preserve"><value>Formules des composantes d'&#233;carts</value></data>
+  <data name="ComplianceGapTitle" xml:space="preserve"><value>&#201;cart de conformit&#233;</value></data>
+  <data name="RateGapTitle" xml:space="preserve"><value>&#201;cart de taux</value></data>
+  <data name="CombinedGapsTitle" xml:space="preserve"><value>&#201;carts combin&#233;s</value></data>
+
+  <!-- Gap Visualization -->
+  <data name="GapVisualization" xml:space="preserve"><value>Visualisation des &#233;carts</value></data>
+  <data name="GapAnalysis" xml:space="preserve"><value>Analyse des &#233;carts</value></data>
+  <data name="Chart" xml:space="preserve"><value>Graphique</value></data>
+  <data name="Breakdown" xml:space="preserve"><value>Ventilation</value></data>
+</root>

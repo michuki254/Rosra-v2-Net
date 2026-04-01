@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.IO;
 using Microsoft.Extensions.Localization;
+using RosraApp.Services;
 
 namespace RosraApp.Controllers
 {
@@ -25,7 +26,9 @@ namespace RosraApp.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RosraController> _logger;
         private readonly IStringLocalizer<RosraApp.Resources.RosraResources> _localizer;
-        
+        private readonly ReportExportService _pdfExportService;
+        private readonly ExcelExportService _excelExportService;
+
         // JSON serialization options to ensure consistent property naming
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
@@ -38,12 +41,16 @@ namespace RosraApp.Controllers
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
             ILogger<RosraController> logger,
-            IStringLocalizer<RosraApp.Resources.RosraResources> localizer)
+            IStringLocalizer<RosraApp.Resources.RosraResources> localizer,
+            ReportExportService pdfExportService,
+            ExcelExportService excelExportService)
         {
             _context = context;
             _userManager = userManager;
             _logger = logger;
             _localizer = localizer;
+            _pdfExportService = pdfExportService;
+            _excelExportService = excelExportService;
         }
 
         public IActionResult Index(string activeTab = null, string umbrellaTab = null, bool viewMode = false)
@@ -898,8 +905,7 @@ namespace RosraApp.Controllers
                 }
 
                 // Generate PDF using the ReportExportService
-                var exportService = new Services.ReportExportService();
-                var pdfBytes = exportService.GeneratePdfReport(sessionData, sessionData.Title ?? "ROSRA Analysis Report");
+                var pdfBytes = _pdfExportService.GeneratePdfReport(sessionData, sessionData.Title ?? "ROSRA Analysis Report");
 
                 // Generate filename with timestamp
                 var filename = $"ROSRA_Report_{formData.City ?? "Analysis"}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
@@ -936,8 +942,7 @@ namespace RosraApp.Controllers
                 }
 
                 // Generate Excel using the ExcelExportService
-                var exportService = new Services.ExcelExportService();
-                var excelBytes = exportService.GenerateExcelReport(sessionData, sessionData.Title ?? "ROSRA Analysis Report");
+                var excelBytes = _excelExportService.GenerateExcelReport(sessionData, sessionData.Title ?? "ROSRA Analysis Report");
                 var filename = $"ROSRA_Report_{sessionData.City ?? "Analysis"}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
                 return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
             }
