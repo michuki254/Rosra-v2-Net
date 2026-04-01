@@ -695,8 +695,8 @@
                             <span>+ Export</span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a href="@Url.Action("ExportPdf", "Rosra")" class="dropdown-item"><i class="bi bi-file-pdf text-danger me-2"></i>Export as PDF</a></li>
-                            <li><a href="@Url.Action("ExportExcel", "Rosra")" class="dropdown-item"><i class="bi bi-file-earmark-excel text-success me-2"></i>Export as Excel</a></li>
+                            <li><button type="button" class="dropdown-item" id="viewExportPdfBtn"><i class="bi bi-file-pdf text-danger me-2"></i>Export as PDF</button></li>
+                            <li><button type="button" class="dropdown-item" id="viewExportExcelBtn"><i class="bi bi-file-earmark-excel text-success me-2"></i>Export as Excel</button></li>
                         </ul>
                     </div>
                     <a asp-controller="Dashboard" asp-action="Index" class="sidebar-btn sidebar-btn-outline">
@@ -721,6 +721,7 @@
                 <input type="hidden" id="selectedSolutionsData" name="SelectedSolutionsData" value="@Model.TabContentModel.SelectedSolutionsData" />
                 <input type="hidden" id="implementationProgressData" name="ImplementationProgressData" value="@Model.TabContentModel.ImplementationProgressData" />
                 <input type="hidden" id="peerSNGData" name="PeerSNGData" value="@Model.TabContentModel.PeerSNGData" />
+                <input type="hidden" id="chartImagesData" name="ChartImagesData" />
 
                 <!-- Hidden field for view mode state - only include if in view mode -->
                 @if (isViewMode)
@@ -1250,15 +1251,45 @@
                         }
                     }
 
-                    // Also try to collect from visible UI elements if they exist
-                    var frontierMultiplierEl = $('#m2FrontierMultiplierTop');
-                    var osrPotentialEl = $('#m2OSRPotentialTop');
-                    if (frontierMultiplierEl.length > 0 || osrPotentialEl.length > 0) {
-                        peerSNGData.analysisResults = {
-                            ...peerSNGData.analysisResults,
-                            frontierMultiplier: parseFloat(frontierMultiplierEl.text()) || null,
-                            osrPotential: parseFloat(osrPotentialEl.text()?.replace(/,/g, '')) || null
-                        };
+                    // Collect all visible frontier metrics from the DOM
+                    function getMetricText(id) {
+                        var el = document.getElementById(id);
+                        return el ? el.textContent.trim() : null;
+                    }
+                    peerSNGData.analysisResults = {
+                        ...peerSNGData.analysisResults,
+                        actualOSR: getMetricText('m2ActualOSRTop'),
+                        subnationalGDP: getMetricText('m2SubnationalGDPTop'),
+                        frontierMultiplier: getMetricText('m2FrontierMultiplierTop'),
+                        subjectMultiplier: getMetricText('m2SubjectMultiplierTop'),
+                        osrPotential: getMetricText('m2OSRPotentialTop'),
+                        osrGap: getMetricText('m2OSRGapTop'),
+                        performanceIndex: getMetricText('m2PerformanceIndexTop')
+                    };
+
+                    // Collect the analysis result text
+                    var resultTextEl = document.getElementById('module2ResultTextTop');
+                    if (resultTextEl) {
+                        peerSNGData.resultText = resultTextEl.textContent.trim();
+                    }
+
+                    // Collect cross-country fiscal analysis data from DOM
+                    peerSNGData.crossCountry = {
+                        sngRevenuePerCapita: getMetricText('sngRevenuePerCapita'),
+                        peerBenchmarkFunding: getMetricText('peerBenchmarkFunding'),
+                        fundingIndex: getMetricText('fundingIndex'),
+                        fundingHeadroom: getMetricText('fundingHeadroom'),
+                        nonGrantsShare: getMetricText('nonGrantsShare'),
+                        peerBenchmarkAutonomy: getMetricText('peerBenchmarkAutonomy'),
+                        autonomyIndex: getMetricText('autonomyIndex'),
+                        distanceFromBenchmark: getMetricText('distanceFromBenchmark'),
+                        positionRelative: getMetricText('positionRelative')
+                    };
+
+                    // Collect cross-country result text
+                    var ccResultEl = document.getElementById('analysisResultText');
+                    if (ccResultEl) {
+                        peerSNGData.crossCountryResultText = ccResultEl.textContent.trim();
                     }
 
                     // Store chart data if available
@@ -1272,20 +1303,26 @@
                 
                 // Export PDF button click handler
                 $("#exportPdfBtn").click(function() {
-                    // Collect data from tabs before export
-                    collectPrioritizationData();
-                    collectSelectedSolutionsData();
-                    collectImplementationProgressData();
+                    // Collect all tab data before export
+                    collectTabDataFromLocalStorage();
+                    // Capture chart images for PDF embedding
+                    if (typeof captureAllCharts === 'function') {
+                        var chartImages = captureAllCharts();
+                        $('#chartImagesData').val(JSON.stringify(chartImages));
+                    }
                     // Submit the form to export as PDF
                     $("#exportPdfSubmit").click();
                 });
 
                 // Export Excel button click handler
                 $("#exportExcelBtn").click(function() {
-                    // Collect data from tabs before export
-                    collectPrioritizationData();
-                    collectSelectedSolutionsData();
-                    collectImplementationProgressData();
+                    // Collect all tab data before export
+                    collectTabDataFromLocalStorage();
+                    // Capture chart images for Excel embedding
+                    if (typeof captureAllCharts === 'function') {
+                        var chartImages = captureAllCharts();
+                        $('#chartImagesData').val(JSON.stringify(chartImages));
+                    }
                     // Submit the form to export as Excel
                     $("#exportExcelSubmit").click();
                 });
@@ -1296,7 +1333,21 @@
                 $(".input-group-append, .input-group button").hide();
             }
             
-            // Export report functionality for view mode is now handled by dropdown links
+            // Export report functionality for view mode
+            $("#viewExportPdfBtn").click(function() {
+                if (typeof captureAllCharts === 'function') {
+                    $('#chartImagesData').val(JSON.stringify(captureAllCharts()));
+                }
+                document.getElementById('rosraForm').action = '@Url.Action("ExportPdf", "Rosra")';
+                document.getElementById('rosraForm').submit();
+            });
+            $("#viewExportExcelBtn").click(function() {
+                if (typeof captureAllCharts === 'function') {
+                    $('#chartImagesData').val(JSON.stringify(captureAllCharts()));
+                }
+                document.getElementById('rosraForm').action = '@Url.Action("ExportExcel", "Rosra")';
+                document.getElementById('rosraForm').submit();
+            });
         });
     </script>
 

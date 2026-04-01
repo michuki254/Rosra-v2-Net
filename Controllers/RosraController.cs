@@ -325,6 +325,8 @@ namespace RosraApp.Controllers
                 Country = formData.Country,
                 Region = formData.Region,
                 City = formData.City,
+                GovUnitLevel3 = formData.GovUnitLevel3,
+                FinalUnitLevel = formData.FinalUnitLevel,
                 Currency = formData.Currency,
                 CurrencySymbol = formData.CurrencySymbol,
                 FinancialYear = formData.FinancialYear,
@@ -396,6 +398,8 @@ namespace RosraApp.Controllers
                         existingReport.Country = formData.Country;
                         existingReport.Region = formData.Region;
                         existingReport.City = formData.City;
+                        existingReport.GovUnitLevel3 = formData.GovUnitLevel3;
+                        existingReport.FinalUnitLevel = formData.FinalUnitLevel;
                         existingReport.Currency = formData.Currency;
                         existingReport.CurrencySymbol = formData.CurrencySymbol;
                         existingReport.FinancialYear = formData.FinancialYear;
@@ -506,6 +510,8 @@ namespace RosraApp.Controllers
                 Country = report.Country,
                 Region = report.Region,
                 City = report.City,
+                GovUnitLevel3 = report.GovUnitLevel3,
+                FinalUnitLevel = report.FinalUnitLevel,
                 Currency = report.Currency,
                 CurrencySymbol = report.CurrencySymbol,
                 FinancialYear = report.FinancialYear,
@@ -563,6 +569,8 @@ namespace RosraApp.Controllers
                 Country = report.Country,
                 Region = report.Region,
                 City = report.City,
+                GovUnitLevel3 = report.GovUnitLevel3,
+                FinalUnitLevel = report.FinalUnitLevel,
                 Currency = report.Currency,
                 CurrencySymbol = report.CurrencySymbol,
                 FinancialYear = report.FinancialYear,
@@ -671,6 +679,8 @@ namespace RosraApp.Controllers
                 Country = report.Country,
                 Region = report.Region,
                 City = report.City,
+                GovUnitLevel3 = report.GovUnitLevel3,
+                FinalUnitLevel = report.FinalUnitLevel,
                 Currency = report.Currency,
                 CurrencySymbol = report.CurrencySymbol,
                 FinancialYear = report.FinancialYear,
@@ -862,21 +872,30 @@ namespace RosraApp.Controllers
         /// Export analysis report as PDF
         /// </summary>
         [HttpPost]
-        public IActionResult ExportPdf()
+        public IActionResult ExportPdf(RosraFormViewModel formData)
         {
             try
             {
-                // Get form data from session
-                var formData = GetFormDataFromSession();
-                if (formData == null)
+                // Save current form data to session, then merge
+                if (formData != null && !string.IsNullOrEmpty(formData.Country))
+                {
+                    SaveFormDataToSession(formData);
+                }
+                var sessionData = GetFormDataFromSession();
+                if (sessionData == null)
                 {
                     TempData["ErrorMessage"] = "No analysis data found. Please complete the analysis first.";
                     return RedirectToAction("Index");
                 }
+                // Preserve chart images from form POST (not stored in session)
+                if (formData != null && !string.IsNullOrEmpty(formData.ChartImagesData))
+                {
+                    sessionData.ChartImagesData = formData.ChartImagesData;
+                }
 
                 // Generate PDF using the ReportExportService
                 var exportService = new Services.ReportExportService();
-                var pdfBytes = exportService.GeneratePdfReport(formData, formData.Title ?? "ROSRA Analysis Report");
+                var pdfBytes = exportService.GeneratePdfReport(sessionData, sessionData.Title ?? "ROSRA Analysis Report");
 
                 // Generate filename with timestamp
                 var filename = $"ROSRA_Report_{formData.City ?? "Analysis"}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
@@ -896,23 +915,27 @@ namespace RosraApp.Controllers
         /// Export analysis report as Excel (placeholder for future implementation)
         /// </summary>
         [HttpPost]
-        public IActionResult ExportExcel()
+        public IActionResult ExportExcel(RosraFormViewModel formData)
         {
             try
             {
-                // Get form data from session
-                var formData = GetFormDataFromSession();
-                if (formData == null)
+                // Save current form data to session, then merge
+                if (formData != null && !string.IsNullOrEmpty(formData.Country))
+                {
+                    SaveFormDataToSession(formData);
+                }
+                var sessionData = GetFormDataFromSession();
+                if (sessionData == null)
                 {
                     TempData["ErrorMessage"] = "No analysis data found. Please complete the analysis first.";
                     return RedirectToAction("Index");
                 }
 
-                // TODO: Implement Excel export using a library like ClosedXML or EPPlus
-                // For now, return a message that this feature is coming soon
-
-                TempData["InfoMessage"] = "Excel export is coming soon. Please use PDF export for now.";
-                return RedirectToAction("Index");
+                // Generate Excel using the ExcelExportService
+                var exportService = new Services.ExcelExportService();
+                var excelBytes = exportService.GenerateExcelReport(sessionData, sessionData.Title ?? "ROSRA Analysis Report");
+                var filename = $"ROSRA_Report_{sessionData.City ?? "Analysis"}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+                return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
             }
             catch (Exception ex)
             {

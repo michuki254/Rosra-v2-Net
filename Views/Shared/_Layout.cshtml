@@ -26,7 +26,7 @@
     <header>
         <!-- Main Navigation Bar -->
         <nav class="navbar navbar-expand-lg navbar-light main-navbar" id="mainNavbar">
-            <div class="container-fluid px-lg-4 px-xl-5">
+            <div class="container">
                 <!-- Left Logo (UN-Habitat) -->
                 <div class="logo-container">
                     <a asp-area="" asp-controller="Home" asp-action="Index">
@@ -42,7 +42,7 @@
 
                 <!-- Navigation Content -->
                 <div class="collapse navbar-collapse" id="navbarMain">
-                    <ul class="navbar-nav main-nav-links mx-auto">
+                    <ul class="navbar-nav main-nav-links ms-auto me-2">
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")"
                                asp-area="" asp-controller="Home" asp-action="Index">
@@ -274,6 +274,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/rosraStateManager.js" asp-append-version="true"></script>
+    <script src="~/js/chartExportHelper.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/propertyTaxCategoryModal.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

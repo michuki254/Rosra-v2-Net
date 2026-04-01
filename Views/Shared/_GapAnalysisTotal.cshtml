@@ -956,6 +956,7 @@
                 data: data,
                 options: options
             });
+            if (window.registerChart) registerChart('top5PotentialChart', window.top5Chart);
         }
         
         // Function to update the simplified Total Potential Revenue display
@@ -2121,8 +2122,9 @@
                         }
                     }
                 });
+                if (window.registerChart) registerChart('gapBreakdownChart', window.gapBreakdownChart);
             }
-            
+
             // Create the Total Gap Chart
             const totalCtx = document.getElementById('totalGapChart');
             if (totalCtx) {
@@ -2202,9 +2204,10 @@
                         }
                     }
                 });
+                if (window.registerChart) registerChart('totalGapChart', window.totalGapChart);
             }
         }
-        
+
         // Add function to update charts when data changes
         function updateCharts() {
             if (typeof Chart !== 'undefined') {
@@ -2358,8 +2361,9 @@
                         }
                     }
                 });
+                if (window.registerChart) registerChart('gapBreakdownChart', window.gapBreakdownChart);
             }
-            
+
             // Create the Total Gap Chart with hardcoded values
             const totalCtx = document.getElementById('totalGapChart');
             if (totalCtx) {
@@ -2443,9 +2447,10 @@
                         }
                     }
                 });
+                if (window.registerChart) registerChart('totalGapChart', window.totalGapChart);
             }
         }
-        
+
         // Call the test function after a delay
         // setTimeout(createTestCharts, 1000); // Not needed anymore as we use hardcoded data as fallback
     });

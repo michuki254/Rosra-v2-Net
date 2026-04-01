@@ -2494,6 +2494,7 @@
                 },
                 plugins: [quadrantLabelsPlugin]
             });
+            if (window.registerChart) registerChart('fiscalDecentralisationChart', fiscalChart);
         }
 
         function updateAnalysisResultText(fundingIndex, autonomyIndex) {
@@ -3989,6 +3990,7 @@
                     }
                 }
             });
+            if (window.registerChart) registerChart('peerSngChartTop', peerFrontierScatterChart);
         }
 
         // Custom plugin to draw values on bars
@@ -4100,6 +4102,7 @@
                     }
                 }
             });
+            if (window.registerChart) registerChart('actualVsPotentialChart', actualVsPotentialChart);
         }
 
         // Update Module 2 Analysis Result Text

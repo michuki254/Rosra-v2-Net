@@ -12,6 +12,8 @@ namespace RosraApp.Models.ViewModels
         public string? Country { get; set; }
         public string? Region { get; set; }
         public string? City { get; set; }
+        public string? GovUnitLevel3 { get; set; }
+        public int? FinalUnitLevel { get; set; }
         public string? Currency { get; set; }
         public string? CurrencySymbol { get; set; }
         public string? FinancialYear { get; set; }
@@ -73,6 +75,10 @@ namespace RosraApp.Models.ViewModels
 
         // Peer SNG Data for Within-Country OSR Frontier analysis (stored as JSON)
         public string? PeerSNGData { get; set; }
+
+        // Chart images captured client-side as base64 PNG (not persisted to DB, used only for export)
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        public string? ChartImagesData { get; set; }
     }
     
     public class ActionItemViewModel

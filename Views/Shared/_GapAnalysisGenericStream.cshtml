@@ -922,6 +922,7 @@
                     }
                 }
             });
+            if (window.registerChart) registerChart(streamId + 'PotentialRevenueChart', potentialRevenueChart);
         }
 
         // Administrative Gap Pie Chart
@@ -979,6 +980,7 @@
                     }
                 }
             });
+            if (window.registerChart) registerChart(streamId + 'GapBreakdownChart', gapBreakdownChart);
         }
     }
 
