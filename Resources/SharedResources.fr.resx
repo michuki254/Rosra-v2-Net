@@ -76,6 +76,9 @@
   <data name="Lang_French" xml:space="preserve"><value>Français</value></data>
   <data name="Lang_Spanish" xml:space="preserve"><value>Español</value></data>
 
+  <!-- Tab Navigation -->
+  <data name="BottomUp_Intro" xml:space="preserve"><value>Ceci est le diagnostic principal. Il examine chaque source de revenus majeure et montre où la collecte est insuffisante et pourquoi, afin que les résultats se traduisent directement en priorités et prochaines étapes. Parcourez les onglets dans l'ordre pour compléter l'analyse.</value></data>
+
   <!-- JavaScript Alert/Confirm Strings -->
   <data name="JS_PleaseEnterName" xml:space="preserve"><value>Veuillez entrer un nom.</value></data>
   <data name="JS_CategoryExists" xml:space="preserve"><value>Une catégorie avec ce nom existe déjà.</value></data>

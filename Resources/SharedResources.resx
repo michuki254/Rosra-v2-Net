@@ -83,6 +83,9 @@
   <data name="Common_Yes" xml:space="preserve"><value>Yes</value></data>
   <data name="Common_No" xml:space="preserve"><value>No</value></data>
 
+  <!-- Tab Navigation -->
+  <data name="BottomUp_Intro" xml:space="preserve"><value>This is the main diagnostic. It looks at each major revenue source and shows where collection is falling short and why, so the results translate directly into priorities and next steps. Go through the tabs in order to complete the analysis.</value></data>
+
   <!-- Language Names -->
   <data name="Lang_English" xml:space="preserve"><value>English</value></data>
   <data name="Lang_French" xml:space="preserve"><value>Français</value></data>
