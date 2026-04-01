@@ -59,4 +59,34 @@
   <data name="SubnationalGov" xml:space="preserve"><value>Gouvernement sous-national</value></data>
   <data name="SelectSng" xml:space="preserve"><value>Sélectionnez un gouvernement sous-national...</value></data>
   <data name="SelectSngForAnalysis" xml:space="preserve"><value>Sélectionnez un gouvernement sous-national pour voir l'analyse de la frontière RPP</value></data>
+  <data name="Metric_OSR" xml:space="preserve"><value>Recettes propres (RPP) par habitant</value></data>
+  <data name="Metric_GDP" xml:space="preserve"><value>PIB sous-national par habitant</value></data>
+  <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Multiplicateur de frontière (moy. top 20% RPP/PIB par habitant)</value></data>
+  <data name="Metric_SubjectMultiplier" xml:space="preserve"><value>Multiplicateur du sujet</value></data>
+  <data name="Metric_Benchmark" xml:space="preserve"><value>Référence de frontière par habitant</value></data>
+  <data name="Metric_Gap" xml:space="preserve"><value>Écart par rapport à la référence</value></data>
+  <data name="Metric_Performance" xml:space="preserve"><value>Indice de performance</value></data>
+  <data name="Metric_PrimaryAnalysis" xml:space="preserve"><value>Analyse principale</value></data>
+  <data name="Chart_ScatterTitle" xml:space="preserve"><value>Comparaison du multiplicateur RPP/PIB par habitant</value></data>
+  <data name="Chart_BarTitle" xml:space="preserve"><value>RPP actuel vs référence de frontière par habitant</value></data>
+  <data name="Result_Header" xml:space="preserve"><value>Résultat de la frontière RPP intra-pays (GNS pairs) :</value></data>
+  <data name="Result_Placeholder" xml:space="preserve"><value>Sélectionnez un gouvernement sous-national pour voir le résultat de l'analyse.</value></data>
+  <data name="CrossCountry_Title" xml:space="preserve"><value>Facultatif : Analyse fiscale internationale</value></data>
+  <data name="CrossCountry_Subtitle" xml:space="preserve"><value>Les analyses suivantes comparent la position de votre pays dans l'espace de décentralisation fiscale mondial.</value></data>
+  <data name="Funding_Title" xml:space="preserve"><value>Frontière de décentralisation du financement</value></data>
+  <data name="Funding_Optional" xml:space="preserve"><value>Facultatif</value></data>
+  <data name="Funding_SngRevenue" xml:space="preserve"><value>Recettes GNS par habitant</value></data>
+  <data name="Funding_PeerBenchmark" xml:space="preserve"><value>Référence des pairs (moy. top 20%)</value></data>
+  <data name="Funding_Index" xml:space="preserve"><value>Indice de financement</value></data>
+  <data name="Funding_Headroom" xml:space="preserve"><value>Marge de financement (USD par habitant)</value></data>
+  <data name="Autonomy_Title" xml:space="preserve"><value>Autonomie des recettes sous-nationales</value></data>
+  <data name="Autonomy_NonGrants" xml:space="preserve"><value>Part hors subventions des recettes GNS (%)</value></data>
+  <data name="Autonomy_PeerBenchmark" xml:space="preserve"><value>Référence des pairs (moy. top 20%)</value></data>
+  <data name="Autonomy_Index" xml:space="preserve"><value>Indice d'autonomie</value></data>
+  <data name="Autonomy_Distance" xml:space="preserve"><value>Distance par rapport à la référence (points de %)</value></data>
+  <data name="Autonomy_Position" xml:space="preserve"><value>Position relative à la référence</value></data>
+  <data name="FiscalChart_Title" xml:space="preserve"><value>Position dans l'espace de décentralisation fiscale</value></data>
+  <data name="FiscalChart_Optional" xml:space="preserve"><value>Analyse facultative</value></data>
+  <data name="CrossCountry_ResultHeader" xml:space="preserve"><value>Résultat de l'analyse fiscale internationale :</value></data>
+  <data name="CrossCountry_ResultPlaceholder" xml:space="preserve"><value>Sélectionnez un pays pour voir le résultat de l'analyse.</value></data>
 </root>

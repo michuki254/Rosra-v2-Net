@@ -59,4 +59,34 @@
   <data name="SubnationalGov" xml:space="preserve"><value>Gobierno subnacional</value></data>
   <data name="SelectSng" xml:space="preserve"><value>Seleccione un gobierno subnacional...</value></data>
   <data name="SelectSngForAnalysis" xml:space="preserve"><value>Seleccione un gobierno subnacional para ver el análisis de frontera IPP</value></data>
+  <data name="Metric_OSR" xml:space="preserve"><value>Ingresos propios (IPP) per cápita</value></data>
+  <data name="Metric_GDP" xml:space="preserve"><value>PIB subnacional per cápita</value></data>
+  <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Multiplicador de frontera (prom. top 20% IPP/PIB per cápita)</value></data>
+  <data name="Metric_SubjectMultiplier" xml:space="preserve"><value>Multiplicador del sujeto</value></data>
+  <data name="Metric_Benchmark" xml:space="preserve"><value>Referencia de frontera per cápita</value></data>
+  <data name="Metric_Gap" xml:space="preserve"><value>Brecha respecto a la referencia</value></data>
+  <data name="Metric_Performance" xml:space="preserve"><value>Índice de desempeño</value></data>
+  <data name="Metric_PrimaryAnalysis" xml:space="preserve"><value>Análisis principal</value></data>
+  <data name="Chart_ScatterTitle" xml:space="preserve"><value>Comparación del multiplicador IPP/PIB per cápita</value></data>
+  <data name="Chart_BarTitle" xml:space="preserve"><value>IPP actual vs referencia de frontera per cápita</value></data>
+  <data name="Result_Header" xml:space="preserve"><value>Resultado de la frontera IPP intrapaís (GNS pares):</value></data>
+  <data name="Result_Placeholder" xml:space="preserve"><value>Seleccione un gobierno subnacional para ver el resultado del análisis.</value></data>
+  <data name="CrossCountry_Title" xml:space="preserve"><value>Opcional: Análisis fiscal internacional</value></data>
+  <data name="CrossCountry_Subtitle" xml:space="preserve"><value>Los siguientes análisis comparan la posición de su país en el espacio de descentralización fiscal global.</value></data>
+  <data name="Funding_Title" xml:space="preserve"><value>Frontera de descentralización del financiamiento</value></data>
+  <data name="Funding_Optional" xml:space="preserve"><value>Opcional</value></data>
+  <data name="Funding_SngRevenue" xml:space="preserve"><value>Ingresos GNS per cápita</value></data>
+  <data name="Funding_PeerBenchmark" xml:space="preserve"><value>Referencia de pares (prom. top 20%)</value></data>
+  <data name="Funding_Index" xml:space="preserve"><value>Índice de financiamiento</value></data>
+  <data name="Funding_Headroom" xml:space="preserve"><value>Margen de financiamiento (USD per cápita)</value></data>
+  <data name="Autonomy_Title" xml:space="preserve"><value>Autonomía de ingresos subnacionales</value></data>
+  <data name="Autonomy_NonGrants" xml:space="preserve"><value>Participación sin subvenciones de ingresos GNS (%)</value></data>
+  <data name="Autonomy_PeerBenchmark" xml:space="preserve"><value>Referencia de pares (prom. top 20%)</value></data>
+  <data name="Autonomy_Index" xml:space="preserve"><value>Índice de autonomía</value></data>
+  <data name="Autonomy_Distance" xml:space="preserve"><value>Distancia de la referencia (puntos de %)</value></data>
+  <data name="Autonomy_Position" xml:space="preserve"><value>Posición relativa a la referencia</value></data>
+  <data name="FiscalChart_Title" xml:space="preserve"><value>Posición en el espacio de descentralización fiscal</value></data>
+  <data name="FiscalChart_Optional" xml:space="preserve"><value>Análisis opcional</value></data>
+  <data name="CrossCountry_ResultHeader" xml:space="preserve"><value>Resultado del análisis fiscal internacional:</value></data>
+  <data name="CrossCountry_ResultPlaceholder" xml:space="preserve"><value>Seleccione un país para ver el resultado del análisis.</value></data>
 </root>

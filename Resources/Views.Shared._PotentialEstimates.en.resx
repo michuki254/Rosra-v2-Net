@@ -59,4 +59,36 @@
   <data name="SubnationalGov" xml:space="preserve"><value>Subnational Government</value></data>
   <data name="SelectSng" xml:space="preserve"><value>Select a subnational government...</value></data>
   <data name="SelectSngForAnalysis" xml:space="preserve"><value>Select a subnational government to view the OSR frontier analysis</value></data>
+
+  <!-- Frontier Metrics -->
+  <data name="Metric_OSR" xml:space="preserve"><value>Own Source Revenues (OSRs) per capita</value></data>
+  <data name="Metric_GDP" xml:space="preserve"><value>Subnational GDP per capita</value></data>
+  <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Peer frontier multiplier (Top-20% avg OSR/GDP per capita)</value></data>
+  <data name="Metric_SubjectMultiplier" xml:space="preserve"><value>Subject multiplier</value></data>
+  <data name="Metric_Benchmark" xml:space="preserve"><value>Frontier benchmark per capita</value></data>
+  <data name="Metric_Gap" xml:space="preserve"><value>Gap to frontier benchmark</value></data>
+  <data name="Metric_Performance" xml:space="preserve"><value>Performance Index</value></data>
+  <data name="Metric_PrimaryAnalysis" xml:space="preserve"><value>Primary Analysis</value></data>
+  <data name="Chart_ScatterTitle" xml:space="preserve"><value>OSR/GDP per capita Multiplier Comparison</value></data>
+  <data name="Chart_BarTitle" xml:space="preserve"><value>Current OSR vs Frontier Benchmark per capita</value></data>
+  <data name="Result_Header" xml:space="preserve"><value>Within-Country OSR Frontier (Peer SNGs) Result:</value></data>
+  <data name="Result_Placeholder" xml:space="preserve"><value>Select a subnational government to view the analysis result.</value></data>
+  <data name="CrossCountry_Title" xml:space="preserve"><value>Optional: Cross-Country Fiscal Analysis</value></data>
+  <data name="CrossCountry_Subtitle" xml:space="preserve"><value>The following analyses compare your country's position in the global fiscal decentralisation space.</value></data>
+  <data name="Funding_Title" xml:space="preserve"><value>Funding Decentralization Frontier</value></data>
+  <data name="Funding_Optional" xml:space="preserve"><value>Optional</value></data>
+  <data name="Funding_SngRevenue" xml:space="preserve"><value>SNG revenue per capita</value></data>
+  <data name="Funding_PeerBenchmark" xml:space="preserve"><value>Peer benchmark (top-20% avg)</value></data>
+  <data name="Funding_Index" xml:space="preserve"><value>Funding index</value></data>
+  <data name="Funding_Headroom" xml:space="preserve"><value>Funding headroom (USD per capita)</value></data>
+  <data name="Autonomy_Title" xml:space="preserve"><value>Subnational Revenue Autonomy</value></data>
+  <data name="Autonomy_NonGrants" xml:space="preserve"><value>Non-grants share of SNG revenue (%)</value></data>
+  <data name="Autonomy_PeerBenchmark" xml:space="preserve"><value>Peer benchmark (top-20% avg)</value></data>
+  <data name="Autonomy_Index" xml:space="preserve"><value>Autonomy index</value></data>
+  <data name="Autonomy_Distance" xml:space="preserve"><value>Distance from peer benchmark (% points)</value></data>
+  <data name="Autonomy_Position" xml:space="preserve"><value>Position relative to peer benchmark</value></data>
+  <data name="FiscalChart_Title" xml:space="preserve"><value>Position in fiscal decentralisation space</value></data>
+  <data name="FiscalChart_Optional" xml:space="preserve"><value>Optional Analysis</value></data>
+  <data name="CrossCountry_ResultHeader" xml:space="preserve"><value>Cross-Country Fiscal Analysis Result:</value></data>
+  <data name="CrossCountry_ResultPlaceholder" xml:space="preserve"><value>Select a country to view the analysis result.</value></data>
 </root>

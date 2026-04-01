@@ -341,7 +341,7 @@
                                 <div class="module2-metrics">
                                     <div class="metric-row">
                                         <span class="metric-label">
-                                            Own Source Revenues (OSRs) per capita
+                                            @Localizer["Metric_OSR"]
                                             <button type="button" class="formula-tooltip-btn" data-formula="XLOOKUP(SNG, Peers[SNG], Peers[OSR])">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
@@ -350,7 +350,7 @@
                                     </div>
                                     <div class="metric-row">
                                         <span class="metric-label">
-                                            Subnational GDP per capita
+                                            @Localizer["Metric_GDP"]
                                             <button type="button" class="formula-tooltip-btn" data-formula="XLOOKUP(SNG, Peers[SNG], Peers[GCP])">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
@@ -359,7 +359,7 @@
                                     </div>
                                     <div class="metric-row highlight">
                                         <span class="metric-label">
-                                            Peer frontier multiplier (Top-20% avg OSR/GDP per capita)
+                                            @Localizer["Metric_FrontierMultiplier"]
                                             <button type="button" class="formula-tooltip-btn" data-formula="LET(m, SORT(FILTER(Peers[Mult], Peers[Mult]>0), ,-1), k, MAX(1,ROUNDUP(ROWS(m)*0.2,0)), AVERAGE(TAKE(m,k)))">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
@@ -368,7 +368,7 @@
                                     </div>
                                     <div class="metric-row">
                                         <span class="metric-label">
-                                            Subject multiplier
+                                            @Localizer["Metric_SubjectMultiplier"]
                                             <button type="button" class="formula-tooltip-btn" data-formula="IFERROR(OSR / GDP, 0)">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
@@ -377,7 +377,7 @@
                                     </div>
                                     <div class="metric-row result">
                                         <span class="metric-label bold">
-                                            Frontier benchmark per capita
+                                            @Localizer["Metric_Benchmark"]
                                             <button type="button" class="formula-tooltip-btn" data-formula="Frontier_Multiplier × Subnational_GDP_per_capita">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
@@ -386,7 +386,7 @@
                                     </div>
                                     <div class="metric-row gap">
                                         <span class="metric-label gap-label">
-                                            Gap to frontier benchmark
+                                            @Localizer["Metric_Gap"]
                                             <button type="button" class="formula-tooltip-btn" data-formula="Frontier_Benchmark - Current_OSR_per_capita">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
@@ -395,7 +395,7 @@
                                     </div>
                                     <div class="metric-row with-bar">
                                         <span class="metric-label accent">
-                                            Performance Index
+                                            @Localizer["Metric_Performance"]
                                             <button type="button" class="formula-tooltip-btn" data-formula="IFERROR(Actual_OSR / OSR_Potential, 0)">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
@@ -409,7 +409,7 @@
 
                                 <!-- Peer SNG Chart -->
                                 <div class="module2-chart-section">
-                                    <h6 class="chart-title">OSR/GDP per capita Multiplier Comparison</h6>
+                                    <h6 class="chart-title">@Localizer["Chart_ScatterTitle"]</h6>
                                     <div class="chart-container" style="height: 350px;">
                                         <canvas id="peerSngChartTop"></canvas>
                                     </div>
@@ -417,7 +417,7 @@
 
                                 <!-- Actual vs DFA Potential Bar Chart -->
                                 <div class="module2-chart-section" style="margin-top: 2rem;">
-                                    <h6 class="chart-title">Current OSR vs Frontier Benchmark per capita</h6>
+                                    <h6 class="chart-title">@Localizer["Chart_BarTitle"]</h6>
                                     <div class="chart-container" style="height: 180px;">
                                         <canvas id="actualVsPotentialChart"></canvas>
                                     </div>
@@ -427,10 +427,10 @@
                                 <div class="analysis-result-section module2-result">
                                     <div class="analysis-result-header">
                                         <i class="bi bi-lightbulb"></i>
-                                        <span>Within-Country OSR Frontier (Peer SNGs) Result:</span>
+                                        <span>@Localizer["Result_Header"]</span>
                                     </div>
                                     <p class="analysis-result-text" id="module2ResultTextTop">
-                                        Select a subnational government to view the analysis result.
+                                        @Localizer["Result_Placeholder"]
                                     </p>
                                 </div>
                             </div>
@@ -440,20 +440,20 @@
 
                         <!-- OPTIONAL ANALYSIS SECTION HEADER -->
                         <div class="optional-analysis-header mb-3">
-                            <h5 class="text-muted"><i class="bi bi-sliders me-2"></i>Optional: Cross-Country Fiscal Analysis</h5>
-                            <p class="small text-muted">The following analyses compare your country's position in the global fiscal decentralisation space.</p>
+                            <h5 class="text-muted"><i class="bi bi-sliders me-2"></i>@Localizer["CrossCountry_Title"]</h5>
+                            <p class="small text-muted">@Localizer["CrossCountry_Subtitle"]</p>
                         </div>
 
                         <!-- Optional Analysis: Funding Decentralization -->
                         <div class="frontier-section" id="fundingDecentralizationSection">
                             <div class="frontier-section-header">
                                 <span class="frontier-section-number">A</span>
-                                <h5 class="frontier-section-title">Funding Decentralization Frontier <span class="badge bg-secondary" style="font-size: 0.6rem;">Optional</span></h5>
+                                <h5 class="frontier-section-title">@Localizer["Funding_Title"] <span class="badge bg-secondary" style="font-size: 0.6rem;">@Localizer["Funding_Optional"]</span></h5>
                             </div>
                             <div class="frontier-metrics">
                                 <div class="frontier-row">
                                     <div class="tooltip-trigger">
-                                        <span class="frontier-label">SNG revenue per capita</span>
+                                        <span class="frontier-label">@Localizer["Funding_SngRevenue"]</span>
                                         <button type="button" class="info-btn" data-tooltip-id="tip-sng-rev">
                                             <i class="bi bi-info"></i>
                                         </button>
@@ -469,7 +469,7 @@
                                 </div>
                                 <div class="frontier-row highlight">
                                     <div class="tooltip-trigger">
-                                        <span class="frontier-label">Peer benchmark (top-20% avg)</span>
+                                        <span class="frontier-label">@Localizer["Funding_PeerBenchmark"]</span>
                                         <button type="button" class="info-btn" data-tooltip-id="tip-peer-funding">
                                             <i class="bi bi-info"></i>
                                         </button>
@@ -485,7 +485,7 @@
                                 </div>
                                 <div class="frontier-row with-bar">
                                     <div class="tooltip-trigger">
-                                        <span class="frontier-label accent">Funding index</span>
+                                        <span class="frontier-label accent">@Localizer["Funding_Index"]</span>
                                         <button type="button" class="info-btn" data-tooltip-id="tip-funding-index">
                                             <i class="bi bi-info"></i>
                                         </button>
@@ -504,7 +504,7 @@
                                 </div>
                                 <div class="frontier-row result">
                                     <div class="tooltip-trigger">
-                                        <span class="frontier-label bold">Funding headroom (USD per capita)</span>
+                                        <span class="frontier-label bold">@Localizer["Funding_Headroom"]</span>
                                         <button type="button" class="info-btn" data-tooltip-id="tip-funding-headroom">
                                             <i class="bi bi-info"></i>
                                         </button>
@@ -525,12 +525,12 @@
                         <div class="frontier-section" id="revenueAutonomySection">
                             <div class="frontier-section-header">
                                 <span class="frontier-section-number">B</span>
-                                <h5 class="frontier-section-title">Subnational Revenue Autonomy <span class="badge bg-secondary" style="font-size: 0.6rem;">Optional</span></h5>
+                                <h5 class="frontier-section-title">@Localizer["Autonomy_Title"] <span class="badge bg-secondary" style="font-size: 0.6rem;">@Localizer["Funding_Optional"]</span></h5>
                             </div>
                             <div class="frontier-metrics">
                                 <div class="frontier-row">
                                     <div class="tooltip-trigger">
-                                        <span class="frontier-label">Non-grants share of SNG revenue (%)</span>
+                                        <span class="frontier-label">@Localizer["Autonomy_NonGrants"]</span>
                                         <button type="button" class="info-btn" data-tooltip-id="tip-non-grants">
                                             <i class="bi bi-info"></i>
                                         </button>
@@ -546,7 +546,7 @@
                                 </div>
                                 <div class="frontier-row highlight">
                                     <div class="tooltip-trigger">
-                                        <span class="frontier-label">Peer benchmark (top-20% avg)</span>
+                                        <span class="frontier-label">@Localizer["Autonomy_PeerBenchmark"]</span>
                                         <button type="button" class="info-btn" data-tooltip-id="tip-peer-autonomy">
                                             <i class="bi bi-info"></i>
                                         </button>
@@ -562,7 +562,7 @@
                                 </div>
                                 <div class="frontier-row with-bar">
                                     <div class="tooltip-trigger">
-                                        <span class="frontier-label accent">Autonomy index</span>
+                                        <span class="frontier-label accent">@Localizer["Autonomy_Index"]</span>
                                         <button type="button" class="info-btn" data-tooltip-id="tip-autonomy-index">
                                             <i class="bi bi-info"></i>
                                         </button>
@@ -581,7 +581,7 @@
                                 </div>
                                 <div class="frontier-row">
                                     <div class="tooltip-trigger">
-                                        <span class="frontier-label">Distance from peer benchmark (% points)</span>
+                                        <span class="frontier-label">@Localizer["Autonomy_Distance"]</span>
                                         <button type="button" class="info-btn" data-tooltip-id="tip-distance">
                                             <i class="bi bi-info"></i>
                                         </button>
@@ -597,7 +597,7 @@
                                 </div>
                                 <div class="frontier-row result position">
                                     <div class="tooltip-trigger">
-                                        <span class="frontier-label bold">Position relative to peer benchmark</span>
+                                        <span class="frontier-label bold">@Localizer["Autonomy_Position"]</span>
                                         <button type="button" class="info-btn" data-tooltip-id="tip-position">
                                             <i class="bi bi-info"></i>
                                         </button>
@@ -617,7 +617,7 @@
                         <!-- Position in Fiscal Decentralisation Space Chart (OPTIONAL ANALYSIS) -->
                         <div class="fiscal-chart-section" id="fiscalDecentralisationSection">
                             <div class="fiscal-chart-header">
-                                <h5 class="fiscal-chart-title">Position in fiscal decentralisation space <span class="badge bg-secondary ms-2" style="font-size: 0.65rem;">Optional Analysis</span></h5>
+                                <h5 class="fiscal-chart-title">@Localizer["FiscalChart_Title"] <span class="badge bg-secondary ms-2" style="font-size: 0.65rem;">@Localizer["FiscalChart_Optional"]</span></h5>
                             </div>
                             <div class="fiscal-chart-container">
                                 <canvas id="fiscalDecentralisationChart"></canvas>
@@ -628,10 +628,10 @@
                         <div class="analysis-result-section" id="analysisResultSection">
                             <div class="analysis-result-header">
                                 <i class="bi bi-lightbulb"></i>
-                                <span>Cross-Country Fiscal Analysis Result:</span>
+                                <span>@Localizer["CrossCountry_ResultHeader"]</span>
                             </div>
                             <p class="analysis-result-text" id="analysisResultText">
-                                Select a country to view the analysis result.
+                                @Localizer["CrossCountry_ResultPlaceholder"]
                             </p>
                         </div>
                     </div>
