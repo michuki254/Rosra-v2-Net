@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"><xsd:complexType><xsd:choice maxOccurs="unbounded">
+      <xsd:element name="data"><xsd:complexType><xsd:sequence>
+        <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+      </xsd:sequence><xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" /><xsd:attribute name="xml:space" use="optional" /></xsd:complexType></xsd:element>
+    </xsd:choice></xsd:complexType></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Title" xml:space="preserve"><value>Tableau de bord</value></data>
+  <data name="YourSavedReports" xml:space="preserve"><value>Vos rapports enregistrés</value></data>
+  <data name="ViewManageReports" xml:space="preserve"><value>Consulter et gérer vos estimations ROSRA enregistrées</value></data>
+  <data name="Refresh" xml:space="preserve"><value>Actualiser</value></data>
+  <data name="CreateNewReport" xml:space="preserve"><value>Créer un nouveau rapport</value></data>
+  <data name="LastUpdated" xml:space="preserve"><value>Dernière mise à jour</value></data>
+  <data name="Submitted" xml:space="preserve"><value>Soumis</value></data>
+  <data name="Location" xml:space="preserve"><value>Localisation :</value></data>
+  <data name="FinancialYear" xml:space="preserve"><value>Dernière année financière se terminant en</value></data>
+  <data name="Currency" xml:space="preserve"><value>Devise :</value></data>
+  <data name="Open" xml:space="preserve"><value>OUVRIR</value></data>
+  <data name="NoReports" xml:space="preserve"><value>Aucun rapport trouvé</value></data>
+  <data name="NoReportsDesc" xml:space="preserve"><value>Vous n'avez pas encore créé de rapport ROSRA. Commencez par créer votre premier rapport.</value></data>
+  <data name="CreateFirst" xml:space="preserve"><value>Créer votre premier rapport</value></data>
+</root>

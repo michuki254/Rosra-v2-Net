@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"><xsd:complexType><xsd:choice maxOccurs="unbounded">
+      <xsd:element name="data"><xsd:complexType><xsd:sequence>
+        <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+      </xsd:sequence><xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" /><xsd:attribute name="xml:space" use="optional" /></xsd:complexType></xsd:element>
+    </xsd:choice></xsd:complexType></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Title" xml:space="preserve"><value>Panel de control</value></data>
+  <data name="YourSavedReports" xml:space="preserve"><value>Sus informes guardados</value></data>
+  <data name="ViewManageReports" xml:space="preserve"><value>Ver y gestionar sus estimaciones ROSRA guardadas</value></data>
+  <data name="Refresh" xml:space="preserve"><value>Actualizar</value></data>
+  <data name="CreateNewReport" xml:space="preserve"><value>Crear nuevo informe</value></data>
+  <data name="LastUpdated" xml:space="preserve"><value>Última actualización</value></data>
+  <data name="Submitted" xml:space="preserve"><value>Enviado</value></data>
+  <data name="Location" xml:space="preserve"><value>Ubicación:</value></data>
+  <data name="FinancialYear" xml:space="preserve"><value>Último año fiscal terminando en</value></data>
+  <data name="Currency" xml:space="preserve"><value>Moneda:</value></data>
+  <data name="Open" xml:space="preserve"><value>ABRIR</value></data>
+  <data name="NoReports" xml:space="preserve"><value>No se encontraron informes</value></data>
+  <data name="NoReportsDesc" xml:space="preserve"><value>Aún no ha creado ningún informe ROSRA. Comience creando su primer informe.</value></data>
+  <data name="CreateFirst" xml:space="preserve"><value>Crear su primer informe</value></data>
+</root>

@@ -512,6 +512,9 @@ namespace RosraApp.Migrations
                     b.Property<decimal?>("EstimatedBudget")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int?>("FinalUnitLevel")
+                        .HasColumnType("int");
+
                     b.Property<string>("FinancialYear")
                         .HasColumnType("nvarchar(max)");
 
@@ -519,6 +522,9 @@ namespace RosraApp.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("GenericStreamsData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GovUnitLevel3")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GovernmentType")

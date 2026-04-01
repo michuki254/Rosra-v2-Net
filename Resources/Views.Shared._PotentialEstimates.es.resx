@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="Intro_Text" xml:space="preserve"><value>Una visión rápida comparando los ingresos propios del GNS con pares nacionales o internacionales similares. Aunque la visión parezca positiva (o sugiera un potencial limitado), el análisis ascendente sigue siendo la referencia principal ya que mide las brechas directamente por fuente de ingresos. Si no hay datos de referencia disponibles, omita este paso y vaya al análisis ascendente.</value></data>
+  <data name="DataInputBlock" xml:space="preserve"><value>Bloque de entrada de datos</value></data>
+  <data name="EnterInfo" xml:space="preserve"><value>Ingrese la información requerida a continuación</value></data>
+  <data name="Country" xml:space="preserve"><value>País</value></data>
+  <data name="SelectCountry" xml:space="preserve"><value>Seleccione un país</value></data>
+  <data name="FinancialYear" xml:space="preserve"><value>Año fiscal</value></data>
+  <data name="SelectYear" xml:space="preserve"><value>Seleccione el año</value></data>
+  <data name="GovUnit1" xml:space="preserve"><value>Unidad gubernamental nivel 1</value></data>
+  <data name="GovUnit1Helper" xml:space="preserve"><value>ej. región, estado, provincia, condado, departamento, gobernación</value></data>
+  <data name="SelectLevel1" xml:space="preserve"><value>Seleccione una unidad de nivel 1</value></data>
+  <data name="Level1Final" xml:space="preserve"><value>Esta evaluación se aplica a la unidad de nivel 1 seleccionada en su totalidad</value></data>
+  <data name="GovUnit2" xml:space="preserve"><value>Unidad gubernamental nivel 2</value></data>
+  <data name="GovUnit2Helper" xml:space="preserve"><value>ej. ciudad, municipio, distrito, cantón, comuna</value></data>
+  <data name="EnterLevel2" xml:space="preserve"><value>Ingrese la unidad de nivel 2</value></data>
+  <data name="Level2Final" xml:space="preserve"><value>Esta evaluación se aplica a la unidad de nivel 2 seleccionada en su totalidad</value></data>
+  <data name="Currency" xml:space="preserve"><value>Moneda</value></data>
+  <data name="IncomeLevel" xml:space="preserve"><value>Nivel de ingresos</value></data>
+  <data name="GovernmentType" xml:space="preserve"><value>Tipo de gobierno</value></data>
+  <data name="CurrencyOverride" xml:space="preserve"><value>Usar una moneda diferente para los resultados del análisis</value></data>
+  <data name="OverrideCurrency" xml:space="preserve"><value>Moneda alternativa</value></data>
+  <data name="CurrencyOverrideHelp" xml:space="preserve"><value>Esto cambia la moneda de visualización para todos los resultados del análisis.</value></data>
+  <data name="FrontierTitle" xml:space="preserve"><value>Frontera IPP intrapaís (GNS pares)</value></data>
+  <data name="FrontierSubtitle" xml:space="preserve"><value>Comparar con gobiernos subnacionales pares nacionales</value></data>
+  <data name="SelectCountryForFrontier" xml:space="preserve"><value>Seleccione un país y un gobierno subnacional para ver el análisis de frontera IPP</value></data>
+  <data name="SubnationalGov" xml:space="preserve"><value>Gobierno subnacional</value></data>
+  <data name="SelectSng" xml:space="preserve"><value>Seleccione un gobierno subnacional...</value></data>
+  <data name="SelectSngForAnalysis" xml:space="preserve"><value>Seleccione un gobierno subnacional para ver el análisis de frontera IPP</value></data>
+</root>

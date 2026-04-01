@@ -22,6 +22,8 @@ namespace RosraApp.Models
         public string? Country { get; set; }
         public string? Region { get; set; }
         public string? City { get; set; }
+        public string? GovUnitLevel3 { get; set; }
+        public int? FinalUnitLevel { get; set; }
         public string? Currency { get; set; }
         public string? CurrencySymbol { get; set; }
         public string? FinancialYear { get; set; }

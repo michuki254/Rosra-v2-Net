@@ -26,6 +26,9 @@ namespace RosraApp.Models.ViewModels
         public string? CurrencySymbol { get; set; }
         public string? Region { get; set; }
         public string? Country { get; set; }
+        public string? City { get; set; }
+        public string? GovUnitLevel3 { get; set; }
+        public int? FinalUnitLevel { get; set; }
         public string? FinancialYear { get; set; }
 
         // Peer SNG Data for Within-Country OSR Frontier analysis
@@ -54,6 +57,9 @@ namespace RosraApp.Models.ViewModels
                 CurrencySymbol = report.CurrencySymbol,
                 Region = report.Region,
                 Country = report.Country,
+                City = report.City,
+                GovUnitLevel3 = report.GovUnitLevel3,
+                FinalUnitLevel = report.FinalUnitLevel,
                 FinancialYear = report.FinancialYear,
                 PeerSNGData = report.PeerSNGData
             };

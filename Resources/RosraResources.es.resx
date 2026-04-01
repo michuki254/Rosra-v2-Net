@@ -52,4 +52,17 @@
   <!-- Tabs -->
   <data name="Tab_TopDown" xml:space="preserve"><value>Análisis descendente</value></data>
   <data name="Tab_BottomUp" xml:space="preserve"><value>Análisis ascendente</value></data>
+  <data name="Tab_GapAnalysis" xml:space="preserve"><value>Análisis de brechas</value></data>
+  <data name="Tab_Prioritization" xml:space="preserve"><value>Priorización</value></data>
+  <data name="Tab_OverviewSelection" xml:space="preserve"><value>Selección de soluciones</value></data>
+  <data name="Tab_Recommendations" xml:space="preserve"><value>Recomendaciones</value></data>
+
+  <!-- Messages -->
+  <data name="Msg_ReportUpdated" xml:space="preserve"><value>¡Informe actualizado con éxito!</value></data>
+  <data name="Msg_ReportNotFound" xml:space="preserve"><value>¡Informe no encontrado!</value></data>
+  <data name="Msg_ReportSaved" xml:space="preserve"><value>¡Informe guardado con éxito!</value></data>
+  <data name="Msg_NoAnalysisData" xml:space="preserve"><value>No se encontraron datos de análisis. Complete el análisis primero.</value></data>
+  <data name="Msg_PdfError" xml:space="preserve"><value>Error al generar el informe PDF. Inténtelo de nuevo.</value></data>
+  <data name="Msg_ExcelError" xml:space="preserve"><value>Error al generar el informe Excel. Inténtelo de nuevo.</value></data>
+  <data name="Msg_ExportSuccess" xml:space="preserve"><value>¡Análisis exportado con éxito!</value></data>
 </root>

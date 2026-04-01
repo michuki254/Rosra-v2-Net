@@ -91,3 +91,6 @@ publish-linux/
 # Backup files
 *.bak2
 *.backup
+# SQLite databases
+*.db
+app.db

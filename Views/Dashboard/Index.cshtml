@@ -1,7 +1,7 @@
 @model RosraApp.Models.ViewModels.DashboardViewModel
 
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = Localizer["Title"].Value;
 }
 
 @functions {
@@ -374,15 +374,15 @@
     <!-- Header section -->
     <div class="dashboard-header d-flex justify-content-between align-items-center">
         <div>
-            <h1>Your Saved Reports</h1>
-            <p>View and manage your saved ROSRA potential estimates</p>
+            <h1>@Localizer["YourSavedReports"]</h1>
+            <p>@Localizer["ViewManageReports"]</p>
         </div>
         <div class="d-flex gap-2">
             <button class="btn btn-refresh d-flex align-items-center" id="refreshBtn">
-                <i class="bi bi-arrow-clockwise me-2"></i> Refresh
+                <i class="bi bi-arrow-clockwise me-2"></i> @Localizer["Refresh"]
             </button>
             <a asp-controller="Rosra" asp-action="NewReport" class="btn btn-create-report">
-                <i class="bi bi-plus-circle me-2"></i> Create New Report
+                <i class="bi bi-plus-circle me-2"></i> @Localizer["CreateNewReport"]
             </a>
         </div>
     </div>
@@ -439,7 +439,7 @@
                                 </div>
                                 <div class="header-actions">
                                     <span class="status-badge">
-                                        <i class="bi bi-circle-fill"></i>Submitted
+                                        <i class="bi bi-circle-fill"></i>@Localizer["Submitted"]
                                     </span>
                                     <button class="icon-btn delete-btn" type="button" data-report-id="@report.Id">
                                         <i class="bi bi-trash"></i>
@@ -470,14 +470,20 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <div class="detail-row">
-                                        <span class="detail-label">State/Region: </span>
-                                        <span class="detail-value">@(report.Region ?? report.Country ?? "N/A")</span>
+                                        <span class="detail-label">@Localizer["Location"] </span>
+                                        <span class="detail-value">@{
+                                            var locParts = new List<string>();
+                                            if (!string.IsNullOrEmpty(report.Country)) locParts.Add(report.Country);
+                                            if (!string.IsNullOrEmpty(report.Region)) locParts.Add(report.Region);
+                                            if (!string.IsNullOrEmpty(report.City) && (report.FinalUnitLevel ?? 0) >= 2) locParts.Add(report.City);
+                                            if (!string.IsNullOrEmpty(report.GovUnitLevel3) && (report.FinalUnitLevel ?? 0) >= 3) locParts.Add(report.GovUnitLevel3);
+                                        }@(locParts.Count > 0 ? string.Join(" > ", locParts) : "N/A")</span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">Last Financial Year Ending in @(report.FinancialYear ?? report.CreatedAt.Year.ToString())</span>
                                     </div>
                                     <div class="detail-row">
-                                        <span class="detail-label">Currency: </span>
+                                        <span class="detail-label">@Localizer["Currency"] </span>
                                         <span class="detail-value">@(report.Currency ?? "N/A") @(report.CurrencySymbol != null ? "(" + report.CurrencySymbol + ")" : "")</span>
                                     </div>
                                 </div>
@@ -485,7 +491,7 @@
                         </div>
                         <div class="card-footer bg-white p-3 border-top-0">
                             <a asp-controller="Dashboard" asp-action="ViewReport" asp-route-id="@report.Id"
-                               class="btn btn-open w-100">OPEN</a>
+                               class="btn btn-open w-100">@Localizer["Open"]</a>
                         </div>
                     </div>
                 </div>
@@ -496,10 +502,10 @@
             <div class="col-12" id="no-reports-message">
                 <div class="no-reports-card">
                     <i class="bi bi-file-earmark-text d-block"></i>
-                    <h5>No Reports Found</h5>
-                    <p class="text-muted mb-4">You haven't created any ROSRA reports yet. Get started by creating your first report.</p>
+                    <h5>@Localizer["NoReports"]</h5>
+                    <p class="text-muted mb-4">@Localizer["NoReportsDesc"]</p>
                     <a asp-controller="Rosra" asp-action="Index" class="btn btn-create-report">
-                        <i class="bi bi-plus-circle me-2"></i> Create Your First Report
+                        <i class="bi bi-plus-circle me-2"></i> @Localizer["CreateFirst"]
                     </a>
                 </div>
             </div>
@@ -599,7 +605,7 @@
                                                 <h5>No Reports Found</h5>
                                                 <p class="text-muted mb-4">You haven't created any ROSRA reports yet. Get started by creating your first report.</p>
                                                 <a href="@Url.Action("Index", "Rosra")" class="btn btn-create-report">
-                                                    <i class="bi bi-plus-circle me-2"></i> Create Your First Report
+                                                    <i class="bi bi-plus-circle me-2"></i> @Localizer["CreateFirst"]
                                                 </a>
                                             </div>
                                         </div>

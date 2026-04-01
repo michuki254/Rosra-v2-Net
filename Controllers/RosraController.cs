@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.IO;
+using Microsoft.Extensions.Localization;
 
 namespace RosraApp.Controllers
 {
@@ -23,6 +24,7 @@ namespace RosraApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RosraController> _logger;
+        private readonly IStringLocalizer<RosraApp.Resources.RosraResources> _localizer;
         
         // JSON serialization options to ensure consistent property naming
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
@@ -35,11 +37,13 @@ namespace RosraApp.Controllers
         public RosraController(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
-            ILogger<RosraController> logger)
+            ILogger<RosraController> logger,
+            IStringLocalizer<RosraApp.Resources.RosraResources> localizer)
         {
             _context = context;
             _userManager = userManager;
             _logger = logger;
+            _localizer = localizer;
         }
 
         public IActionResult Index(string activeTab = null, string umbrellaTab = null, bool viewMode = false)
@@ -81,28 +85,28 @@ namespace RosraApp.Controllers
                 new TabViewModel
                 {
                     Id = "gap-analysis",
-                    Title = "Gap Analysis",
+                    Title = _localizer["Tab_GapAnalysis"].Value,
                     ContentPartialName = "_GapAnalysis",
                     StepNumber = 1
                 },
                 new TabViewModel
                 {
                     Id = "prioritization",
-                    Title = "Prioritization",
+                    Title = _localizer["Tab_Prioritization"].Value,
                     ContentPartialName = "_Prioritization",
                     StepNumber = 2
                 },
                 new TabViewModel
                 {
                     Id = "overview-selection",
-                    Title = "Overview Selection",
+                    Title = _localizer["Tab_OverviewSelection"].Value,
                     ContentPartialName = "_OverviewSelection",
                     StepNumber = 3
                 },
                 new TabViewModel
                 {
                     Id = "recommendations",
-                    Title = "Recommendations",
+                    Title = _localizer["Tab_Recommendations"].Value,
                     ContentPartialName = "_Recommendations",
                     StepNumber = 4
                 }
@@ -155,7 +159,7 @@ namespace RosraApp.Controllers
                 new UmbrellaTabViewModel
                 {
                     Id = "top-down",
-                    Title = "Top-Down Analysis",
+                    Title = _localizer["Tab_TopDown"].Value,
                     Description = "Quick OSR Potential Estimate",
                     Icon = "bi bi-arrow-down-circle",
                     IsActive = activeUmbrellaId == "top-down",
@@ -175,7 +179,7 @@ namespace RosraApp.Controllers
                 new UmbrellaTabViewModel
                 {
                     Id = "bottom-up",
-                    Title = "Bottom-Up Analysis",
+                    Title = _localizer["Tab_BottomUp"].Value,
                     Description = "Detailed 4-Step Pipeline",
                     Icon = "bi bi-arrow-up-circle",
                     IsActive = activeUmbrellaId == "bottom-up",
@@ -453,11 +457,11 @@ namespace RosraApp.Controllers
                         _context.Update(existingReport);
                         await _context.SaveChangesAsync();
                         
-                        TempData["SuccessMessage"] = "Report updated successfully!";
+                        TempData["SuccessMessage"] = _localizer["Msg_ReportUpdated"].Value;
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "Report not found!";
+                        TempData["ErrorMessage"] = _localizer["Msg_ReportNotFound"].Value;
                     }
                 }
                 else
@@ -466,7 +470,7 @@ namespace RosraApp.Controllers
                     _context.RosraReports.Add(report);
                     await _context.SaveChangesAsync();
                     
-                    TempData["SuccessMessage"] = "Report saved successfully!";
+                    TempData["SuccessMessage"] = _localizer["Msg_ReportSaved"].Value;
                 }
             }
             catch (Exception ex)
@@ -762,7 +766,7 @@ namespace RosraApp.Controllers
                 new TabViewModel
                 {
                     Id = "gap-analysis",
-                    Title = "Gap Analysis",
+                    Title = _localizer["Tab_GapAnalysis"].Value,
                     IsActive = true, // First bottom-up step active by default in view
                     IsVisited = true,
                     ContentPartialName = "_GapAnalysis",
@@ -771,7 +775,7 @@ namespace RosraApp.Controllers
                 new TabViewModel
                 {
                     Id = "prioritization",
-                    Title = "Prioritization",
+                    Title = _localizer["Tab_Prioritization"].Value,
                     IsActive = false,
                     IsVisited = true,
                     ContentPartialName = "_Prioritization",
@@ -780,7 +784,7 @@ namespace RosraApp.Controllers
                 new TabViewModel
                 {
                     Id = "overview-selection",
-                    Title = "Overview Selection",
+                    Title = _localizer["Tab_OverviewSelection"].Value,
                     IsActive = false,
                     IsVisited = true,
                     ContentPartialName = "_OverviewSelection",
@@ -789,7 +793,7 @@ namespace RosraApp.Controllers
                 new TabViewModel
                 {
                     Id = "recommendations",
-                    Title = "Recommendations",
+                    Title = _localizer["Tab_Recommendations"].Value,
                     IsActive = false,
                     IsVisited = true,
                     ContentPartialName = "_Recommendations",
@@ -803,7 +807,7 @@ namespace RosraApp.Controllers
                 new UmbrellaTabViewModel
                 {
                     Id = "top-down",
-                    Title = "Top-Down Analysis",
+                    Title = _localizer["Tab_TopDown"].Value,
                     Description = "Quick OSR Potential Estimate",
                     Icon = "bi bi-arrow-down-circle",
                     IsActive = true,
@@ -823,7 +827,7 @@ namespace RosraApp.Controllers
                 new UmbrellaTabViewModel
                 {
                     Id = "bottom-up",
-                    Title = "Bottom-Up Analysis",
+                    Title = _localizer["Tab_BottomUp"].Value,
                     Description = "Detailed 4-Step Pipeline",
                     Icon = "bi bi-arrow-up-circle",
                     IsActive = false,
@@ -863,7 +867,7 @@ namespace RosraApp.Controllers
             // In a real application, we would generate a PDF or Excel file here
             // For now, we'll just redirect back with a success message
 
-            TempData["SuccessMessage"] = "Analysis exported successfully!";
+            TempData["SuccessMessage"] = _localizer["Msg_ExportSuccess"].Value;
 
             return RedirectToAction("Index");
         }
@@ -884,7 +888,7 @@ namespace RosraApp.Controllers
                 var sessionData = GetFormDataFromSession();
                 if (sessionData == null)
                 {
-                    TempData["ErrorMessage"] = "No analysis data found. Please complete the analysis first.";
+                    TempData["ErrorMessage"] = _localizer["Msg_NoAnalysisData"].Value;
                     return RedirectToAction("Index");
                 }
                 // Preserve chart images from form POST (not stored in session)
@@ -906,7 +910,7 @@ namespace RosraApp.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error generating PDF report");
-                TempData["ErrorMessage"] = "Error generating PDF report. Please try again.";
+                TempData["ErrorMessage"] = _localizer["Msg_PdfError"].Value;
                 return RedirectToAction("Index");
             }
         }
@@ -927,7 +931,7 @@ namespace RosraApp.Controllers
                 var sessionData = GetFormDataFromSession();
                 if (sessionData == null)
                 {
-                    TempData["ErrorMessage"] = "No analysis data found. Please complete the analysis first.";
+                    TempData["ErrorMessage"] = _localizer["Msg_NoAnalysisData"].Value;
                     return RedirectToAction("Index");
                 }
 
@@ -940,7 +944,7 @@ namespace RosraApp.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error generating Excel report");
-                TempData["ErrorMessage"] = "Error generating Excel report. Please try again.";
+                TempData["ErrorMessage"] = _localizer["Msg_ExcelError"].Value;
                 return RedirectToAction("Index");
             }
         }

@@ -52,4 +52,17 @@
   <!-- Tabs -->
   <data name="Tab_TopDown" xml:space="preserve"><value>Top-Down Analysis</value></data>
   <data name="Tab_BottomUp" xml:space="preserve"><value>Bottom-Up Analysis</value></data>
+  <data name="Tab_GapAnalysis" xml:space="preserve"><value>Gap Analysis</value></data>
+  <data name="Tab_Prioritization" xml:space="preserve"><value>Prioritization</value></data>
+  <data name="Tab_OverviewSelection" xml:space="preserve"><value>Overview Selection</value></data>
+  <data name="Tab_Recommendations" xml:space="preserve"><value>Recommendations</value></data>
+
+  <!-- Messages -->
+  <data name="Msg_ReportUpdated" xml:space="preserve"><value>Report updated successfully!</value></data>
+  <data name="Msg_ReportNotFound" xml:space="preserve"><value>Report not found!</value></data>
+  <data name="Msg_ReportSaved" xml:space="preserve"><value>Report saved successfully!</value></data>
+  <data name="Msg_NoAnalysisData" xml:space="preserve"><value>No analysis data found. Please complete the analysis first.</value></data>
+  <data name="Msg_PdfError" xml:space="preserve"><value>Error generating PDF report. Please try again.</value></data>
+  <data name="Msg_ExcelError" xml:space="preserve"><value>Error generating Excel report. Please try again.</value></data>
+  <data name="Msg_ExportSuccess" xml:space="preserve"><value>Analysis exported successfully!</value></data>
 </root>

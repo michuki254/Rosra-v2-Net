@@ -1,4 +1,5 @@
 @model RosraApp.Models.ViewModels.RosraFormViewModel
+@inject IHtmlLocalizer<RosraApp.Resources.RosraResources> RosraLocalizer
 @{
     bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
     int currentYear = DateTime.Now.Year;
@@ -9,7 +10,7 @@
     <div class="top-down-intro-section mb-4">
         <div class="intro-text-box">
             <i class="bi bi-info-circle-fill intro-icon"></i>
-            <p class="intro-text">A quick snapshot comparing the SNG's own-source revenues with similar domestic or international peers. Even if the snapshot looks strong (or suggests limited room), the bottom-up analysis remains the main reference because it measures gaps directly by revenue stream. Where benchmark data is not available, skip this step and go to bottom-up.</p>
+            <p class="intro-text">@Localizer["Intro_Text"]</p>
         </div>
     </div>
 
@@ -24,8 +25,8 @@
                             <i class="bi bi-pencil-square"></i>
                         </div>
                         <div class="flex-grow-1">
-                            <h5 class="card-title mb-0">Data Input Block</h5>
-                            <p class="card-subtitle mb-0">Enter required information below</p>
+                            <h5 class="card-title mb-0">@Localizer["DataInputBlock"]</h5>
+                            <p class="card-subtitle mb-0">@Localizer["EnterInfo"]</p>
                         </div>
                         <div class="collapse-toggle-btn">
                             <i class="bi bi-chevron-up collapse-icon"></i>
@@ -38,18 +39,18 @@
                         <!-- Row 1: Country & Financial Year -->
                         <div class="compact-row">
                             <div class="compact-field">
-                                <label class="compact-label">Country</label>
+                                <label class="compact-label">@Localizer["Country"]</label>
                                 <div class="country-select-wrapper">
                                     <img id="country-flag" class="country-flag" src="" alt="" style="display: none;">
                                     <select class="form-select form-select-sm @(isViewMode ? "readonly" : "")" id="country" name="Country" @(isViewMode ? "disabled" : "")>
-                                        <option value="">Select a country</option>
+                                        <option value="">@Localizer["SelectCountry"]</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="compact-field">
-                                <label class="compact-label">Financial Year</label>
+                                <label class="compact-label">@Localizer["FinancialYear"]</label>
                                 <select class="form-select form-select-sm @(isViewMode ? "readonly" : "")" id="financialYear" name="FinancialYear" @(isViewMode ? "disabled" : "")>
-                                    <option value="">Select year</option>
+                                    <option value="">@Localizer["SelectYear"]</option>
                                 </select>
                             </div>
                         </div>
@@ -57,15 +58,15 @@
                         <!-- Row 2: Government Unit Level 1 (hidden until country selected) -->
                         <div class="compact-row single" id="govUnitLevel1Row" style="display: none;">
                             <div class="compact-field full-width">
-                                <label class="compact-label">Government Unit Level 1</label>
-                                <small class="gov-unit-helper">e.g. region, state, province, county, department, governorate</small>
+                                <label class="compact-label">@Localizer["GovUnit1"]</label>
+                                <small class="gov-unit-helper">@Localizer["GovUnit1Helper"]</small>
                                 <select class="form-select form-select-sm @(isViewMode ? "readonly" : "")" id="region" name="Region" @(isViewMode ? "disabled" : "")>
-                                    <option value="">Select a level 1 unit</option>
+                                    <option value="">@Localizer["SelectLevel1"]</option>
                                 </select>
                                 <div class="form-check mt-1">
                                     <input class="form-check-input" type="checkbox" id="level1IsFinal" @(isViewMode ? "disabled" : "")>
                                     <label class="form-check-label gov-unit-checkbox-label" for="level1IsFinal">
-                                        This assessment applies to the selected Level 1 unit as a whole
+                                        @Localizer["Level1Final"]
                                     </label>
                                 </div>
                             </div>
@@ -74,15 +75,15 @@
                         <!-- Row 3: Government Unit Level 2 (hidden until L1 selected & L1 unchecked) -->
                         <div class="compact-row single" id="govUnitLevel2Row" style="display: none;">
                             <div class="compact-field full-width">
-                                <label class="compact-label">Government Unit Level 2</label>
-                                <small class="gov-unit-helper">e.g. city, municipality, district, canton, commune</small>
+                                <label class="compact-label">@Localizer["GovUnit2"]</label>
+                                <small class="gov-unit-helper">@Localizer["GovUnit2Helper"]</small>
                                 <input type="text" class="form-control form-control-sm @(isViewMode ? "readonly" : "")"
                                        id="city" name="City" value="@Model.City"
-                                       placeholder="Enter level 2 unit" @(isViewMode ? "readonly" : "")>
+                                       placeholder="@Localizer["EnterLevel2"]" @(isViewMode ? "readonly" : "")>
                                 <div class="form-check mt-1">
                                     <input class="form-check-input" type="checkbox" id="level2IsFinal" @(isViewMode ? "disabled" : "")>
                                     <label class="form-check-label gov-unit-checkbox-label" for="level2IsFinal">
-                                        This assessment applies to the selected Level 2 unit as a whole
+                                        @Localizer["Level2Final"]
                                     </label>
                                 </div>
                             </div>
@@ -111,7 +112,7 @@
                         <!-- Row 5: Currency (auto) & Income Level (auto) -->
                         <div class="compact-row">
                             <div class="compact-field">
-                                <label class="compact-label">Currency</label>
+                                <label class="compact-label">@Localizer["Currency"]</label>
                                 <div class="auto-value-display" id="currency-display">
                                     <span class="currency-badge" id="currency-symbol">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "-" : Model.CurrencySymbol)</span>
                                     <input type="text" class="form-control form-control-sm readonly-auto"
@@ -120,7 +121,7 @@
                                 </div>
                             </div>
                             <div class="compact-field">
-                                <label class="compact-label">Income Level</label>
+                                <label class="compact-label">@Localizer["IncomeLevel"]</label>
                                 <input type="text" class="form-control form-control-sm readonly-auto"
                                        id="incomeLevel" name="IncomeLevel" value="@Model.IncomeLevel"
                                        placeholder="-" readonly>
@@ -134,12 +135,12 @@
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox" role="switch" id="useDifferentCurrency" @(isViewMode ? "disabled" : "")>
                                         <label class="form-check-label" for="useDifferentCurrency">
-                                            Use a different currency for analysis outputs
+                                            @Localizer["CurrencyOverride"]
                                         </label>
                                     </div>
                                 </div>
                                 <div class="currency-override-select" id="currencyOverrideSelect" style="display: none;">
-                                    <label class="compact-label">Override Currency</label>
+                                    <label class="compact-label">@Localizer["OverrideCurrency"]</label>
                                     <select class="form-select form-select-sm" id="overrideCurrency" @(isViewMode ? "disabled" : "")>
                                         <option value="">-- Select currency --</option>
                                         <option value="USD" data-symbol="$" data-name="US Dollar">USD – US Dollar ($)</option>
@@ -160,7 +161,7 @@
                                         <option value="SGD" data-symbol="S$" data-name="Singapore Dollar">SGD – Singapore Dollar (S$)</option>
                                     </select>
                                     <small class="text-muted mt-1 d-block">
-                                        <i class="bi bi-info-circle me-1"></i>This changes the display currency for all analysis outputs.
+                                        <i class="bi bi-info-circle me-1"></i>@Localizer["CurrencyOverrideHelp"]
                                     </small>
                                 </div>
                                 <input type="hidden" id="overrideCurrencySymbol" name="OverrideCurrencySymbol" value="">
@@ -170,7 +171,7 @@
                         <!-- Row 6: Government Type (full width, auto) -->
                         <div class="compact-row single">
                             <div class="compact-field full-width">
-                                <label class="compact-label">Government Type</label>
+                                <label class="compact-label">@Localizer["GovernmentType"]</label>
                                 <input type="text" class="form-control form-control-sm readonly-auto"
                                        id="governmentType" name="GovernmentType" value="@Model.GovernmentType"
                                        placeholder="-" readonly>
@@ -244,15 +245,15 @@
                             <i class="bi bi-building"></i>
                         </div>
                         <div class="frontier-header-content">
-                            <h4 class="frontier-title">Within-Country OSR Frontier (Peer SNGs)</h4>
-                            <p class="frontier-subtitle">Compare against domestic peer subnational governments</p>
+                            <h4 class="frontier-title">@Localizer["FrontierTitle"]</h4>
+                            <p class="frontier-subtitle">@Localizer["FrontierSubtitle"]</p>
                         </div>
                     </div>
 
                     <!-- Placeholder when no country selected -->
                     <div class="frontier-placeholder" id="frontierPlaceholder">
                         <i class="bi bi-geo-alt"></i>
-                        <p>Select a country and subnational government to view OSR frontier analysis</p>
+                        <p>@Localizer["SelectCountryForFrontier"]</p>
                     </div>
 
                     <!-- Frontier Analysis Content -->
@@ -269,9 +270,9 @@
 
                             <!-- SNG Selection -->
                             <div class="module2-selection">
-                                <label class="compact-label">Subnational Government</label>
+                                <label class="compact-label">@Localizer["SubnationalGov"]</label>
                                 <select class="form-select form-select-sm" id="peerSngSelectTop">
-                                    <option value="">Select a subnational government...</option>
+                                    <option value="">@Localizer["SelectSng"]</option>
                                 </select>
                             </div>
 
@@ -331,7 +332,7 @@
                             <!-- Module Placeholder -->
                             <div class="module2-placeholder" id="module2PlaceholderTop">
                                 <i class="bi bi-geo-alt"></i>
-                                <p>Select a subnational government to view the OSR frontier analysis</p>
+                                <p>@Localizer["SelectSngForAnalysis"]</p>
                             </div>
 
                             <!-- Module Content (hidden by default) -->

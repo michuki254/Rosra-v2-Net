@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="Intro_Text" xml:space="preserve"><value>A quick snapshot comparing the SNG's own-source revenues with similar domestic or international peers. Even if the snapshot looks strong (or suggests limited room), the bottom-up analysis remains the main reference because it measures gaps directly by revenue stream. Where benchmark data is not available, skip this step and go to bottom-up.</value></data>
+  <data name="DataInputBlock" xml:space="preserve"><value>Data Input Block</value></data>
+  <data name="EnterInfo" xml:space="preserve"><value>Enter required information below</value></data>
+  <data name="Country" xml:space="preserve"><value>Country</value></data>
+  <data name="SelectCountry" xml:space="preserve"><value>Select a country</value></data>
+  <data name="FinancialYear" xml:space="preserve"><value>Financial Year</value></data>
+  <data name="SelectYear" xml:space="preserve"><value>Select year</value></data>
+  <data name="GovUnit1" xml:space="preserve"><value>Government Unit Level 1</value></data>
+  <data name="GovUnit1Helper" xml:space="preserve"><value>e.g. region, state, province, county, department, governorate</value></data>
+  <data name="SelectLevel1" xml:space="preserve"><value>Select a level 1 unit</value></data>
+  <data name="Level1Final" xml:space="preserve"><value>This assessment applies to the selected Level 1 unit as a whole</value></data>
+  <data name="GovUnit2" xml:space="preserve"><value>Government Unit Level 2</value></data>
+  <data name="GovUnit2Helper" xml:space="preserve"><value>e.g. city, municipality, district, canton, commune</value></data>
+  <data name="EnterLevel2" xml:space="preserve"><value>Enter level 2 unit</value></data>
+  <data name="Level2Final" xml:space="preserve"><value>This assessment applies to the selected Level 2 unit as a whole</value></data>
+  <data name="Currency" xml:space="preserve"><value>Currency</value></data>
+  <data name="IncomeLevel" xml:space="preserve"><value>Income Level</value></data>
+  <data name="GovernmentType" xml:space="preserve"><value>Government Type</value></data>
+  <data name="CurrencyOverride" xml:space="preserve"><value>Use a different currency for analysis outputs</value></data>
+  <data name="OverrideCurrency" xml:space="preserve"><value>Override Currency</value></data>
+  <data name="CurrencyOverrideHelp" xml:space="preserve"><value>This changes the display currency for all analysis outputs.</value></data>
+  <data name="FrontierTitle" xml:space="preserve"><value>Within-Country OSR Frontier (Peer SNGs)</value></data>
+  <data name="FrontierSubtitle" xml:space="preserve"><value>Compare against domestic peer subnational governments</value></data>
+  <data name="SelectCountryForFrontier" xml:space="preserve"><value>Select a country and subnational government to view OSR frontier analysis</value></data>
+  <data name="SubnationalGov" xml:space="preserve"><value>Subnational Government</value></data>
+  <data name="SelectSng" xml:space="preserve"><value>Select a subnational government...</value></data>
+  <data name="SelectSngForAnalysis" xml:space="preserve"><value>Select a subnational government to view the OSR frontier analysis</value></data>
+</root>
