@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Step 1: Stream Prioritization Header -->
+  <data name="Step1_Title" xml:space="preserve"><value>Priorización de flujos de ingresos</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Paso 1 del proceso de priorización: Clasifique los flujos de ingresos según su brecha funcional total para determinar cuáles abordar primero. Incluya o excluya flujos en función de las prioridades locales, la capacidad o las consideraciones políticas.</value></data>
+
+  <!-- Instructions -->
+  <data name="Instructions_Title" xml:space="preserve"><value>Cómo utilizar este módulo</value></data>
+  <data name="Instructions_Step1" xml:space="preserve"><value>Revise la tabla de &lt;strong&gt;Priorización ajustable de flujos&lt;/strong&gt; que muestra todos los flujos de ingresos analizados, clasificados por brecha funcional total.</value></data>
+  <data name="Instructions_Step2" xml:space="preserve"><value>Utilice el menú desplegable &lt;strong&gt;Incluir/Excluir&lt;/strong&gt; para seleccionar qué flujos incluir en su plan de reforma.</value></data>
+  <data name="Instructions_Step3" xml:space="preserve"><value>Utilice el menú desplegable &lt;strong&gt;Ajustar rango&lt;/strong&gt; para modificar la clasificación predeterminada según las prioridades locales.</value></data>
+  <data name="Instructions_Step4" xml:space="preserve"><value>Consulte la tabla de &lt;strong&gt;Priorización final de flujos&lt;/strong&gt; para ver sus clasificaciones finalizadas y la participación en la brecha total.</value></data>
+
+  <!-- Adjustable Stream Table -->
+  <data name="AdjustableStream_Title" xml:space="preserve"><value>Priorización ajustable de flujos</value></data>
+  <data name="AdjustableStream_Col_DefaultRank" xml:space="preserve"><value>Rango predeterminado</value></data>
+  <data name="AdjustableStream_Col_StreamName" xml:space="preserve"><value>Nombre del flujo</value></data>
+  <data name="AdjustableStream_Col_TotalFunctionalGap" xml:space="preserve"><value>Brecha funcional total</value></data>
+  <data name="AdjustableStream_Col_IncludeExclude" xml:space="preserve"><value>Incluir/Excluir</value></data>
+  <data name="AdjustableStream_Col_AdjustRank" xml:space="preserve"><value>Ajustar rango</value></data>
+  <data name="AdjustableStream_Tooltip_DefaultRank" xml:space="preserve"><value>Asignado automáticamente según la brecha funcional total (la mayor = 1)</value></data>
+  <data name="AdjustableStream_Tooltip_StreamName" xml:space="preserve"><value>El nombre del flujo de ingresos que se está analizando</value></data>
+  <data name="AdjustableStream_Tooltip_TotalFunctionalGap" xml:space="preserve"><value>Suma de todos los componentes de brecha para este flujo</value></data>
+  <data name="AdjustableStream_Tooltip_IncludeExclude" xml:space="preserve"><value>Incluir este flujo en el plan de reforma o excluirlo</value></data>
+  <data name="AdjustableStream_Tooltip_AdjustRank" xml:space="preserve"><value>Modificar el rango predeterminado según las prioridades locales</value></data>
+  <data name="AdjustableStream_Placeholder" xml:space="preserve"><value>Cargando datos de flujos desde el análisis de brechas...</value></data>
+
+  <!-- Final Stream Table -->
+  <data name="FinalStream_Title" xml:space="preserve"><value>Priorización final de flujos</value></data>
+  <data name="FinalStream_Col_FinalRank" xml:space="preserve"><value>Rango final</value></data>
+  <data name="FinalStream_Col_StreamName" xml:space="preserve"><value>Nombre del flujo</value></data>
+  <data name="FinalStream_Col_TotalFunctionalGap" xml:space="preserve"><value>Brecha funcional total</value></data>
+  <data name="FinalStream_Col_ShareOfTotalGap" xml:space="preserve"><value>Participación en la brecha total</value></data>
+  <data name="FinalStream_Col_Status" xml:space="preserve"><value>Estado</value></data>
+  <data name="FinalStream_Tooltip_FinalRank" xml:space="preserve"><value>Rango final después de los ajustes (solo flujos incluidos)</value></data>
+  <data name="FinalStream_Tooltip_StreamName" xml:space="preserve"><value>El nombre del flujo de ingresos</value></data>
+  <data name="FinalStream_Tooltip_TotalFunctionalGap" xml:space="preserve"><value>Brecha funcional total para este flujo</value></data>
+  <data name="FinalStream_Tooltip_ShareOfTotalGap" xml:space="preserve"><value>Brecha de este flujo como porcentaje de la brecha total de todos los flujos incluidos</value></data>
+  <data name="FinalStream_Tooltip_Status" xml:space="preserve"><value>Estado del flujo en el plan de reforma</value></data>
+  <data name="FinalStream_Placeholder" xml:space="preserve"><value>Las clasificaciones finales aparecerán después de seleccionar los flujos arriba</value></data>
+  <data name="FinalStream_Footer_Total" xml:space="preserve"><value>Total (flujos incluidos)</value></data>
+
+  <!-- Charts -->
+  <data name="Chart_BarTitle" xml:space="preserve"><value>Brecha funcional total por flujo</value></data>
+  <data name="Chart_PieTitle" xml:space="preserve"><value>Participación en la brecha total</value></data>
+  <data name="Chart_Placeholder" xml:space="preserve"><value>Complete el análisis de brechas para ver los datos gráficos</value></data>
+
+  <!-- Summary Statistics -->
+  <data name="Stats_TotalStreamsAnalyzed" xml:space="preserve"><value>Total de flujos analizados</value></data>
+  <data name="Stats_StreamsIncluded" xml:space="preserve"><value>Flujos incluidos</value></data>
+  <data name="Stats_TotalGapAll" xml:space="preserve"><value>Brecha total (todos)</value></data>
+  <data name="Stats_TotalGapIncluded" xml:space="preserve"><value>Brecha total (incluidos)</value></data>
+
+  <!-- Step 2: Gap Prioritization Header -->
+  <data name="Step2_Title" xml:space="preserve"><value>Priorización de brechas</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>Paso 2 del proceso de priorización: Después de ordenar los flujos, priorice las brechas (cumplimiento, cobertura, valoración/obligación) dentro de cada uno. ROSRA sugiere un orden predeterminado basado en los indicadores de cumplimiento y cobertura; utilice las columnas "Ajustar prioridad" para cambiar la secuencia o seleccione "Eliminar" para retirar una brecha de su plan.</value></data>
+
+  <!-- Mode Accordion -->
+  <data name="Mode_RevenuePotential" xml:space="preserve"><value>Potencial de ingresos</value></data>
+  <data name="Mode_RevenuePotential_Condition" xml:space="preserve"><value>Ratio de cumplimiento ≥ 75 %</value></data>
+  <data name="Mode_RevenuePotential_WhenApplied" xml:space="preserve"><value>Condiciones de aplicación:</value></data>
+  <data name="Mode_RevenuePotential_Description" xml:space="preserve"><value>Un alto nivel de cumplimiento generalmente indica que los sistemas básicos de recaudación y registro están funcionando. En este caso, la prioridad es centrarse en las funciones con las &lt;strong&gt;mayores brechas monetarias&lt;/strong&gt;, ya que representan las mayores ganancias de ingresos para un esfuerzo de reforma dado.</value></data>
+  <data name="Mode_ComplianceFirst" xml:space="preserve"><value>Cumplimiento primero</value></data>
+  <data name="Mode_ComplianceFirst_Condition" xml:space="preserve"><value>Cumplimiento &lt; 75 % Y cobertura ≥ 60 %</value></data>
+  <data name="Mode_ComplianceFirst_WhenApplied" xml:space="preserve"><value>Condiciones de aplicación:</value></data>
+  <data name="Mode_ComplianceFirst_Description" xml:space="preserve"><value>Una parte significativa de los contribuyentes conocidos no está pagando, pero el registro no está fundamentalmente dañado. ROSRA recomienda priorizar las &lt;strong&gt;reformas de cumplimiento&lt;/strong&gt; (facturación, canales de pago, aplicación), luego la cobertura y, por último, la valoración/obligación.</value></data>
+  <data name="Mode_Overhaul" xml:space="preserve"><value>Reestructuración</value></data>
+  <data name="Mode_Overhaul_Condition" xml:space="preserve"><value>Cumplimiento &lt; 75 % Y cobertura &lt; 60 %</value></data>
+  <data name="Mode_Overhaul_WhenApplied" xml:space="preserve"><value>Condiciones de aplicación:</value></data>
+  <data name="Mode_Overhaul_Description" xml:space="preserve"><value>Cuando ambos ratios son bajos, la base tributaria faltante suele ser la restricción principal. Fortalecer la aplicación por sí sola tiene un efecto limitado si la mayoría de las unidades son invisibles para la administración. La secuencia recomendada es &lt;strong&gt;Cobertura → Cumplimiento → Valoración/Obligación&lt;/strong&gt;.</value></data>
+
+  <!-- Gap Sequencing Table -->
+  <data name="GapSequencing_Title" xml:space="preserve"><value>Secuenciación de brechas por flujo</value></data>
+  <data name="GapSequencing_Col_Rank" xml:space="preserve"><value>Rango</value></data>
+  <data name="GapSequencing_Col_Stream" xml:space="preserve"><value>Flujo</value></data>
+  <data name="GapSequencing_Col_Mode" xml:space="preserve"><value>Modo</value></data>
+  <data name="GapSequencing_Col_Priority1" xml:space="preserve"><value>Prioridad 1</value></data>
+  <data name="GapSequencing_Col_Priority2" xml:space="preserve"><value>Prioridad 2</value></data>
+  <data name="GapSequencing_Col_Priority3" xml:space="preserve"><value>Prioridad 3</value></data>
+  <data name="GapSequencing_Tooltip_Rank" xml:space="preserve"><value>Rango final del flujo desde el paso 1</value></data>
+  <data name="GapSequencing_Tooltip_Stream" xml:space="preserve"><value>Nombre del flujo de ingresos</value></data>
+  <data name="GapSequencing_Tooltip_Mode" xml:space="preserve"><value>Modo de priorización basado en los ratios de indicadores clave</value></data>
+  <data name="GapSequencing_Tooltip_Priority1" xml:space="preserve"><value>Primera brecha a abordar</value></data>
+  <data name="GapSequencing_Tooltip_Priority2" xml:space="preserve"><value>Segunda brecha a abordar</value></data>
+  <data name="GapSequencing_Tooltip_Priority3" xml:space="preserve"><value>Tercera brecha a abordar</value></data>
+  <data name="GapSequencing_Placeholder" xml:space="preserve"><value>Incluya flujos en el paso 1 para ver las opciones de priorización de brechas</value></data>
+
+  <!-- Gap Amounts Table -->
+  <data name="GapAmounts_Title" xml:space="preserve"><value>Montos de brechas por prioridad</value></data>
+  <data name="GapAmounts_Col_Rank" xml:space="preserve"><value>Rango</value></data>
+  <data name="GapAmounts_Col_Stream" xml:space="preserve"><value>Flujo</value></data>
+  <data name="GapAmounts_Col_Priority1" xml:space="preserve"><value>Prioridad 1</value></data>
+  <data name="GapAmounts_Col_Amount1" xml:space="preserve"><value>Monto 1</value></data>
+  <data name="GapAmounts_Col_Priority2" xml:space="preserve"><value>Prioridad 2</value></data>
+  <data name="GapAmounts_Col_Amount2" xml:space="preserve"><value>Monto 2</value></data>
+  <data name="GapAmounts_Col_Priority3" xml:space="preserve"><value>Prioridad 3</value></data>
+  <data name="GapAmounts_Col_Amount3" xml:space="preserve"><value>Monto 3</value></data>
+  <data name="GapAmounts_Placeholder" xml:space="preserve"><value>Los montos de brechas aparecerán después de la priorización de brechas</value></data>
+
+  <!-- Reform Sequence Summary -->
+  <data name="ReformSummary_Title" xml:space="preserve"><value>Resumen de la secuencia de reforma</value></data>
+  <data name="ReformSummary_TotalStreams" xml:space="preserve"><value>Total de flujos</value></data>
+  <data name="ReformSummary_TotalGapCombinations" xml:space="preserve"><value>Total de combinaciones de brechas</value></data>
+  <data name="ReformSummary_RemovedGaps" xml:space="preserve"><value>Brechas eliminadas</value></data>
+  <data name="ReformSummary_ActiveGapActions" xml:space="preserve"><value>Acciones activas sobre brechas</value></data>
+  <data name="ReformSummary_FirstPriorityActions" xml:space="preserve"><value>Acciones de primera prioridad:</value></data>
+  <data name="ReformSummary_NoActionsDefined" xml:space="preserve"><value>No se han definido acciones aún</value></data>
+
+  <!-- Master Priority List -->
+  <data name="MasterPriority_Title" xml:space="preserve"><value>Lista de prioridades generales</value></data>
+  <data name="MasterPriority_Col_Number" xml:space="preserve"><value>#</value></data>
+  <data name="MasterPriority_Col_Stream" xml:space="preserve"><value>Flujo</value></data>
+  <data name="MasterPriority_Col_Gap" xml:space="preserve"><value>Brecha</value></data>
+  <data name="MasterPriority_Col_Amount" xml:space="preserve"><value>Monto</value></data>
+  <data name="MasterPriority_Placeholder" xml:space="preserve"><value>La lista general se completará a partir de las prioridades de brechas</value></data>
+</root>

@@ -26,9 +26,9 @@
         <div class="hero-gradient"></div>
         <div class="hero-content">
             <h1 class="hero-title">
-                Rapid Own Source Revenue Analysis for Sustainable Cities
+                @Localizer["Hero_Title"]
             </h1>
-            <a href="#what-is-rosra" class="btn-hero-learn-more">LEARN MORE</a>
+            <a href="#what-is-rosra" class="btn-hero-learn-more">@Localizer["Hero_LearnMore"]</a>
         </div>
         <div class="hero-indicators">
             <span class="indicator active" data-slide="0"></span>
@@ -44,20 +44,20 @@
     <div class="container">
         <div class="featured-cards">
             <div class="featured-card featured-card--primary">
-                <h3>ROSRA TOOL</h3>
-                <p><strong>Rapid Own Source Revenue Analysis</strong></p>
-                <p>A UN-Habitat diagnostic tool for local governments to optimize own-source revenues.</p>
-                <a asp-controller="Rosra" asp-action="NewReport" class="uh-btn uh-btn--dark">+ START ANALYSIS</a>
+                <h3>@Localizer["Featured_RosraTool"]</h3>
+                <p><strong>@Localizer["Featured_RosraTool_Highlight"]</strong></p>
+                <p>@Localizer["Featured_RosraTool_Desc"]</p>
+                <a asp-controller="Rosra" asp-action="NewReport" class="uh-btn uh-btn--dark">@Localizer["Featured_StartAnalysis"]</a>
             </div>
             <div class="featured-card featured-card--accent">
-                <h4>WHAT IS ROSRA?</h4>
-                <p>An evidence-based, quantitative decision-making tool for local finance practitioners in developing cities.</p>
-                <a href="#what-is-rosra" class="uh-btn uh-btn--outline-light">+ LEARN MORE</a>
+                <h4>@Localizer["Featured_WhatIsRosra"]</h4>
+                <p>@Localizer["Featured_WhatIsRosra_Desc"]</p>
+                <a href="#what-is-rosra" class="uh-btn uh-btn--outline-light">@Localizer["Featured_LearnMore"]</a>
             </div>
             <div class="featured-card featured-card--white">
-                <h4>DATA PRIVACY</h4>
-                <p>All data input into the ROSRA is completely confidential and only visible to the local government itself.</p>
-                <a href="#how-it-works" class="uh-btn uh-btn--outline">+ LEARN MORE</a>
+                <h4>@Localizer["Featured_DataPrivacy"]</h4>
+                <p>@Localizer["Featured_DataPrivacy_Desc"]</p>
+                <a href="#how-it-works" class="uh-btn uh-btn--outline">@Localizer["Featured_LearnMore"]</a>
             </div>
         </div>
     </div>
@@ -66,8 +66,8 @@
 <!-- What is ROSRA Section -->
 <section id="what-is-rosra" class="uh-section">
     <div class="container">
-        <h2 class="uh-section-title">What is the ROSRA?</h2>
-        <p class="uh-section-subtitle">ROSRA is a UN-Habitat diagnostic tool that helps local governments see where their own source revenue system stands today and how much room there is to improve.</p>
+        <h2 class="uh-section-title">@Localizer["WhatIsRosra_Title"]</h2>
+        <p class="uh-section-subtitle">@Localizer["WhatIsRosra_Subtitle"]</p>
 
         <div class="uh-card-grid uh-card-grid--2col">
             <div class="uh-info-card">
@@ -75,8 +75,8 @@
                     <img src="~/images/cities/nairobi.jpg" asp-append-version="true" alt="Strategic Decision Making" />
                 </div>
                 <div class="uh-info-card__body">
-                    <h4>Strategic Decision Making</h4>
-                    <p>Clear visualization of OSR gaps for informed decisions and reform prioritization.</p>
+                    <h4>@Localizer["WhatIsRosra_StrategicDecision"]</h4>
+                    <p>@Localizer["WhatIsRosra_StrategicDecision_Desc"]</p>
                 </div>
             </div>
             <div class="uh-info-card">
@@ -84,8 +84,8 @@
                     <img src="~/images/cities/lagos.jpg" asp-append-version="true" alt="Revenue Optimization" />
                 </div>
                 <div class="uh-info-card__body">
-                    <h4>Revenue Optimization</h4>
-                    <p>Estimates actual OSR gaps and shows how much revenue is being left untapped.</p>
+                    <h4>@Localizer["WhatIsRosra_RevenueOptimization"]</h4>
+                    <p>@Localizer["WhatIsRosra_RevenueOptimization_Desc"]</p>
                 </div>
             </div>
         </div>
@@ -96,8 +96,8 @@
                     <img src="~/images/cities/addis-ababa.jpg" asp-append-version="true" alt="Reform Prioritization" />
                 </div>
                 <div class="uh-info-card__body">
-                    <h4>Reform Prioritization</h4>
-                    <p>Prioritize interventions and allocate resources effectively.</p>
+                    <h4>@Localizer["WhatIsRosra_ReformPrioritization"]</h4>
+                    <p>@Localizer["WhatIsRosra_ReformPrioritization_Desc"]</p>
                 </div>
             </div>
             <div class="uh-info-card">
@@ -105,8 +105,8 @@
                     <img src="~/images/cities/dar-es-salaam.jpg" asp-append-version="true" alt="Enhanced Creditworthiness" />
                 </div>
                 <div class="uh-info-card__body">
-                    <h4>Enhanced Creditworthiness</h4>
-                    <p>Strengthen municipal finance foundations for sustainable growth.</p>
+                    <h4>@Localizer["WhatIsRosra_EnhancedCreditworthiness"]</h4>
+                    <p>@Localizer["WhatIsRosra_EnhancedCreditworthiness_Desc"]</p>
                 </div>
             </div>
             <div class="uh-info-card">
@@ -114,14 +114,14 @@
                     <img src="~/images/cities/african-city-skyline.jpg" asp-append-version="true" alt="Political Support" />
                 </div>
                 <div class="uh-info-card__body">
-                    <h4>Political Support</h4>
-                    <p>Mobilize political support for revenue reforms with data-driven evidence.</p>
+                    <h4>@Localizer["WhatIsRosra_PoliticalSupport"]</h4>
+                    <p>@Localizer["WhatIsRosra_PoliticalSupport_Desc"]</p>
                 </div>
             </div>
         </div>
 
         <div class="text-center mt-4">
-            <a href="#what-is-osr" class="uh-btn uh-btn--outline">+ ALL ABOUT ROSRA</a>
+            <a href="#what-is-osr" class="uh-btn uh-btn--outline">@Localizer["WhatIsRosra_AllAbout"]</a>
         </div>
     </div>
 </section>
@@ -129,44 +129,44 @@
 <!-- What is OSR - Revenue Types (like Research & Publications) -->
 <section id="what-is-osr" class="uh-section">
     <div class="container">
-        <h2 class="uh-section-title">Own Source Revenue Types</h2>
-        <p class="uh-section-subtitle">OSRs are taxes, fees, licenses, and other revenues directly controlled by local governments.</p>
+        <h2 class="uh-section-title">@Localizer["OsrTypes_Title"]</h2>
+        <p class="uh-section-subtitle">@Localizer["OsrTypes_Subtitle"]</p>
 
         <div class="uh-scroll-row">
             <div class="uh-pub-card">
                 <div class="uh-pub-icon"><i class="fas fa-home"></i></div>
-                <h4>Property Tax</h4>
-                <p>Recurrent tax on land or property</p>
+                <h4>@Localizer["OsrTypes_PropertyTax"]</h4>
+                <p>@Localizer["OsrTypes_PropertyTax_Desc"]</p>
             </div>
             <div class="uh-pub-card">
                 <div class="uh-pub-icon"><i class="fas fa-receipt"></i></div>
-                <h4>Other Taxes</h4>
-                <p>Local Sales Tax, Excise Tax, Hotel Tax</p>
+                <h4>@Localizer["OsrTypes_OtherTaxes"]</h4>
+                <p>@Localizer["OsrTypes_OtherTaxes_Desc"]</p>
             </div>
             <div class="uh-pub-card">
                 <div class="uh-pub-icon"><i class="fas fa-parking"></i></div>
-                <h4>User Fees</h4>
-                <p>Parking, Road Tolls, Market Fees</p>
+                <h4>@Localizer["OsrTypes_UserFees"]</h4>
+                <p>@Localizer["OsrTypes_UserFees_Desc"]</p>
             </div>
             <div class="uh-pub-card">
                 <div class="uh-pub-icon"><i class="fas fa-file-contract"></i></div>
-                <h4>Licenses & Permits</h4>
-                <p>Business Permit, Liquor License</p>
+                <h4>@Localizer["OsrTypes_Licenses"]</h4>
+                <p>@Localizer["OsrTypes_Licenses_Desc"]</p>
             </div>
             <div class="uh-pub-card">
                 <div class="uh-pub-icon"><i class="fas fa-gavel"></i></div>
-                <h4>Fines & Penalties</h4>
-                <p>Parking Fines, Late Payment Fees</p>
+                <h4>@Localizer["OsrTypes_Fines"]</h4>
+                <p>@Localizer["OsrTypes_Fines_Desc"]</p>
             </div>
             <div class="uh-pub-card">
                 <div class="uh-pub-icon"><i class="fas fa-building"></i></div>
-                <h4>Revenue from Assets</h4>
-                <p>Public Land, Buildings, Investments</p>
+                <h4>@Localizer["OsrTypes_RevenueFromAssets"]</h4>
+                <p>@Localizer["OsrTypes_RevenueFromAssets_Desc"]</p>
             </div>
         </div>
 
         <div class="text-center mt-4">
-            <a href="#how-it-works" class="uh-btn uh-btn--outline">+ VIEW ANALYSIS PROCESS</a>
+            <a href="#how-it-works" class="uh-btn uh-btn--outline">@Localizer["OsrTypes_ViewProcess"]</a>
         </div>
     </div>
 </section>
@@ -174,32 +174,32 @@
 <!-- Our Focus - Why Optimize OSR (UN-Habitat blue section) -->
 <section id="why-optimize" class="uh-section uh-section--blue">
     <div class="container">
-        <h3 class="uh-focus-label">Our focus</h3>
-        <p class="uh-focus-desc">UN-Habitat promotes transformative change in cities through knowledge, policy advice, technical assistance and collaborative action to leave no one and no place behind.</p>
+        <h3 class="uh-focus-label">@Localizer["WhyOptimize_OurFocus"]</h3>
+        <p class="uh-focus-desc">@Localizer["WhyOptimize_OurFocus_Desc"]</p>
 
-        <h3 class="uh-focus-label">Why optimize Own Source Revenue?</h3>
+        <h3 class="uh-focus-label">@Localizer["WhyOptimize_Title"]</h3>
 
         <div class="uh-focus-grid">
             <div class="uh-focus-item">
                 <div class="uh-focus-icon"><i class="fas fa-coins"></i></div>
-                <p><strong>Increased resources</strong> to close unfunded mandates and invest in development</p>
+                <p><strong>@Localizer["WhyOptimize_IncreasedResources"]</strong> @Localizer["WhyOptimize_IncreasedResources_Desc"]</p>
             </div>
             <div class="uh-focus-item">
                 <div class="uh-focus-icon"><i class="fas fa-balance-scale"></i></div>
-                <p><strong>Greater autonomy</strong> and reduced dependence on inter-governmental transfers</p>
+                <p><strong>@Localizer["WhyOptimize_GreaterAutonomy"]</strong> @Localizer["WhyOptimize_GreaterAutonomy_Desc"]</p>
             </div>
             <div class="uh-focus-item">
                 <div class="uh-focus-icon"><i class="fas fa-handshake"></i></div>
-                <p><strong>Strengthened social contract</strong> and improved government accountability</p>
+                <p><strong>@Localizer["WhyOptimize_SocialContract"]</strong> @Localizer["WhyOptimize_SocialContract_Desc"]</p>
             </div>
             <div class="uh-focus-item">
                 <div class="uh-focus-icon"><i class="fas fa-chart-line"></i></div>
-                <p><strong>Effective urban crises prevention</strong> and improved creditworthiness</p>
+                <p><strong>@Localizer["WhyOptimize_CrisisPrevention"]</strong> @Localizer["WhyOptimize_CrisisPrevention_Desc"]</p>
             </div>
         </div>
 
         <div class="text-center mt-4">
-            <a asp-controller="Rosra" asp-action="NewReport" class="uh-btn uh-btn--outline-light">+ GET STARTED WITH ROSRA</a>
+            <a asp-controller="Rosra" asp-action="NewReport" class="uh-btn uh-btn--outline-light">@Localizer["WhyOptimize_GetStarted"]</a>
         </div>
     </div>
 </section>
@@ -207,36 +207,36 @@
 <!-- Why Choose UN-Habitat -->
 <section id="who-is-rosra-for" class="uh-section">
     <div class="container">
-        <h2 class="uh-section-title">Why Choose UN-Habitat?</h2>
+        <h2 class="uh-section-title">@Localizer["WhyChoose_Title"]</h2>
 
         <div class="uh-icon-cards">
             <div class="uh-icon-card">
                 <div class="uh-icon-card__img">
                     <img src="~/images/icon-data.png" alt="Data" />
                 </div>
-                <h4>Data</h4>
-                <p>We bring the best of global data paired with exemplary analysis to provide the most tailored recommendations.</p>
+                <h4>@Localizer["WhyChoose_Data"]</h4>
+                <p>@Localizer["WhyChoose_Data_Desc"]</p>
             </div>
             <div class="uh-icon-card">
                 <div class="uh-icon-card__img">
                     <img src="~/images/icon-experience-expertise.png" alt="Experience & Expertise" />
                 </div>
-                <h4>Experience & Expertise</h4>
-                <p>Global experience on municipal finance issues in many countries and contexts.</p>
+                <h4>@Localizer["WhyChoose_Experience"]</h4>
+                <p>@Localizer["WhyChoose_Experience_Desc"]</p>
             </div>
             <div class="uh-icon-card">
                 <div class="uh-icon-card__img">
                     <img src="~/images/icon-funds-mobilization.png" alt="Funds Mobilization" />
                 </div>
-                <h4>Funds Mobilization</h4>
-                <p>When supported by a UN agency, it becomes easier to mobilize funding from other sources.</p>
+                <h4>@Localizer["WhyChoose_Funds"]</h4>
+                <p>@Localizer["WhyChoose_Funds_Desc"]</p>
             </div>
             <div class="uh-icon-card">
                 <div class="uh-icon-card__img">
                     <img src="~/images/icon-political-weight.png" alt="Political Weight" />
                 </div>
-                <h4>Political Weight</h4>
-                <p>The UN name provides credibility and political stature to act on recommendations.</p>
+                <h4>@Localizer["WhyChoose_Political"]</h4>
+                <p>@Localizer["WhyChoose_Political_Desc"]</p>
             </div>
         </div>
     </div>
@@ -245,39 +245,39 @@
 <!-- How It Works -->
 <section id="how-it-works" class="uh-section uh-section--light">
     <div class="container">
-        <h2 class="uh-section-title">How does the ROSRA work?</h2>
-        <p class="uh-section-subtitle">The ROSRA analyses user data by comparing it with accepted benchmarks and the specific characteristics of well-functioning OSR systems observed in peer local governments.</p>
+        <h2 class="uh-section-title">@Localizer["HowItWorks_Title"]</h2>
+        <p class="uh-section-subtitle">@Localizer["HowItWorks_Subtitle"]</p>
 
         <div class="uh-scroll-row">
             <div class="uh-pub-card">
                 <div class="uh-pub-icon"><i class="fas fa-university"></i></div>
-                <h4>1. Authority & Incentives</h4>
-                <p>The authority and incentives of local government to raise OSR</p>
+                <h4>@Localizer["HowItWorks_Step1"]</h4>
+                <p>@Localizer["HowItWorks_Step1_Desc"]</p>
             </div>
             <div class="uh-pub-card">
                 <div class="uh-pub-icon"><i class="fas fa-users-cog"></i></div>
-                <h4>2. Capacity Assessment</h4>
-                <p>The capacity and incentives of the revenue administration</p>
+                <h4>@Localizer["HowItWorks_Step2"]</h4>
+                <p>@Localizer["HowItWorks_Step2_Desc"]</p>
             </div>
             <div class="uh-pub-card">
                 <div class="uh-pub-icon"><i class="fas fa-cogs"></i></div>
-                <h4>3. Strategy & Management</h4>
-                <p>The strategy, management and collection processes</p>
+                <h4>@Localizer["HowItWorks_Step3"]</h4>
+                <p>@Localizer["HowItWorks_Step3_Desc"]</p>
             </div>
             <div class="uh-pub-card">
                 <div class="uh-pub-icon"><i class="fas fa-chart-bar"></i></div>
-                <h4>4. Gap Analysis</h4>
-                <p>Detailed breakdown of revenue gaps and potential estimates</p>
+                <h4>@Localizer["HowItWorks_Step4"]</h4>
+                <p>@Localizer["HowItWorks_Step4_Desc"]</p>
             </div>
             <div class="uh-pub-card">
                 <div class="uh-pub-icon"><i class="fas fa-file-pdf"></i></div>
-                <h4>5. Report Output</h4>
-                <p>Comprehensive report with recommendations in ~1 hour</p>
+                <h4>@Localizer["HowItWorks_Step5"]</h4>
+                <p>@Localizer["HowItWorks_Step5_Desc"]</p>
             </div>
         </div>
 
         <div class="text-center mt-4">
-            <a asp-controller="Rosra" asp-action="NewReport" class="uh-btn uh-btn--outline">+ START YOUR ANALYSIS</a>
+            <a asp-controller="Rosra" asp-action="NewReport" class="uh-btn uh-btn--outline">@Localizer["HowItWorks_StartAnalysis"]</a>
         </div>
     </div>
 </section>
@@ -285,7 +285,7 @@
 <!-- Sustainable Development Goals -->
 <section class="uh-section uh-sdg-section">
     <div class="container">
-        <h2 class="uh-section-title">Sustainable Development Goals</h2>
+        <h2 class="uh-section-title">@Localizer["Sdg_Title"]</h2>
         <div class="uh-sdg-grid">
             <a href="https://sdgs.un.org/goals/goal11" target="_blank">
                 <img src="~/images/sdg/sdg-11.svg" alt="SDG 11 - Sustainable Cities" />
@@ -297,7 +297,7 @@
                 <img src="~/images/sdg/sdg-17.svg" alt="SDG 17 - Partnerships" />
             </a>
         </div>
-        <p class="uh-sdg-note">Hover over an icon to learn more.</p>
+        <p class="uh-sdg-note">@Localizer["Sdg_HoverNote"]</p>
     </div>
 </section>
 

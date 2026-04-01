@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Step 1: Stream Prioritization Header -->
+  <data name="Step1_Title" xml:space="preserve"><value>Stream Prioritization</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Step 1 of the Prioritization Pipeline: Rank revenue streams by their Total Functional Gap to determine which streams to tackle first. Include or exclude streams based on local priorities, capacity, or political considerations.</value></data>
+
+  <!-- Instructions -->
+  <data name="Instructions_Title" xml:space="preserve"><value>How to use this module</value></data>
+  <data name="Instructions_Step1" xml:space="preserve"><value>Review the &lt;strong&gt;Adjustable Stream Prioritization&lt;/strong&gt; table showing all analyzed revenue streams ranked by Total Functional Gap.</value></data>
+  <data name="Instructions_Step2" xml:space="preserve"><value>Use the &lt;strong&gt;Include/Exclude&lt;/strong&gt; dropdown to select which streams to include in your reform plan.</value></data>
+  <data name="Instructions_Step3" xml:space="preserve"><value>Use the &lt;strong&gt;Adjust Rank&lt;/strong&gt; dropdown to override the default ranking based on local priorities.</value></data>
+  <data name="Instructions_Step4" xml:space="preserve"><value>View the &lt;strong&gt;Final Stream Prioritization&lt;/strong&gt; table to see your finalized rankings and share of total gap.</value></data>
+
+  <!-- Adjustable Stream Table -->
+  <data name="AdjustableStream_Title" xml:space="preserve"><value>Adjustable Stream Prioritization</value></data>
+  <data name="AdjustableStream_Col_DefaultRank" xml:space="preserve"><value>Default Rank</value></data>
+  <data name="AdjustableStream_Col_StreamName" xml:space="preserve"><value>Stream Name</value></data>
+  <data name="AdjustableStream_Col_TotalFunctionalGap" xml:space="preserve"><value>Total Functional Gap</value></data>
+  <data name="AdjustableStream_Col_IncludeExclude" xml:space="preserve"><value>Include/Exclude</value></data>
+  <data name="AdjustableStream_Col_AdjustRank" xml:space="preserve"><value>Adjust Rank</value></data>
+  <data name="AdjustableStream_Tooltip_DefaultRank" xml:space="preserve"><value>Automatically assigned based on Total Functional Gap (largest = 1)</value></data>
+  <data name="AdjustableStream_Tooltip_StreamName" xml:space="preserve"><value>The name of the revenue stream being analyzed</value></data>
+  <data name="AdjustableStream_Tooltip_TotalFunctionalGap" xml:space="preserve"><value>Sum of all gap components for this stream</value></data>
+  <data name="AdjustableStream_Tooltip_IncludeExclude" xml:space="preserve"><value>Include this stream in the reform plan or exclude it</value></data>
+  <data name="AdjustableStream_Tooltip_AdjustRank" xml:space="preserve"><value>Override the default rank based on local priorities</value></data>
+  <data name="AdjustableStream_Placeholder" xml:space="preserve"><value>Loading stream data from Gap Analysis...</value></data>
+
+  <!-- Final Stream Table -->
+  <data name="FinalStream_Title" xml:space="preserve"><value>Final Stream Prioritization</value></data>
+  <data name="FinalStream_Col_FinalRank" xml:space="preserve"><value>Final Rank</value></data>
+  <data name="FinalStream_Col_StreamName" xml:space="preserve"><value>Stream Name</value></data>
+  <data name="FinalStream_Col_TotalFunctionalGap" xml:space="preserve"><value>Total Functional Gap</value></data>
+  <data name="FinalStream_Col_ShareOfTotalGap" xml:space="preserve"><value>Share of Total Gap</value></data>
+  <data name="FinalStream_Col_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="FinalStream_Tooltip_FinalRank" xml:space="preserve"><value>Final rank after adjustments (only included streams)</value></data>
+  <data name="FinalStream_Tooltip_StreamName" xml:space="preserve"><value>The name of the revenue stream</value></data>
+  <data name="FinalStream_Tooltip_TotalFunctionalGap" xml:space="preserve"><value>Total functional gap for this stream</value></data>
+  <data name="FinalStream_Tooltip_ShareOfTotalGap" xml:space="preserve"><value>This stream's gap as a percentage of the total gap across all included streams</value></data>
+  <data name="FinalStream_Tooltip_Status" xml:space="preserve"><value>Stream status in the reform plan</value></data>
+  <data name="FinalStream_Placeholder" xml:space="preserve"><value>Final rankings will appear after selecting streams above</value></data>
+  <data name="FinalStream_Footer_Total" xml:space="preserve"><value>Total (Included Streams)</value></data>
+
+  <!-- Charts -->
+  <data name="Chart_BarTitle" xml:space="preserve"><value>Total Functional Gap by Stream</value></data>
+  <data name="Chart_PieTitle" xml:space="preserve"><value>Share of Total Gap</value></data>
+  <data name="Chart_Placeholder" xml:space="preserve"><value>Complete Gap Analysis to see chart data</value></data>
+
+  <!-- Summary Statistics -->
+  <data name="Stats_TotalStreamsAnalyzed" xml:space="preserve"><value>Total Streams Analyzed</value></data>
+  <data name="Stats_StreamsIncluded" xml:space="preserve"><value>Streams Included</value></data>
+  <data name="Stats_TotalGapAll" xml:space="preserve"><value>Total Gap (All)</value></data>
+  <data name="Stats_TotalGapIncluded" xml:space="preserve"><value>Total Gap (Included)</value></data>
+
+  <!-- Step 2: Gap Prioritization Header -->
+  <data name="Step2_Title" xml:space="preserve"><value>Gap Prioritization</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>Step 2 of the Prioritization Pipeline: After ordering streams, prioritize gaps (Compliance, Coverage, Valuation/Liability) within each one. ROSRA suggests a default order based on compliance and coverage indicators; use the Adjust Priority columns to change the sequence or select "Remove" to drop a gap from your plan.</value></data>
+
+  <!-- Mode Accordion -->
+  <data name="Mode_RevenuePotential" xml:space="preserve"><value>Revenue Potential</value></data>
+  <data name="Mode_RevenuePotential_Condition" xml:space="preserve"><value>Compliance Ratio ≥ 75%</value></data>
+  <data name="Mode_RevenuePotential_WhenApplied" xml:space="preserve"><value>When Applied:</value></data>
+  <data name="Mode_RevenuePotential_Description" xml:space="preserve"><value>High compliance usually indicates that the basic collection and registration systems are functioning. In this case, the priority is to focus on the functions with the &lt;strong&gt;largest monetary gaps&lt;/strong&gt;, as these represent the biggest revenue gains for a given reform effort.</value></data>
+  <data name="Mode_ComplianceFirst" xml:space="preserve"><value>Compliance First</value></data>
+  <data name="Mode_ComplianceFirst_Condition" xml:space="preserve"><value>Compliance &lt; 75% AND Coverage ≥ 60%</value></data>
+  <data name="Mode_ComplianceFirst_WhenApplied" xml:space="preserve"><value>When Applied:</value></data>
+  <data name="Mode_ComplianceFirst_Description" xml:space="preserve"><value>A significant share of known taxpayers is not paying, but the register is not fundamentally broken. ROSRA recommends prioritising &lt;strong&gt;compliance reforms&lt;/strong&gt; (billing, payment channels, enforcement), then coverage, and only then valuation/liability.</value></data>
+  <data name="Mode_Overhaul" xml:space="preserve"><value>Overhaul</value></data>
+  <data name="Mode_Overhaul_Condition" xml:space="preserve"><value>Compliance &lt; 75% AND Coverage &lt; 60%</value></data>
+  <data name="Mode_Overhaul_WhenApplied" xml:space="preserve"><value>When Applied:</value></data>
+  <data name="Mode_Overhaul_Description" xml:space="preserve"><value>When both ratios are low, the missing tax base is usually the binding constraint. Strengthening enforcement alone has limited effect if most units are invisible to the administration. The recommended sequence is &lt;strong&gt;Coverage → Compliance → Valuation/Liability&lt;/strong&gt;.</value></data>
+
+  <!-- Gap Sequencing Table -->
+  <data name="GapSequencing_Title" xml:space="preserve"><value>Gap Sequencing by Stream</value></data>
+  <data name="GapSequencing_Col_Rank" xml:space="preserve"><value>Rank</value></data>
+  <data name="GapSequencing_Col_Stream" xml:space="preserve"><value>Stream</value></data>
+  <data name="GapSequencing_Col_Mode" xml:space="preserve"><value>Mode</value></data>
+  <data name="GapSequencing_Col_Priority1" xml:space="preserve"><value>Priority 1</value></data>
+  <data name="GapSequencing_Col_Priority2" xml:space="preserve"><value>Priority 2</value></data>
+  <data name="GapSequencing_Col_Priority3" xml:space="preserve"><value>Priority 3</value></data>
+  <data name="GapSequencing_Tooltip_Rank" xml:space="preserve"><value>Stream's final rank from Step 1</value></data>
+  <data name="GapSequencing_Tooltip_Stream" xml:space="preserve"><value>Revenue stream name</value></data>
+  <data name="GapSequencing_Tooltip_Mode" xml:space="preserve"><value>Prioritization mode based on KPI ratios</value></data>
+  <data name="GapSequencing_Tooltip_Priority1" xml:space="preserve"><value>First gap to address</value></data>
+  <data name="GapSequencing_Tooltip_Priority2" xml:space="preserve"><value>Second gap to address</value></data>
+  <data name="GapSequencing_Tooltip_Priority3" xml:space="preserve"><value>Third gap to address</value></data>
+  <data name="GapSequencing_Placeholder" xml:space="preserve"><value>Include streams in Step 1 to see gap prioritization options</value></data>
+
+  <!-- Gap Amounts Table -->
+  <data name="GapAmounts_Title" xml:space="preserve"><value>Gap Amounts by Priority</value></data>
+  <data name="GapAmounts_Col_Rank" xml:space="preserve"><value>Rank</value></data>
+  <data name="GapAmounts_Col_Stream" xml:space="preserve"><value>Stream</value></data>
+  <data name="GapAmounts_Col_Priority1" xml:space="preserve"><value>Priority 1</value></data>
+  <data name="GapAmounts_Col_Amount1" xml:space="preserve"><value>Amount 1</value></data>
+  <data name="GapAmounts_Col_Priority2" xml:space="preserve"><value>Priority 2</value></data>
+  <data name="GapAmounts_Col_Amount2" xml:space="preserve"><value>Amount 2</value></data>
+  <data name="GapAmounts_Col_Priority3" xml:space="preserve"><value>Priority 3</value></data>
+  <data name="GapAmounts_Col_Amount3" xml:space="preserve"><value>Amount 3</value></data>
+  <data name="GapAmounts_Placeholder" xml:space="preserve"><value>Gap amounts will appear after gap prioritization</value></data>
+
+  <!-- Reform Sequence Summary -->
+  <data name="ReformSummary_Title" xml:space="preserve"><value>Reform Sequence Summary</value></data>
+  <data name="ReformSummary_TotalStreams" xml:space="preserve"><value>Total Streams</value></data>
+  <data name="ReformSummary_TotalGapCombinations" xml:space="preserve"><value>Total Gap Combinations</value></data>
+  <data name="ReformSummary_RemovedGaps" xml:space="preserve"><value>Removed Gaps</value></data>
+  <data name="ReformSummary_ActiveGapActions" xml:space="preserve"><value>Active Gap Actions</value></data>
+  <data name="ReformSummary_FirstPriorityActions" xml:space="preserve"><value>First Priority Actions:</value></data>
+  <data name="ReformSummary_NoActionsDefined" xml:space="preserve"><value>No actions defined yet</value></data>
+
+  <!-- Master Priority List -->
+  <data name="MasterPriority_Title" xml:space="preserve"><value>Master Priority List</value></data>
+  <data name="MasterPriority_Col_Number" xml:space="preserve"><value>#</value></data>
+  <data name="MasterPriority_Col_Stream" xml:space="preserve"><value>Stream</value></data>
+  <data name="MasterPriority_Col_Gap" xml:space="preserve"><value>Gap</value></data>
+  <data name="MasterPriority_Col_Amount" xml:space="preserve"><value>Amount</value></data>
+  <data name="MasterPriority_Placeholder" xml:space="preserve"><value>Master list will populate from gap priorities</value></data>
+</root>

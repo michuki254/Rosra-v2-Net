@@ -6,7 +6,7 @@
         <div class="modal-content">
             <div class="modal-header auth-modal-header">
                 <h5 class="modal-title" id="authModalLabel">
-                    <i class="bi bi-shield-lock me-2"></i>Sign In to Save Report
+                    <i class="bi bi-shield-lock me-2"></i>@Localizer["ModalTitle"]
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -15,12 +15,12 @@
                 <ul class="nav nav-tabs auth-tabs" id="authTabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#loginPane" type="button" role="tab" aria-controls="loginPane" aria-selected="true">
-                            <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                            <i class="bi bi-box-arrow-in-right me-1"></i>@Localizer["TabLogin"]
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#registerPane" type="button" role="tab" aria-controls="registerPane" aria-selected="false">
-                            <i class="bi bi-person-plus me-1"></i>Register
+                            <i class="bi bi-person-plus me-1"></i>@Localizer["TabRegister"]
                         </button>
                     </li>
                 </ul>
@@ -33,15 +33,15 @@
                             <div class="alert alert-danger d-none" id="loginError"></div>
 
                             <div class="mb-3">
-                                <label for="loginEmail" class="form-label">Email Address</label>
-                                <input type="email" class="form-control" id="loginEmail" name="Email" required placeholder="Enter your email">
+                                <label for="loginEmail" class="form-label">@Localizer["EmailAddress"]</label>
+                                <input type="email" class="form-control" id="loginEmail" name="Email" required placeholder="@Localizer["EnterEmail"].Value">
                                 <div class="invalid-feedback" id="loginEmailError"></div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="loginPassword" class="form-label">Password</label>
+                                <label for="loginPassword" class="form-label">@Localizer["Password"]</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="loginPassword" name="Password" required placeholder="Enter your password">
+                                    <input type="password" class="form-control" id="loginPassword" name="Password" required placeholder="@Localizer["EnterPassword"].Value">
                                     <button class="btn btn-outline-secondary" type="button" id="toggleLoginPassword">
                                         <i class="bi bi-eye"></i>
                                     </button>
@@ -51,11 +51,11 @@
 
                             <div class="mb-3 form-check">
                                 <input type="checkbox" class="form-check-input" id="loginRememberMe" name="RememberMe">
-                                <label class="form-check-label" for="loginRememberMe">Remember me</label>
+                                <label class="form-check-label" for="loginRememberMe">@Localizer["RememberMe"]</label>
                             </div>
 
                             <button type="submit" class="btn btn-auth-primary w-100" id="loginSubmitBtn">
-                                <span class="btn-text">Sign In</span>
+                                <span class="btn-text">@Localizer["SignIn"]</span>
                                 <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                             </button>
                         </form>
@@ -68,48 +68,48 @@
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="registerFirstName" class="form-label">First Name</label>
-                                    <input type="text" class="form-control" id="registerFirstName" name="FirstName" required placeholder="First name">
+                                    <label for="registerFirstName" class="form-label">@Localizer["FirstName"]</label>
+                                    <input type="text" class="form-control" id="registerFirstName" name="FirstName" required placeholder="@Localizer["FirstName"].Value">
                                     <div class="invalid-feedback" id="registerFirstNameError"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="registerLastName" class="form-label">Last Name</label>
-                                    <input type="text" class="form-control" id="registerLastName" name="LastName" required placeholder="Last name">
+                                    <label for="registerLastName" class="form-label">@Localizer["LastName"]</label>
+                                    <input type="text" class="form-control" id="registerLastName" name="LastName" required placeholder="@Localizer["LastName"].Value">
                                     <div class="invalid-feedback" id="registerLastNameError"></div>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="registerEmail" class="form-label">Email Address</label>
-                                <input type="email" class="form-control" id="registerEmail" name="Email" required placeholder="Enter your email">
+                                <label for="registerEmail" class="form-label">@Localizer["EmailAddress"]</label>
+                                <input type="email" class="form-control" id="registerEmail" name="Email" required placeholder="@Localizer["EnterEmail"].Value">
                                 <div class="invalid-feedback" id="registerEmailError"></div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="registerOrganization" class="form-label">Organization <span class="text-muted">(optional)</span></label>
-                                <input type="text" class="form-control" id="registerOrganization" name="Organization" placeholder="Your organization">
+                                <label for="registerOrganization" class="form-label">@Localizer["Organization"] <span class="text-muted">@Localizer["Optional"]</span></label>
+                                <input type="text" class="form-control" id="registerOrganization" name="Organization" placeholder="@Localizer["YourOrg"].Value">
                             </div>
 
                             <div class="mb-3">
-                                <label for="registerPassword" class="form-label">Password</label>
+                                <label for="registerPassword" class="form-label">@Localizer["Password"]</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="registerPassword" name="Password" required placeholder="Min. 6 characters">
+                                    <input type="password" class="form-control" id="registerPassword" name="Password" required placeholder="@Localizer["MinChars"].Value">
                                     <button class="btn btn-outline-secondary" type="button" id="toggleRegisterPassword">
                                         <i class="bi bi-eye"></i>
                                     </button>
                                 </div>
                                 <div class="invalid-feedback" id="registerPasswordError"></div>
-                                <small class="text-muted">Password must be at least 6 characters with uppercase, lowercase, and a number.</small>
+                                <small class="text-muted">@Localizer["PasswordHint"]</small>
                             </div>
 
                             <div class="mb-3">
-                                <label for="registerConfirmPassword" class="form-label">Confirm Password</label>
-                                <input type="password" class="form-control" id="registerConfirmPassword" name="ConfirmPassword" required placeholder="Confirm your password">
+                                <label for="registerConfirmPassword" class="form-label">@Localizer["ConfirmPassword"]</label>
+                                <input type="password" class="form-control" id="registerConfirmPassword" name="ConfirmPassword" required placeholder="@Localizer["ConfirmPlaceholder"].Value">
                                 <div class="invalid-feedback" id="registerConfirmPasswordError"></div>
                             </div>
 
                             <button type="submit" class="btn btn-auth-primary w-100" id="registerSubmitBtn">
-                                <span class="btn-text">Create Account</span>
+                                <span class="btn-text">@Localizer["CreateAccount"]</span>
                                 <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                             </button>
                         </form>
@@ -119,7 +119,7 @@
             <div class="modal-footer auth-modal-footer">
                 <small class="text-muted">
                     <i class="bi bi-info-circle me-1"></i>
-                    Your report data will be saved after signing in.
+                    @Localizer["FooterNote"]
                 </small>
             </div>
         </div>

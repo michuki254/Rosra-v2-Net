@@ -1,7 +1,7 @@
 @model RosraApp.Models.ViewModels.RegisterViewModel
 
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = Localizer["PageTitle"].Value;
 }
 
 @section Styles {
@@ -412,8 +412,8 @@
                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                         </svg>
                     </div>
-                    <h1>Create Account</h1>
-                    <p>Join us to access revenue analysis tools</p>
+                    <h1>@Localizer["Heading"]</h1>
+                    <p>@Localizer["Subheading"]</p>
                 </div>
 
                 <form asp-action="Register" method="post">
@@ -424,52 +424,52 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label asp-for="FirstName" class="form-label">First Name*</label>
-                            <input asp-for="FirstName" class="form-control" type="text" placeholder="John" />
+                            <label asp-for="FirstName" class="form-label">@Localizer["FirstNameLabel"]</label>
+                            <input asp-for="FirstName" class="form-control" type="text" placeholder="@Localizer["FirstNamePlaceholder"].Value" />
                             <span asp-validation-for="FirstName" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="LastName" class="form-label">Last Name*</label>
-                            <input asp-for="LastName" class="form-control" type="text" placeholder="Doe" />
+                            <label asp-for="LastName" class="form-label">@Localizer["LastNameLabel"]</label>
+                            <input asp-for="LastName" class="form-control" type="text" placeholder="@Localizer["LastNamePlaceholder"].Value" />
                             <span asp-validation-for="LastName" class="text-danger"></span>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="Email" class="form-label">Email Address*</label>
-                        <input asp-for="Email" class="form-control" type="email" placeholder="mail@website.com" />
+                        <label asp-for="Email" class="form-label">@Localizer["EmailLabel"]</label>
+                        <input asp-for="Email" class="form-control" type="email" placeholder="@Localizer["EmailPlaceholder"].Value" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="Organization" class="form-label">Organization</label>
-                        <input asp-for="Organization" class="form-control" type="text" placeholder="Your organization (optional)" />
+                        <label asp-for="Organization" class="form-label">@Localizer["OrganizationLabel"]</label>
+                        <input asp-for="Organization" class="form-control" type="text" placeholder="@Localizer["OrganizationPlaceholder"].Value" />
                         <span asp-validation-for="Organization" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
-                        <input asp-for="PhoneNumber" class="form-control" type="tel" placeholder="+123 456 7890 (optional)" />
+                        <label asp-for="PhoneNumber" class="form-label">@Localizer["PhoneLabel"]</label>
+                        <input asp-for="PhoneNumber" class="form-control" type="tel" placeholder="@Localizer["PhonePlaceholder"].Value" />
                         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label asp-for="Password" class="form-label">Password*</label>
-                            <input asp-for="Password" class="form-control" type="password" placeholder="Min. 8 characters" />
+                            <label asp-for="Password" class="form-label">@Localizer["PasswordLabel"]</label>
+                            <input asp-for="Password" class="form-control" type="password" placeholder="@Localizer["PasswordPlaceholder"].Value" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="ConfirmPassword" class="form-label">Confirm Password*</label>
-                            <input asp-for="ConfirmPassword" class="form-control" type="password" placeholder="Confirm password" />
+                            <label asp-for="ConfirmPassword" class="form-label">@Localizer["ConfirmPasswordLabel"]</label>
+                            <input asp-for="ConfirmPassword" class="form-control" type="password" placeholder="@Localizer["ConfirmPasswordPlaceholder"].Value" />
                             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-register">Create Account</button>
+                    <button type="submit" class="btn-register">@Localizer["CreateAccountButton"]</button>
 
                     <div class="login-row">
-                        Already have an account? <a class="login-link" asp-controller="Account" asp-action="Login">Sign in</a>
+                        @Localizer["AlreadyHaveAccount"] <a class="login-link" asp-controller="Account" asp-action="Login">@Localizer["SignIn"]</a>
                     </div>
                 </form>
             </div>
@@ -484,7 +484,7 @@
                         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                     </svg>
                 </div>
-                <div class="label">Revenue Gap</div>
+                <div class="label">@Localizer["FloatingCard_RevenueGap"]</div>
                 <div class="value">KSh 7.2B</div>
             </div>
 
@@ -494,13 +494,13 @@
                         <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
                     </svg>
                 </div>
-                <div class="label">Counties</div>
+                <div class="label">@Localizer["FloatingCard_Counties"]</div>
                 <div class="value">47</div>
             </div>
 
             <div class="visual-content">
-                <h2>Join the <span>Revenue Revolution</span></h2>
-                <p>Create an account to unlock powerful OSR analysis tools</p>
+                <h2>@Localizer["VisualHeading_JoinThe"] <span>@Localizer["VisualHeading_RevenueRevolution"]</span></h2>
+                <p>@Localizer["VisualText"]</p>
 
                 <div class="image-showcase">
                     <img src="~/images/Login 1.png" alt="ROSRA Dashboard" class="showcase-image" id="showcaseImage" />

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Header -->
+  <data name="Header_Title" xml:space="preserve"><value>Solutions recommandées et orientations de mise en œuvre</value></data>
+  <data name="Header_Description" xml:space="preserve"><value>Cet onglet présente des fiches de solutions détaillées pour les options que vous avez sélectionnées précédemment. Les solutions apparaissent selon l'ordre de priorisation établi. Utilisez ces recommandations pour élaborer le plan d'action d'amélioration des recettes adapté à votre ville.</value></data>
+  <data name="Header_BackToOverview" xml:space="preserve"><value>Retour à la sélection générale</value></data>
+  <data name="Header_GenerateReport" xml:space="preserve"><value>Générer le rapport</value></data>
+
+  <!-- Summary Stats -->
+  <data name="Summary_SolutionsSelected" xml:space="preserve"><value>Solutions sélectionnées</value></data>
+  <data name="Summary_QuickWins" xml:space="preserve"><value>Gains rapides (&lt;1 an)</value></data>
+  <data name="Summary_MediumTerm" xml:space="preserve"><value>Moyen terme (1-3 ans)</value></data>
+  <data name="Summary_LongTerm" xml:space="preserve"><value>Long terme (3+ ans)</value></data>
+
+  <!-- View Toggle -->
+  <data name="View_SolutionCards" xml:space="preserve"><value>Fiches de solutions</value></data>
+  <data name="View_TimelineView" xml:space="preserve"><value>Vue chronologique</value></data>
+  <data name="View_ProgressTracker" xml:space="preserve"><value>Suivi de l'avancement</value></data>
+
+  <!-- Empty State -->
+  <data name="Empty_Title" xml:space="preserve"><value>Aucune solution sélectionnée</value></data>
+  <data name="Empty_Description" xml:space="preserve"><value>Veuillez accéder à l'onglet de sélection générale et sélectionner des solutions pour consulter les recommandations détaillées ici.</value></data>
+  <data name="Empty_GoToOverview" xml:space="preserve"><value>Accéder à la sélection générale</value></data>
+
+  <!-- Timeline View -->
+  <data name="Timeline_Title" xml:space="preserve"><value>Calendrier de mise en œuvre</value></data>
+  <data name="Timeline_Description" xml:space="preserve"><value>Solutions organisées par horizon temporel de mise en œuvre</value></data>
+
+  <!-- Progress Tracker View -->
+  <data name="Progress_Title" xml:space="preserve"><value>Suivi de l'avancement de la mise en œuvre</value></data>
+  <data name="Progress_Description" xml:space="preserve"><value>Suivez l'avancement des jalons de mise en œuvre</value></data>
+  <data name="Progress_ResetAll" xml:space="preserve"><value>Tout réinitialiser</value></data>
+  <data name="Progress_ExportProgress" xml:space="preserve"><value>Exporter l'avancement</value></data>
+
+  <!-- Report Modal -->
+  <data name="Modal_Title" xml:space="preserve"><value>Générer le plan d'action d'amélioration des recettes</value></data>
+  <data name="Modal_IncludeInReport" xml:space="preserve"><value>Inclure dans le rapport :</value></data>
+  <data name="Modal_ExecSummary" xml:space="preserve"><value>Résumé exécutif</value></data>
+  <data name="Modal_GapAnalysis" xml:space="preserve"><value>Résultats de l'analyse des écarts</value></data>
+  <data name="Modal_StreamPrioritization" xml:space="preserve"><value>Priorisation des flux</value></data>
+  <data name="Modal_GapSequencing" xml:space="preserve"><value>Séquençage des écarts</value></data>
+  <data name="Modal_SelectedSolutions" xml:space="preserve"><value>Solutions sélectionnées (détail complet)</value></data>
+  <data name="Modal_SkippedSolutions" xml:space="preserve"><value>Solutions non sélectionnées (résumé uniquement)</value></data>
+  <data name="Modal_Timeline" xml:space="preserve"><value>Calendrier de mise en œuvre</value></data>
+  <data name="Modal_Resources" xml:space="preserve"><value>Besoins en ressources</value></data>
+  <data name="Modal_FormatLabel" xml:space="preserve"><value>Format du rapport :</value></data>
+  <data name="Modal_FormatPdf" xml:space="preserve"><value>Document PDF</value></data>
+  <data name="Modal_FormatHtml" xml:space="preserve"><value>HTML (adapté à l'impression)</value></data>
+  <data name="Modal_Cancel" xml:space="preserve"><value>Annuler</value></data>
+  <data name="Modal_Generate" xml:space="preserve"><value>Générer le rapport</value></data>
+</root>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"><xsd:complexType><xsd:choice maxOccurs="unbounded">
+      <xsd:element name="data"><xsd:complexType><xsd:sequence>
+        <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+      </xsd:sequence><xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" /><xsd:attribute name="xml:space" use="optional" /></xsd:complexType></xsd:element>
+    </xsd:choice></xsd:complexType></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+
+  <!-- Hero Section -->
+  <data name="Hero_Title" xml:space="preserve"><value>Analyse rapide des recettes propres pour des villes durables</value></data>
+  <data name="Hero_LearnMore" xml:space="preserve"><value>EN SAVOIR PLUS</value></data>
+
+  <!-- Featured Cards -->
+  <data name="Featured_RosraTool" xml:space="preserve"><value>OUTIL ROSRA</value></data>
+  <data name="Featured_RosraTool_Highlight" xml:space="preserve"><value>Analyse rapide des recettes propres</value></data>
+  <data name="Featured_RosraTool_Desc" xml:space="preserve"><value>Un outil de diagnostic d'ONU-Habitat permettant aux gouvernements locaux d'optimiser leurs recettes propres.</value></data>
+  <data name="Featured_StartAnalysis" xml:space="preserve"><value>+ LANCER L'ANALYSE</value></data>
+  <data name="Featured_WhatIsRosra" xml:space="preserve"><value>QU'EST-CE QUE LE ROSRA ?</value></data>
+  <data name="Featured_WhatIsRosra_Desc" xml:space="preserve"><value>Un outil quantitatif d'aide a la decision fonde sur des donnees probantes, destine aux praticiens des finances locales dans les villes en developpement.</value></data>
+  <data name="Featured_LearnMore" xml:space="preserve"><value>+ EN SAVOIR PLUS</value></data>
+  <data name="Featured_DataPrivacy" xml:space="preserve"><value>CONFIDENTIALITE DES DONNEES</value></data>
+  <data name="Featured_DataPrivacy_Desc" xml:space="preserve"><value>Toutes les donnees saisies dans le ROSRA sont strictement confidentielles et accessibles uniquement au gouvernement local concerne.</value></data>
+
+  <!-- What is ROSRA Section -->
+  <data name="WhatIsRosra_Title" xml:space="preserve"><value>Qu'est-ce que le ROSRA ?</value></data>
+  <data name="WhatIsRosra_Subtitle" xml:space="preserve"><value>Le ROSRA est un outil de diagnostic d'ONU-Habitat qui aide les gouvernements locaux a evaluer la situation actuelle de leur systeme de recettes propres et a identifier les marges d'amelioration.</value></data>
+  <data name="WhatIsRosra_StrategicDecision" xml:space="preserve"><value>Prise de decision strategique</value></data>
+  <data name="WhatIsRosra_StrategicDecision_Desc" xml:space="preserve"><value>Visualisation claire des ecarts de recettes propres pour des decisions eclairees et une priorisation des reformes.</value></data>
+  <data name="WhatIsRosra_RevenueOptimization" xml:space="preserve"><value>Optimisation des recettes</value></data>
+  <data name="WhatIsRosra_RevenueOptimization_Desc" xml:space="preserve"><value>Estimation des ecarts reels de recettes propres et identification des revenus non exploites.</value></data>
+  <data name="WhatIsRosra_ReformPrioritization" xml:space="preserve"><value>Priorisation des reformes</value></data>
+  <data name="WhatIsRosra_ReformPrioritization_Desc" xml:space="preserve"><value>Prioriser les interventions et allouer les ressources de maniere efficace.</value></data>
+  <data name="WhatIsRosra_EnhancedCreditworthiness" xml:space="preserve"><value>Solvabilite renforcee</value></data>
+  <data name="WhatIsRosra_EnhancedCreditworthiness_Desc" xml:space="preserve"><value>Renforcer les fondements des finances municipales pour une croissance durable.</value></data>
+  <data name="WhatIsRosra_PoliticalSupport" xml:space="preserve"><value>Soutien politique</value></data>
+  <data name="WhatIsRosra_PoliticalSupport_Desc" xml:space="preserve"><value>Mobiliser le soutien politique en faveur des reformes fiscales grace a des donnees probantes.</value></data>
+  <data name="WhatIsRosra_AllAbout" xml:space="preserve"><value>+ TOUT SUR LE ROSRA</value></data>
+
+  <!-- OSR Types Section -->
+  <data name="OsrTypes_Title" xml:space="preserve"><value>Types de recettes propres</value></data>
+  <data name="OsrTypes_Subtitle" xml:space="preserve"><value>Les recettes propres comprennent les impots, les taxes, les redevances, les licences et autres revenus directement controles par les gouvernements locaux.</value></data>
+  <data name="OsrTypes_PropertyTax" xml:space="preserve"><value>Impot foncier</value></data>
+  <data name="OsrTypes_PropertyTax_Desc" xml:space="preserve"><value>Impot recurrent sur les terrains ou les proprietes</value></data>
+  <data name="OsrTypes_OtherTaxes" xml:space="preserve"><value>Autres impots</value></data>
+  <data name="OsrTypes_OtherTaxes_Desc" xml:space="preserve"><value>Taxe locale sur les ventes, droits d'accise, taxe hoteliere</value></data>
+  <data name="OsrTypes_UserFees" xml:space="preserve"><value>Redevances d'utilisation</value></data>
+  <data name="OsrTypes_UserFees_Desc" xml:space="preserve"><value>Stationnement, peages routiers, droits de marche</value></data>
+  <data name="OsrTypes_Licenses" xml:space="preserve"><value>Licences et permis</value></data>
+  <data name="OsrTypes_Licenses_Desc" xml:space="preserve"><value>Permis d'exploitation, licence de debit de boissons</value></data>
+  <data name="OsrTypes_Fines" xml:space="preserve"><value>Amendes et penalites</value></data>
+  <data name="OsrTypes_Fines_Desc" xml:space="preserve"><value>Amendes de stationnement, penalites de retard</value></data>
+  <data name="OsrTypes_RevenueFromAssets" xml:space="preserve"><value>Revenus du patrimoine</value></data>
+  <data name="OsrTypes_RevenueFromAssets_Desc" xml:space="preserve"><value>Terrains publics, batiments, investissements</value></data>
+  <data name="OsrTypes_ViewProcess" xml:space="preserve"><value>+ VOIR LE PROCESSUS D'ANALYSE</value></data>
+
+  <!-- Why Optimize Section -->
+  <data name="WhyOptimize_OurFocus" xml:space="preserve"><value>Notre mission</value></data>
+  <data name="WhyOptimize_OurFocus_Desc" xml:space="preserve"><value>ONU-Habitat promeut le changement transformateur dans les villes a travers le savoir, le conseil en politiques publiques, l'assistance technique et l'action collaborative pour ne laisser personne ni aucun lieu de cote.</value></data>
+  <data name="WhyOptimize_Title" xml:space="preserve"><value>Pourquoi optimiser les recettes propres ?</value></data>
+  <data name="WhyOptimize_IncreasedResources" xml:space="preserve"><value>Ressources accrues</value></data>
+  <data name="WhyOptimize_IncreasedResources_Desc" xml:space="preserve"><value>pour combler les mandats non finances et investir dans le developpement</value></data>
+  <data name="WhyOptimize_GreaterAutonomy" xml:space="preserve"><value>Autonomie renforcee</value></data>
+  <data name="WhyOptimize_GreaterAutonomy_Desc" xml:space="preserve"><value>et reduction de la dependance aux transferts intergouvernementaux</value></data>
+  <data name="WhyOptimize_SocialContract" xml:space="preserve"><value>Contrat social renforce</value></data>
+  <data name="WhyOptimize_SocialContract_Desc" xml:space="preserve"><value>et amelioration de la redevabilite gouvernementale</value></data>
+  <data name="WhyOptimize_CrisisPrevention" xml:space="preserve"><value>Prevention efficace des crises urbaines</value></data>
+  <data name="WhyOptimize_CrisisPrevention_Desc" xml:space="preserve"><value>et amelioration de la solvabilite</value></data>
+  <data name="WhyOptimize_GetStarted" xml:space="preserve"><value>+ COMMENCER AVEC LE ROSRA</value></data>
+
+  <!-- Why Choose UN-Habitat Section -->
+  <data name="WhyChoose_Title" xml:space="preserve"><value>Pourquoi choisir ONU-Habitat ?</value></data>
+  <data name="WhyChoose_Data" xml:space="preserve"><value>Donnees</value></data>
+  <data name="WhyChoose_Data_Desc" xml:space="preserve"><value>Nous mettons a disposition les meilleures donnees mondiales associees a une analyse exemplaire pour fournir les recommandations les plus adaptees.</value></data>
+  <data name="WhyChoose_Experience" xml:space="preserve"><value>Experience et expertise</value></data>
+  <data name="WhyChoose_Experience_Desc" xml:space="preserve"><value>Experience mondiale en matiere de finances municipales dans de nombreux pays et contextes.</value></data>
+  <data name="WhyChoose_Funds" xml:space="preserve"><value>Mobilisation de fonds</value></data>
+  <data name="WhyChoose_Funds_Desc" xml:space="preserve"><value>Avec l'appui d'une agence des Nations Unies, la mobilisation de financements aupres d'autres sources est facilitee.</value></data>
+  <data name="WhyChoose_Political" xml:space="preserve"><value>Poids politique</value></data>
+  <data name="WhyChoose_Political_Desc" xml:space="preserve"><value>Le nom des Nations Unies confere credibilite et stature politique pour agir sur les recommandations.</value></data>
+
+  <!-- How It Works Section -->
+  <data name="HowItWorks_Title" xml:space="preserve"><value>Comment fonctionne le ROSRA ?</value></data>
+  <data name="HowItWorks_Subtitle" xml:space="preserve"><value>Le ROSRA analyse les donnees de l'utilisateur en les comparant a des references reconnues et aux caracteristiques specifiques des systemes de recettes propres performants observes dans les gouvernements locaux homologues.</value></data>
+  <data name="HowItWorks_Step1" xml:space="preserve"><value>1. Autorite et incitations</value></data>
+  <data name="HowItWorks_Step1_Desc" xml:space="preserve"><value>L'autorite et les incitations du gouvernement local a collecter des recettes propres</value></data>
+  <data name="HowItWorks_Step2" xml:space="preserve"><value>2. Evaluation des capacites</value></data>
+  <data name="HowItWorks_Step2_Desc" xml:space="preserve"><value>La capacite et les incitations de l'administration fiscale</value></data>
+  <data name="HowItWorks_Step3" xml:space="preserve"><value>3. Strategie et gestion</value></data>
+  <data name="HowItWorks_Step3_Desc" xml:space="preserve"><value>La strategie, la gestion et les processus de collecte</value></data>
+  <data name="HowItWorks_Step4" xml:space="preserve"><value>4. Analyse des ecarts</value></data>
+  <data name="HowItWorks_Step4_Desc" xml:space="preserve"><value>Ventilation detaillee des ecarts de recettes et estimations du potentiel</value></data>
+  <data name="HowItWorks_Step5" xml:space="preserve"><value>5. Rapport final</value></data>
+  <data name="HowItWorks_Step5_Desc" xml:space="preserve"><value>Rapport complet avec recommandations en environ 1 heure</value></data>
+  <data name="HowItWorks_StartAnalysis" xml:space="preserve"><value>+ LANCER VOTRE ANALYSE</value></data>
+
+  <!-- SDG Section -->
+  <data name="Sdg_Title" xml:space="preserve"><value>Objectifs de developpement durable</value></data>
+  <data name="Sdg_HoverNote" xml:space="preserve"><value>Survolez une icone pour en savoir plus.</value></data>
+</root>

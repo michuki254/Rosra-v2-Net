@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Step 1: Stream Prioritization Header -->
+  <data name="Step1_Title" xml:space="preserve"><value>Priorisation des flux de recettes</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>Étape 1 du processus de priorisation : Classez les flux de recettes selon leur écart fonctionnel total afin de déterminer lesquels traiter en priorité. Incluez ou excluez des flux en fonction des priorités locales, des capacités ou des considérations politiques.</value></data>
+
+  <!-- Instructions -->
+  <data name="Instructions_Title" xml:space="preserve"><value>Comment utiliser ce module</value></data>
+  <data name="Instructions_Step1" xml:space="preserve"><value>Consultez le tableau &lt;strong&gt;Priorisation ajustable des flux&lt;/strong&gt; présentant tous les flux de recettes analysés, classés par écart fonctionnel total.</value></data>
+  <data name="Instructions_Step2" xml:space="preserve"><value>Utilisez le menu déroulant &lt;strong&gt;Inclure/Exclure&lt;/strong&gt; pour sélectionner les flux à inclure dans votre plan de réforme.</value></data>
+  <data name="Instructions_Step3" xml:space="preserve"><value>Utilisez le menu déroulant &lt;strong&gt;Ajuster le rang&lt;/strong&gt; pour modifier le classement par défaut en fonction des priorités locales.</value></data>
+  <data name="Instructions_Step4" xml:space="preserve"><value>Consultez le tableau &lt;strong&gt;Priorisation finale des flux&lt;/strong&gt; pour visualiser vos classements finalisés et la part de l'écart total.</value></data>
+
+  <!-- Adjustable Stream Table -->
+  <data name="AdjustableStream_Title" xml:space="preserve"><value>Priorisation ajustable des flux</value></data>
+  <data name="AdjustableStream_Col_DefaultRank" xml:space="preserve"><value>Rang par défaut</value></data>
+  <data name="AdjustableStream_Col_StreamName" xml:space="preserve"><value>Nom du flux</value></data>
+  <data name="AdjustableStream_Col_TotalFunctionalGap" xml:space="preserve"><value>Écart fonctionnel total</value></data>
+  <data name="AdjustableStream_Col_IncludeExclude" xml:space="preserve"><value>Inclure/Exclure</value></data>
+  <data name="AdjustableStream_Col_AdjustRank" xml:space="preserve"><value>Ajuster le rang</value></data>
+  <data name="AdjustableStream_Tooltip_DefaultRank" xml:space="preserve"><value>Attribué automatiquement selon l'écart fonctionnel total (le plus élevé = 1)</value></data>
+  <data name="AdjustableStream_Tooltip_StreamName" xml:space="preserve"><value>Le nom du flux de recettes analysé</value></data>
+  <data name="AdjustableStream_Tooltip_TotalFunctionalGap" xml:space="preserve"><value>Somme de toutes les composantes de l'écart pour ce flux</value></data>
+  <data name="AdjustableStream_Tooltip_IncludeExclude" xml:space="preserve"><value>Inclure ce flux dans le plan de réforme ou l'exclure</value></data>
+  <data name="AdjustableStream_Tooltip_AdjustRank" xml:space="preserve"><value>Modifier le rang par défaut en fonction des priorités locales</value></data>
+  <data name="AdjustableStream_Placeholder" xml:space="preserve"><value>Chargement des données des flux depuis l'analyse des écarts...</value></data>
+
+  <!-- Final Stream Table -->
+  <data name="FinalStream_Title" xml:space="preserve"><value>Priorisation finale des flux</value></data>
+  <data name="FinalStream_Col_FinalRank" xml:space="preserve"><value>Rang final</value></data>
+  <data name="FinalStream_Col_StreamName" xml:space="preserve"><value>Nom du flux</value></data>
+  <data name="FinalStream_Col_TotalFunctionalGap" xml:space="preserve"><value>Écart fonctionnel total</value></data>
+  <data name="FinalStream_Col_ShareOfTotalGap" xml:space="preserve"><value>Part de l'écart total</value></data>
+  <data name="FinalStream_Col_Status" xml:space="preserve"><value>Statut</value></data>
+  <data name="FinalStream_Tooltip_FinalRank" xml:space="preserve"><value>Rang final après ajustements (flux inclus uniquement)</value></data>
+  <data name="FinalStream_Tooltip_StreamName" xml:space="preserve"><value>Le nom du flux de recettes</value></data>
+  <data name="FinalStream_Tooltip_TotalFunctionalGap" xml:space="preserve"><value>Écart fonctionnel total pour ce flux</value></data>
+  <data name="FinalStream_Tooltip_ShareOfTotalGap" xml:space="preserve"><value>Part de l'écart de ce flux en pourcentage de l'écart total de tous les flux inclus</value></data>
+  <data name="FinalStream_Tooltip_Status" xml:space="preserve"><value>Statut du flux dans le plan de réforme</value></data>
+  <data name="FinalStream_Placeholder" xml:space="preserve"><value>Les classements finaux apparaîtront après la sélection des flux ci-dessus</value></data>
+  <data name="FinalStream_Footer_Total" xml:space="preserve"><value>Total (flux inclus)</value></data>
+
+  <!-- Charts -->
+  <data name="Chart_BarTitle" xml:space="preserve"><value>Écart fonctionnel total par flux</value></data>
+  <data name="Chart_PieTitle" xml:space="preserve"><value>Part de l'écart total</value></data>
+  <data name="Chart_Placeholder" xml:space="preserve"><value>Complétez l'analyse des écarts pour afficher les données graphiques</value></data>
+
+  <!-- Summary Statistics -->
+  <data name="Stats_TotalStreamsAnalyzed" xml:space="preserve"><value>Total des flux analysés</value></data>
+  <data name="Stats_StreamsIncluded" xml:space="preserve"><value>Flux inclus</value></data>
+  <data name="Stats_TotalGapAll" xml:space="preserve"><value>Écart total (tous)</value></data>
+  <data name="Stats_TotalGapIncluded" xml:space="preserve"><value>Écart total (inclus)</value></data>
+
+  <!-- Step 2: Gap Prioritization Header -->
+  <data name="Step2_Title" xml:space="preserve"><value>Priorisation des écarts</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>Étape 2 du processus de priorisation : Après le classement des flux, priorisez les écarts (conformité, couverture, valorisation/obligation) au sein de chacun. ROSRA propose un ordre par défaut basé sur les indicateurs de conformité et de couverture ; utilisez les colonnes « Ajuster la priorité » pour modifier la séquence ou sélectionnez « Supprimer » pour retirer un écart de votre plan.</value></data>
+
+  <!-- Mode Accordion -->
+  <data name="Mode_RevenuePotential" xml:space="preserve"><value>Potentiel de recettes</value></data>
+  <data name="Mode_RevenuePotential_Condition" xml:space="preserve"><value>Ratio de conformité ≥ 75 %</value></data>
+  <data name="Mode_RevenuePotential_WhenApplied" xml:space="preserve"><value>Conditions d'application :</value></data>
+  <data name="Mode_RevenuePotential_Description" xml:space="preserve"><value>Un taux de conformité élevé indique généralement que les systèmes de base de collecte et d'enregistrement fonctionnent. Dans ce cas, la priorité est de se concentrer sur les fonctions présentant les &lt;strong&gt;écarts monétaires les plus importants&lt;/strong&gt;, car elles représentent les gains de recettes les plus élevés pour un effort de réforme donné.</value></data>
+  <data name="Mode_ComplianceFirst" xml:space="preserve"><value>Conformité d'abord</value></data>
+  <data name="Mode_ComplianceFirst_Condition" xml:space="preserve"><value>Conformité &lt; 75 % ET couverture ≥ 60 %</value></data>
+  <data name="Mode_ComplianceFirst_WhenApplied" xml:space="preserve"><value>Conditions d'application :</value></data>
+  <data name="Mode_ComplianceFirst_Description" xml:space="preserve"><value>Une part significative des contribuables connus ne paie pas, mais le registre n'est pas fondamentalement défaillant. ROSRA recommande de prioriser les &lt;strong&gt;réformes de conformité&lt;/strong&gt; (facturation, canaux de paiement, application), puis la couverture, et enfin la valorisation/obligation.</value></data>
+  <data name="Mode_Overhaul" xml:space="preserve"><value>Refonte</value></data>
+  <data name="Mode_Overhaul_Condition" xml:space="preserve"><value>Conformité &lt; 75 % ET couverture &lt; 60 %</value></data>
+  <data name="Mode_Overhaul_WhenApplied" xml:space="preserve"><value>Conditions d'application :</value></data>
+  <data name="Mode_Overhaul_Description" xml:space="preserve"><value>Lorsque les deux ratios sont faibles, la base fiscale manquante constitue généralement la contrainte majeure. Renforcer l'application seule a un effet limité si la plupart des unités sont invisibles pour l'administration. La séquence recommandée est &lt;strong&gt;Couverture → Conformité → Valorisation/Obligation&lt;/strong&gt;.</value></data>
+
+  <!-- Gap Sequencing Table -->
+  <data name="GapSequencing_Title" xml:space="preserve"><value>Séquençage des écarts par flux</value></data>
+  <data name="GapSequencing_Col_Rank" xml:space="preserve"><value>Rang</value></data>
+  <data name="GapSequencing_Col_Stream" xml:space="preserve"><value>Flux</value></data>
+  <data name="GapSequencing_Col_Mode" xml:space="preserve"><value>Mode</value></data>
+  <data name="GapSequencing_Col_Priority1" xml:space="preserve"><value>Priorité 1</value></data>
+  <data name="GapSequencing_Col_Priority2" xml:space="preserve"><value>Priorité 2</value></data>
+  <data name="GapSequencing_Col_Priority3" xml:space="preserve"><value>Priorité 3</value></data>
+  <data name="GapSequencing_Tooltip_Rank" xml:space="preserve"><value>Rang final du flux depuis l'étape 1</value></data>
+  <data name="GapSequencing_Tooltip_Stream" xml:space="preserve"><value>Nom du flux de recettes</value></data>
+  <data name="GapSequencing_Tooltip_Mode" xml:space="preserve"><value>Mode de priorisation basé sur les ratios d'indicateurs clés</value></data>
+  <data name="GapSequencing_Tooltip_Priority1" xml:space="preserve"><value>Premier écart à traiter</value></data>
+  <data name="GapSequencing_Tooltip_Priority2" xml:space="preserve"><value>Deuxième écart à traiter</value></data>
+  <data name="GapSequencing_Tooltip_Priority3" xml:space="preserve"><value>Troisième écart à traiter</value></data>
+  <data name="GapSequencing_Placeholder" xml:space="preserve"><value>Incluez des flux à l'étape 1 pour afficher les options de priorisation des écarts</value></data>
+
+  <!-- Gap Amounts Table -->
+  <data name="GapAmounts_Title" xml:space="preserve"><value>Montants des écarts par priorité</value></data>
+  <data name="GapAmounts_Col_Rank" xml:space="preserve"><value>Rang</value></data>
+  <data name="GapAmounts_Col_Stream" xml:space="preserve"><value>Flux</value></data>
+  <data name="GapAmounts_Col_Priority1" xml:space="preserve"><value>Priorité 1</value></data>
+  <data name="GapAmounts_Col_Amount1" xml:space="preserve"><value>Montant 1</value></data>
+  <data name="GapAmounts_Col_Priority2" xml:space="preserve"><value>Priorité 2</value></data>
+  <data name="GapAmounts_Col_Amount2" xml:space="preserve"><value>Montant 2</value></data>
+  <data name="GapAmounts_Col_Priority3" xml:space="preserve"><value>Priorité 3</value></data>
+  <data name="GapAmounts_Col_Amount3" xml:space="preserve"><value>Montant 3</value></data>
+  <data name="GapAmounts_Placeholder" xml:space="preserve"><value>Les montants des écarts apparaîtront après la priorisation des écarts</value></data>
+
+  <!-- Reform Sequence Summary -->
+  <data name="ReformSummary_Title" xml:space="preserve"><value>Résumé de la séquence de réforme</value></data>
+  <data name="ReformSummary_TotalStreams" xml:space="preserve"><value>Total des flux</value></data>
+  <data name="ReformSummary_TotalGapCombinations" xml:space="preserve"><value>Total des combinaisons d'écarts</value></data>
+  <data name="ReformSummary_RemovedGaps" xml:space="preserve"><value>Écarts supprimés</value></data>
+  <data name="ReformSummary_ActiveGapActions" xml:space="preserve"><value>Actions actives sur les écarts</value></data>
+  <data name="ReformSummary_FirstPriorityActions" xml:space="preserve"><value>Actions de première priorité :</value></data>
+  <data name="ReformSummary_NoActionsDefined" xml:space="preserve"><value>Aucune action définie pour le moment</value></data>
+
+  <!-- Master Priority List -->
+  <data name="MasterPriority_Title" xml:space="preserve"><value>Liste des priorités générales</value></data>
+  <data name="MasterPriority_Col_Number" xml:space="preserve"><value>#</value></data>
+  <data name="MasterPriority_Col_Stream" xml:space="preserve"><value>Flux</value></data>
+  <data name="MasterPriority_Col_Gap" xml:space="preserve"><value>Écart</value></data>
+  <data name="MasterPriority_Col_Amount" xml:space="preserve"><value>Montant</value></data>
+  <data name="MasterPriority_Placeholder" xml:space="preserve"><value>La liste générale sera alimentée à partir des priorités des écarts</value></data>
+</root>

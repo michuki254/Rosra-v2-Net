@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Page Title -->
+  <data name="PageTitle" xml:space="preserve"><value>Log in</value></data>
+
+  <!-- Form Heading -->
+  <data name="Heading" xml:space="preserve"><value>Login</value></data>
+  <data name="Subheading" xml:space="preserve"><value>Access your revenue analysis dashboard</value></data>
+
+  <!-- Form Labels -->
+  <data name="EmailLabel" xml:space="preserve"><value>Email*</value></data>
+  <data name="EmailPlaceholder" xml:space="preserve"><value>mail@website.com</value></data>
+  <data name="PasswordLabel" xml:space="preserve"><value>Password*</value></data>
+  <data name="PasswordPlaceholder" xml:space="preserve"><value>Min. 8 characters</value></data>
+  <data name="RememberMe" xml:space="preserve"><value>Remember me</value></data>
+  <data name="ForgotPassword" xml:space="preserve"><value>Forget password?</value></data>
+
+  <!-- Buttons & Links -->
+  <data name="LoginButton" xml:space="preserve"><value>Login</value></data>
+  <data name="NotRegistered" xml:space="preserve"><value>Not registered yet?</value></data>
+  <data name="CreateAccount" xml:space="preserve"><value>Create an Account</value></data>
+
+  <!-- Visual Side -->
+  <data name="VisualHeading_Empower" xml:space="preserve"><value>Empower</value></data>
+  <data name="VisualHeading_RevenueGrowth" xml:space="preserve"><value>Revenue Growth</value></data>
+  <data name="VisualText" xml:space="preserve"><value>Analyze your OSR gaps and unlock sustainable revenue potential</value></data>
+
+  <!-- Floating Cards -->
+  <data name="FloatingCard_RevenueGap" xml:space="preserve"><value>Revenue Gap</value></data>
+  <data name="FloatingCard_Counties" xml:space="preserve"><value>Counties</value></data>
+</root>

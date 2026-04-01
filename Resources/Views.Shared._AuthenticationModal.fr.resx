@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"><xsd:complexType><xsd:choice maxOccurs="unbounded">
+      <xsd:element name="data"><xsd:complexType><xsd:sequence>
+        <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+      </xsd:sequence><xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" /><xsd:attribute name="xml:space" use="optional" /></xsd:complexType></xsd:element>
+    </xsd:choice></xsd:complexType></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="ModalTitle" xml:space="preserve"><value>Connectez-vous pour enregistrer le rapport</value></data>
+  <data name="TabLogin" xml:space="preserve"><value>Connexion</value></data>
+  <data name="TabRegister" xml:space="preserve"><value>Inscription</value></data>
+  <data name="EmailAddress" xml:space="preserve"><value>Adresse e-mail</value></data>
+  <data name="EnterEmail" xml:space="preserve"><value>Entrez votre e-mail</value></data>
+  <data name="Password" xml:space="preserve"><value>Mot de passe</value></data>
+  <data name="EnterPassword" xml:space="preserve"><value>Entrez votre mot de passe</value></data>
+  <data name="RememberMe" xml:space="preserve"><value>Se souvenir de moi</value></data>
+  <data name="SignIn" xml:space="preserve"><value>Se connecter</value></data>
+  <data name="FirstName" xml:space="preserve"><value>Prénom</value></data>
+  <data name="LastName" xml:space="preserve"><value>Nom</value></data>
+  <data name="Organization" xml:space="preserve"><value>Organisation</value></data>
+  <data name="Optional" xml:space="preserve"><value>(facultatif)</value></data>
+  <data name="YourOrg" xml:space="preserve"><value>Votre organisation</value></data>
+  <data name="MinChars" xml:space="preserve"><value>Min. 6 caractères</value></data>
+  <data name="PasswordHint" xml:space="preserve"><value>Le mot de passe doit comporter au moins 6 caractères avec des majuscules, des minuscules et un chiffre.</value></data>
+  <data name="ConfirmPassword" xml:space="preserve"><value>Confirmer le mot de passe</value></data>
+  <data name="ConfirmPlaceholder" xml:space="preserve"><value>Confirmez votre mot de passe</value></data>
+  <data name="CreateAccount" xml:space="preserve"><value>Créer un compte</value></data>
+  <data name="FooterNote" xml:space="preserve"><value>Vos données de rapport seront enregistrées après la connexion.</value></data>
+</root>

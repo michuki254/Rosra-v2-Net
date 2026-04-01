@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="xml:space" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Page Title -->
+  <data name="PageTitle" xml:space="preserve"><value>Inscription</value></data>
+
+  <!-- Form Heading -->
+  <data name="Heading" xml:space="preserve"><value>Créer un compte</value></data>
+  <data name="Subheading" xml:space="preserve"><value>Rejoignez-nous pour accéder aux outils d'analyse des recettes</value></data>
+
+  <!-- Form Labels -->
+  <data name="FirstNameLabel" xml:space="preserve"><value>Prénom*</value></data>
+  <data name="FirstNamePlaceholder" xml:space="preserve"><value>Jean</value></data>
+  <data name="LastNameLabel" xml:space="preserve"><value>Nom de famille*</value></data>
+  <data name="LastNamePlaceholder" xml:space="preserve"><value>Dupont</value></data>
+  <data name="EmailLabel" xml:space="preserve"><value>Adresse e-mail*</value></data>
+  <data name="EmailPlaceholder" xml:space="preserve"><value>courriel@siteweb.com</value></data>
+  <data name="OrganizationLabel" xml:space="preserve"><value>Organisation</value></data>
+  <data name="OrganizationPlaceholder" xml:space="preserve"><value>Votre organisation (facultatif)</value></data>
+  <data name="PhoneLabel" xml:space="preserve"><value>Numéro de téléphone</value></data>
+  <data name="PhonePlaceholder" xml:space="preserve"><value>+123 456 7890 (facultatif)</value></data>
+  <data name="PasswordLabel" xml:space="preserve"><value>Mot de passe*</value></data>
+  <data name="PasswordPlaceholder" xml:space="preserve"><value>Min. 8 caractères</value></data>
+  <data name="ConfirmPasswordLabel" xml:space="preserve"><value>Confirmer le mot de passe*</value></data>
+  <data name="ConfirmPasswordPlaceholder" xml:space="preserve"><value>Confirmer le mot de passe</value></data>
+
+  <!-- Buttons & Links -->
+  <data name="CreateAccountButton" xml:space="preserve"><value>Créer un compte</value></data>
+  <data name="AlreadyHaveAccount" xml:space="preserve"><value>Vous avez déjà un compte ?</value></data>
+  <data name="SignIn" xml:space="preserve"><value>Se connecter</value></data>
+
+  <!-- Visual Side -->
+  <data name="VisualHeading_JoinThe" xml:space="preserve"><value>Rejoignez la</value></data>
+  <data name="VisualHeading_RevenueRevolution" xml:space="preserve"><value>révolution des recettes</value></data>
+  <data name="VisualText" xml:space="preserve"><value>Créez un compte pour accéder à de puissants outils d'analyse des recettes propres</value></data>
+
+  <!-- Floating Cards -->
+  <data name="FloatingCard_RevenueGap" xml:space="preserve"><value>Écart de recettes</value></data>
+  <data name="FloatingCard_Counties" xml:space="preserve"><value>Comtés</value></data>
+</root>
