@@ -1,7 +1,7 @@
 using ClosedXML.Excel;
 using Microsoft.Extensions.Localization;
 using RosraApp.Models.ViewModels;
-using RosraApp.Resources;
+// ExportResources marker class is in RosraApp namespace
 using System.Text.Json;
 
 namespace RosraApp.Services

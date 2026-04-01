@@ -3,7 +3,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using RosraApp.Models.ViewModels;
-using RosraApp.Resources;
+// ExportResources marker class is in RosraApp namespace
 using System.Text.Json;
 
 namespace RosraApp.Services

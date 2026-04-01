@@ -1,5 +1,5 @@
 @model RosraApp.Models.ViewModels.RosraFormViewModel
-@inject IHtmlLocalizer<RosraApp.Resources.RosraResources> RosraLocalizer
+@inject IHtmlLocalizer<RosraApp.RosraResources> RosraLocalizer
 @{
     bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
     int currentYear = DateTime.Now.Year;

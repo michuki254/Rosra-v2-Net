@@ -25,7 +25,7 @@ namespace RosraApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RosraController> _logger;
-        private readonly IStringLocalizer<RosraApp.Resources.RosraResources> _localizer;
+        private readonly IStringLocalizer<RosraApp.RosraResources> _localizer;
         private readonly ReportExportService _pdfExportService;
         private readonly ExcelExportService _excelExportService;
 
@@ -41,7 +41,7 @@ namespace RosraApp.Controllers
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
             ILogger<RosraController> logger,
-            IStringLocalizer<RosraApp.Resources.RosraResources> localizer,
+            IStringLocalizer<RosraApp.RosraResources> localizer,
             ReportExportService pdfExportService,
             ExcelExportService excelExportService)
         {
