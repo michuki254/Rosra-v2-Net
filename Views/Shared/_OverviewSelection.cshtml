@@ -982,6 +982,22 @@
         return 'timeline-badge long';
     }
 
+    // Localized labels for JS-rendered content
+    var _t = {
+        whatThisSolves: '@Html.Raw(Localizer["JS_WhatThisSolves"].Value)',
+        whatYouDo: '@Html.Raw(Localizer["JS_WhatYouDo"].Value)',
+        whenFitsBest: '@Html.Raw(Localizer["JS_WhenFitsBest"].Value)',
+        minimumEnablers: '@Html.Raw(Localizer["JS_MinimumEnablers"].Value)',
+        skip: '@Html.Raw(Localizer["JS_Skip"].Value)',
+        select: '@Html.Raw(Localizer["JS_Select"].Value)',
+        undo: '@Html.Raw(Localizer["JS_Undo"].Value)',
+        selected: '@Html.Raw(Localizer["JS_Selected"].Value)',
+        skipped: '@Html.Raw(Localizer["JS_Skipped"].Value)',
+        gap: '@Html.Raw(Localizer["JS_Gap"].Value)',
+        solutions: '@Html.Raw(Localizer["JS_Solutions"].Value)',
+        rank: '@Html.Raw(Localizer["JS_Rank"].Value)'
+    };
+
     // Render a single solution card
     function renderSolutionCard(solution) {
         const isSelected = selections.selected.has(solution.solutionId);
@@ -993,8 +1009,8 @@
                 <div class="solution-card-header">
                     <div class="d-flex align-items-center gap-2">
                         <span class="solution-id">${solution.solutionId}</span>
-                        ${isSelected ? '<span class="badge bg-success">Selected</span>' : ''}
-                        ${isSkipped ? '<span class="badge bg-secondary">Skipped</span>' : ''}
+                        ${isSelected ? '<span class="badge bg-success">' + _t.selected + '</span>' : ''}
+                        ${isSkipped ? '<span class="badge bg-secondary">' + _t.skipped + '</span>' : ''}
                     </div>
                     <span class="badge ${getTimelineBadgeClass(solution.timeline)}">${solution.timeline}</span>
                 </div>
@@ -1002,7 +1018,7 @@
                 <div class="solution-content">
                     <div class="solution-section">
                         <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-what">
-                            <span><i class="bi bi-lightbulb me-2"></i>What this solves</span>
+                            <span><i class="bi bi-lightbulb me-2"></i>${_t.whatThisSolves}</span>
                             <i class="bi bi-chevron-down"></i>
                         </div>
                         <div class="collapse show" id="${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-what">
@@ -1011,7 +1027,7 @@
                     </div>
                     <div class="solution-section">
                         <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-do">
-                            <span><i class="bi bi-gear me-2"></i>What you do</span>
+                            <span><i class="bi bi-gear me-2"></i>${_t.whatYouDo}</span>
                             <i class="bi bi-chevron-down"></i>
                         </div>
                         <div class="collapse" id="${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-do">
@@ -1020,7 +1036,7 @@
                     </div>
                     <div class="solution-section">
                         <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-when">
-                            <span><i class="bi bi-calendar-check me-2"></i>When this fits best</span>
+                            <span><i class="bi bi-calendar-check me-2"></i>${_t.whenFitsBest}</span>
                             <i class="bi bi-chevron-down"></i>
                         </div>
                         <div class="collapse" id="${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-when">
@@ -1029,7 +1045,7 @@
                     </div>
                     <div class="solution-section">
                         <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-min">
-                            <span><i class="bi bi-check2-square me-2"></i>Minimum enablers</span>
+                            <span><i class="bi bi-check2-square me-2"></i>${_t.minimumEnablers}</span>
                             <i class="bi bi-chevron-down"></i>
                         </div>
                         <div class="collapse" id="${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-min">
@@ -1040,14 +1056,14 @@
                 <div class="solution-actions">
                     ${isSelected || isSkipped ? `
                         <button class="btn btn-sm btn-undo" onclick="undoSelection('${solution.solutionId}')">
-                            <i class="bi bi-arrow-counterclockwise me-1"></i>Undo
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>${_t.undo}
                         </button>
                     ` : `
                         <button class="btn btn-sm btn-skip" onclick="skipSolution('${solution.solutionId}')">
-                            <i class="bi bi-x-lg me-1"></i>Skip
+                            <i class="bi bi-x-lg me-1"></i>${_t.skip}
                         </button>
                         <button class="btn btn-sm btn-select" onclick="selectSolution('${solution.solutionId}')">
-                            <i class="bi bi-check-lg me-1"></i>Select
+                            <i class="bi bi-check-lg me-1"></i>${_t.select}
                         </button>
                     `}
                 </div>
@@ -1068,13 +1084,13 @@
                         <span class="gap-icon ${gapType}">
                             <i class="bi bi-${gapType === 'compliance' ? 'check-circle' : gapType === 'coverage' ? 'geo-alt' : 'currency-dollar'}"></i>
                         </span>
-                        <span>${gap.type.toUpperCase()} GAP</span>
+                        <span>${gap.type.toUpperCase()} ${_t.gap}</span>
                         <span class="badge bg-light text-dark ms-2">#${gap.priority}</span>
                     </div>
                     <div class="gap-stats">
                         <span class="gap-amount">${formatCurrency(gap.amount)}</span>
                         <span class="solutions-count">
-                            <i class="bi bi-check-circle-fill text-success me-1"></i>${selectedCount} / ${solutions.length} solutions
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>${selectedCount} / ${solutions.length} ${_t.solutions}
                         </span>
                         <i class="bi bi-chevron-down collapse-icon"></i>
                     </div>
@@ -1094,7 +1110,7 @@
             <div class="stream-section" data-stream="${stream.name}">
                 <div class="stream-header">
                     <h5><i class="bi bi-bar-chart-line me-2"></i>${stream.name}</h5>
-                    <span class="stream-rank">Rank #${stream.rank}</span>
+                    <span class="stream-rank">${_t.rank} #${stream.rank}</span>
                 </div>
         `;
 
