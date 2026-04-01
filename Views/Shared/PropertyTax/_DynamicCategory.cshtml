@@ -1,0 +1,77 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+@{
+    bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+    // We'll need to pass the specific PropertyTaxCategory as a parameter
+    var category = (RosraApp.Models.ViewModels.PropertyTaxCategory)ViewData["Category"];
+    var categoryId = "category-" + category.Name.Replace(" ", "-");
+    var collapseId = "category" + category.Name.Replace(" ", "") + "Collapse";
+}
+
+<div class="card mb-3 category-card" id="@categoryId">
+    <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId" style="cursor: pointer;">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <h6 class="mb-0 category-title">@category.Name</h6>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary rename-category-btn me-2" data-bs-toggle="tooltip" title="Rename Category">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-category-btn" data-bs-toggle="tooltip" title="Remove Category" data-bs-toggle="modal" data-bs-target="#deletePropertyTaxCategoryModal">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button class="btn btn-sm btn-link text-muted collapse-toggle ms-2" type="button">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="@collapseId" class="collapse">
+        <div class="card-body">
+            <div class="mb-3">
+                <div class="form-group">
+                    <label for="registeredTaxpayers-@category.Name.Replace(" ", "-")">Registered Taxpayers</label>
+                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" 
+                           id="registeredTaxpayers-@category.Name.Replace(" ", "-")" 
+                           name="PropertyTax.DynamicCategories[].RegisteredTaxpayers" 
+                           value="@category.RegisteredTaxpayers" 
+                           placeholder="Enter registered taxpayers" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="form-group">
+                    <label for="compliantTaxpayers-@category.Name.Replace(" ", "-")">Compliant Taxpayers</label>
+                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" 
+                           id="compliantTaxpayers-@category.Name.Replace(" ", "-")" 
+                           name="PropertyTax.DynamicCategories[].CompliantTaxpayers" 
+                           value="@category.CompliantTaxpayers" 
+                           placeholder="Enter compliant taxpayers" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="form-group">
+                    <label for="avgValueLandProperty-@category.Name.Replace(" ", "-")">Average Value of Land/Property</label>
+                    <input type="text" class="form-control currency-format @(isViewMode ? "bg-light" : "")" 
+                           id="avgValueLandProperty-@category.Name.Replace(" ", "-")" 
+                           name="PropertyTax.DynamicCategories[].AveragePropertyValue" 
+                           value="@category.AveragePropertyValue" 
+                           placeholder="Enter average value" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="form-group">
+                    <label for="taxRate-@category.Name.Replace(" ", "-")">Tax Rate (%)</label>
+                    <input type="text" class="form-control percentage-format @(isViewMode ? "bg-light" : "")" 
+                           id="taxRate-@category.Name.Replace(" ", "-")" 
+                           name="PropertyTax.DynamicCategories[].TaxRate" 
+                           value="@category.TaxRate" 
+                           placeholder="Enter tax rate" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

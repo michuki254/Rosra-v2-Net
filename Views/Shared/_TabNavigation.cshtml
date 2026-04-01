@@ -1,81 +1,454 @@
 @model RosraApp.Models.ViewModels.TabsContainerViewModel
 
-<div class="tab-system mb-4">
-    <ul class="nav nav-pills nav-fill mb-3" id="@Model.ContainerId" role="tablist">
-        @foreach (var tab in Model.Tabs)
-        {
-            <li class="nav-item" role="presentation">
-                <button class="nav-link @(tab.IsActive ? "active" : "")" 
-                        id="@tab.Id-tab" 
-                        data-bs-toggle="tab" 
-                        data-bs-target="#@tab.Id-content" 
-                        type="button" 
-                        role="tab" 
-                        aria-controls="@tab.Id-content" 
-                        aria-selected="@(tab.IsActive ? "true" : "false")"
-                        data-tab-id="@tab.Id">
-                    <span class="badge rounded-pill @(tab.IsVisited ? "bg-primary" : "bg-secondary") tab-badge me-2">@(Model.Tabs.IndexOf(tab) + 1)</span>
-                    @tab.Title
-                </button>
-            </li>
-        }
-    </ul>
+@{
+    var hasUmbrellaTabs = Model.UmbrellaTabs != null && Model.UmbrellaTabs.Any();
+    var activeUmbrellaTab = hasUmbrellaTabs ? Model.UmbrellaTabs.FirstOrDefault(u => u.IsActive) : null;
+    var activeSubTabs = activeUmbrellaTab?.SubTabs ?? new List<RosraApp.Models.ViewModels.TabViewModel>();
+}
 
-    <div class="tab-content p-3 border-top" id="@(Model.ContainerId)Content">
-        @foreach (var tab in Model.Tabs)
-        {
-            <div class="tab-pane fade @(tab.IsActive ? "show active" : "")" 
-                 id="@tab.Id-content" 
-                 role="tabpanel" 
-                 aria-labelledby="@tab.Id-tab">
-                @await Html.PartialAsync(tab.ContentPartialName, Model.TabContentModel)
-            </div>
-        }
-    </div>
+<div class="tab-system mb-4">
+    @if (hasUmbrellaTabs)
+    {
+        <!-- Umbrella Tab Content (tabs are now in sidebar) -->
+        <div class="tab-content umbrella-tab-content" id="umbrellaTabsContent">
+            @foreach (var umbrellaTab in Model.UmbrellaTabs)
+            {
+                <div class="tab-pane fade @(umbrellaTab.IsActive ? "show active" : "")"
+                     id="@umbrellaTab.Id-umbrella-content"
+                     role="tabpanel"
+                     aria-labelledby="@umbrellaTab.Id-umbrella-tab">
+
+                    @if (umbrellaTab.SubTabs.Count > 1 && umbrellaTab.HasStepper)
+                    {
+                        <!-- Intro Text for Bottom-Up Analysis -->
+                        <div class="bottom-up-intro-section">
+                            <div class="intro-text-box">
+                                <i class="bi bi-info-circle-fill intro-icon"></i>
+                                <p class="intro-text">This is the main diagnostic. It looks at each major revenue source and shows where collection is falling short and why, so the results translate directly into priorities and next steps. Go through the tabs in order to complete the analysis.</p>
+                            </div>
+                        </div>
+
+                        <!-- Stepper Navigation for Bottom-Up Pipeline -->
+                        <div class="stepper-container">
+                            <div class="stepper">
+                                @foreach (var subTab in umbrellaTab.SubTabs)
+                                {
+                                    var stepIndex = umbrellaTab.SubTabs.IndexOf(subTab);
+                                    var isActiveStep = subTab.IsActive;
+                                    var isCompletedStep = subTab.IsVisited && !isActiveStep;
+                                    var stepClass = isActiveStep ? "active" : (isCompletedStep ? "completed" : "");
+
+                                    <div class="stepper-step @stepClass" data-step="@(stepIndex + 1)" data-tab-id="@subTab.Id">
+                                        <div class="step-indicator">
+                                            @if (isCompletedStep)
+                                            {
+                                                <i class="bi bi-check-lg"></i>
+                                            }
+                                            else
+                                            {
+                                                <span>@(stepIndex + 1)</span>
+                                            }
+                                        </div>
+                                        <div class="step-label">@subTab.Title</div>
+                                        @if (stepIndex < umbrellaTab.SubTabs.Count - 1)
+                                        {
+                                            <div class="step-connector"></div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Sub-Tab Content for Stepper -->
+                        <div class="sub-tab-content stepper-content">
+                            @foreach (var subTab in umbrellaTab.SubTabs)
+                            {
+                                <div class="sub-tab-pane @(subTab.IsActive ? "active" : "")"
+                                     id="@subTab.Id-content"
+                                     data-tab-id="@subTab.Id">
+                                    @await Html.PartialAsync(subTab.ContentPartialName, Model.TabContentModel)
+                                </div>
+                            }
+                        </div>
+                    }
+                    else if (umbrellaTab.SubTabs.Count == 1)
+                    {
+                        <!-- Single Sub-Tab (Top-Down - no stepper needed) -->
+                        <div class="single-tab-content">
+                            @await Html.PartialAsync(umbrellaTab.SubTabs[0].ContentPartialName, Model.TabContentModel)
+                        </div>
+                    }
+                    else if (umbrellaTab.SubTabs.Count > 1)
+                    {
+                        <!-- Multiple Sub-Tabs without Stepper (pill tabs) -->
+                        <ul class="nav nav-pills sub-tabs mb-3" role="tablist">
+                            @foreach (var subTab in umbrellaTab.SubTabs)
+                            {
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link @(subTab.IsActive ? "active" : "")"
+                                            id="@subTab.Id-tab"
+                                            data-bs-toggle="pill"
+                                            data-bs-target="#@subTab.Id-content"
+                                            type="button"
+                                            role="tab"
+                                            data-tab-id="@subTab.Id">
+                                        @subTab.Title
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+
+                        <div class="tab-content sub-tab-content">
+                            @foreach (var subTab in umbrellaTab.SubTabs)
+                            {
+                                <div class="tab-pane fade @(subTab.IsActive ? "show active" : "")"
+                                     id="@subTab.Id-content"
+                                     role="tabpanel">
+                                    @await Html.PartialAsync(subTab.ContentPartialName, Model.TabContentModel)
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- Legacy Tab Navigation (fallback) -->
+        <ul class="nav nav-pills nav-fill mb-3" id="@Model.ContainerId" role="tablist">
+            @foreach (var tab in Model.Tabs)
+            {
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link @(tab.IsActive ? "active" : "")"
+                            id="@tab.Id-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#@tab.Id-content"
+                            type="button"
+                            role="tab"
+                            aria-controls="@tab.Id-content"
+                            aria-selected="@(tab.IsActive ? "true" : "false")"
+                            data-tab-id="@tab.Id">
+                        <span class="badge rounded-pill @(tab.IsVisited ? "bg-primary" : "bg-secondary") tab-badge me-2">@(Model.Tabs.IndexOf(tab) + 1)</span>
+                        @tab.Title
+                    </button>
+                </li>
+            }
+        </ul>
+
+        <div class="tab-content p-3 border-top" id="@(Model.ContainerId)Content">
+            @foreach (var tab in Model.Tabs)
+            {
+                <div class="tab-pane fade @(tab.IsActive ? "show active" : "")"
+                     id="@tab.Id-content"
+                     role="tabpanel"
+                     aria-labelledby="@tab.Id-tab">
+                    @await Html.PartialAsync(tab.ContentPartialName, Model.TabContentModel)
+                </div>
+            }
+        </div>
+    }
 </div>
 
 <style>
-    /* Custom styling for the tabs */
+    /* UN-Habitat Official Brand Colors */
+    :root {
+        --un-blue: #00b2e3;
+        --un-dark-blue: #00689D;
+        --un-orange: #FD9D24;
+        --un-orange-dark: #E8891A;
+        --un-light-bg: #E6F9FC;
+    }
+
+    /* Umbrella Tab Content - Note: umbrella tab buttons are now in sidebar */
+    .umbrella-tab-content {
+        background: transparent;
+        border-radius: 0;
+        padding: 0;
+        border: none;
+    }
+
+    /* Intro section styling */
+    .bottom-up-intro-section,
+    .top-down-intro-section {
+        margin-bottom: 1.5rem;
+    }
+
+    /* Bottom-Up Intro Section */
+    .bottom-up-intro-section {
+        margin-bottom: 1rem;
+    }
+
+    .intro-text-box {
+        background: #f0f9ff;
+        border-left: 4px solid var(--un-blue);
+        border-radius: 0 8px 8px 0;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .intro-icon {
+        color: var(--un-blue);
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        margin-top: 0.1rem;
+    }
+
+    .intro-text {
+        margin: 0;
+        font-size: 0.95rem;
+        color: #334155;
+        line-height: 1.5;
+    }
+
+    /* Stepper Styling - pops out from background */
+    .stepper-container {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+        border: none;
+    }
+
+    .stepper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+    }
+
+    .stepper-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+        position: relative;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .stepper-step:hover {
+        background: rgba(0, 178, 227, 0.08);
+        transform: translateY(-2px);
+    }
+
+    .step-indicator {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        color: #757575;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 2;
+        border: 2px solid #e0e0e0;
+        transition: all 0.2s ease;
+    }
+
+    .stepper-step:hover .step-indicator {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .stepper-step.active .step-indicator {
+        background: var(--un-orange);
+        color: white;
+        border-color: var(--un-orange);
+        box-shadow: 0 2px 8px rgba(253, 157, 36, 0.4);
+    }
+
+    .stepper-step.completed .step-indicator {
+        background: var(--un-blue);
+        color: white;
+        border-color: var(--un-blue);
+    }
+
+    .step-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #757575;
+        text-align: center;
+        max-width: 120px;
+        line-height: 1.3;
+        transition: color 0.2s ease;
+    }
+
+    .stepper-step:hover .step-label {
+        color: var(--un-dark-blue);
+    }
+
+    .stepper-step.active .step-label {
+        color: var(--un-orange);
+        font-weight: 700;
+    }
+
+    .stepper-step.completed .step-label {
+        color: var(--un-blue);
+    }
+
+    .step-connector {
+        position: absolute;
+        top: 22px;
+        left: calc(50% + 24px);
+        width: calc(100% - 48px);
+        height: 3px;
+        background: #e0e0e0;
+        z-index: 1;
+        border-radius: 2px;
+    }
+
+    .stepper-step.completed .step-connector {
+        background: var(--un-blue);
+    }
+
+    .stepper-step.active .step-connector {
+        background: #e0e0e0;
+    }
+
+    /* Sub-Tab Content Styling */
+    .stepper-content {
+        background: transparent;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    .sub-tab-pane {
+        display: none;
+    }
+
+    .sub-tab-pane.active {
+        display: block;
+    }
+
+    .single-tab-content {
+        background: transparent;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    /* Sub-tabs pill styling - pop out */
+    .sub-tabs {
+        background: white;
+        border-radius: 10px;
+        padding: 0.5rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .sub-tabs .nav-link {
+        color: var(--un-dark-blue);
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+    }
+
+    .sub-tabs .nav-link:hover {
+        background: rgba(253, 157, 36, 0.1);
+    }
+
+    .sub-tabs .nav-link.active {
+        background: var(--un-orange);
+        color: white;
+    }
+
+    /* Legacy Tab Styling */
     .nav-pills .nav-link {
         background-color: transparent;
-        color: #6c757d; /* Gray text for inactive tabs */
+        color: #6c757d;
         border: none;
         padding: 0.75rem 1rem;
     }
-    
+
     .nav-pills .nav-link.active {
         background-color: transparent;
-        color: #0d6efd; /* Blue text for active tab */
+        color: var(--un-blue);
         font-weight: 500;
     }
-    
+
     .nav-pills .nav-link:hover {
-        background-color: rgba(13, 110, 253, 0.05);
+        background-color: rgba(0, 178, 227, 0.05);
     }
-    
-    /* Badge styling */
-    .nav-pills .nav-link .tab-badge {
-        transition: all 0.2s ease-in-out;
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .stepper {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .step-connector {
+            display: none;
+        }
+
+        .stepper-step {
+            flex-direction: row;
+            gap: 1rem;
+        }
+
+        .step-indicator {
+            margin-bottom: 0;
+        }
+
+        .step-label {
+            text-align: left;
+            max-width: none;
+        }
     }
 </style>
 
-<!-- Hidden form for tab switching -->
+<!-- Hidden form fields for tab switching -->
 <input type="hidden" id="tabIdInput" name="tabId" />
+<input type="hidden" id="umbrellaTabIdInput" name="umbrellaTabId" />
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Add click event listeners to tab buttons
-        document.querySelectorAll('.nav-link').forEach(function(tabButton) {
-            tabButton.addEventListener('click', function(e) {
+        // Note: Umbrella tab navigation is now handled in the sidebar (Index.cshtml)
+
+        // Stepper step click handling
+        document.querySelectorAll('.stepper-step').forEach(function(step) {
+            step.addEventListener('click', function(e) {
                 e.preventDefault();
-                
-                // Get the tab ID from the data attribute
+
                 var tabId = this.getAttribute('data-tab-id');
-                
-                // Set the form input value
                 document.getElementById('tabIdInput').value = tabId;
-                
-                // Submit the parent form (rosraForm)
+
+                // Get the umbrella tab ID
+                var umbrellaContent = this.closest('.tab-pane');
+                if (umbrellaContent) {
+                    var umbrellaId = umbrellaContent.id.replace('-umbrella-content', '');
+                    document.getElementById('umbrellaTabIdInput').value = umbrellaId;
+                }
+
+                // Submit form to switch tabs
+                document.getElementById('rosraForm').action = '@Url.Action("SwitchTab", "Rosra")';
+                document.getElementById('rosraForm').submit();
+            });
+        });
+
+        // Legacy tab click handling (for fallback)
+        document.querySelectorAll('.nav-link[data-tab-id]:not(.umbrella-tab):not(.stepper-step *)').forEach(function(tabButton) {
+            tabButton.addEventListener('click', function(e) {
+                // Check if this is part of sub-tabs with Bootstrap handling
+                if (this.closest('.sub-tabs')) {
+                    return; // Let Bootstrap handle it
+                }
+
+                e.preventDefault();
+                var tabId = this.getAttribute('data-tab-id');
+                document.getElementById('tabIdInput').value = tabId;
+
+                // Submit form to switch tabs
                 document.getElementById('rosraForm').action = '@Url.Action("SwitchTab", "Rosra")';
                 document.getElementById('rosraForm').submit();
             });

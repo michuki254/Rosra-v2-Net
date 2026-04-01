@@ -4,70 +4,523 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<h1>Admin Dashboard</h1>
+@functions {
+    public string GetCountryFlag(string country)
+    {
+        if (string.IsNullOrEmpty(country)) return "";
 
-<div class="row">
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5>Users</h5>
+        var countryFlags = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            // Africa
+            { "Kenya", "🇰🇪" },
+            { "Nigeria", "🇳🇬" },
+            { "South Africa", "🇿🇦" },
+            { "Egypt", "🇪🇬" },
+            { "Ethiopia", "🇪🇹" },
+            { "Ghana", "🇬🇭" },
+            { "Tanzania", "🇹🇿" },
+            { "Uganda", "🇺🇬" },
+            { "Rwanda", "🇷🇼" },
+            { "Morocco", "🇲🇦" },
+
+            // Europe
+            { "United Kingdom", "🇬🇧" },
+            { "UK", "🇬🇧" },
+            { "France", "🇫🇷" },
+            { "Germany", "🇩🇪" },
+            { "Italy", "🇮🇹" },
+            { "Spain", "🇪🇸" },
+            { "Netherlands", "🇳🇱" },
+            { "Belgium", "🇧🇪" },
+            { "Switzerland", "🇨🇭" },
+            { "Sweden", "🇸🇪" },
+
+            // Americas
+            { "United States", "🇺🇸" },
+            { "USA", "🇺🇸" },
+            { "Canada", "🇨🇦" },
+            { "Mexico", "🇲🇽" },
+            { "Brazil", "🇧🇷" },
+            { "Argentina", "🇦🇷" },
+            { "Chile", "🇨🇱" },
+            { "Colombia", "🇨🇴" },
+
+            // Asia
+            { "China", "🇨🇳" },
+            { "India", "🇮🇳" },
+            { "Japan", "🇯🇵" },
+            { "Singapore", "🇸🇬" },
+            { "South Korea", "🇰🇷" },
+            { "Thailand", "🇹🇭" },
+            { "Indonesia", "🇮🇩" },
+            { "Malaysia", "🇲🇾" },
+            { "Philippines", "🇵🇭" },
+            { "Vietnam", "🇻🇳" },
+
+            // Middle East
+            { "UAE", "🇦🇪" },
+            { "United Arab Emirates", "🇦🇪" },
+            { "Saudi Arabia", "🇸🇦" },
+            { "Israel", "🇮🇱" },
+
+            // Oceania
+            { "Australia", "🇦🇺" },
+            { "New Zealand", "🇳🇿" }
+        };
+
+        return countryFlags.TryGetValue(country, out var flag) ? flag : "🌍";
+    }
+}
+
+@section Styles {
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .admin-header {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-header h1 {
+            color: #212529;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-header p {
+            color: #6c757d;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--card-color);
+        }
+
+        .stat-card:nth-child(1) { --card-color: #4c6ef5; }
+        .stat-card:nth-child(2) { --card-color: #10b981; }
+        .stat-card:nth-child(3) { --card-color: #6b7280; }
+        .stat-card:nth-child(4) { --card-color: #f59e0b; }
+        .stat-card:nth-child(5) { --card-color: #8b5cf6; }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-card:nth-child(1) .stat-icon { background: #4c6ef5; }
+        .stat-card:nth-child(2) .stat-icon { background: #10b981; }
+        .stat-card:nth-child(3) .stat-icon { background: #6b7280; }
+        .stat-card:nth-child(4) .stat-icon { background: #f59e0b; }
+        .stat-card:nth-child(5) .stat-icon { background: #8b5cf6; }
+
+        .stat-details {
+            text-align: right;
+        }
+
+        .stat-number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .reports-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+
+        .reports-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .reports-header h5 {
+            color: #212529;
+            font-weight: 600;
+            margin: 0;
+            font-size: 1.125rem;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 0.75rem;
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .filter-controls input,
+        .filter-controls select {
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .filter-controls input {
+            flex: 2;
+        }
+
+        .filter-controls select {
+            flex: 1;
+        }
+
+        .reports-table {
+            margin-bottom: 0;
+        }
+
+        .reports-table thead th {
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            color: #495057;
+            font-weight: 600;
+            font-size: 0.875rem;
+            padding: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .reports-table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .reports-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .report-title {
+            font-weight: 600;
+            color: #212529;
+            font-size: 0.9375rem;
+        }
+
+        .user-info-cell {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name-cell {
+            font-weight: 600;
+            color: #212529;
+            font-size: 0.875rem;
+        }
+
+        .user-email-cell {
+            color: #868e96;
+            font-size: 0.8125rem;
+        }
+
+        .location-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .country-flag {
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        .date-cell {
+            display: block;
+            font-weight: 500;
+            color: #212529;
+            font-size: 0.875rem;
+        }
+
+        .time-cell {
+            display: block;
+            color: #868e96;
+            font-size: 0.8125rem;
+        }
+
+        .btn-view {
+            background: #4c6ef5;
+            color: white;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-view:hover {
+            background: #3b5bdb;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(76, 110, 245, 0.3);
+        }
+    </style>
+}
+
+<div class="container py-4">
+    <!-- Header -->
+    <div class="admin-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1>Admin Dashboard</h1>
+            <p>Manage users, data, and system settings</p>
+        </div>
+        <a asp-action="Users" class="btn btn-primary">
+            <i class="bi bi-people me-2"></i> Manage Users
+        </a>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="stat-details">
+                    <div class="stat-number">@Model.TotalUsers</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
             </div>
-            <div class="card-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Email</th>
-                            <th>Name</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.Users != null)
-                        {
-                            @foreach (var user in Model.Users)
-                            {
-                                <tr>
-                                    <td>@user.Email</td>
-                                    <td>@user.FirstName @user.LastName</td>
-                                    <td>
-                                        <a asp-action="UserDetails" asp-route-id="@user.Id" class="btn btn-sm btn-info">Details</a>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
+        </div>
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="stat-details">
+                    <div class="stat-number">@Model.ActiveUsers</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-icon">
+                    <i class="bi bi-x-circle-fill"></i>
+                </div>
+                <div class="stat-details">
+                    <div class="stat-number">@Model.InactiveUsers</div>
+                    <div class="stat-label">Inactive Users</div>
+                </div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-icon">
+                    <i class="bi bi-file-text-fill"></i>
+                </div>
+                <div class="stat-details">
+                    <div class="stat-number">@Model.TotalReports</div>
+                    <div class="stat-label">Total Reports</div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5>Roles</h5>
-                    <a asp-action="CreateRole" class="btn btn-sm btn-primary">Create Role</a>
-                </div>
+
+    <!-- Reports Data Table -->
+    <div class="reports-section">
+        <div class="reports-header">
+            <h5><i class="bi bi-file-text me-2"></i>User Reports</h5>
+            <div class="filter-controls">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search by title, user, or location...">
+                <select id="userFilter" class="form-select">
+                    <option value="">All Users</option>
+                    @foreach (var report in Model.AllReports.GroupBy(r => r.UserEmail).Select(g => g.First()))
+                    {
+                        <option value="@report.UserEmail">@report.UserName</option>
+                    }
+                </select>
             </div>
-            <div class="card-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Role Name</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.Roles != null)
+        </div>
+        <div class="table-responsive">
+            <table class="table reports-table" id="reportsTable">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>User</th>
+                        <th>Location</th>
+                        <th>Created Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.AllReports != null && Model.AllReports.Any())
+                    {
+                        @foreach (var report in Model.AllReports)
                         {
-                            @foreach (var role in Model.Roles)
-                            {
-                                <tr>
-                                    <td>@role.Name</td>
-                                </tr>
-                            }
+                            <tr>
+                                <td>
+                                    <div class="report-title">@report.Title</div>
+                                </td>
+                                <td>
+                                    <div class="user-info-cell">
+                                        <div class="user-name-cell">@report.UserName</div>
+                                        <div class="user-email-cell">@report.UserEmail</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(report.City) || !string.IsNullOrEmpty(report.Country))
+                                    {
+                                        <div class="location-cell">
+                                            @if (!string.IsNullOrEmpty(report.Country))
+                                            {
+                                                <span class="country-flag">@GetCountryFlag(report.Country)</span>
+                                            }
+                                            <span>@report.City@(!string.IsNullOrEmpty(report.City) && !string.IsNullOrEmpty(report.Country) ? ", " : "")@report.Country</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="date-cell">@report.CreatedAt.ToString("MMM dd, yyyy")</span>
+                                    <span class="time-cell">@report.CreatedAt.ToString("hh:mm tt")</span>
+                                </td>
+                                <td>
+                                    <a asp-controller="Dashboard" asp-action="ViewReport" asp-route-id="@report.Id" class="btn btn-sm btn-view">
+                                        <i class="bi bi-eye me-1"></i> View
+                                    </a>
+                                </td>
+                            </tr>
                         }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox display-4"></i>
+                                <p class="mt-2">No reports found</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            const searchInput = $('#searchInput');
+            const userFilter = $('#userFilter');
+            const table = $('#reportsTable tbody');
+            const rows = table.find('tr');
+
+            function filterTable() {
+                const searchTerm = searchInput.val().toLowerCase();
+                const selectedUser = userFilter.val();
+
+                rows.each(function() {
+                    const row = $(this);
+                    const title = row.find('.report-title').text().toLowerCase();
+                    const userName = row.find('.user-name-cell').text().toLowerCase();
+                    const userEmail = row.find('.user-email-cell').text().toLowerCase();
+                    const location = row.find('td:eq(2)').text().toLowerCase();
+
+                    // Check if row matches search term
+                    const matchesSearch = !searchTerm ||
+                        title.includes(searchTerm) ||
+                        userName.includes(searchTerm) ||
+                        userEmail.includes(searchTerm) ||
+                        location.includes(searchTerm);
+
+                    // Check if row matches user filter
+                    const matchesUser = !selectedUser || userEmail === selectedUser.toLowerCase();
+
+                    // Show/hide row based on filters
+                    if (matchesSearch && matchesUser) {
+                        row.show();
+                    } else {
+                        row.hide();
+                    }
+                });
+
+                // Update empty state
+                updateEmptyState();
+            }
+
+            function updateEmptyState() {
+                const visibleRows = rows.filter(':visible').length;
+                const emptyRow = table.find('tr td[colspan]').parent();
+
+                if (visibleRows === 0 && emptyRow.length === 0) {
+                    table.append(`
+                        <tr class="empty-state">
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="bi bi-search display-4"></i>
+                                <p class="mt-2">No reports match your filters</p>
+                            </td>
+                        </tr>
+                    `);
+                } else if (visibleRows > 0) {
+                    table.find('.empty-state').remove();
+                }
+            }
+
+            // Event listeners
+            searchInput.on('keyup', filterTable);
+            userFilter.on('change', filterTable);
+        });
+    </script>
+}

@@ -1,0 +1,211 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Calculate actual revenue from all categories
+        window.calculateActualRevenue = function() {
+            // Category A
+            const compliantTaxpayersA = parseNumericValue('compliantTaxpayersCategoryA');
+            const avgValueA = parseNumericValue('avgValueLandPropertyCategoryA');
+            const taxRateA = parseNumericValue('taxRateCategoryA') / 100; // Convert percentage to decimal
+            const actualRevenueA = compliantTaxpayersA * avgValueA * taxRateA;
+            
+            // Category B
+            const compliantTaxpayersB = parseNumericValue('compliantTaxpayersCategoryB');
+            const avgValueB = parseNumericValue('avgValueLandPropertyCategoryB');
+            const taxRateB = parseNumericValue('taxRateCategoryB') / 100;
+            const actualRevenueB = compliantTaxpayersB * avgValueB * taxRateB;
+            
+            // Category C
+            const compliantTaxpayersC = parseNumericValue('compliantTaxpayersCategoryC');
+            const avgValueC = parseNumericValue('avgValueLandPropertyCategoryC');
+            const taxRateC = parseNumericValue('taxRateCategoryC') / 100;
+            const actualRevenueC = compliantTaxpayersC * avgValueC * taxRateC;
+            
+            // Dynamic categories
+            let dynamicCategoriesRevenue = 0;
+            const dynamicCategories = document.querySelectorAll('#dynamicPropertyTaxCategoriesContainer .category-card');
+            
+            dynamicCategories.forEach(function(category) {
+                const categoryId = category.id;
+                const compliantTaxpayers = parseNumericValue(category.querySelector('input[id^="compliantTaxpayers-"]').id);
+                const avgValue = parseNumericValue(category.querySelector('input[id^="avgValueLandProperty-"]').id);
+                const taxRate = parseNumericValue(category.querySelector('input[id^="taxRate-"]').id) / 100;
+                
+                const categoryRevenue = compliantTaxpayers * avgValue * taxRate;
+                dynamicCategoriesRevenue += categoryRevenue;
+            });
+            
+            // Total actual revenue
+            const totalActualRevenue = actualRevenueA + actualRevenueB + actualRevenueC + dynamicCategoriesRevenue;
+            return totalActualRevenue;
+        };
+        
+        // Calculate potential revenue if all registered taxpayers were compliant
+        window.calculatePotentialRevenue = function() {
+            // Category A
+            const registeredTaxpayersA = parseNumericValue('registeredTaxpayersCategoryA');
+            const avgValueA = parseNumericValue('avgValueLandPropertyCategoryA');
+            const taxRateA = parseNumericValue('taxRateCategoryA') / 100;
+            const potentialRevenueA = registeredTaxpayersA * avgValueA * taxRateA;
+            
+            // Category B
+            const registeredTaxpayersB = parseNumericValue('registeredTaxpayersCategoryB');
+            const avgValueB = parseNumericValue('avgValueLandPropertyCategoryB');
+            const taxRateB = parseNumericValue('taxRateCategoryB') / 100;
+            const potentialRevenueB = registeredTaxpayersB * avgValueB * taxRateB;
+            
+            // Category C
+            const registeredTaxpayersC = parseNumericValue('registeredTaxpayersCategoryC');
+            const avgValueC = parseNumericValue('avgValueLandPropertyCategoryC');
+            const taxRateC = parseNumericValue('taxRateCategoryC') / 100;
+            const potentialRevenueC = registeredTaxpayersC * avgValueC * taxRateC;
+            
+            // Dynamic categories
+            let dynamicCategoriesPotentialRevenue = 0;
+            const dynamicCategories = document.querySelectorAll('#dynamicPropertyTaxCategoriesContainer .category-card');
+            
+            dynamicCategories.forEach(function(category) {
+                const categoryId = category.id;
+                const registeredTaxpayers = parseNumericValue(category.querySelector('input[id^="registeredTaxpayers-"]').id);
+                const avgValue = parseNumericValue(category.querySelector('input[id^="avgValueLandProperty-"]').id);
+                const taxRate = parseNumericValue(category.querySelector('input[id^="taxRate-"]').id) / 100;
+                
+                const categoryPotentialRevenue = registeredTaxpayers * avgValue * taxRate;
+                dynamicCategoriesPotentialRevenue += categoryPotentialRevenue;
+            });
+            
+            // Total potential revenue
+            const totalPotentialRevenue = potentialRevenueA + potentialRevenueB + potentialRevenueC + dynamicCategoriesPotentialRevenue;
+            return totalPotentialRevenue;
+        };
+        
+        // Calculate revenue gap (difference between potential and actual revenue)
+        window.calculateRevenueGap = function(potentialRevenue, actualRevenue) {
+            return potentialRevenue - actualRevenue;
+        };
+        
+        // Calculate registration gap
+        window.calculateRegistrationGap = function() {
+            // Get the values needed for the formula
+            const totalEstimated = parseNumericValue('totalPropertyTaxPayers'); // B13
+            const totalRegistered = parseNumericValue('registeredPropertyTaxPayers'); // B14
+            
+            // Calculate unregistered taxpayers
+            const unregisteredTaxpayers = totalEstimated - totalRegistered;
+            
+            // Calculate average value and tax rate across all categories
+            let totalRegisteredTaxpayers = 0;
+            let weightedAvgValue = 0;
+            let weightedTaxRate = 0;
+            
+            // Static categories
+            const registeredA = parseNumericValue('registeredTaxpayersCategoryA');
+            const avgValueA = parseNumericValue('avgValueLandPropertyCategoryA');
+            const taxRateA = parseNumericValue('taxRateCategoryA') / 100;
+            
+            const registeredB = parseNumericValue('registeredTaxpayersCategoryB');
+            const avgValueB = parseNumericValue('avgValueLandPropertyCategoryB');
+            const taxRateB = parseNumericValue('taxRateCategoryB') / 100;
+            
+            const registeredC = parseNumericValue('registeredTaxpayersCategoryC');
+            const avgValueC = parseNumericValue('avgValueLandPropertyCategoryC');
+            const taxRateC = parseNumericValue('taxRateCategoryC') / 100;
+            
+            totalRegisteredTaxpayers = registeredA + registeredB + registeredC;
+            weightedAvgValue = (registeredA * avgValueA + registeredB * avgValueB + registeredC * avgValueC) / (totalRegisteredTaxpayers || 1);
+            weightedTaxRate = (registeredA * taxRateA + registeredB * taxRateB + registeredC * taxRateC) / (totalRegisteredTaxpayers || 1);
+            
+            // Dynamic categories
+            const dynamicCategories = document.querySelectorAll('#dynamicPropertyTaxCategoriesContainer .category-card');
+            let dynamicRegistered = 0;
+            let dynamicWeightedAvgValue = 0;
+            let dynamicWeightedTaxRate = 0;
+            
+            dynamicCategories.forEach(function(category) {
+                const registered = parseNumericValue(category.querySelector('input[id^="registeredTaxpayers-"]').id);
+                const avgValue = parseNumericValue(category.querySelector('input[id^="avgValueLandProperty-"]').id);
+                const taxRate = parseNumericValue(category.querySelector('input[id^="taxRate-"]').id) / 100;
+                
+                dynamicRegistered += registered;
+                dynamicWeightedAvgValue += registered * avgValue;
+                dynamicWeightedTaxRate += registered * taxRate;
+            });
+            
+            totalRegisteredTaxpayers += dynamicRegistered;
+            
+            if (dynamicRegistered > 0) {
+                weightedAvgValue = ((registeredA * avgValueA + registeredB * avgValueB + registeredC * avgValueC + dynamicWeightedAvgValue) / totalRegisteredTaxpayers) || 0;
+                weightedTaxRate = ((registeredA * taxRateA + registeredB * taxRateB + registeredC * taxRateC + dynamicWeightedTaxRate) / totalRegisteredTaxpayers) || 0;
+            }
+            
+            // Calculate registration gap
+            const registrationGap = unregisteredTaxpayers * weightedAvgValue * weightedTaxRate;
+            
+            return registrationGap;
+        };
+        
+        // Calculate compliance gap
+        window.calculateComplianceGap = function() {
+            // Calculate the difference between registered and compliant taxpayers for each category
+            // and multiply by average value and tax rate
+            
+            // Category A
+            const registeredA = parseNumericValue('registeredTaxpayersCategoryA');
+            const compliantA = parseNumericValue('compliantTaxpayersCategoryA');
+            const avgValueA = parseNumericValue('avgValueLandPropertyCategoryA');
+            const taxRateA = parseNumericValue('taxRateCategoryA') / 100;
+            const complianceGapA = (registeredA - compliantA) * avgValueA * taxRateA;
+            
+            // Category B
+            const registeredB = parseNumericValue('registeredTaxpayersCategoryB');
+            const compliantB = parseNumericValue('compliantTaxpayersCategoryB');
+            const avgValueB = parseNumericValue('avgValueLandPropertyCategoryB');
+            const taxRateB = parseNumericValue('taxRateCategoryB') / 100;
+            const complianceGapB = (registeredB - compliantB) * avgValueB * taxRateB;
+            
+            // Category C
+            const registeredC = parseNumericValue('registeredTaxpayersCategoryC');
+            const compliantC = parseNumericValue('compliantTaxpayersCategoryC');
+            const avgValueC = parseNumericValue('avgValueLandPropertyCategoryC');
+            const taxRateC = parseNumericValue('taxRateCategoryC') / 100;
+            const complianceGapC = (registeredC - compliantC) * avgValueC * taxRateC;
+            
+            // Dynamic categories
+            let dynamicComplianceGap = 0;
+            const dynamicCategories = document.querySelectorAll('#dynamicPropertyTaxCategoriesContainer .category-card');
+            
+            dynamicCategories.forEach(function(category) {
+                const registered = parseNumericValue(category.querySelector('input[id^="registeredTaxpayers-"]').id);
+                const compliant = parseNumericValue(category.querySelector('input[id^="compliantTaxpayers-"]').id);
+                const avgValue = parseNumericValue(category.querySelector('input[id^="avgValueLandProperty-"]').id);
+                const taxRate = parseNumericValue(category.querySelector('input[id^="taxRate-"]').id) / 100;
+                
+                const categoryComplianceGap = (registered - compliant) * avgValue * taxRate;
+                dynamicComplianceGap += categoryComplianceGap;
+            });
+            
+            // Total compliance gap
+            const totalComplianceGap = complianceGapA + complianceGapB + complianceGapC + dynamicComplianceGap;
+            
+            return totalComplianceGap;
+        };
+        
+        // Calculate assessment/valuation gap
+        window.calculateAssessmentValuationGap = function() {
+            // For simplicity, we'll assume a fixed percentage (e.g., 15%) of the potential revenue
+            // In a real implementation, this would be based on more complex calculations
+            const potentialRevenue = calculatePotentialRevenue();
+            const assessmentGapPercentage = 0.15; // 15%
+            
+            return potentialRevenue * assessmentGapPercentage;
+        };
+        
+        // Calculate combined gaps (other gaps not covered by registration, compliance, and assessment)
+        window.calculateCombinedGaps = function(revenueGap, registrationGap, complianceGap, assessmentGap) {
+            // The combined gaps is what remains after accounting for the three main gaps
+            const combinedGaps = revenueGap - (registrationGap + complianceGap + assessmentGap);
+            
+            // Ensure it's not negative (which could happen due to calculation imprecisions)
+            return Math.max(0, combinedGaps);
+        };
+    });
+</script>

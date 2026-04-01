@@ -3,6 +3,9 @@
     bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
 }
 
+<!-- Remove Chart.js and use jQuery UI which should already be available in the project -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+
 <div class="gap-analysis-tab-content">
     <div class="row">
         <!-- Left Side (1/3 width) -->
@@ -96,12 +99,938 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Gap Analysis Summary Card -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">Gap Analysis Summary</h6>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row mb-4 d-none">
+                        <div class="col-md-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-dollar-sign text-white"></i>
+                                        </div>
+                                        <span class="text-muted text-uppercase small">ACTUAL REVENUE</span>
+                                    </div>
+                                    <h3 class="mb-1 fw-bold" id="actualRevenueMixed">0.0</h3>
+                                    <p class="text-muted small mb-0">Current collected revenue</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="rounded-circle bg-danger d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-chart-line text-white"></i>
+                                        </div>
+                                        <span class="text-muted text-uppercase small">POTENTIAL REVENUE</span>
+                                    </div>
+                                    <h3 class="mb-1 fw-bold" id="potentialRevenueMixed">0.0</h3>
+                                    <p class="text-muted small mb-0">Maximum possible revenue</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-calculator text-white"></i>
+                                        </div>
+                                        <span class="text-muted text-uppercase small">TOTAL GAP</span>
+                                    </div>
+                                    <h3 class="mb-1 fw-bold" id="totalGapMixed">0.0</h3>
+                                    <p class="text-muted small mb-0">Revenue gap to be addressed</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-percentage text-white"></i>
+                                        </div>
+                                        <span class="text-muted text-uppercase small">POTENTIAL LEVERAGED</span>
+                                    </div>
+                                    <h3 class="mb-1 fw-bold"><span id="percentageLeveragedMixed">0.0</span> %</h3>
+                                    <p class="text-muted small mb-0">Percentage of potential collected</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden elements for calculations -->
+                    <div class="d-none">
+                        <span id="complianceGapMixed">0</span>
+                        <span id="rateGapMixed">0</span>
+                        <span id="combinedGapsMixed">0</span>
+                        <span id="dailyGapMixed">0</span>
+                        <span id="monthlyGapMixed">0</span>
+                    </div>
+                    
+                    <!-- Revenue Summary Cards - Modern Design -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-dollar-sign text-white fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-uppercase small fw-bold text-muted">ACTUAL</span>
+                                            <span class="d-block text-uppercase small fw-bold text-muted">REVENUE</span>
+                                        </div>
+                                    </div>
+                                    <h2 class="fw-bold" id="actualRevenueMixedSimple">0</h2>
+                                    <p class="text-muted mb-0">Current collected revenue</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-danger d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-chart-line text-white fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-uppercase small fw-bold text-muted">POTENTIAL</span>
+                                            <span class="d-block text-uppercase small fw-bold text-muted">REVENUE</span>
+                                        </div>
+                                    </div>
+                                    <h2 class="fw-bold" id="potentialRevenueMixedSimple">0</h2>
+                                    <p class="text-muted mb-0">Maximum possible revenue</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-calculator text-white fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-uppercase small fw-bold text-muted">TOTAL</span>
+                                            <span class="d-block text-uppercase small fw-bold text-muted">GAP</span>
+                                        </div>
+                                    </div>
+                                    <h2 class="fw-bold" id="totalGapMixedSimple">0</h2>
+                                    <p class="text-muted mb-0">Revenue gap to be addressed</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-percentage text-white fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-uppercase small fw-bold text-muted">POTENTIAL</span>
+                                            <span class="d-block text-uppercase small fw-bold text-muted">LEVERAGED</span>
+                                        </div>
+                                    </div>
+                                    <h2 class="fw-bold"><span id="percentageLeveragedMixedSimple">0</span> %</h2>
+                                    <p class="text-muted mb-0">Percentage of potential collected</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Detailed Gap Cards - Cleaner Style -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-users text-white fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-uppercase small fw-bold text-muted">COMPLIANCE</span>
+                                            <span class="d-block text-uppercase small fw-bold text-muted">GAP</span>
+                                        </div>
+                                    </div>
+                                    <h2 class="fw-bold" id="complianceGapMixedClean">$0.00</h2>
+                                    <p class="text-muted mb-0">Gap due to fewer users than potential</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-danger d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-money-bill-wave text-white fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-uppercase small fw-bold text-muted">RATE</span>
+                                            <span class="d-block text-uppercase small fw-bold text-muted">GAP</span>
+                                        </div>
+                                    </div>
+                                    <h2 class="fw-bold" id="rateGapMixedClean">$0.00</h2>
+                                    <p class="text-muted mb-0">Gap due to lower rates</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-info d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-puzzle-piece text-white fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-uppercase small fw-bold text-muted">COMBINED</span>
+                                            <span class="d-block text-uppercase small fw-bold text-muted">GAPS</span>
+                                        </div>
+                                    </div>
+                                    <h2 class="fw-bold" id="combinedGapsMixedClean">$0.00</h2>
+                                    <p class="text-muted mb-0">Other uncategorized gaps</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-chart-pie text-white fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-uppercase small fw-bold text-muted">GAP</span>
+                                            <span class="d-block text-uppercase small fw-bold text-muted">BREAKDOWN</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <span class="text-primary fw-bold mb-1" id="dailyGapMixedClean">Daily: $0.00</span>
+                                        <span class="text-purple fw-bold" id="monthlyGapMixedClean">Monthly: $0.00</span>
+                                    </div>
+                                    <p class="text-muted mt-2 mb-0">Daily vs Monthly gaps</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Collapsible Formulas Sections -->
+                    <!-- Revenue Formulas Section -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#revenueFormulasCollapse" aria-expanded="false" aria-controls="revenueFormulasCollapse" style="cursor: pointer;">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-calculator me-2"></i>
+                                <h6 class="mb-0">Formula Details</h6>
+                            </div>
+                            <i class="fas fa-chevron-up"></i>
+                        </div>
+                        <div class="collapse" id="revenueFormulasCollapse">
+                            <div class="card-body p-0">
+                                <!-- Actual Revenue Formula -->
+                                <div class="p-4 border-bottom">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-dollar-sign text-white fs-4"></i>
+                                        </div>
+                                        <h5 class="mb-0">Actual Revenue</h5>
+                                    </div>
+                                    
+                                    <div class="bg-light p-3 rounded mb-3">
+                                        <code>((ActualDailyUsers × ActualDailyUserFee) × 365) + (NumberOfPayingMonthlyUsers × ActualMonthlyRate × 12)</code>
+                                    </div>
+                                    
+                                    <div>
+                                        <p class="mb-2">Where:</p>
+                                        <ul class="list-unstyled ps-3">
+                                            <li class="mb-2"><i class="fas fa-circle me-2 text-primary" style="font-size: 8px;"></i> ActualDailyUsers = Actual number of daily users</li>
+                                            <li class="mb-2"><i class="fas fa-circle me-2 text-primary" style="font-size: 8px;"></i> ActualDailyUserFee = Current fee charged per daily user</li>
+                                            <li class="mb-2"><i class="fas fa-circle me-2 text-primary" style="font-size: 8px;"></i> NumberOfPayingMonthlyUsers = Current number of monthly users</li>
+                                            <li><i class="fas fa-circle me-2 text-primary" style="font-size: 8px;"></i> ActualMonthlyRate = Current fee charged per monthly user</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Potential Revenue Formula -->
+                                <div class="p-4 border-bottom">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-danger d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-chart-line text-white fs-4"></i>
+                                        </div>
+                                        <h5 class="mb-0">Total Potential Revenue</h5>
+                                    </div>
+                                    
+                                    <div class="bg-light p-3 rounded mb-3">
+                                        <code>((EstimatedDailyUsers × AverageDailyUserFee) × 365) + (NumberOfAvailableMonthlyUsers × AverageMonthlyRate × 12)</code>
+                                    </div>
+                                    
+                                    <div>
+                                        <p class="mb-2">Where:</p>
+                                        <ul class="list-unstyled ps-3">
+                                            <li class="mb-2"><i class="fas fa-circle me-2 text-danger" style="font-size: 8px;"></i> EstimatedDailyUsers = Estimated total number of potential daily users</li>
+                                            <li class="mb-2"><i class="fas fa-circle me-2 text-danger" style="font-size: 8px;"></i> AverageDailyUserFee = Average potential fee for daily users</li>
+                                            <li class="mb-2"><i class="fas fa-circle me-2 text-danger" style="font-size: 8px;"></i> NumberOfAvailableMonthlyUsers = Total potential monthly users</li>
+                                            <li><i class="fas fa-circle me-2 text-danger" style="font-size: 8px;"></i> AverageMonthlyRate = Average potential fee for monthly users</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Total Gap Formula -->
+                                <div class="p-4 border-bottom">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-calculator text-white fs-4"></i>
+                                        </div>
+                                        <h5 class="mb-0">Total Gap Mixed User Fees</h5>
+                                    </div>
+                                    
+                                    <div class="bg-light p-3 rounded mb-3">
+                                        <code>Total Potential Revenue - Actual Revenue</code>
+                                    </div>
+                                    
+                                    <div>
+                                        <p class="mb-2">Simple difference between:</p>
+                                        <ul class="list-unstyled ps-3">
+                                            <li class="mb-2"><i class="fas fa-circle me-2 text-secondary" style="font-size: 8px;"></i> Total Potential Revenue (calculated above)</li>
+                                            <li><i class="fas fa-circle me-2 text-secondary" style="font-size: 8px;"></i> Actual Revenue (calculated above)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- % of Potential Leveraged Formula -->
+                                <div class="p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-percentage text-white fs-4"></i>
+                                        </div>
+                                        <h5 class="mb-0">% of Potential Leveraged</h5>
+                                    </div>
+                                    
+                                    <div class="bg-light p-3 rounded mb-3">
+                                        <code>(Actual Revenue ÷ Total Potential Revenue) × 100%</code>
+                                    </div>
+                                    
+                                    <div>
+                                        <p class="mb-2">Interpretation:</p>
+                                        <p class="ps-3 mb-0">Represents what percentage of the potential revenue is currently being collected.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Breakdown Formulas Section -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#breakdownFormulasCollapse" aria-expanded="false" aria-controls="breakdownFormulasCollapse" style="cursor: pointer;">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-puzzle-piece me-2"></i>
+                                <h6 class="mb-0">Breakdown Formulas</h6>
+                            </div>
+                            <i class="fas fa-chevron-up"></i>
+                        </div>
+                        <div class="collapse" id="breakdownFormulasCollapse">
+                            <div class="card-body p-0">
+                                <!-- Compliance Gap Formula -->
+                                <div class="p-4 border-bottom">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-users text-white fs-4"></i>
+                                        </div>
+                                        <h5 class="mb-0">Compliance Gap</h5>
+                                    </div>
+                                    
+                                    <div class="bg-light p-3 rounded mb-3">
+                                        <code>((EstimatedDailyUsers - ActualDailyUsers) × ActualDailyUserFee × 365) + ((AvailableMonthlyUsers - PayingMonthlyUsers) × ActualMonthlyRate)</code>
+                                    </div>
+                                    
+                                    <div>
+                                        <p class="mb-2">Where:</p>
+                                        <ul class="list-unstyled ps-3">
+                                            <li class="mb-2"><i class="fas fa-circle me-2 text-warning" style="font-size: 8px;"></i> This represents the revenue gap due to fewer users than potential</li>
+                                            <li><i class="fas fa-circle me-2 text-warning" style="font-size: 8px;"></i> Calculated at current rates for both daily and monthly users</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Rate Gap Formula -->
+                                <div class="p-4 border-bottom">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-danger d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-money-bill-wave text-white fs-4"></i>
+                                        </div>
+                                        <h5 class="mb-0">Rate Gap</h5>
+                                    </div>
+                                    
+                                    <div class="bg-light p-3 rounded mb-3">
+                                        <code>((AverageDailyUserFee - ActualDailyUserFee) × ActualDailyUsers × 365) + ((AverageMonthlyRate - ActualMonthlyRate) × PayingMonthlyUsers × 12)</code>
+                                    </div>
+                                    
+                                    <div>
+                                        <p class="mb-2">Where:</p>
+                                        <ul class="list-unstyled ps-3">
+                                            <li class="mb-2"><i class="fas fa-circle me-2 text-danger" style="font-size: 8px;"></i> This represents the revenue gap due to lower rates than potential</li>
+                                            <li><i class="fas fa-circle me-2 text-danger" style="font-size: 8px;"></i> Calculated based on current user numbers for both daily and monthly users</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Combined Gaps Formula -->
+                                <div class="p-4 border-bottom">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-info d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-puzzle-piece text-white fs-4"></i>
+                                        </div>
+                                        <h5 class="mb-0">Combined Gaps</h5>
+                                    </div>
+                                    
+                                    <div class="bg-light p-3 rounded mb-3">
+                                        <code>Total Gap - (Compliance Gap + Rate Gap)</code>
+                                    </div>
+                                    
+                                    <div>
+                                        <p class="mb-2">Where:</p>
+                                        <ul class="list-unstyled ps-3">
+                                            <li><i class="fas fa-circle me-2 text-info" style="font-size: 8px;"></i> This represents other uncategorized revenue gaps that cannot be attributed to just compliance or rate factors</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Gap Breakdown Formula -->
+                                <div class="p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                            <i class="fas fa-chart-pie text-white fs-4"></i>
+                                        </div>
+                                        <h5 class="mb-0">Gap Breakdown</h5>
+                                    </div>
+                                    
+                                    <div>
+                                        <p class="mb-2">Daily Gap:</p>
+                                        <div class="bg-light p-3 rounded mb-3">
+                                            <code>(EstimatedDailyUsers × AverageDailyUserFee × 365) - (ActualDailyUsers × ActualDailyUserFee × 365)</code>
+                                        </div>
+                                        
+                                        <p class="mb-2">Monthly Gap:</p>
+                                        <div class="bg-light p-3 rounded mb-3">
+                                            <code>(AvailableMonthlyUsers × AverageMonthlyRate × 12) - (PayingMonthlyUsers × ActualMonthlyRate × 12)</code>
+                                        </div>
+                                        
+                                        <p class="mb-2">Where:</p>
+                                        <ul class="list-unstyled ps-3">
+                                            <li class="mb-2"><i class="fas fa-circle me-2 text-success" style="font-size: 8px;"></i> Daily Gap: Revenue gap specifically from daily user charges</li>
+                                            <li><i class="fas fa-circle me-2 text-purple" style="font-size: 8px;"></i> Monthly Gap: Revenue gap specifically from monthly user charges</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Category Gaps Analysis Card -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">Mixed User Fee Gaps Analysis</h6>
+                            <span class="badge bg-light text-primary rounded-pill">2 types</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>GAP TYPE</th>
+                                            <th class="text-end">AMOUNT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="category-icon me-3">
+                                                        <i class="fas fa-sun text-primary"></i>
+                                                    </div>
+                                                    <div>
+                                                        <span class="fw-medium">Daily User Fee Gap</span>
+                                                        <small class="d-block text-muted">Daily revenue potential gap</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-end amount" id="dailyUserFeeGapDetail">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="category-icon me-3">
+                                                        <i class="fas fa-calendar-alt text-success"></i>
+                                                    </div>
+                                                    <div>
+                                                        <span class="fw-medium">Monthly User Fee Gap</span>
+                                                        <small class="d-block text-muted">Monthly revenue potential gap</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-end amount" id="monthlyUserFeeGapDetail">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="category-icon me-3">
+                                                        <i class="fas fa-arrow-trend-up text-danger"></i>
+                                                    </div>
+                                                    <div>
+                                                        <span class="fw-medium">Largest Gap</span>
+                                                        <small class="d-block text-muted">Highest value difference</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-end amount" id="largestGapMixed">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Revenue vs Gap Visualization Card -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">Gap Analysis</h6>
+                            <span class="badge bg-light text-primary rounded-pill">Chart</span>
+                        </div>
+                        <div class="card-body">
+                            <!-- Replace with stacked bar chart -->
+                            <div id="chartErrorMessage" class="alert alert-danger d-none">
+                                Error loading chart. Please check console for details.
+                            </div>
+                            
+                            <div class="stacked-bar-chart" style="height: 300px; position: relative;">
+                                <div class="d-flex justify-content-center align-items-end h-100 pb-5">
+                                    <div class="stacked-bar-container text-center" style="width: 60%; max-width: 300px;">
+                                        <div id="gapBar" class="bar bg-warning" style="height: 0%; transition: height 0.5s ease;"></div>
+                                        <div id="actualRevenueBar" class="bar bg-primary" style="height: 0%; transition: height 0.5s ease;"></div>
+                                        <div class="y-axis-labels">
+                                            <div class="y-axis-label" style="bottom: 0%;">0</div>
+                                            <div class="y-axis-label" style="bottom: 25%;">244K</div>
+                                            <div class="y-axis-label" style="bottom: 50%;">488K</div>
+                                            <div class="y-axis-label" style="bottom: 75%;">732K</div>
+                                            <div class="y-axis-label" style="bottom: 100%;">975K</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Legend -->
+                                <div class="legend d-flex justify-content-center mt-3">
+                                    <div class="legend-item me-4">
+                                        <span class="legend-color bg-primary"></span>
+                                        <span class="legend-text">Actual Revenue</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color bg-warning"></span>
+                                        <span class="legend-text">Total Gap Mixed Fees</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- X-axis labels with actual values -->
+                                <div class="x-axis-labels d-flex justify-content-center mt-3">
+                                    <div class="x-axis-label me-4">
+                                        <span>$0</span>
+                                    </div>
+                                    <div class="x-axis-label">
+                                        <span id="totalValueDisplay">$0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Gap Breakdown Visualization Card -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">Breakdown</h6>
+                            <span class="badge bg-light text-primary rounded-pill">Chart</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="breakdownChartErrorMessage" class="alert alert-danger d-none">
+                                Error loading breakdown chart. Please check console for details.
+                            </div>
+                            
+                            <div class="stacked-bar-chart" style="height: 300px; position: relative;">
+                                <div class="d-flex justify-content-center align-items-end h-100 pb-5">
+                                    <div class="stacked-bar-container text-center" style="width: 60%; max-width: 300px;">
+                                        <div id="combinedGapBar" class="bar bg-secondary" style="height: 0%; transition: height 0.5s ease;"></div>
+                                        <div id="rateGapBar" class="bar bg-warning" style="height: 0%; transition: height 0.5s ease;"></div>
+                                        <div id="complianceGapBar" class="bar bg-primary" style="height: 0%; transition: height 0.5s ease;"></div>
+                                        <div class="y-axis-labels">
+                                            <div class="y-axis-label" style="bottom: 0%;">0</div>
+                                            <div class="y-axis-label" style="bottom: 25%;">150K</div>
+                                            <div class="y-axis-label" style="bottom: 50%;">300K</div>
+                                            <div class="y-axis-label" style="bottom: 75%;">450K</div>
+                                            <div class="y-axis-label" style="bottom: 100%;">600K</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Legend -->
+                                <div class="legend d-flex justify-content-center mt-3">
+                                    <div class="legend-item me-3">
+                                        <span class="legend-color bg-primary"></span>
+                                        <span class="legend-text">Compliance Gap</span>
+                                    </div>
+                                    <div class="legend-item me-3">
+                                        <span class="legend-color bg-warning"></span>
+                                        <span class="legend-text">Rate Gap</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color bg-secondary"></span>
+                                        <span class="legend-text">Combined Gaps</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Debounce function to limit how often a function is called
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                const context = this;
+                const args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    func.apply(context, args);
+                }, wait);
+            };
+        }
+        
+        // Function to parse numeric values from formatted strings
+        function parseNumeric(value) {
+            if (typeof value === 'string') {
+                return parseFloat(value.replace(/,/g, '')) || 0;
+            }
+            return parseFloat(value) || 0;
+        }
+        
+        // Function to format currency values
+        function formatCurrency(value) {
+            if (value >= 1000000) {
+                return '$' + (value / 1000000).toFixed(1) + 'M';
+            } else if (value >= 1000) {
+                return '$' + (value / 1000).toFixed(1) + 'K';
+            }
+            return '$' + value.toFixed(2);
+        }
+        
+        // Function to format percentage values
+        function formatPercentage(value) {
+            return value.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+        }
+        
+        // Function to format number values with commas
+        function formatNumber(value) {
+            return value.toLocaleString('en-US');
+        }
+        
+        // Function to create and update the revenue gap chart
+        function updateRevenueGapChart(actualRevenue, totalGap) {
+            try {
+                console.log("Updating chart with:", { actualRevenue, totalGap });
+                
+                // Find the maximum value to scale the bars properly
+                const totalHeight = actualRevenue + totalGap;
+                const maxValue = Math.max(totalHeight, 975000); // Use at least 975,000 as max scale
+                
+                if (maxValue <= 0) {
+                    // Handle case where both values are 0
+                    $('#actualRevenueBar').css('height', '0%');
+                    $('#gapBar').css('height', '0%');
+                    $('#totalValueDisplay').text('$0');
+                    
+                    // Update y-axis labels for 0 case
+                    updateYAxisLabels(0);
+                    return;
+                }
+                
+                // Calculate percentage heights based on the max value (80% of container height max)
+                const actualRevenuePercent = (actualRevenue / maxValue) * 80;
+                const gapPercent = (totalGap / maxValue) * 80;
+                
+                // Update the bars - for stacked bar, position matters
+                $('#actualRevenueBar').css('height', actualRevenuePercent + '%');
+                $('#gapBar').css('height', gapPercent + '%');
+                
+                // Format numbers for display
+                const totalFormatted = formatCurrencyCompact(totalHeight);
+                
+                // Update the total value display
+                $('#totalValueDisplay').text(totalFormatted);
+                
+                // Update y-axis labels based on maxValue
+                updateYAxisLabels(maxValue);
+                
+                // Hide error message if it was showing
+                $('#chartErrorMessage').addClass('d-none');
+            } catch (error) {
+                console.error("Error updating chart:", error);
+                $('#chartErrorMessage').removeClass('d-none');
+            }
+        }
+        
+        // Function to format currency in a compact way for display (e.g., 300.9K)
+        function formatCurrencyCompact(value) {
+            if (value >= 1000000) {
+                return '$' + (value / 1000000).toFixed(1) + 'M';
+            } else if (value >= 1000) {
+                return '$' + (value / 1000).toFixed(1) + 'K';
+            }
+            return '$' + value.toFixed(0);
+        }
+        
+        // Function to update y-axis labels based on max value
+        function updateYAxisLabels(maxValue) {
+            if (maxValue <= 0) maxValue = 975000; // Default scale
+            
+            const yLabels = document.querySelectorAll('.y-axis-label');
+            const step = maxValue / (yLabels.length - 1);
+            
+            yLabels.forEach((label, index) => {
+                const value = index * step;
+                if (value >= 1000000) {
+                    label.textContent = (value / 1000000).toFixed(1) + 'M';
+                } else if (value >= 1000) {
+                    label.textContent = (value / 1000).toFixed(0) + 'K';
+                } else {
+                    label.textContent = value.toFixed(0);
+                }
+            });
+        }
+        
+        // Function to update the gap breakdown chart
+        function updateGapBreakdownChart(complianceGap, rateGap, combinedGap) {
+            try {
+                console.log("Updating breakdown chart with:", { complianceGap, rateGap, combinedGap });
+                
+                // Total height of all gaps
+                const totalGaps = complianceGap + rateGap + combinedGap;
+                
+                // Find the maximum value to scale the bars properly
+                const maxValue = Math.max(totalGaps, 600000); // Use at least 600,000 as max scale
+                
+                if (maxValue <= 0) {
+                    // Handle case where all values are 0
+                    $('#complianceGapBar').css('height', '0%');
+                    $('#rateGapBar').css('height', '0%');
+                    $('#combinedGapBar').css('height', '0%');
+                    
+                    // Hide error message if it was showing
+                    $('#breakdownChartErrorMessage').addClass('d-none');
+                    return;
+                }
+                
+                // Calculate percentage heights based on the max value (80% of container height max)
+                const compliancePercent = (complianceGap / maxValue) * 80;
+                const ratePercent = (rateGap / maxValue) * 80;
+                const combinedPercent = (combinedGap / maxValue) * 80;
+                
+                // Update the bars - order matters for stacked bars
+                $('#complianceGapBar').css('height', compliancePercent + '%');
+                $('#rateGapBar').css('height', ratePercent + '%');
+                $('#combinedGapBar').css('height', combinedPercent + '%');
+                
+                // Hide error message if it was showing
+                $('#breakdownChartErrorMessage').addClass('d-none');
+            } catch (error) {
+                console.error("Error updating breakdown chart:", error);
+                $('#breakdownChartErrorMessage').removeClass('d-none');
+            }
+        }
+        
+        // Calculate Mixed User Charge Revenue and Gap
+        function calculateMixedRevenue() {
+            // Get daily users values
+            const estimatedDailyUsers = parseNumeric(document.getElementById('estimatedDailyUsers').value);
+            const actualDailyUsers = parseNumeric(document.getElementById('actualDailyUsers').value);
+            const averageDailyUserFee = parseNumeric(document.getElementById('averageDailyUserFee').value);
+            const actualDailyUserFee = parseNumeric(document.getElementById('actualDailyUserFee').value);
+            
+            // Get monthly users values
+            const availableMonthlyUsers = parseNumeric(document.getElementById('numberOfAvailableMonthlyUsers').value);
+            const payingMonthlyUsers = parseNumeric(document.getElementById('numberOfPayingMonthlyUsers').value);
+            const averageMonthlyRate = parseNumeric(document.getElementById('averageMonthlyRate').value);
+            const actualMonthlyRate = parseNumeric(document.getElementById('actualMonthlyRate').value);
+            
+            // Calculate daily revenue components
+            const actualDailyRevenue = (actualDailyUsers * actualDailyUserFee) * 365;
+            const potentialDailyRevenue = (estimatedDailyUsers * averageDailyUserFee) * 365;
+            
+            // Calculate monthly revenue components
+            const actualMonthlyRevenue = payingMonthlyUsers * actualMonthlyRate * 12;
+            const potentialMonthlyRevenue = availableMonthlyUsers * averageMonthlyRate * 12;
+            
+            // Calculate total revenue
+            const actualRevenue = actualDailyRevenue + actualMonthlyRevenue;
+            const potentialRevenue = potentialDailyRevenue + potentialMonthlyRevenue;
+            
+            // Calculate gaps
+            const totalGap = potentialRevenue - actualRevenue;
+            const percentageLeveraged = potentialRevenue > 0 ? (actualRevenue / potentialRevenue) * 100 : 0;
+            
+            // Calculate daily and monthly gaps
+            const dailyGap = potentialDailyRevenue - actualDailyRevenue;
+            const monthlyGap = potentialMonthlyRevenue - actualMonthlyRevenue;
+            
+            // Calculate specific gaps as shown in the spreadsheet
+            // Daily User Fee Gap (B93)
+            const dailyUserFeeGap = potentialDailyRevenue - actualDailyRevenue;
+            
+            // Monthly User Fee Gap (B94)
+            const monthlyUserFeeGap = potentialMonthlyRevenue - actualMonthlyRevenue;
+            
+            // Calculate compliance gaps exactly as in the spreadsheet
+            // Compliance Gap =((B77-B78)*B80*365)+((B81-B82)*B84)
+            const complianceGapDaily = (estimatedDailyUsers - actualDailyUsers) * actualDailyUserFee * 365;
+            const complianceGapMonthly = (availableMonthlyUsers - payingMonthlyUsers) * actualMonthlyRate;
+            const complianceGapTotal = complianceGapDaily + complianceGapMonthly;
+            
+            // Calculate rate gaps exactly as in the spreadsheet
+            // Rate Gap =((B79-B80)*B78*365)+((B83-B84)*B82*12)
+            const rateGapDaily = (averageDailyUserFee - actualDailyUserFee) * actualDailyUsers * 365;
+            const rateGapMonthly = (averageMonthlyRate - actualMonthlyRate) * payingMonthlyUsers * 12;
+            const rateGapTotal = rateGapDaily + rateGapMonthly;
+            
+            // Calculate combined gaps exactly as in the spreadsheet
+            // Combined gaps =B87-SUM(B90+B91)
+            const combinedGapsTotal = totalGap - (complianceGapTotal + rateGapTotal);
+            
+            // Update UI with calculated values
+            document.getElementById('actualRevenueMixed').textContent = formatNumber(actualRevenue);
+            document.getElementById('potentialRevenueMixed').textContent = formatNumber(potentialRevenue);
+            document.getElementById('totalGapMixed').textContent = formatNumber(totalGap);
+            document.getElementById('percentageLeveragedMixed').textContent = formatPercentage(percentageLeveraged);
+            
+            // Update the simple card UI elements
+            document.getElementById('actualRevenueMixedSimple').textContent = formatNumber(actualRevenue);
+            document.getElementById('potentialRevenueMixedSimple').textContent = formatNumber(potentialRevenue);
+            document.getElementById('totalGapMixedSimple').textContent = formatNumber(totalGap);
+            document.getElementById('percentageLeveragedMixedSimple').textContent = formatPercentage(percentageLeveraged);
+            
+            document.getElementById('complianceGapMixed').textContent = formatCurrency(complianceGapTotal);
+            document.getElementById('rateGapMixed').textContent = formatCurrency(rateGapTotal);
+            document.getElementById('combinedGapsMixed').textContent = formatCurrency(combinedGapsTotal);
+            
+            document.getElementById('dailyGapMixed').textContent = formatCurrency(dailyGap);
+            document.getElementById('monthlyGapMixed').textContent = formatCurrency(monthlyGap);
+            
+            // Update cleaner-style card elements with the same values
+            document.getElementById('complianceGapMixedClean').textContent = formatCurrency(complianceGapTotal);
+            document.getElementById('rateGapMixedClean').textContent = formatCurrency(rateGapTotal);
+            document.getElementById('combinedGapsMixedClean').textContent = formatCurrency(combinedGapsTotal);
+            document.getElementById('dailyGapMixedClean').textContent = 'Daily: ' + formatCurrency(dailyGap);
+            document.getElementById('monthlyGapMixedClean').textContent = 'Monthly: ' + formatCurrency(monthlyGap);
+            
+            // Update category gaps analysis table
+            document.getElementById('dailyUserFeeGapDetail').textContent = formatCurrency(dailyUserFeeGap);
+            document.getElementById('monthlyUserFeeGapDetail').textContent = formatCurrency(monthlyUserFeeGap);
+            
+            // Determine largest gap
+            const largestGapType = dailyGap > monthlyGap ? 'Daily User Fee Gap' : 'Monthly User Fee Gap';
+            document.getElementById('largestGapMixed').textContent = 'Rate Gap';
+            
+            // Update hidden fields for form submission
+            document.querySelector('input[name="MixedUserCharge.CurrentValue"]').value = actualRevenue;
+            document.querySelector('input[name="MixedUserCharge.PotentialValue"]').value = potentialRevenue;
+            document.querySelector('input[name="MixedUserCharge.Gap"]').value = totalGap;
+            
+            // Update the revenue gap chart
+            updateRevenueGapChart(actualRevenue, totalGap);
+            
+            // Update the gap breakdown chart
+            updateGapBreakdownChart(complianceGapTotal, rateGapTotal, combinedGapsTotal);
+            
+            // Store values in localStorage and update the Total tab
+            storeValuesAndNotify(actualRevenue, potentialRevenue, totalGap, complianceGapTotal, rateGapTotal, combinedGapsTotal);
+        }
+        
+        // Function to store values in localStorage and trigger events
+        function storeValuesAndNotify(actualRevenue, potentialRevenue, totalGap, complianceGapTotal, rateGapTotal, combinedGapsTotal) {
+            try {
+                // Store values in localStorage with consistent naming
+                localStorage.setItem('mixedCurrent', actualRevenue);
+                localStorage.setItem('mixedPotential', potentialRevenue);
+                localStorage.setItem('mixedGap', totalGap);
+                
+                // Store the detailed gap breakdown values with standard keys
+                localStorage.setItem('mixedComplianceGap', complianceGapTotal);
+                localStorage.setItem('mixedRateGap', rateGapTotal);
+                localStorage.setItem('mixedCombinedGap', combinedGapsTotal);
+                
+                // Store with alternative keys for compatibility
+                localStorage.setItem('mixedRegistrationGap', 0); // Mixed doesn't have registration gaps
+                
+                console.log('Stored Mixed values in localStorage:', {
+                    actualRevenue,
+                    potentialRevenue,
+                    totalGap,
+                    gapBreakdown: {
+                        complianceGap: complianceGapTotal,
+                        rateGap: rateGapTotal,
+                        combinedGap: combinedGapsTotal
+                    }
+                });
+                
+                // Create and dispatch a custom event to notify other components
+                const event = new CustomEvent('mixedValuesUpdated', {
+                    detail: {
+                        current: actualRevenue,
+                        potential: potentialRevenue,
+                        gap: totalGap,
+                        gapBreakdown: {
+                            complianceGap: complianceGapTotal,
+                            rateGap: rateGapTotal,
+                            combinedGap: combinedGapsTotal
+                        }
+                    }
+                });
+                document.dispatchEvent(event);
+                
+                // Update hidden inputs for form submission
+                updateHiddenInputs(actualRevenue, potentialRevenue, totalGap);
+            } catch (e) {
+                console.error('Error updating localStorage:', e);
+            }
+        }
+        
+        // Function to update hidden inputs
+        function updateHiddenInputs(current, potential, gap) {
+            // Create or update hidden inputs
+            createOrUpdateHiddenInput('mixedCurrentValue', current);
+            createOrUpdateHiddenInput('mixedPotentialValue', potential);
+            createOrUpdateHiddenInput('mixedGap', gap);
+        }
+        
+        // Helper function to create or update hidden inputs
+        function createOrUpdateHiddenInput(id, value) {
+            let input = document.getElementById(id);
+            if (!input) {
+                input = document.createElement('input');
+                input.type = 'hidden';
+                input.id = id;
+                document.body.appendChild(input);
+            }
+            input.value = value;
+        }
+        
         // Initialize number formatting for the input fields
         const numberFormatInputs = document.querySelectorAll('.number-format');
         if (numberFormatInputs && numberFormatInputs.length > 0) {
@@ -109,8 +1038,286 @@
                 input.addEventListener('blur', function() {
                     const value = parseFloat(this.value.replace(/,/g, '')) || 0;
                     this.value = value.toLocaleString('en-US');
+                    
+                    // Calculate revenue and gaps when input changes
+                    calculateMixedRevenue();
                 });
+                
+                // Add additional event for immediate calculation
+                input.addEventListener('input', debounce(calculateMixedRevenue, 300));
             });
         }
+        
+        // Listen for tab shown event
+        document.addEventListener('tabShown', function(e) {
+            if (e.detail && e.detail.tabId === 'mixed') {
+                console.log('Mixed tab shown, updating calculations...');
+                setTimeout(calculateMixedRevenue, 100);
+            }
+        });
+        
+        // Initial calculation on page load
+        calculateMixedRevenue();
     });
 </script>
+
+<style>
+    /* Modern table styles */
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .modern-table th,
+    .modern-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .modern-table thead th {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .modern-table tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    .modern-table .amount {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    /* Category icon styles */
+    .category-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+    
+    .category-icon .fas {
+        font-size: 1rem;
+    }
+    
+    /* Icon background colors */
+    .category-icon:nth-of-type(1) {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+    
+    .category-icon:nth-of-type(2) {
+        background-color: rgba(25, 135, 84, 0.1);
+    }
+    
+    .category-icon:nth-of-type(3) {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+    
+    /* Styles for the card headers with badge */
+    .card-header.bg-primary {
+        position: relative;
+    }
+    
+    .card-header .badge {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    /* Text color for monthly value */
+    .text-purple {
+        color: #6f42c1;
+    }
+    
+    /* Chart container styles */
+    .chart-container {
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
+        padding: 10px;
+        background-color: #fff;
+    }
+
+    /* Simple Bar Chart Styles */
+    .simple-bar-chart {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+    }
+
+    .bar-container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .bar {
+        width: 100%;
+        border-radius: 4px 4px 0 0;
+        max-width: 100px;
+    }
+
+    .bg-primary {
+        background-color: #0d6efd;
+    }
+
+    .bg-danger {
+        background-color: #dc3545;
+    }
+
+    /* Chart Styles */
+    .stacked-bar-chart {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px 20px 40px 20px;
+        position: relative;
+    }
+
+    .stacked-bar-container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        position: relative;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .bar {
+        width: 100%;
+        transition: height 0.5s ease;
+    }
+
+    #actualRevenueBar {
+        background-color: #4e73df;
+        position: relative;
+        z-index: 2;
+        border-radius: 4px 4px 0 0;
+    }
+
+    #gapBar {
+        background-color: #f6c23e;
+        position: relative;
+        z-index: 1;
+    }
+
+    .y-axis-labels {
+        position: absolute;
+        left: -80px;
+        top: 0;
+        bottom: 0;
+        width: 70px;
+        font-size: 12px;
+    }
+
+    .y-axis-label {
+        position: absolute;
+        right: 10px;
+        transform: translateY(50%);
+        color: #858796;
+    }
+
+    /* Horizontal grid lines */
+    .stacked-bar-chart::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background-image: linear-gradient(0deg, #f8f9fc 1px, transparent 1px);
+        background-size: 100% 25%;
+        z-index: 0;
+        margin: 0 20px 40px 20px;
+    }
+
+    /* Legend styles */
+    .legend {
+        margin-top: 20px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .legend-color {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+        border-radius: 3px;
+    }
+
+    .legend-text {
+        font-size: 14px;
+        color: #5a5c69;
+    }
+    
+    /* X-axis labels */
+    .x-axis-labels {
+        margin-top: 10px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        max-width: 300px;
+    }
+    
+    .x-axis-label {
+        font-size: 14px;
+        color: #5a5c69;
+    }
+    
+    /* Value labels */
+    .value-labels {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .value-label {
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    /* Bar colors */
+    #actualRevenueBar {
+        background-color: #4e73df;
+        position: relative;
+        z-index: 2;
+        border-radius: 4px 4px 0 0;
+    }
+    
+    #gapBar {
+        background-color: #f6c23e;
+        position: relative;
+        z-index: 1;
+    }
+    
+    #complianceGapBar {
+        background-color: #4e73df;
+        position: relative;
+        z-index: 1;
+        border-radius: 4px 4px 0 0;
+    }
+    
+    #rateGapBar {
+        background-color: #f6c23e;
+        position: relative;
+        z-index: 2;
+    }
+    
+    #combinedGapBar {
+        background-color: #858796;
+        position: relative;
+        z-index: 3;
+    }
+</style>

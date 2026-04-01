@@ -1,0 +1,425 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Modern chart configuration
+        Chart.defaults.font.family = "'Inter', 'Segoe UI', 'Arial', sans-serif";
+        Chart.defaults.color = '#495057';
+        
+        // Chart variables
+        let revenueComparisonChart = null;
+        let gapDistributionChart = null;
+        let chartType = 'bar';
+        let gapChartType = 'stacked';
+        
+        // Modern color palette
+        const colors = {
+            primary: '#6c63ff',
+            success: '#10b981',
+            danger: '#ef4444',
+            warning: '#f59e0b',
+            info: '#3b82f6',
+            purple: '#8b5cf6',
+            pink: '#ec4899',
+            indigo: '#6366f1'
+        };
+        
+        // Gradient function
+        function createGradient(ctx, color1, color2) {
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, color1);
+            gradient.addColorStop(1, color2);
+            return gradient;
+        }
+        
+        // Update the revenue comparison chart with modern design
+        window.updateRevenueComparisonChart = function(actualRevenue, potentialRevenue, revenueGap) {
+            const canvas = document.getElementById('revenueComparisonChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Format the data
+            const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'KES',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            
+            // Destroy existing chart
+            if (revenueComparisonChart) {
+                revenueComparisonChart.destroy();
+            }
+            
+            // Create chart based on type
+            if (chartType === 'bar') {
+                // Modern bar chart
+                revenueComparisonChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Actual Revenue', 'Potential Revenue'],
+                        datasets: [{
+                            data: [actualRevenue, potentialRevenue],
+                            backgroundColor: [
+                                createGradient(ctx, colors.primary, colors.indigo),
+                                createGradient(ctx, colors.success, '#34d399')
+                            ],
+                            borderWidth: 0,
+                            borderRadius: 12,
+                            barThickness: 80
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                cornerRadius: 8,
+                                titleFont: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    size: 13
+                                },
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return formatter.format(context.raw);
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    padding: 10,
+                                    font: {
+                                        size: 12
+                                    },
+                                    callback: function(value) {
+                                        return formatter.format(value).replace('KES', '');
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    padding: 10,
+                                    font: {
+                                        size: 13,
+                                        weight: '600'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                // Modern donut chart
+                revenueComparisonChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Actual Revenue', 'Revenue Gap'],
+                        datasets: [{
+                            data: [actualRevenue, revenueGap],
+                            backgroundColor: [
+                                createGradient(ctx, colors.primary, colors.indigo),
+                                'rgba(229, 231, 235, 0.5)'
+                            ],
+                            borderWidth: 0,
+                            spacing: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    font: {
+                                        size: 13,
+                                        weight: '500'
+                                    },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                cornerRadius: 8,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = formatter.format(context.raw);
+                                        const percentage = ((context.raw / potentialRevenue) * 100).toFixed(1);
+                                        return `${label}: ${value} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Add center text
+                const centerText = {
+                    id: 'centerText',
+                    beforeDraw: function(chart) {
+                        const width = chart.width,
+                              height = chart.height,
+                              ctx = chart.ctx;
+                        
+                        ctx.restore();
+                        const percentage = ((actualRevenue / potentialRevenue) * 100).toFixed(0);
+                        
+                        ctx.font = "bold 36px Inter";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillStyle = colors.primary;
+                        ctx.fillText(percentage + '%', width / 2, height / 2 - 10);
+                        
+                        ctx.font = "500 14px Inter";
+                        ctx.fillStyle = '#6c757d';
+                        ctx.fillText('Collection Rate', width / 2, height / 2 + 20);
+                        ctx.save();
+                    }
+                };
+                
+                revenueComparisonChart.plugins.push(centerText);
+            }
+        };
+        
+        // Update the gap distribution chart with modern design
+        window.updateGapDistributionChart = function(registrationGap, complianceGap, assessmentGap, combinedGaps) {
+            const canvas = document.getElementById('gapDistributionChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Destroy existing chart
+            if (gapDistributionChart) {
+                gapDistributionChart.destroy();
+            }
+            
+            const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'KES',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            
+            if (gapChartType === 'stacked') {
+                // Modern horizontal stacked bar
+                gapDistributionChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Revenue Gap Analysis'],
+                        datasets: [
+                            {
+                                label: 'Registration',
+                                data: [registrationGap],
+                                backgroundColor: createGradient(ctx, colors.danger, colors.pink),
+                                borderWidth: 0,
+                                borderRadius: {
+                                    topLeft: 12,
+                                    bottomLeft: 12
+                                }
+                            },
+                            {
+                                label: 'Compliance',
+                                data: [complianceGap],
+                                backgroundColor: createGradient(ctx, colors.primary, colors.indigo),
+                                borderWidth: 0
+                            },
+                            {
+                                label: 'Assessment',
+                                data: [assessmentGap],
+                                backgroundColor: createGradient(ctx, colors.warning, '#fbbf24'),
+                                borderWidth: 0
+                            },
+                            {
+                                label: 'Other',
+                                data: [combinedGaps],
+                                backgroundColor: createGradient(ctx, colors.info, '#60a5fa'),
+                                borderWidth: 0,
+                                borderRadius: {
+                                    topRight: 12,
+                                    bottomRight: 12
+                                }
+                            }
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                cornerRadius: 8,
+                                displayColors: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.dataset.label;
+                                        const value = formatter.format(context.raw);
+                                        const total = context.chart.data.datasets.reduce((sum, dataset) => 
+                                            sum + dataset.data[0], 0
+                                        );
+                                        const percentage = ((context.raw / total) * 100).toFixed(1);
+                                        return `${label}: ${value} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                stacked: true,
+                                grid: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                stacked: true,
+                                grid: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 14,
+                                        weight: '600'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                // Modern pie chart with 3D effect
+                gapDistributionChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Registration Gap', 'Compliance Gap', 'Assessment Gap', 'Other Gaps'],
+                        datasets: [{
+                            data: [registrationGap, complianceGap, assessmentGap, combinedGaps],
+                            backgroundColor: [
+                                createGradient(ctx, colors.danger, colors.pink),
+                                createGradient(ctx, colors.primary, colors.indigo),
+                                createGradient(ctx, colors.warning, '#fbbf24'),
+                                createGradient(ctx, colors.info, '#60a5fa')
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    font: {
+                                        size: 12,
+                                        weight: '500'
+                                    },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        
+                                        return data.labels.map((label, i) => {
+                                            const value = data.datasets[0].data[i];
+                                            const percentage = ((value / total) * 100).toFixed(1);
+                                            
+                                            return {
+                                                text: `${label} (${percentage}%)`,
+                                                fillStyle: data.datasets[0].backgroundColor[i],
+                                                hidden: false,
+                                                index: i
+                                            };
+                                        });
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                cornerRadius: 8,
+                                displayColors: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = formatter.format(context.raw);
+                                        return `${context.label}: ${value}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        
+        // Chart type toggle handlers
+        document.getElementById('viewBarChartBtn').addEventListener('click', function() {
+            chartType = 'bar';
+            this.classList.add('active');
+            document.getElementById('viewPieChartBtn').classList.remove('active');
+            calculatePropertyTaxRevenue();
+        });
+        
+        document.getElementById('viewPieChartBtn').addEventListener('click', function() {
+            chartType = 'pie';
+            this.classList.add('active');
+            document.getElementById('viewBarChartBtn').classList.remove('active');
+            calculatePropertyTaxRevenue();
+        });
+        
+        document.getElementById('viewStackedBarBtn').addEventListener('click', function() {
+            gapChartType = 'stacked';
+            this.classList.add('active');
+            document.getElementById('viewPieGapBtn').classList.remove('active');
+            updateGapAnalysis();
+        });
+        
+        document.getElementById('viewPieGapBtn').addEventListener('click', function() {
+            gapChartType = 'pie';
+            this.classList.add('active');
+            document.getElementById('viewStackedBarBtn').classList.remove('active');
+            updateGapAnalysis();
+        });
+        
+        // Update breakdown analysis (same as before)
+        window.updateBreakdownAnalysis = window.updateBreakdownAnalysis || function() {
+            // Keep existing implementation
+        };
+    });
+</script>

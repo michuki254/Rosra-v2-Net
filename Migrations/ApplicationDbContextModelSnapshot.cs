@@ -236,6 +236,244 @@ namespace RosraApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("RosraApp.Models.Country", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Capital")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Currency")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Region")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("StateCity")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("Statescity");
+
+                    b.Property<string>("StateCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("Statesstate_code");
+
+                    b.Property<string>("StateName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("Statesname");
+
+                    b.Property<string>("Subregion")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Country");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.CountryData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CurrencyCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("CurrencySymbol")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<decimal?>("GDP_nominal_usd")
+                        .HasColumnType("decimal(22, 2)");
+
+                    b.Property<string>("Government_Type")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Income_Group")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Income_Level")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("OSR_Data_Complete")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<decimal?>("OSR_pc_derived_usd")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<decimal?>("OSR_pc_proxy_usd")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal?>("OSR_pct_gdp")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<long?>("Population_total")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal?>("Revenue_Autonomy")
+                        .HasColumnType("decimal(18, 9)");
+
+                    b.Property<decimal?>("SNG_grants_subsidies_pct_gdp")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<decimal?>("SNG_total_rev_pc_usd")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<decimal?>("SNG_total_revenue_pct_gdp")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DB_Countries");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.Frontier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Government_Type")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Income_Level")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal?>("OSR_pc_frontier")
+                        .HasColumnType("decimal(18, 8)");
+
+                    b.Property<decimal?>("Revenue_Autonomy_frontier")
+                        .HasColumnType("decimal(18, 9)");
+
+                    b.Property<decimal?>("SNG_total_rev_pc_frontier")
+                        .HasColumnType("decimal(18, 8)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DB_Frontiers");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.PeerSNG", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CountryCode")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<decimal>("GCP")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<bool>("Include")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("OSR")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<string>("SNG")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Peers_SNG");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.RolePermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AssignedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PermissionId");
+
+                    b.HasIndex("RoleId", "PermissionId")
+                        .IsUnique();
+
+                    b.ToTable("RolePermissions");
+                });
+
             modelBuilder.Entity("RosraApp.Models.RosraReport", b =>
                 {
                     b.Property<int>("Id")
@@ -280,6 +518,18 @@ namespace RosraApp.Migrations
                     b.Property<decimal?>("GdpPerCapita")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("GenericStreamsData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GovernmentType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImplementationProgressData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IncomeLevel")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("KeyObjectives")
                         .HasColumnType("nvarchar(max)");
 
@@ -292,8 +542,17 @@ namespace RosraApp.Migrations
                     b.Property<string>("MixedUserChargeData")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal?>("OtherRevenue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PeerSNGData")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("Population")
                         .HasColumnType("int");
+
+                    b.Property<string>("PrioritizationData")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProblemStatement")
                         .HasColumnType("nvarchar(max)");
@@ -316,6 +575,9 @@ namespace RosraApp.Migrations
                     b.Property<string>("RootCauses")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SelectedSolutionsData")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ShortTermUserChargeData")
                         .HasColumnType("nvarchar(max)");
 
@@ -324,6 +586,9 @@ namespace RosraApp.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TopOsrConfigData")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TotalEstimateData")
@@ -390,6 +655,25 @@ namespace RosraApp.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RosraApp.Models.RolePermission", b =>
+                {
+                    b.HasOne("RosraApp.Models.Permission", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("RosraApp.Models.RosraReport", b =>
                 {
                     b.HasOne("RosraApp.Models.ApplicationUser", "User")
@@ -397,6 +681,11 @@ namespace RosraApp.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.Permission", b =>
+                {
+                    b.Navigation("RolePermissions");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,424 +1,587 @@
 @model RosraApp.Models.ViewModels.RosraFormViewModel
 @{
     bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+    string currencySymbol = string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol;
 }
 
-<div class="gap-analysis-tab-content">
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+<div class="property-tax-gap-analysis">
     <div class="row">
-        <!-- Left Side (1/3 width) -->
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Property Tax Information</h6>
+        <!-- Left Column - Data Input Section -->
+        <div class="col-lg-4">
+            <!-- Required Data + Derived Metrics -->
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-input-cursor-text me-2"></i>Entry of required information + Processed Metrics</h6>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted mb-3">For proper execution of the analysis, you are required to complete only the cells shaded in gray and in bold.</p>
+
+                    <!-- User Input Fields -->
+                    <div class="mb-3">
+                        <label for="registeredProperties" class="form-label fw-bold">
+                            Registered Properties
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Total number of properties currently listed in the official property tax register/cadastre."></i>
+                        </label>
+                        <input type="text" class="form-control number-format bg-light fw-bold" id="registeredProperties"
+                               name="PropertyTax.RegisteredProperties" value="@(Model.PropertyTax.RegisteredProperties?.ToString("N0") ?? "20,344")"
+                               placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="nonRegisteredProperties" class="form-label fw-bold">
+                            Non-registered Properties
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Estimated properties not in the tax register. If unknown, check 'I don't have a specific number' to enter a percentage of registered properties."></i>
+                        </label>
+                        <input type="text" class="form-control number-format bg-light fw-bold" id="nonRegisteredProperties"
+                               name="PropertyTax.NonRegisteredProperties" value="@(Model.PropertyTax.NonRegisteredProperties?.ToString("N0") ?? "1,000")"
+                               placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+
+                        <!-- Estimation Option -->
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="estimateNonRegistered" @(isViewMode ? "disabled" : "")>
+                            <label class="form-check-label small text-muted" for="estimateNonRegistered">
+                                I don't have a specific number (use estimate)
+                            </label>
+                        </div>
+                        <div id="estimatePercentageContainer" class="mt-2" style="display: none;">
+                            <label class="form-label small text-primary">Estimate as % of Registered Properties</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" class="form-control" id="nonRegisteredPercentage"
+                                       value="5" min="0" max="100" step="0.1" @(isViewMode ? "readonly" : "")>
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <small class="text-muted">e.g., 5% means Non-registered = Registered × 0.05</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="estimatedProperties" class="form-label text-primary">
+                            Estimated Properties
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Total estimated taxable properties in the jurisdiction = Registered + Non-registered."></i>
+                        </label>
+                        <input type="text" class="form-control number-format" id="estimatedProperties"
+                               readonly value="0" style="background-color: #e8f4fc;">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="compliantProperties" class="form-label text-primary">
+                            Compliant Properties
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Estimated using proxy formula to account for partial payments across fiscal year. Assumes proportion of compliant properties equals proportion of revenue collected."></i>
+                        </label>
+                        <input type="text" class="form-control number-format" id="compliantProperties"
+                               name="PropertyTax.CompliantProperties" value="@Model.PropertyTax.CompliantProperties"
+                               readonly style="background-color: #e8f4fc;">
+                        <small class="text-muted">= Registered × (Revenue to Date / Billed Amount)</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="totalFiscalBase" class="form-label fw-bold">
+                            Total Fiscal Base (<span class="currency-label">@currencySymbol</span>)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Total value of all registered and taxable properties based on their fiscal (assessed) valuation. This is the officially recorded fiscal base used for property tax calculations."></i>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control number-format bg-light fw-bold" id="totalFiscalBase"
+                                   name="PropertyTax.TotalFiscalBase" value="@(Model.PropertyTax.TotalFiscalBase?.ToString("N0") ?? "236,465,062,053")"
+                                   placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="totalMarketValue" class="form-label fw-bold">
+                            Total Market Value (<span class="currency-label">@currencySymbol</span>)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Estimated total market value of all taxable properties at real market prices. If unknown, check 'I don't have market value data' to enter estimated percentage above fiscal values."></i>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control number-format bg-light fw-bold" id="totalMarketValue"
+                                   name="PropertyTax.TotalMarketValue" value="@(Model.PropertyTax.TotalMarketValue?.ToString("N0") ?? "300,000,000,000")"
+                                   placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                        </div>
+
+                        <!-- Market Value Estimation Option -->
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="estimateMarketValue" @(isViewMode ? "disabled" : "")>
+                            <label class="form-check-label small text-muted" for="estimateMarketValue">
+                                I don't have market value data (use estimate)
+                            </label>
+                        </div>
+                        <div id="marketValueEstimateContainer" class="mt-2" style="display: none;">
+                            <label class="form-label small text-primary">Market value is higher than Fiscal Base by:</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" class="form-control" id="marketValuePercentage"
+                                       value="30" min="0" max="500" step="1" @(isViewMode ? "readonly" : "")>
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <small class="text-muted">e.g., 30% means Market Value = Fiscal Base × 1.30</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="billedAmount" class="form-label fw-bold">
+                            Billed Amount (<span class="currency-label">@currencySymbol</span>)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Amount officially charged for collection (billed) for the year under analysis."></i>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control number-format bg-light fw-bold" id="billedAmount"
+                                   name="PropertyTax.BilledAmount" value="@(Model.PropertyTax.BilledAmount?.ToString("N0") ?? "407,911,073")"
+                                   placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="outstandingAmount" class="form-label fw-bold">
+                            Outstanding Amount (<span class="currency-label">@currencySymbol</span>)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Portion of current year charges that remain unpaid. Should NOT include arrears from previous years. If exact data unavailable, provide reasonable estimate."></i>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control number-format bg-light fw-bold" id="outstandingAmount"
+                                   name="PropertyTax.OutstandingAmount" value="@(Model.PropertyTax.OutstandingAmount?.ToString("N0") ?? "123,880,968")"
+                                   placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="revenueToDate" class="form-label text-primary">
+                            Revenue to Date (<span class="currency-label">@currencySymbol</span>)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Auto-calculated. Total revenue collected = Billed Amount minus Outstanding. Updates dynamically."></i>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control number-format" id="revenueToDate"
+                                   name="PropertyTax.RevenueToDate" value="@Model.PropertyTax.RevenueToDate"
+                                   readonly style="background-color: #e8f4fc;">
+                        </div>
+                        <small class="text-muted">= Billed Amount - Outstanding Amount</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Useful Average Values -->
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="bi bi-calculator me-2"></i>Useful Average Values required for the Analysis</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <label class="form-label small text-primary">
+                            Average taxable value (registered)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Average official valuation per property, determined by cadastre. Base for applying tax rates."></i>
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control" id="avgTaxableValue" readonly style="background-color: #e8f4fc;">
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small text-primary">
+                            Average Market Value (registered)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Estimate of average property value if assessed at market levels. Reflects theoretical tax base under ideal valuation."></i>
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control" id="avgMarketValue" readonly style="background-color: #e8f4fc;">
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small text-primary">
+                            Effective tax rate
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Actual effective rate from real revenue collected. Reflects under-assessment, exemptions, and compliance limitations."></i>
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" id="effectiveTaxRate" readonly style="background-color: #e8f4fc;">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small text-primary">
+                            Average billed amount
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Estimated billing per property based on current assessed values and effective tax rate."></i>
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control" id="avgBilledAmount" readonly style="background-color: #e8f4fc;">
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small text-primary">
+                            Potential billing (market basis)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Theoretical maximum billing per property assuming full market value assessment."></i>
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control" id="potentialBilling" readonly style="background-color: #e8f4fc;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Ratios -->
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-warning">
+                    <h6 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>Key Performance Indicators (KPI) Ratios</h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <div class="form-group">
-                            <label for="totalPropertyTaxPayers">Total estimated property tax payers</label>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="totalPropertyTaxPayers" name="PropertyTax.TotalPropertyTaxPayers" value="@Model.PropertyTax.TotalPropertyTaxPayers" placeholder="Enter total estimated property tax payers" @(isViewMode ? "readonly" : "")>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label small mb-0">
+                                Compliance Ratio
+                                <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                   title="Proxy indicator of compliance system performance. Measures proportion of billed amounts actually collected. >80% Green, 60-80% Yellow, <60% Red."></i>
+                            </label>
+                            <span id="complianceRatioValue" class="badge bg-success">0%</span>
                         </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar" role="progressbar" id="complianceRatioBar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">Revenue to Date / Billed Amount</small>
                     </div>
+
                     <div class="mb-3">
-                        <div class="form-group">
-                            <label for="registeredPropertyTaxPayers">Registered property tax payers</label>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="registeredPropertyTaxPayers" name="PropertyTax.RegisteredPropertyTaxPayers" value="@Model.PropertyTax.RegisteredPropertyTaxPayers" placeholder="Enter registered property tax payers" @(isViewMode ? "readonly" : "")>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label small mb-0">
+                                Coverage Ratio
+                                <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                   title="Proxy indicator of coverage system performance. Measures proportion of total properties registered. >80% Green, 60-80% Yellow, <60% Red."></i>
+                            </label>
+                            <span id="coverageRatioValue" class="badge bg-info">0%</span>
                         </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar" role="progressbar" id="coverageRatioBar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">Registered Properties / Estimated Properties</small>
                     </div>
-                    
-                    <hr class="my-4">
-                    <h6 class="mb-3">Property Tax Categories</h6>
-                    
-                    <!-- Add Category Button -->
-                    <div class="mt-3 mb-3">
-                        <button type="button" class="btn btn-primary" id="addPropertyTaxCategoryBtn" @(isViewMode ? "disabled" : "")>
-                            <i class="fas fa-plus"></i> Add New Category
-                        </button>
-                    </div>
-                    
-                    <!-- Category A -->
-                    <div class="card mb-3 category-card" id="category-A">
-                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#categoryACollapse" aria-expanded="true" aria-controls="categoryACollapse" style="cursor: pointer;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <h6 class="mb-0 category-title">Category A</h6>
-                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                                <div>
-                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <i class="fas fa-chevron-down ms-2"></i>
-                                </div>
-                            </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label small mb-0">
+                                Valuation Ratio
+                                <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                   title="Proxy indicator of valuation system performance. Measures how closely fiscal assessments match market values. >80% Green, 60-80% Yellow, <60% Red."></i>
+                            </label>
+                            <span id="valuationRatioValue" class="badge bg-primary">0%</span>
                         </div>
-                        <div id="categoryACollapse" class="collapse show">
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="registeredTaxpayersCategoryA">Registered Taxpayers</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="registeredTaxpayersCategoryA" name="PropertyTax.RegisteredTaxpayersCategoryA" value="@Model.PropertyTax.RegisteredTaxpayersCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="compliantTaxpayersCategoryA">Compliant Taxpayers</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="compliantTaxpayersCategoryA" name="PropertyTax.CompliantTaxpayersCategoryA" value="@Model.PropertyTax.CompliantTaxpayersCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="avgValueLandPropertyCategoryA">Average Value of land/property</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
-                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="avgValueLandPropertyCategoryA" name="PropertyTax.AveragePropertyValueCategoryA" value="@Model.PropertyTax.AveragePropertyValueCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="estAvgValueLandPropertyCategoryA">Estimated Average Value of land/property</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
-                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="estAvgValueLandPropertyCategoryA" name="PropertyTax.EstimatedAveragePropertyValueCategoryA" value="@Model.PropertyTax.EstimatedAveragePropertyValueCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="taxRateCategoryA">Tax Rate</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="taxRateCategoryA" name="PropertyTax.TaxRateCategoryA" value="@Model.PropertyTax.TaxRateCategoryA" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                            <span class="input-group-text">%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar" role="progressbar" id="valuationRatioBar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                    </div>
-                    
-                    <!-- Category B -->
-                    <div class="card mb-3 category-card" id="category-B">
-                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#categoryBCollapse" aria-expanded="false" aria-controls="categoryBCollapse" style="cursor: pointer;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <h6 class="mb-0 category-title">Category B</h6>
-                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                                <div>
-                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <i class="fas fa-chevron-down ms-2"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="categoryBCollapse" class="collapse">
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="registeredTaxpayersCategoryB">Registered Taxpayers</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="registeredTaxpayersCategoryB" name="PropertyTax.RegisteredTaxpayersCategoryB" value="@Model.PropertyTax.RegisteredTaxpayersCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="compliantTaxpayersCategoryB">Compliant Taxpayers</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="compliantTaxpayersCategoryB" name="PropertyTax.CompliantTaxpayersCategoryB" value="@Model.PropertyTax.CompliantTaxpayersCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="avgValueLandPropertyCategoryB">Average Value of land/property</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
-                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="avgValueLandPropertyCategoryB" name="PropertyTax.AveragePropertyValueCategoryB" value="@Model.PropertyTax.AveragePropertyValueCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="estAvgValueLandPropertyCategoryB">Estimated Average Value of land/property</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
-                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="estAvgValueLandPropertyCategoryB" name="PropertyTax.EstimatedAveragePropertyValueCategoryB" value="@Model.PropertyTax.EstimatedAveragePropertyValueCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="taxRateCategoryB">Tax Rate</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="taxRateCategoryB" name="PropertyTax.TaxRateCategoryB" value="@Model.PropertyTax.TaxRateCategoryB" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                            <span class="input-group-text">%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Category C -->
-                    <div class="card mb-3 category-card" id="category-C">
-                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#categoryCCollapse" aria-expanded="false" aria-controls="categoryCCollapse" style="cursor: pointer;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <h6 class="mb-0 category-title">Category C</h6>
-                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                                <div>
-                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <i class="fas fa-chevron-down ms-2"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="categoryCCollapse" class="collapse">
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="registeredTaxpayersCategoryC">Registered Taxpayers</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="registeredTaxpayersCategoryC" name="PropertyTax.RegisteredTaxpayersCategoryC" value="@Model.PropertyTax.RegisteredTaxpayersCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="compliantTaxpayersCategoryC">Compliant Taxpayers</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="compliantTaxpayersCategoryC" name="PropertyTax.CompliantTaxpayersCategoryC" value="@Model.PropertyTax.CompliantTaxpayersCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="avgValueLandPropertyCategoryC">Average Value of land/property</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
-                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="avgValueLandPropertyCategoryC" name="PropertyTax.AveragePropertyValueCategoryC" value="@Model.PropertyTax.AveragePropertyValueCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="estAvgValueLandPropertyCategoryC">Estimated Average Value of land/property</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
-                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="estAvgValueLandPropertyCategoryC" name="PropertyTax.EstimatedAveragePropertyValueCategoryC" value="@Model.PropertyTax.EstimatedAveragePropertyValueCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label for="taxRateCategoryC">Tax Rate</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="taxRateCategoryC" name="PropertyTax.TaxRateCategoryC" value="@Model.PropertyTax.TaxRateCategoryC" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                            <span class="input-group-text">%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="dynamicPropertyTaxCategoriesContainer">
-                        <!-- Dynamic categories will be added here -->
-                        @if (Model.PropertyTax.DynamicCategories != null && Model.PropertyTax.DynamicCategories.Count > 0)
-                        {
-                            @foreach (var category in Model.PropertyTax.DynamicCategories)
-                            {
-                                <div class="card mb-3 category-card" id="category-@category.Name.Replace(" ", "-")">
-                                    <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#category@(category.Name.Replace(" ", ""))Collapse" aria-expanded="false" aria-controls="category@(category.Name.Replace(" ", ""))Collapse" style="cursor: pointer;">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="d-flex align-items-center">
-                                                <h6 class="mb-0 category-title">@category.Name</h6>
-                                                <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </div>
-                                            <div>
-                                                <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                                <i class="fas fa-chevron-down ms-2"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="category@(category.Name.Replace(" ", ""))Collapse" class="collapse">
-                                        <div class="card-body">
-                                            <div class="mb-3">
-                                                <div class="form-group">
-                                                    <label>Registered Taxpayers</label>
-                                                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="PropertyTax.DynamicCategories[@(Model.PropertyTax.DynamicCategories.IndexOf(category))].RegisteredTaxpayers" value="@category.RegisteredTaxpayers" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <div class="form-group">
-                                                    <label>Compliant Taxpayers</label>
-                                                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="PropertyTax.DynamicCategories[@(Model.PropertyTax.DynamicCategories.IndexOf(category))].CompliantTaxpayers" value="@category.CompliantTaxpayers" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <div class="form-group">
-                                                    <label>Average Value of land/property</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
-                                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="PropertyTax.DynamicCategories[@(Model.PropertyTax.DynamicCategories.IndexOf(category))].AveragePropertyValue" value="@category.AveragePropertyValue" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <div class="form-group">
-                                                    <label>Estimated Average Value of land/property</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
-                                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="PropertyTax.DynamicCategories[@(Model.PropertyTax.DynamicCategories.IndexOf(category))].EstimatedAveragePropertyValue" value="@category.EstimatedAveragePropertyValue" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <div class="form-group">
-                                                    <label>Tax Rate</label>
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="PropertyTax.DynamicCategories[@(Model.PropertyTax.DynamicCategories.IndexOf(category))].TaxRate" value="@category.TaxRate" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                                        <span class="input-group-text">%</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <input type="hidden" name="PropertyTax.DynamicCategories[@(Model.PropertyTax.DynamicCategories.IndexOf(category))].Name" value="@category.Name">
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        }
-                    </div>
-                    
-                    <!-- Template for new category (hidden) -->
-                    <div id="propertyTaxCategoryTemplate" style="display: none;">
-                        <div class="card mb-3 category-card">
-                            <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#categoryTemplateCollapse" aria-expanded="false" aria-controls="categoryTemplateCollapse" style="cursor: pointer;">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <h6 class="mb-0 category-title">New Category</h6>
-                                        <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                    </div>
-                                    <div>
-                                        <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                        <i class="fas fa-chevron-down ms-2"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="categoryTemplateCollapse" class="collapse">
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <div class="form-group">
-                                            <label>Registered Taxpayers</label>
-                                            <input type="text" class="form-control number-format" placeholder="Enter value">
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="form-group">
-                                            <label>Compliant Taxpayers</label>
-                                            <input type="text" class="form-control number-format" placeholder="Enter value">
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="form-group">
-                                            <label>Average Value of land/property</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
-                                                <input type="text" class="form-control number-format" placeholder="Enter value">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="form-group">
-                                            <label>Estimated Average Value of land/property</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
-                                                <input type="text" class="form-control number-format" placeholder="Enter value">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="form-group">
-                                            <label>Tax Rate</label>
-                                            <div class="input-group">
-                                                <input type="text" class="form-control number-format" placeholder="Enter value">
-                                                <span class="input-group-text">%</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <small class="text-muted">Total Fiscal Base / Total Market Value</small>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Right Side (2/3 width) -->
-        <div class="col-md-8">
-            <div class="card mb-3">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Property Tax Revenue Gap Analysis</h6>
+
+        <!-- Right Column - Results Section -->
+        <div class="col-lg-8">
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Graphical Representation of Analyzed Data</h6>
                 </div>
                 <div class="card-body">
-                    <!-- Revenue Gap Analysis -->
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="propertyTaxCurrentValue">Current Revenue</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
-                                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="propertyTaxCurrentValue" name="PropertyTax.CurrentValue" value="@Model.PropertyTax.CurrentValue" placeholder="Enter current value" @(isViewMode ? "readonly" : "")>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="propertyTaxPotentialValue">Potential Revenue</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
-                                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="propertyTaxPotentialValue" name="PropertyTax.PotentialValue" value="@Model.PropertyTax.PotentialValue" placeholder="Enter potential value" @(isViewMode ? "readonly" : "")>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="propertyTaxGap">Revenue Gap</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol)</span>
-                                    <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="propertyTaxGap" name="PropertyTax.Gap" value="@Model.PropertyTax.Gap" readonly>
-                                </div>
-                            </div>
-                            </div>
+                    <!-- Potential Revenue Breakdown Table (MOVED TO TOP) -->
+                    <div class="mb-4">
+                        <h6 class="text-center mb-3">Potential Revenue Breakdown (Actual Revenue + Adm. Gap breakdown)</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Revenue & Administrative Gaps</th>
+                                        <th class="text-end">Amount (<span class="currency-label">@currencySymbol</span>)</th>
+                                        <th class="text-end">Share (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-success">
+                                        <td>Revenue to date</td>
+                                        <td class="text-end" id="tableRevenueToDate">0</td>
+                                        <td class="text-end" id="tableRevenueToDatePct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Compliance Gap
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="The proportion of registered properties that do not pay the tax or fulfill their liability. It reflects weaknesses in enforcement, billing, and payment collection systems. The compliance gap equals Outstanding."></i>
+                                        </td>
+                                        <td class="text-end" id="tableComplianceGap">0</td>
+                                        <td class="text-end" id="tableComplianceGapPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Coverage Gap
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="The proportion of total estimated properties that are not registered in the property tax system. This gap indicates lack of property identification and inclusion in the fiscal database. The gap is quantified by multiplying the number of unregistered properties by the average billed amount per registered property."></i>
+                                        </td>
+                                        <td class="text-end" id="tableCoverageGap">0</td>
+                                        <td class="text-end" id="tableCoverageGapPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Valuation Gap
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="The valuation gap estimates how much more revenue could be billed to compliant properties if they were assessed at market value instead of undervalued fiscal assessments. It reflects weaknesses in the valuation framework and outdated property records."></i>
+                                        </td>
+                                        <td class="text-end" id="tableValuationGap">0</td>
+                                        <td class="text-end" id="tableValuationGapPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Mixed Gap (val./cov. reg.)
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="This mixed gap captures the revenue loss from non-compliant properties that are registered but do not pay - and whose values are also below market. It shows the compounded effect of enforcement failure and undervaluation."></i>
+                                        </td>
+                                        <td class="text-end" id="tableMixedGapReg">0</td>
+                                        <td class="text-end" id="tableMixedGapRegPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Mixed Gap (val./uncov. unreg.)
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="This mixed gap estimates the revenue missed from unregistered properties valued at market levels. It captures the full revenue loss due to both lack of registry and undervaluation."></i>
+                                        </td>
+                                        <td class="text-end" id="tableMixedGapUnreg">0</td>
+                                        <td class="text-end" id="tableMixedGapUnregPct">0%</td>
+                                    </tr>
+                                    <tr class="table-secondary fw-bold">
+                                        <td>TOTAL (Potential Revenue)</td>
+                                        <td class="text-end" id="tableTotalPotential">0</td>
+                                        <td class="text-end">100%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label for="propertyTaxDescription">Description</label>
-                                <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="propertyTaxDescription" name="PropertyTax.Description" rows="3" placeholder="Enter description" @(isViewMode ? "readonly" : "")>@Model.PropertyTax.Description</textarea>
+
+                    <hr>
+
+                    <!-- Matrix Gap Analysis Dashboard (Primary Visualization) -->
+                    <div class="mb-4">
+                        <h6 class="text-center mb-3">Property Tax Gap Analysis - Dashboard</h6>
+                        <div class="row g-3 align-items-stretch">
+                            <!-- Matrix Visualization -->
+                            <div class="col-12">
+                                <div class="matrix-container position-relative" style="height: 320px; min-height: 320px; border-radius: 8px; overflow: hidden; background: #fff;">
+                                    <!-- Y-axis Title (rotated) -->
+                                    <div class="position-absolute d-flex align-items-center justify-content-center" style="left: 0; top: 0; bottom: 30px; width: 20px; background: #f8f9fa;">
+                                        <span style="transform: rotate(-90deg); white-space: nowrap; font-size: 0.6rem; color: #666;"># of Properties</span>
+                                    </div>
+
+                                    <!-- Y-axis Labels Container - labels positioned at row BOUNDARIES -->
+                                    <div class="matrix-y-labels position-absolute" id="matrixYLabelsContainer" style="left: 20px; top: 0; bottom: 30px; width: 55px; font-size: 0.6rem; background: #f8f9fa; position: relative;">
+                                        <!-- Estimated label at TOP boundary (top of matrix) -->
+                                        <div class="y-label-item" id="yLabelEstimated" style="position: absolute; right: 3px; top: 0; text-align: right; transform: translateY(-50%);">
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Estimated</small>
+                                            <span id="matrixEstimatedLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
+                                        </div>
+                                        <!-- Registered label at boundary between Row1 and Row2 -->
+                                        <div class="y-label-item" id="yLabelRegistered" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%);">
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Registered</small>
+                                            <span id="matrixRegisteredLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
+                                        </div>
+                                        <!-- Compliant label at boundary between Row2 and Row3 -->
+                                        <div class="y-label-item" id="yLabelCompliant" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%);">
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Compliant</small>
+                                            <span id="matrixCompliantLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Matrix Grid Area -->
+                                    <div class="matrix-grid position-absolute" id="matrixGridArea" style="left: 75px; top: 0; right: 0; bottom: 30px; display: flex; flex-direction: column;">
+                                        <!-- Row 1: Unregistered (Estimated - Registered) -->
+                                        <div class="matrix-row d-flex" id="matrixRowUnreg" style="flex: 1; min-height: 30px;">
+                                            <div class="matrix-cell d-flex align-items-center justify-content-center" id="matrixCoverageGap"
+                                                 style="background-color: #5B9BD5; color: white; flex: 1; min-width: 60px;">
+                                                <div class="text-center p-1">
+                                                    <small style="font-size: 0.7rem;">Coverage Gap</small><br>
+                                                    <span id="matrixCoverageGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
+                                                </div>
+                                            </div>
+                                            <div class="matrix-cell d-flex align-items-center justify-content-center" id="matrixMixedUnreg"
+                                                 style="background-color: #FF6B6B; color: white; flex: 1; min-width: 60px;">
+                                                <div class="text-center p-1">
+                                                    <small style="font-size: 0.7rem;">Mixed Gap (Unreg.)</small><br>
+                                                    <span id="matrixMixedUnregVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Row 2: Non-Compliant Registered (Registered - Compliant) -->
+                                        <div class="matrix-row d-flex" id="matrixRowNonCompliant" style="flex: 1; min-height: 30px;">
+                                            <div class="matrix-cell d-flex align-items-center justify-content-center" id="matrixComplianceGap"
+                                                 style="background-color: #FFD966; color: #333; flex: 1; min-width: 60px;">
+                                                <div class="text-center p-1">
+                                                    <small style="font-size: 0.7rem;">Compliance Gap</small><br>
+                                                    <span id="matrixComplianceGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
+                                                </div>
+                                            </div>
+                                            <div class="matrix-cell d-flex align-items-center justify-content-center" id="matrixMixedReg"
+                                                 style="background-color: #F4A6A6; color: #333; flex: 1; min-width: 60px;">
+                                                <div class="text-center p-1">
+                                                    <small style="font-size: 0.7rem;">Mixed Gap (Reg.)</small><br>
+                                                    <span id="matrixMixedRegVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Row 3: Compliant -->
+                                        <div class="matrix-row d-flex" id="matrixRowCompliant" style="flex: 1; min-height: 30px;">
+                                            <div class="matrix-cell d-flex align-items-center justify-content-center" id="matrixActualRevenue"
+                                                 style="background-color: #70AD47; color: white; flex: 1; min-width: 60px;">
+                                                <div class="text-center p-1">
+                                                    <small style="font-size: 0.7rem;">Actual Revenue</small><br>
+                                                    <span id="matrixActualRevenueVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
+                                                </div>
+                                            </div>
+                                            <div class="matrix-cell d-flex align-items-center justify-content-center" id="matrixValuationGap"
+                                                 style="background-color: #FFF2CC; color: #333; flex: 1; min-width: 60px;">
+                                                <div class="text-center p-1">
+                                                    <small style="font-size: 0.7rem;">Valuation Gap</small><br>
+                                                    <span id="matrixValuationGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- X-axis Labels - positioned at column BOUNDARIES -->
+                                    <div class="matrix-x-axis position-absolute" id="matrixXAxisContainer" style="left: 75px; right: 0; bottom: 0; height: 30px; background: #f8f9fa;">
+                                        <!-- X-axis label at left edge (origin = 0) -->
+                                        <div class="x-label-item" id="xLabelOrigin" style="position: absolute; left: 0; bottom: 2px; transform: translateX(0%); text-align: left; font-size: 0.6rem;">
+                                            <span id="matrixOriginLabel" class="fw-bold" style="font-size: 0.65rem;">@currencySymbol 0</span>
+                                        </div>
+                                        <!-- X-axis label at column boundary (between left and right columns) -->
+                                        <div class="x-label-item" id="xLabelAvgBilled" style="position: absolute; bottom: 2px; transform: translateX(-50%); text-align: center; font-size: 0.6rem;">
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Avg. Billed</small>
+                                            <span id="matrixAvgBilledLabel" class="fw-bold" style="font-size: 0.65rem;">@currencySymbol 0</span>
+                                        </div>
+                                        <!-- X-axis label at right edge -->
+                                        <div class="x-label-item" id="xLabelAchievable" style="position: absolute; right: 0; bottom: 2px; transform: translateX(0%); text-align: right; font-size: 0.6rem;">
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Achievable Avg.</small>
+                                            <span id="matrixAvgMarketLabel" class="fw-bold" style="font-size: 0.65rem;">@currencySymbol 0</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                        </div><!-- end row -->
+                        <p class="small text-muted mt-3 text-center">
+                            <strong>DESCRIPTION:</strong> This matrix visualization shows the property tax gap analysis across two dimensions: the number of properties (vertical axis from Compliant to Estimated) and the billing level (horizontal axis from average billed to achievable market-based billing). Each colored cell represents a different type of gap or revenue component. The same breakdown is also shown in the pie chart below.
+                        </p>
+                    </div>
+
+                    <hr>
+
+                    <!-- Revenue and Administrative Gaps Pie Chart -->
+                    <div class="mb-4">
+                        <h6 class="text-center mb-3">Revenue and Administrative Gaps</h6>
+                        <div class="d-flex justify-content-center">
+                            <div style="height: 300px; width: 450px; position: relative;">
+                                <canvas id="potentialRevenueChart"></canvas>
                             </div>
+                        </div>
+                        <p class="small text-muted mt-2 text-center">
+                            <strong>DESCRIPTION:</strong> This pie chart illustrates the same information as the matrix above in percentage form. It shows the share of total potential revenue corresponding to the revenue actually collected, as well as the contribution of each type of administrative gap (uncollected or lost revenue) to that total.
+                        </p>
+                    </div>
+
+                    <hr>
+
+                    <!-- Administrative Gap Breakdown Table -->
+                    <div class="mb-4">
+                        <h6 class="text-center mb-3">Administrative Gap Breakdown (<span class="currency-label">@currencySymbol</span>)</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Administrative Gaps</th>
+                                        <th class="text-end">Amount (<span class="currency-label">@currencySymbol</span>)</th>
+                                        <th class="text-end">Share (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Compliance Gap
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="The proportion of registered properties that do not pay the tax or fulfill their liability. It reflects weaknesses in enforcement, billing, and payment collection systems. The compliance gap equals Outstanding."></i>
+                                        </td>
+                                        <td class="text-end" id="admComplianceGap">0</td>
+                                        <td class="text-end" id="admComplianceGapPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Coverage Gap
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="The proportion of total estimated properties that are not registered in the property tax system. This gap indicates lack of property identification and inclusion in the fiscal database. The gap is quantified by multiplying the number of unregistered properties by the average billed amount per registered property."></i>
+                                        </td>
+                                        <td class="text-end" id="admCoverageGap">0</td>
+                                        <td class="text-end" id="admCoverageGapPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Valuation/assessment Gap
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="The valuation gap estimates how much more revenue could be billed to compliant properties if they were assessed at market value instead of undervalued fiscal assessments. It reflects weaknesses in the valuation framework and outdated property records."></i>
+                                        </td>
+                                        <td class="text-end" id="admValuationGap">0</td>
+                                        <td class="text-end" id="admValuationGapPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Mixed Gap (val./reg.)
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="This mixed gap captures the revenue loss from non-compliant properties that are registered but do not pay - and whose values are also below market. It shows the compounded effect of enforcement failure and undervaluation."></i>
+                                        </td>
+                                        <td class="text-end" id="admMixedGapReg">0</td>
+                                        <td class="text-end" id="admMixedGapRegPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Mixed Gap (val./unreg.)
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="This mixed gap estimates the revenue missed from unregistered properties valued at market levels. It captures the full revenue loss due to both lack of registry and undervaluation."></i>
+                                        </td>
+                                        <td class="text-end" id="admMixedGapUnreg">0</td>
+                                        <td class="text-end" id="admMixedGapUnregPct">0%</td>
+                                    </tr>
+                                    <tr class="table-secondary fw-bold">
+                                        <td>Total Administrative Gap</td>
+                                        <td class="text-end" id="tableTotalAdmGap">0</td>
+                                        <td class="text-end">100%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label for="propertyTaxNotes">Notes</label>
-                                <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="propertyTaxNotes" name="PropertyTax.Notes" rows="3" placeholder="Enter notes" @(isViewMode ? "readonly" : "")>@Model.PropertyTax.Notes</textarea>
-                            </div>
+
+                    <!-- Breakdown of Administrative Gaps Pie Chart -->
+                    <div class="mb-4">
+                        <h6 class="text-center mb-3">Breakdown of Administrative Gaps</h6>
+                        <div class="d-flex justify-content-center">
+                            <div style="height: 300px; width: 450px; position: relative;">
+                                <canvas id="adminGapChart"></canvas>
                             </div>
                         </div>
+                        <p class="small text-muted mt-2 text-center">
+                            <strong>DESCRIPTION:</strong> This pie chart illustrates the percentage distribution of the revenue gaps. It visually shows the contribution of each type of gap to the total uncollected revenue, helping to identify which gaps are the most significant.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -426,324 +589,779 @@
     </div>
 </div>
 
-<!-- Create New Category Modal -->
-<div class="modal fade" id="createPropertyTaxCategoryModal" tabindex="-1" aria-labelledby="createPropertyTaxCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createPropertyTaxCategoryModalLabel">Create New Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="newPropertyTaxCategoryNameCreate">Category Name</label>
-                    <input type="text" class="form-control" id="newPropertyTaxCategoryNameCreate" placeholder="Enter category name">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="createPropertyTaxCategoryBtn">Create</button>
-            </div>
-        </div>
-    </div>
-</div>
+<style>
+    .property-tax-gap-analysis .card {
+        border-radius: 8px;
+    }
 
-<!-- Rename Category Modal -->
-<div class="modal fade" id="renamePropertyTaxCategoryModal" tabindex="-1" aria-labelledby="renamePropertyTaxCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="renamePropertyTaxCategoryModalLabel">Rename Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="newPropertyTaxCategoryName">New Category Name</label>
-                    <input type="text" class="form-control" id="newPropertyTaxCategoryName" placeholder="Enter new category name">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="savePropertyTaxCategoryNameBtn">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
+    .property-tax-gap-analysis .card-header {
+        border-radius: 8px 8px 0 0;
+    }
 
-<!-- Delete Category Modal -->
-<div class="modal fade" id="deletePropertyTaxCategoryModal" tabindex="-1" aria-labelledby="deletePropertyTaxCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deletePropertyTaxCategoryModalLabel">Delete Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete the category <span id="propertyTaxCategoryToDeleteName"></span>?</p>
-                <p class="text-danger">This action cannot be undone.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeletePropertyTaxCategoryBtn">Delete</button>
-            </div>
-        </div>
-    </div>
-</div>
+    .property-tax-gap-analysis .form-control[readonly] {
+        cursor: default;
+    }
+
+    .property-tax-gap-analysis .progress {
+        border-radius: 10px;
+    }
+
+    .property-tax-gap-analysis .progress-bar {
+        border-radius: 10px;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .property-tax-gap-analysis .table th,
+    .property-tax-gap-analysis .table td {
+        vertical-align: middle;
+        font-size: 0.875rem;
+    }
+
+    /* Ensure table header text is visible with white color on dark background */
+    .property-tax-gap-analysis .table thead.table-dark th {
+        color: #ffffff !important;
+        background-color: #212529 !important;
+    }
+
+    /* KPI Ratio badges should display as normal Bootstrap badges */
+    .property-tax-gap-analysis .card-body > .mb-3 .badge {
+        width: auto;
+        height: auto;
+        border-radius: 0.25rem;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+    }
+
+    .property-tax-gap-analysis .input-group-sm .form-control,
+    .property-tax-gap-analysis .input-group-sm .input-group-text {
+        font-size: 0.8rem;
+    }
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize counter for unique IDs
-        let propertyTaxCategoryCounter = 1;
-        
-        // Variables to store current category being edited/deleted
-        let currentPropertyTaxCategory = null;
-        
-        // Initialize modals
-        const renamePropertyTaxModalElement = document.getElementById('renamePropertyTaxCategoryModal');
-        const deletePropertyTaxModalElement = document.getElementById('deletePropertyTaxCategoryModal');
-        const createPropertyTaxModalElement = document.getElementById('createPropertyTaxCategoryModal');
-        
-        const renamePropertyTaxModal = new bootstrap.Modal(renamePropertyTaxModalElement);
-        const deletePropertyTaxModal = new bootstrap.Modal(deletePropertyTaxModalElement);
-        const createPropertyTaxModal = new bootstrap.Modal(createPropertyTaxModalElement);
-        
-        // Function to clean up all modals and backdrops
-        function cleanupModals() {
-            // Hide all modals
-            if (renamePropertyTaxModal) renamePropertyTaxModal.hide();
-            if (deletePropertyTaxModal) deletePropertyTaxModal.hide();
-            if (createPropertyTaxModal) createPropertyTaxModal.hide();
-            
-            // Remove all backdrops
-            const modalBackdrops = document.querySelectorAll('.modal-backdrop');
-            modalBackdrops.forEach(backdrop => {
-                backdrop.remove();
+        // Chart instances
+        let potentialRevenueChart = null;
+        let adminGapChart = null;
+
+        // Get currency symbol from AppContext (single source of truth)
+        function getCurrencySymbol() {
+            if (window.AppContext) {
+                return window.AppContext.get('currencySymbol') || '$';
+            }
+            return '$';
+        }
+
+        // Update all currency displays in Property Tax section
+        function updatePropertyTaxCurrencySymbols() {
+            const symbol = getCurrencySymbol();
+            console.log('Updating Property Tax currency symbols to:', symbol);
+
+            // Update input group prefixes
+            document.querySelectorAll('.property-tax-gap-analysis .currency-prefix-display').forEach(el => {
+                el.textContent = symbol;
             });
-            
-            // Reset body
-            document.body.classList.remove('modal-open');
-            document.body.style.overflow = '';
-            document.body.style.paddingRight = '';
-            
-            // Hide all modal elements
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.style.display = 'none';
-                modal.setAttribute('aria-hidden', 'true');
-                modal.classList.remove('show');
+
+            // Update labels with currency
+            document.querySelectorAll('.property-tax-gap-analysis .currency-label').forEach(el => {
+                el.textContent = symbol;
             });
         }
-        
-        // Add event listener for when modals are hidden
-        renamePropertyTaxModalElement.addEventListener('hidden.bs.modal', cleanupModals);
-        deletePropertyTaxModalElement.addEventListener('hidden.bs.modal', cleanupModals);
-        createPropertyTaxModalElement.addEventListener('hidden.bs.modal', cleanupModals);
-        
-        // Listen for tab changes to clean up modals
-        document.addEventListener('click', function(e) {
-            // If clicking on a tab or navigation item
-            if (e.target.closest('a[data-bs-toggle="tab"]') || e.target.closest('.nav-link')) {
-                cleanupModals();
-            }
-        });
-        
-        // Initialize number formatting for the input fields
-        const numberFormatInputs = document.querySelectorAll('.number-format');
-        if (numberFormatInputs && numberFormatInputs.length > 0) {
-            numberFormatInputs.forEach(input => {
-                input.addEventListener('blur', function() {
-                    const value = parseFloat(this.value.replace(/,/g, '')) || 0;
-                    this.value = value.toLocaleString('en-US');
-                });
+
+        // Subscribe to AppContext currency changes (similar to useContext in React)
+        if (window.AppContext) {
+            window.AppContext.subscribe('currencySymbol', function(newSymbol) {
+                console.log('Property Tax received currency change via AppContext:', newSymbol);
+                updatePropertyTaxCurrencySymbols();
+                // Also recalculate to update matrix dashboard with new currency
+                calculatePropertyTaxGaps();
             });
         }
-        
-        // Add event listeners for existing edit buttons
-        document.querySelectorAll('.edit-category-btn').forEach(function(button) {
-            button.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent collapse toggle
-                currentPropertyTaxCategory = this.closest('.category-card');
-                const titleElement = currentPropertyTaxCategory.querySelector('.category-title');
-                const currentName = titleElement.textContent;
-                
-                // Set the current name in the modal input
-                document.getElementById('newPropertyTaxCategoryName').value = currentName;
-                
-                // Show the modal
-                renamePropertyTaxModal.show();
+
+        // Initial currency update
+        updatePropertyTaxCurrencySymbols();
+
+        // Delayed update to catch currency loaded from API (after country data loads)
+        setTimeout(function() {
+            updatePropertyTaxCurrencySymbols();
+        }, 1000);
+
+        // Another update after 2 seconds for slower connections
+        setTimeout(function() {
+            updatePropertyTaxCurrencySymbols();
+        }, 2000);
+
+        // Initialize Bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Initialize charts
+        initializeCharts();
+
+        // Add event listeners to all input fields
+        const inputFields = document.querySelectorAll('.property-tax-gap-analysis input[data-input="true"]');
+        inputFields.forEach(field => {
+            field.addEventListener('input', function() {
+                calculatePropertyTaxGaps();
+            });
+            field.addEventListener('change', function() {
+                calculatePropertyTaxGaps();
             });
         });
-        
-        // Add event listeners for existing remove buttons
-        document.querySelectorAll('.remove-category-btn').forEach(function(button) {
-            button.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent collapse toggle
-                currentPropertyTaxCategory = this.closest('.category-card');
-                const titleElement = currentPropertyTaxCategory.querySelector('.category-title');
-                
-                // Set the category name in the modal
-                document.getElementById('propertyTaxCategoryToDeleteName').textContent = titleElement.textContent;
-                
-                // Show the modal
-                deletePropertyTaxModal.show();
-            });
-        });
-        
-        // Add Category button click handler - now just opens the modal
-        document.getElementById('addPropertyTaxCategoryBtn').addEventListener('click', function() {
-            // Clear the input field
-            document.getElementById('newPropertyTaxCategoryNameCreate').value = '';
-            
-            // Show the modal
-            createPropertyTaxModal.show();
-        });
-        
-        // Create Category button click handler
-        document.getElementById('createPropertyTaxCategoryBtn').addEventListener('click', function() {
-            const categoryName = document.getElementById('newPropertyTaxCategoryNameCreate').value.trim();
-            
-            if (!categoryName) {
-                alert('Please enter a category name');
-                return;
-            }
-            
-            // Clone the template
-            const template = document.getElementById('propertyTaxCategoryTemplate');
-            const newCategory = template.querySelector('.category-card').cloneNode(true);
-            
-            // Generate unique IDs
-            const categoryId = 'propertyTaxCategory-' + propertyTaxCategoryCounter;
-            const collapseId = 'propertyTaxCollapse-' + propertyTaxCategoryCounter;
-            
-            // Update IDs and attributes
-            newCategory.id = categoryId;
-            newCategory.querySelector('.card-header').setAttribute('data-bs-target', '#' + collapseId);
-            newCategory.querySelector('.card-header').setAttribute('aria-controls', collapseId);
-            newCategory.querySelector('.collapse').id = collapseId;
-            
-            // Set the user-provided category name
-            newCategory.querySelector('.category-title').textContent = categoryName;
-            
-            // Update input names for form submission
-            const inputs = newCategory.querySelectorAll('input');
-            inputs.forEach(function(input, index) {
-                const fieldName = index === 0 ? 'RegisteredTaxpayers' : 
-                                 index === 1 ? 'CompliantTaxpayers' : 
-                                 index === 2 ? 'AveragePropertyValue' : 
-                                 index === 3 ? 'EstimatedAveragePropertyValue' : 'TaxRate';
-                input.name = `PropertyTax.DynamicCategories[${propertyTaxCategoryCounter - 1}].${fieldName}`;
-            });
-            
-            // Add hidden input for category name
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = `PropertyTax.DynamicCategories[${propertyTaxCategoryCounter - 1}].Name`;
-            hiddenInput.value = categoryName;
-            newCategory.querySelector('.card-body').appendChild(hiddenInput);
-            
-            // Add edit button handler
-            newCategory.querySelector('.edit-category-btn').addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent collapse toggle
-                currentPropertyTaxCategory = newCategory;
-                const titleElement = newCategory.querySelector('.category-title');
-                const currentName = titleElement.textContent;
-                
-                // Set the current name in the modal input
-                document.getElementById('newPropertyTaxCategoryName').value = currentName;
-                
-                // Show the modal
-                renamePropertyTaxModal.show();
-            });
-            
-            // Add remove button handler
-            newCategory.querySelector('.remove-category-btn').addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent collapse toggle
-                currentPropertyTaxCategory = newCategory;
-                const titleElement = newCategory.querySelector('.category-title');
-                
-                // Set the category name in the modal
-                document.getElementById('propertyTaxCategoryToDeleteName').textContent = titleElement.textContent;
-                
-                // Show the modal
-                deletePropertyTaxModal.show();
-            });
-            
-            // Add to container and show
-            document.getElementById('dynamicPropertyTaxCategoriesContainer').appendChild(newCategory);
-            
-            // Increment counter for next category
-            propertyTaxCategoryCounter++;
-            
-            // Close the modal
-            createPropertyTaxModal.hide();
-            
-            // Show the collapse
-            new bootstrap.Collapse(document.getElementById(collapseId)).show();
-        });
-        
-        // Save Category Name button click handler
-        document.getElementById('savePropertyTaxCategoryNameBtn').addEventListener('click', function() {
-            if (currentPropertyTaxCategory) {
-                const newName = document.getElementById('newPropertyTaxCategoryName').value.trim();
-                if (newName) {
-                    // Update the category title
-                    const titleElement = currentPropertyTaxCategory.querySelector('.category-title');
-                    titleElement.textContent = newName;
-                    
-                    // Update the hidden input value if it exists
-                    const hiddenInput = currentPropertyTaxCategory.querySelector('input[type="hidden"]');
-                    if (hiddenInput) {
-                        hiddenInput.value = newName;
-                    }
-                    
-                    // Close the modal
-                    renamePropertyTaxModal.hide();
-                }
-            }
-        });
-        
-        // Confirm Delete Category button click handler
-        document.getElementById('confirmDeletePropertyTaxCategoryBtn').addEventListener('click', function() {
-            if (currentPropertyTaxCategory) {
-                // Remove the category card
-                currentPropertyTaxCategory.remove();
-                
-                // Close the modal
-                deletePropertyTaxModal.hide();
-                
-                // Update indices for remaining dynamic categories
-                updatePropertyTaxDynamicCategoryIndices();
-            }
-        });
-        
-        // Function to update indices for dynamic categories after deletion
-        function updatePropertyTaxDynamicCategoryIndices() {
-            const dynamicCategories = document.getElementById('dynamicPropertyTaxCategoriesContainer').querySelectorAll('.category-card');
-            dynamicCategories.forEach(function(category, index) {
-                const inputs = category.querySelectorAll('input');
-                inputs.forEach(function(input) {
-                    if (input.name.includes('DynamicCategories[')) {
-                        input.name = input.name.replace(/DynamicCategories\[\d+\]/, `DynamicCategories[${index}]`);
-                    }
-                });
-            });
-        }
-        
-        // Toggle chevron icon when collapsing/expanding categories
-        const categoryHeaders = document.querySelectorAll('[data-bs-toggle="collapse"]');
-        
-        categoryHeaders.forEach(header => {
-            header.addEventListener('click', function() {
-                const chevron = this.querySelector('.fas.fa-chevron-down');
-                const collapseId = this.getAttribute('data-bs-target');
-                const collapseElement = document.querySelector(collapseId);
-                
-                // Check if the collapse is currently shown
-                if (collapseElement.classList.contains('show')) {
-                    chevron.style.transform = 'rotate(0deg)';
+
+        // Non-registered Properties Estimation Logic
+        const estimateCheckbox = document.getElementById('estimateNonRegistered');
+        const estimateContainer = document.getElementById('estimatePercentageContainer');
+        const nonRegisteredInput = document.getElementById('nonRegisteredProperties');
+        const percentageInput = document.getElementById('nonRegisteredPercentage');
+        const registeredInput = document.getElementById('registeredProperties');
+
+        if (estimateCheckbox) {
+            estimateCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    // Show percentage input, make non-registered field readonly
+                    estimateContainer.style.display = 'block';
+                    nonRegisteredInput.readOnly = true;
+                    nonRegisteredInput.style.backgroundColor = '#e8f4fc';
+                    nonRegisteredInput.classList.remove('bg-light');
+                    // Calculate based on percentage
+                    updateNonRegisteredFromPercentage();
                 } else {
-                    chevron.style.transform = 'rotate(180deg)';
+                    // Hide percentage input, make non-registered field editable
+                    estimateContainer.style.display = 'none';
+                    nonRegisteredInput.readOnly = false;
+                    nonRegisteredInput.style.backgroundColor = '';
+                    nonRegisteredInput.classList.add('bg-light');
                 }
             });
-        });
+        }
+
+        if (percentageInput) {
+            percentageInput.addEventListener('input', updateNonRegisteredFromPercentage);
+            percentageInput.addEventListener('change', updateNonRegisteredFromPercentage);
+        }
+
+        // Also recalculate when registered properties change (if estimate mode is on)
+        if (registeredInput) {
+            registeredInput.addEventListener('input', function() {
+                if (estimateCheckbox && estimateCheckbox.checked) {
+                    updateNonRegisteredFromPercentage();
+                }
+            });
+        }
+
+        function updateNonRegisteredFromPercentage() {
+            if (!estimateCheckbox || !estimateCheckbox.checked) return;
+
+            const registered = parseNumber(registeredInput?.value);
+            const percentage = parseFloat(percentageInput?.value) || 0;
+
+            const nonRegistered = Math.round(registered * (percentage / 100));
+            nonRegisteredInput.value = formatCurrency(nonRegistered).replace('.00', '');
+
+            // Trigger recalculation
+            calculatePropertyTaxGaps();
+        }
+
+        // Total Market Value Estimation Logic
+        const marketValueCheckbox = document.getElementById('estimateMarketValue');
+        const marketValueContainer = document.getElementById('marketValueEstimateContainer');
+        const marketValueInput = document.getElementById('totalMarketValue');
+        const marketValuePercentageInput = document.getElementById('marketValuePercentage');
+        const fiscalBaseInput = document.getElementById('totalFiscalBase');
+
+        if (marketValueCheckbox) {
+            marketValueCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    // Show percentage input, make market value field readonly
+                    marketValueContainer.style.display = 'block';
+                    marketValueInput.readOnly = true;
+                    marketValueInput.style.backgroundColor = '#e8f4fc';
+                    marketValueInput.classList.remove('bg-light');
+                    // Calculate based on percentage
+                    updateMarketValueFromPercentage();
+                } else {
+                    // Hide percentage input, make market value field editable
+                    marketValueContainer.style.display = 'none';
+                    marketValueInput.readOnly = false;
+                    marketValueInput.style.backgroundColor = '';
+                    marketValueInput.classList.add('bg-light');
+                }
+            });
+        }
+
+        if (marketValuePercentageInput) {
+            marketValuePercentageInput.addEventListener('input', updateMarketValueFromPercentage);
+            marketValuePercentageInput.addEventListener('change', updateMarketValueFromPercentage);
+        }
+
+        // Also recalculate market value when fiscal base changes (if estimate mode is on)
+        if (fiscalBaseInput) {
+            fiscalBaseInput.addEventListener('input', function() {
+                if (marketValueCheckbox && marketValueCheckbox.checked) {
+                    updateMarketValueFromPercentage();
+                }
+            });
+        }
+
+        function updateMarketValueFromPercentage() {
+            if (!marketValueCheckbox || !marketValueCheckbox.checked) return;
+
+            const fiscalBase = parseNumber(fiscalBaseInput?.value);
+            const percentage = parseFloat(marketValuePercentageInput?.value) || 0;
+
+            // Market Value = Fiscal Base × (1 + percentage/100)
+            const marketValue = fiscalBase * (1 + percentage / 100);
+            marketValueInput.value = formatCurrency(marketValue);
+
+            // Trigger recalculation
+            calculatePropertyTaxGaps();
+        }
+
+        // Initial calculation
+        calculatePropertyTaxGaps();
+
+        function initializeCharts() {
+            // Potential Revenue Pie Chart
+            const ctx1 = document.getElementById('potentialRevenueChart');
+            if (ctx1) {
+                potentialRevenueChart = new Chart(ctx1.getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: ['Revenue to date', 'Compliance Gap', 'Coverage Gap', 'Valuation Gap', 'Mixed Gap (reg.)', 'Mixed Gap (unreg.)'],
+                        datasets: [{
+                            data: [0, 0, 0, 0, 0, 0],
+                            backgroundColor: ['#4CAF50', '#F44336', '#FF9800', '#2196F3', '#9C27B0', '#E91E63'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    boxWidth: 12,
+                                    font: { size: 10 },
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        if (data.labels.length && data.datasets.length) {
+                                            const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                            return data.labels.map((label, i) => {
+                                                const value = data.datasets[0].data[i];
+                                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                                return {
+                                                    text: label + ' (' + percentage + '%)',
+                                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                                    hidden: false,
+                                                    index: i
+                                                };
+                                            });
+                                        }
+                                        return [];
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.raw || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return context.label + ': ' + formatCurrency(value) + ' (' + percentage + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Administrative Gap Pie Chart
+            const ctx2 = document.getElementById('adminGapChart');
+            if (ctx2) {
+                adminGapChart = new Chart(ctx2.getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: ['Compliance Gap', 'Coverage Gap', 'Valuation/assessment gap', 'Mixed Gap (reg.)', 'Mixed Gap (unreg.)'],
+                        datasets: [{
+                            data: [0, 0, 0, 0, 0],
+                            backgroundColor: ['#F44336', '#FF9800', '#2196F3', '#9C27B0', '#E91E63'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    boxWidth: 12,
+                                    font: { size: 10 },
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        if (data.labels.length && data.datasets.length) {
+                                            const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                            return data.labels.map((label, i) => {
+                                                const value = data.datasets[0].data[i];
+                                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                                return {
+                                                    text: label + ' (' + percentage + '%)',
+                                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                                    hidden: false,
+                                                    index: i
+                                                };
+                                            });
+                                        }
+                                        return [];
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.raw || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return context.label + ': ' + formatCurrency(value) + ' (' + percentage + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function parseNumber(value) {
+            if (!value) return 0;
+            // Remove currency symbols, commas, spaces
+            const cleaned = String(value).replace(/[^0-9.-]/g, '');
+            return parseFloat(cleaned) || 0;
+        }
+
+        function formatCurrency(value) {
+            if (isNaN(value) || value === null) return '0';
+            return new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value);
+        }
+
+        function formatPercentage(value) {
+            if (isNaN(value) || value === null) return '0.00%';
+            return value.toFixed(2) + '%';
+        }
+
+        function calculatePropertyTaxGaps() {
+            // Get input values (user inputs)
+            const registeredProperties = parseNumber(document.getElementById('registeredProperties')?.value);
+            const nonRegisteredProperties = parseNumber(document.getElementById('nonRegisteredProperties')?.value);
+            const totalFiscalBase = parseNumber(document.getElementById('totalFiscalBase')?.value);
+            const totalMarketValue = parseNumber(document.getElementById('totalMarketValue')?.value);
+            const billedAmount = parseNumber(document.getElementById('billedAmount')?.value);
+            const outstandingAmount = parseNumber(document.getElementById('outstandingAmount')?.value);
+
+            // AUTO-CALCULATE Revenue to Date = Billed - Outstanding
+            const revenueToDate = billedAmount - outstandingAmount;
+            document.getElementById('revenueToDate').value = formatCurrency(revenueToDate);
+
+            // Calculate Derived Metrics
+            const estimatedProperties = registeredProperties + nonRegisteredProperties;
+
+            // Calculate Compliant Properties = Registered Properties × (Revenue to Date / Billed Amount)
+            const compliantProperties = billedAmount > 0 ? registeredProperties * (revenueToDate / billedAmount) : 0;
+
+            // Average values
+            const avgTaxableValue = registeredProperties > 0 ? totalFiscalBase / registeredProperties : 0;
+            const avgMarketValue = registeredProperties > 0 ? totalMarketValue / registeredProperties : 0;
+
+            // Effective Tax Rate = Revenue to Date / (Avg Taxable Value × Compliant Properties)
+            const effectiveTaxRate = (avgTaxableValue * compliantProperties) > 0
+                ? (revenueToDate / (avgTaxableValue * compliantProperties)) * 100
+                : 0;
+            const effectiveTaxRateDecimal = effectiveTaxRate / 100;
+
+            // Average Billed Amount = Effective Tax Rate × Average Taxable Value
+            const avgBilledAmount = effectiveTaxRateDecimal * avgTaxableValue;
+
+            // Potential Billing (market basis) = Effective Tax Rate × Average Market Value
+            const potentialBilling = effectiveTaxRateDecimal * avgMarketValue;
+
+            // Calculate KPI Ratios
+            const complianceRatio = billedAmount > 0 ? (revenueToDate / billedAmount) * 100 : 0;
+            const coverageRatio = estimatedProperties > 0 ? (registeredProperties / estimatedProperties) * 100 : 0;
+            const valuationRatio = totalMarketValue > 0 ? (totalFiscalBase / totalMarketValue) * 100 : 0;
+
+            // Calculate Gaps (using CORRECT formulas from spec)
+            // Compliance Gap = Outstanding Amount
+            const complianceGap = outstandingAmount;
+
+            // Coverage Gap = (Estimated - Registered) × Avg Billed Amount
+            const coverageGap = (estimatedProperties - registeredProperties) * avgBilledAmount;
+
+            // Valuation Gap = Compliant Properties × (Potential Billing Market - Avg Billed)
+            const valuationGap = compliantProperties * (potentialBilling - avgBilledAmount);
+
+            // Mixed Gap (val./reg.) = (Registered - Compliant) × (Potential Billing Market - Avg Billed)
+            const mixedGapReg = (registeredProperties - compliantProperties) * (potentialBilling - avgBilledAmount);
+
+            // Mixed Gap (val./unreg.) = (Estimated - Registered) × (Potential Billing Market - Avg Billed)
+            const mixedGapUnreg = (estimatedProperties - registeredProperties) * (potentialBilling - avgBilledAmount);
+
+            // Calculate Totals
+            const totalPotentialRevenue = revenueToDate + complianceGap + coverageGap + valuationGap + mixedGapReg + mixedGapUnreg;
+            const totalAdminGap = complianceGap + coverageGap + valuationGap + mixedGapReg + mixedGapUnreg;
+
+            // Calculate percentages for potential revenue
+            const revenueToDatePct = totalPotentialRevenue > 0 ? (revenueToDate / totalPotentialRevenue) * 100 : 0;
+            const complianceGapPct = totalPotentialRevenue > 0 ? (complianceGap / totalPotentialRevenue) * 100 : 0;
+            const coverageGapPct = totalPotentialRevenue > 0 ? (coverageGap / totalPotentialRevenue) * 100 : 0;
+            const valuationGapPct = totalPotentialRevenue > 0 ? (valuationGap / totalPotentialRevenue) * 100 : 0;
+            const mixedGapRegPct = totalPotentialRevenue > 0 ? (mixedGapReg / totalPotentialRevenue) * 100 : 0;
+            const mixedGapUnregPct = totalPotentialRevenue > 0 ? (mixedGapUnreg / totalPotentialRevenue) * 100 : 0;
+
+            // Calculate percentages for admin gaps
+            const admComplianceGapPct = totalAdminGap > 0 ? (complianceGap / totalAdminGap) * 100 : 0;
+            const admCoverageGapPct = totalAdminGap > 0 ? (coverageGap / totalAdminGap) * 100 : 0;
+            const admValuationGapPct = totalAdminGap > 0 ? (valuationGap / totalAdminGap) * 100 : 0;
+            const admMixedGapRegPct = totalAdminGap > 0 ? (mixedGapReg / totalAdminGap) * 100 : 0;
+            const admMixedGapUnregPct = totalAdminGap > 0 ? (mixedGapUnreg / totalAdminGap) * 100 : 0;
+
+            // Update derived metrics display
+            document.getElementById('estimatedProperties').value = formatCurrency(estimatedProperties).replace('.00', '');
+            document.getElementById('compliantProperties').value = formatCurrency(compliantProperties).replace('.00', '');
+            document.getElementById('avgTaxableValue').value = formatCurrency(avgTaxableValue);
+            document.getElementById('avgMarketValue').value = formatCurrency(avgMarketValue);
+            document.getElementById('effectiveTaxRate').value = effectiveTaxRate.toFixed(2);
+            document.getElementById('avgBilledAmount').value = formatCurrency(avgBilledAmount);
+            document.getElementById('potentialBilling').value = formatCurrency(potentialBilling);
+
+            // Update KPI progress bars (colors are dynamic based on thresholds)
+            updateKPIBar('complianceRatio', complianceRatio);
+            updateKPIBar('coverageRatio', coverageRatio);
+            updateKPIBar('valuationRatio', valuationRatio);
+
+            // Update Potential Revenue Breakdown Table
+            document.getElementById('tableRevenueToDate').textContent = formatCurrency(revenueToDate);
+            document.getElementById('tableRevenueToDatePct').textContent = formatPercentage(revenueToDatePct);
+            document.getElementById('tableComplianceGap').textContent = formatCurrency(complianceGap);
+            document.getElementById('tableComplianceGapPct').textContent = formatPercentage(complianceGapPct);
+            document.getElementById('tableCoverageGap').textContent = formatCurrency(coverageGap);
+            document.getElementById('tableCoverageGapPct').textContent = formatPercentage(coverageGapPct);
+            document.getElementById('tableValuationGap').textContent = formatCurrency(valuationGap);
+            document.getElementById('tableValuationGapPct').textContent = formatPercentage(valuationGapPct);
+            document.getElementById('tableMixedGapReg').textContent = formatCurrency(mixedGapReg);
+            document.getElementById('tableMixedGapRegPct').textContent = formatPercentage(mixedGapRegPct);
+            document.getElementById('tableMixedGapUnreg').textContent = formatCurrency(mixedGapUnreg);
+            document.getElementById('tableMixedGapUnregPct').textContent = formatPercentage(mixedGapUnregPct);
+            document.getElementById('tableTotalPotential').textContent = formatCurrency(totalPotentialRevenue);
+
+            // Update Administrative Gap Breakdown Table
+            document.getElementById('admComplianceGap').textContent = formatCurrency(complianceGap);
+            document.getElementById('admComplianceGapPct').textContent = formatPercentage(admComplianceGapPct);
+            document.getElementById('admCoverageGap').textContent = formatCurrency(coverageGap);
+            document.getElementById('admCoverageGapPct').textContent = formatPercentage(admCoverageGapPct);
+            document.getElementById('admValuationGap').textContent = formatCurrency(valuationGap);
+            document.getElementById('admValuationGapPct').textContent = formatPercentage(admValuationGapPct);
+            document.getElementById('admMixedGapReg').textContent = formatCurrency(mixedGapReg);
+            document.getElementById('admMixedGapRegPct').textContent = formatPercentage(admMixedGapRegPct);
+            document.getElementById('admMixedGapUnreg').textContent = formatCurrency(mixedGapUnreg);
+            document.getElementById('admMixedGapUnregPct').textContent = formatPercentage(admMixedGapUnregPct);
+            document.getElementById('tableTotalAdmGap').textContent = formatCurrency(totalAdminGap);
+
+            // Update Charts
+            updateCharts(revenueToDate, complianceGap, coverageGap, valuationGap, mixedGapReg, mixedGapUnreg);
+
+            // Update Matrix Dashboard
+            updateMatrixDashboard({
+                estimatedProperties,
+                registeredProperties,
+                compliantProperties,
+                avgBilledAmount,
+                potentialBilling,
+                revenueToDate,
+                complianceGap,
+                coverageGap,
+                valuationGap,
+                mixedGapReg,
+                mixedGapUnreg,
+                totalPotentialRevenue,
+                revenueToDatePct,
+                complianceGapPct,
+                coverageGapPct,
+                valuationGapPct,
+                mixedGapRegPct,
+                mixedGapUnregPct
+            });
+
+            // Store values in localStorage for Prioritization tab
+            storePropertyTaxValues(revenueToDate, totalPotentialRevenue, totalAdminGap, complianceGap, coverageGap, valuationGap, mixedGapReg, mixedGapUnreg, complianceRatio, coverageRatio);
+        }
+
+        function storePropertyTaxValues(revenueToDate, totalPotentialRevenue, totalFunctionalGap, complianceGap, coverageGap, valuationGap, mixedGapReg, mixedGapUnreg, complianceRatio, coverageRatio) {
+            try {
+                // Use RosraStateManager if available (preferred method)
+                if (typeof RosraStateManager !== 'undefined') {
+                    RosraStateManager.updatePropertyTax({
+                        currentRevenue: revenueToDate,
+                        potentialRevenue: totalPotentialRevenue,
+                        totalFunctionalGap: totalFunctionalGap,
+                        complianceGap: complianceGap,
+                        coverageGap: coverageGap,
+                        valuationGap: valuationGap,
+                        mixedGapReg: mixedGapReg,
+                        mixedGapUnreg: mixedGapUnreg,
+                        complianceRatio: complianceRatio,
+                        coverageRatio: coverageRatio
+                    });
+                    console.log('Property Tax: Updated via RosraStateManager');
+                }
+
+                // Also keep localStorage for backward compatibility
+                localStorage.setItem('propertyTaxCurrentValue', revenueToDate);
+                localStorage.setItem('propertyTaxPotentialValue', totalPotentialRevenue);
+                localStorage.setItem('propertyTaxGapValue', totalFunctionalGap);
+                localStorage.setItem('propertyTaxGap', totalFunctionalGap);
+                localStorage.setItem('propertyTaxComplianceGap', complianceGap);
+                localStorage.setItem('propertyTaxCoverageGap', coverageGap);
+                localStorage.setItem('propertyTaxValuationGap', valuationGap);
+                localStorage.setItem('propertyTaxMixedGapReg', mixedGapReg);
+                localStorage.setItem('propertyTaxMixedGapUnreg', mixedGapUnreg);
+                localStorage.setItem('propertyTaxComplianceRatio', complianceRatio);
+                localStorage.setItem('propertyTaxCoverageRatio', coverageRatio);
+
+                const propertyTaxValuesUpdated = new CustomEvent('propertyTaxValuesUpdated', {
+                    detail: {
+                        current: revenueToDate,
+                        potential: totalPotentialRevenue,
+                        gap: totalFunctionalGap
+                    }
+                });
+                document.dispatchEvent(propertyTaxValuesUpdated);
+            } catch (e) {
+                console.error('Error storing Property Tax values:', e);
+            }
+        }
+
+        function updateKPIBar(name, value) {
+            const bar = document.getElementById(name + 'Bar');
+            const valueSpan = document.getElementById(name + 'Value');
+            const cappedValue = Math.min(Math.max(value, 0), 100);
+
+            // Determine color based on value: >80% Green, 60-80% Yellow, <60% Red
+            let colorClass, badgeClass;
+            if (value >= 80) {
+                colorClass = 'bg-success';
+                badgeClass = 'bg-success';
+            } else if (value >= 60) {
+                colorClass = 'bg-warning';
+                badgeClass = 'bg-warning text-dark';
+            } else {
+                colorClass = 'bg-danger';
+                badgeClass = 'bg-danger';
+            }
+
+            if (bar) {
+                bar.style.width = cappedValue + '%';
+                bar.setAttribute('aria-valuenow', cappedValue);
+                // Remove old color classes and add new one
+                bar.classList.remove('bg-success', 'bg-warning', 'bg-danger', 'bg-info', 'bg-primary');
+                bar.classList.add(colorClass);
+            }
+            if (valueSpan) {
+                valueSpan.textContent = value.toFixed(0) + '%';
+                // Update badge color
+                valueSpan.classList.remove('bg-success', 'bg-warning', 'bg-danger', 'bg-info', 'bg-primary', 'text-dark');
+                badgeClass.split(' ').forEach(cls => valueSpan.classList.add(cls));
+            }
+        }
+
+        function updateCharts(revenueToDate, complianceGap, coverageGap, valuationGap, mixedGapReg, mixedGapUnreg) {
+            // Update Potential Revenue Chart
+            if (potentialRevenueChart) {
+                potentialRevenueChart.data.datasets[0].data = [
+                    Math.max(0, revenueToDate),
+                    Math.max(0, complianceGap),
+                    Math.max(0, coverageGap),
+                    Math.max(0, valuationGap),
+                    Math.max(0, mixedGapReg),
+                    Math.max(0, mixedGapUnreg)
+                ];
+                potentialRevenueChart.update();
+            }
+
+            // Update Admin Gap Chart
+            if (adminGapChart) {
+                adminGapChart.data.datasets[0].data = [
+                    Math.max(0, complianceGap),
+                    Math.max(0, coverageGap),
+                    Math.max(0, valuationGap),
+                    Math.max(0, mixedGapReg),
+                    Math.max(0, mixedGapUnreg)
+                ];
+                adminGapChart.update();
+            }
+        }
+
+        function updateMatrixDashboard(data) {
+            const currencySymbol = getCurrencySymbol();
+
+            // Format number for display (compact for large numbers)
+            function formatCompact(value) {
+                if (value >= 1000000000) {
+                    return currencySymbol + ' ' + (value / 1000000000).toFixed(1) + 'B';
+                } else if (value >= 1000000) {
+                    return currencySymbol + ' ' + (value / 1000000).toFixed(1) + 'M';
+                } else if (value >= 1000) {
+                    return currencySymbol + ' ' + (value / 1000).toFixed(1) + 'K';
+                }
+                return currencySymbol + ' ' + formatCurrency(value);
+            }
+
+            function formatPropertyCount(value) {
+                if (value >= 1000000) {
+                    return (value / 1000000).toFixed(1) + 'M';
+                } else if (value >= 1000) {
+                    return (value / 1000).toFixed(1) + 'K';
+                }
+                return Math.round(value).toLocaleString();
+            }
+
+            // Update Y-axis labels (property counts)
+            const estLabel = document.getElementById('matrixEstimatedLabel');
+            const regLabel = document.getElementById('matrixRegisteredLabel');
+            const compLabel = document.getElementById('matrixCompliantLabel');
+
+            if (estLabel) estLabel.textContent = formatPropertyCount(data.estimatedProperties);
+            if (regLabel) regLabel.textContent = formatPropertyCount(data.registeredProperties);
+            if (compLabel) compLabel.textContent = formatPropertyCount(data.compliantProperties);
+
+            // Update X-axis labels (average billing amounts)
+            const avgBilledLabel = document.getElementById('matrixAvgBilledLabel');
+            const avgMarketLabel = document.getElementById('matrixAvgMarketLabel');
+            const originLabel = document.getElementById('matrixOriginLabel');
+
+            if (avgBilledLabel) avgBilledLabel.textContent = formatCompact(data.avgBilledAmount);
+            if (avgMarketLabel) avgMarketLabel.textContent = formatCompact(data.potentialBilling);
+            if (originLabel) originLabel.textContent = currencySymbol + ' 0';
+
+            // Update matrix cell values
+            const matrixActualRevenue = document.getElementById('matrixActualRevenueVal');
+            const matrixValuationGap = document.getElementById('matrixValuationGapVal');
+            const matrixComplianceGap = document.getElementById('matrixComplianceGapVal');
+            const matrixMixedReg = document.getElementById('matrixMixedRegVal');
+            const matrixCoverageGap = document.getElementById('matrixCoverageGapVal');
+            const matrixMixedUnreg = document.getElementById('matrixMixedUnregVal');
+
+            if (matrixActualRevenue) matrixActualRevenue.textContent = formatCompact(data.revenueToDate);
+            if (matrixValuationGap) matrixValuationGap.textContent = formatCompact(data.valuationGap);
+            if (matrixComplianceGap) matrixComplianceGap.textContent = formatCompact(data.complianceGap);
+            if (matrixMixedReg) matrixMixedReg.textContent = formatCompact(data.mixedGapReg);
+            if (matrixCoverageGap) matrixCoverageGap.textContent = formatCompact(data.coverageGap);
+            if (matrixMixedUnreg) matrixMixedUnreg.textContent = formatCompact(data.mixedGapUnreg);
+
+            // === DYNAMIC ROW HEIGHTS (proportional to property counts) ===
+            const totalProps = data.estimatedProperties || 1;
+            const unregProps = Math.max(0, data.estimatedProperties - data.registeredProperties);
+            const nonCompliantProps = Math.max(0, data.registeredProperties - data.compliantProperties);
+            const compliantProps = Math.max(0, data.compliantProperties);
+
+            // Calculate flex ratios with minimum 15% to ensure text visibility
+            const minFlex = 0.15;
+            const unregRatio = unregProps / totalProps;
+            const nonCompliantRatio = nonCompliantProps / totalProps;
+            const compliantRatio = compliantProps / totalProps;
+
+            // Apply minimum and scale
+            const unregFlex = Math.max(minFlex, unregRatio);
+            const nonCompliantFlex = Math.max(minFlex, nonCompliantRatio);
+            const compliantFlex = Math.max(minFlex, compliantRatio);
+
+            const rowUnreg = document.getElementById('matrixRowUnreg');
+            const rowNonCompliant = document.getElementById('matrixRowNonCompliant');
+            const rowCompliant = document.getElementById('matrixRowCompliant');
+
+            if (rowUnreg) rowUnreg.style.flex = unregFlex.toString();
+            if (rowNonCompliant) rowNonCompliant.style.flex = nonCompliantFlex.toString();
+            if (rowCompliant) rowCompliant.style.flex = compliantFlex.toString();
+
+            // === DYNAMIC COLUMN WIDTHS (proportional to billing amounts) ===
+            const totalBilling = data.potentialBilling || 1;
+            const avgBilled = data.avgBilledAmount || 0;
+            const valuationDiff = Math.max(0, data.potentialBilling - data.avgBilledAmount);
+
+            // Calculate column width ratios (min 20% to ensure text visibility)
+            const minColWidth = 0.2;
+            const leftColRatio = avgBilled / totalBilling;
+            const rightColRatio = valuationDiff / totalBilling;
+
+            const leftColFlex = Math.max(minColWidth, leftColRatio);
+            const rightColFlex = Math.max(minColWidth, rightColRatio);
+
+            // Apply to all row cells
+            const allRows = document.querySelectorAll('.matrix-row');
+            allRows.forEach(row => {
+                const cells = row.querySelectorAll('.matrix-cell');
+                if (cells.length >= 2) {
+                    cells[0].style.flex = leftColFlex.toString();
+                    cells[1].style.flex = rightColFlex.toString();
+                }
+            });
+
+            // === POSITION Y-AXIS LABELS AT ROW BOUNDARIES ===
+            // Get the grid area and y-axis container heights
+            const gridArea = document.getElementById('matrixGridArea');
+            const yAxisContainer = document.getElementById('matrixYLabelsContainer');
+
+            if (gridArea && yAxisContainer) {
+                const gridHeight = gridArea.offsetHeight;
+                const totalFlex = unregFlex + nonCompliantFlex + compliantFlex;
+
+                // Calculate row heights in pixels
+                const row1Height = (unregFlex / totalFlex) * gridHeight;
+                const row2Height = (nonCompliantFlex / totalFlex) * gridHeight;
+                const row3Height = (compliantFlex / totalFlex) * gridHeight;
+
+                // Position labels at boundaries
+                const yLabelEstimated = document.getElementById('yLabelEstimated');
+                const yLabelRegistered = document.getElementById('yLabelRegistered');
+                const yLabelCompliant = document.getElementById('yLabelCompliant');
+
+                // Estimated at top (0px from top)
+                if (yLabelEstimated) {
+                    yLabelEstimated.style.top = '0px';
+                }
+                // Registered at boundary between row1 and row2
+                if (yLabelRegistered) {
+                    yLabelRegistered.style.top = row1Height + 'px';
+                }
+                // Compliant at boundary between row2 and row3
+                if (yLabelCompliant) {
+                    yLabelCompliant.style.top = (row1Height + row2Height) + 'px';
+                }
+            }
+
+            // === POSITION X-AXIS LABEL AT COLUMN BOUNDARY ===
+            const xAxisContainer = document.getElementById('matrixXAxisContainer');
+            const xLabelAvgBilled = document.getElementById('xLabelAvgBilled');
+
+            if (xAxisContainer && xLabelAvgBilled) {
+                const totalColFlex = leftColFlex + rightColFlex;
+                const leftColPercent = (leftColFlex / totalColFlex) * 100;
+
+                // Position the "Avg. Billed" label at the column boundary
+                xLabelAvgBilled.style.left = leftColPercent + '%';
+            }
+        }
+
+        // Expose calculatePropertyTaxGaps globally
+        window.calculatePropertyTaxGaps = calculatePropertyTaxGaps;
     });
 </script>

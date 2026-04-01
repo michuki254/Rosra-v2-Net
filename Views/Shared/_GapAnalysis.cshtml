@@ -1,68 +1,813 @@
 @model RosraApp.Models.ViewModels.RosraFormViewModel
 @{
     bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+    var currencySymbol = Model.CurrencySymbol ?? "$";
 }
 
-<div class="tab-content-container">
-    <h5 class="mb-3">Gap Analysis</h5>
-    
-    <!-- Revenue Source Tabs -->
-    <div class="card">
-        <div class="card-header bg-light">
-            <h6 class="mb-0">Revenue Sources</h6>
+<style>
+    /* Gap Analysis Intro Section */
+    .gap-analysis-intro-section {
+        margin-bottom: 1.25rem;
+    }
+
+    .gap-analysis-intro-section .intro-text-box {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-left: 4px solid var(--un-blue, #00b2e3);
+        border-radius: 0 8px 8px 0;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .gap-analysis-intro-section .intro-icon {
+        color: var(--un-blue, #00b2e3);
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        margin-top: 0.1rem;
+    }
+
+    .gap-analysis-intro-section .intro-text {
+        margin: 0;
+        font-size: 0.95rem;
+        color: #334155;
+        line-height: 1.5;
+    }
+
+    /* Gap Analysis Modern Tabs */
+    .gap-tabs-container {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .gap-tabs-nav {
+        display: flex;
+        gap: 0.5rem;
+        padding: 0.375rem;
+        background: #f1f3f5;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .gap-tab-btn {
+        flex: 0 0 auto;
+        min-width: 100px;
+        padding: 0.625rem 1rem;
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .gap-tab-btn:hover {
+        color: #495057;
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+    .gap-tab-btn.active {
+        background: #fff;
+        color: #00689D;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .gap-tab-btn i {
+        font-size: 1rem;
+    }
+
+    /* Dynamic stream tab with close button */
+    .gap-tab-btn .close-tab {
+        margin-left: 0.5rem;
+        padding: 0.125rem 0.25rem;
+        font-size: 0.75rem;
+        line-height: 1;
+        border-radius: 50%;
+        opacity: 0.6;
+    }
+
+    .gap-tab-btn .close-tab:hover {
+        opacity: 1;
+        background: rgba(220, 53, 69, 0.2);
+        color: #dc3545;
+    }
+
+    /* Rename tab button (pencil icon) */
+    .gap-tab-btn .rename-tab-btn {
+        margin-left: 0.4rem;
+        padding: 0.2rem 0.35rem;
+        font-size: 0.7rem;
+        line-height: 1;
+        border-radius: 4px;
+        opacity: 0.5;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .gap-tab-btn:hover .rename-tab-btn {
+        opacity: 0.8;
+    }
+
+    .gap-tab-btn .rename-tab-btn:hover {
+        opacity: 1;
+        background: rgba(0, 178, 227, 0.2);
+        color: #00b2e3;
+    }
+
+    .gap-tab-btn.active .rename-tab-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+
+    /* Add Stream Button */
+    .add-stream-btn {
+        flex: 0 0 auto;
+        padding: 0.625rem 1rem;
+        border: 2px dashed #6c757d;
+        background: transparent;
+        color: #6c757d;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .add-stream-btn:hover {
+        border-color: #00b2e3;
+        color: #00b2e3;
+        background: rgba(0, 178, 227, 0.05);
+    }
+
+    @@media (max-width: 768px) {
+        .gap-tabs-nav {
+            gap: 0.375rem;
+        }
+        .gap-tab-btn {
+            min-width: 80px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        .gap-tab-btn i {
+            display: none;
+        }
+    }
+
+    /* Modal Styling */
+    .stream-name-modal .modal-header {
+        background: #00b2e3;
+        color: white;
+    }
+
+    /* ============================================
+       UN-HABITAT GAP ANALYSIS DESIGN SYSTEM
+       Unified styling for Property Tax, Business License, and Generic Streams
+       ============================================ */
+
+    /* CSS Variables for consistent theming */
+    .gap-tabs-container {
+        --un-blue: #00b2e3;
+        --un-dark-blue: #00689D;
+        --un-orange: #FD9D24;
+        --un-orange-dark: #E8891A;
+        --un-light-bg: #f8fafc;
+        --un-input-bg: #f1f5f9;
+        --un-calculated-bg: #e0f2fe;
+        --un-border-color: #e2e8f0;
+        --un-success: #10b981;
+        --un-warning: #f59e0b;
+        --un-danger: #ef4444;
+        --card-radius: 12px;
+        --input-radius: 8px;
+    }
+
+    /* ========== CARD STYLING ========== */
+    .gap-tabs-container .card {
+        border: none;
+        border-radius: var(--card-radius);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        transition: box-shadow 0.2s ease;
+    }
+
+    .gap-tabs-container .card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Primary Card Header - Data Entry (UN Dark Blue) */
+    .gap-tabs-container .card-header.bg-primary {
+        background: linear-gradient(135deg, var(--un-dark-blue) 0%, #005a87 100%) !important;
+        border: none;
+        padding: 1rem 1.25rem;
+    }
+
+    .gap-tabs-container .card-header.bg-primary h6 {
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+    }
+
+    .gap-tabs-container .card-header.bg-primary i {
+        opacity: 0.9;
+    }
+
+    /* Info Card Header - Average Values (UN Blue) */
+    .gap-tabs-container .card-header.bg-info {
+        background: linear-gradient(135deg, var(--un-blue) 0%, #0099c7 100%) !important;
+        border: none;
+        padding: 1rem 1.25rem;
+    }
+
+    .gap-tabs-container .card-header.bg-info h6 {
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+    }
+
+    /* Warning Card Header - KPIs (UN Orange) */
+    .gap-tabs-container .card-header.bg-warning {
+        background: linear-gradient(135deg, var(--un-orange) 0%, var(--un-orange-dark) 100%) !important;
+        color: white !important;
+        border: none;
+        padding: 1rem 1.25rem;
+    }
+
+    .gap-tabs-container .card-header.bg-warning h6 {
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+        color: white;
+    }
+
+    /* Secondary Card Header - Gap Breakdown */
+    .gap-tabs-container .card-header.bg-secondary {
+        background: linear-gradient(135deg, #64748b 0%, #475569 100%) !important;
+        border: none;
+        padding: 1rem 1.25rem;
+    }
+
+    /* Card Body */
+    .gap-tabs-container .card-body {
+        padding: 1.25rem;
+        background: white;
+    }
+
+    /* ========== INPUT FIELD STYLING ========== */
+
+    /* Required Input Fields (Gray background, bold) */
+    .gap-tabs-container .form-control.bg-light {
+        background-color: var(--un-input-bg) !important;
+        border: 2px solid var(--un-border-color);
+        border-radius: var(--input-radius);
+        padding: 0.625rem 0.875rem;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+    .gap-tabs-container .form-control.bg-light:focus {
+        border-color: var(--un-dark-blue);
+        box-shadow: 0 0 0 3px rgba(0, 104, 157, 0.15);
+        background-color: white !important;
+    }
+
+    .gap-tabs-container .form-control.fw-bold {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    /* Calculated/Read-only Fields (Light blue background) */
+    .gap-tabs-container .form-control[readonly],
+    .gap-tabs-container .form-control[style*="e8f4fc"] {
+        background-color: var(--un-calculated-bg) !important;
+        border: 2px solid #bae6fd;
+        border-radius: var(--input-radius);
+        color: var(--un-dark-blue);
+        font-weight: 500;
+    }
+
+    /* Input Group Styling */
+    .gap-tabs-container .input-group {
+        border-radius: var(--input-radius);
+    }
+
+    .gap-tabs-container .input-group-text {
+        background-color: #f1f5f9;
+        border: 2px solid var(--un-border-color);
+        border-right: none;
+        color: #64748b;
+        font-weight: 500;
+        padding: 0.625rem 0.75rem;
+    }
+
+    .gap-tabs-container .input-group .form-control {
+        border-left: none;
+    }
+
+    .gap-tabs-container .input-group .form-control:focus {
+        border-color: var(--un-border-color);
+    }
+
+    .gap-tabs-container .input-group:focus-within .input-group-text {
+        border-color: var(--un-dark-blue);
+        background-color: #e0f2fe;
+    }
+
+    .gap-tabs-container .input-group:focus-within .form-control {
+        border-color: var(--un-dark-blue);
+    }
+
+    /* ========== FORM LABELS ========== */
+    .gap-tabs-container .form-label {
+        font-size: 0.875rem;
+        color: #475569;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .gap-tabs-container .form-label.fw-bold {
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .gap-tabs-container .form-label.text-primary {
+        color: var(--un-dark-blue) !important;
+        font-weight: 500;
+    }
+
+    .gap-tabs-container .form-label i.bi-info-circle {
+        color: #94a3b8;
+        cursor: help;
+        transition: color 0.2s;
+    }
+
+    .gap-tabs-container .form-label i.bi-info-circle:hover {
+        color: var(--un-blue);
+    }
+
+    /* ========== KPI PROGRESS BARS ========== */
+    .gap-tabs-container .progress {
+        height: 10px;
+        border-radius: 5px;
+        background-color: #e2e8f0;
+        overflow: hidden;
+    }
+
+    .gap-tabs-container .progress-bar {
+        border-radius: 5px;
+        transition: width 0.5s ease;
+    }
+
+    .gap-tabs-container .progress-bar.bg-success {
+        background: linear-gradient(90deg, #10b981 0%, #059669 100%) !important;
+    }
+
+    .gap-tabs-container .progress-bar.bg-warning {
+        background: linear-gradient(90deg, var(--un-orange) 0%, var(--un-orange-dark) 100%) !important;
+    }
+
+    .gap-tabs-container .progress-bar.bg-danger {
+        background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%) !important;
+    }
+
+    /* KPI Badge Styling */
+    .gap-tabs-container .badge {
+        font-weight: 600;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
+
+    .gap-tabs-container .badge.bg-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    }
+
+    .gap-tabs-container .badge.bg-warning {
+        background: linear-gradient(135deg, var(--un-orange) 0%, var(--un-orange-dark) 100%) !important;
+        color: white !important;
+    }
+
+    .gap-tabs-container .badge.bg-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+    }
+
+    /* ========== TABLE STYLING ========== */
+    .gap-tabs-container .table {
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+
+    /* Light header tables */
+    .gap-tabs-container .table thead:not(.table-dark) th {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-bottom: 2px solid var(--un-border-color);
+        color: #475569;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        padding: 0.875rem 1rem;
+    }
+
+    /* Dark header tables (table-dark) - UN Dark Blue styling */
+    .gap-tabs-container .table thead.table-dark {
+        background: linear-gradient(135deg, var(--un-dark-blue) 0%, #005a87 100%) !important;
+    }
+
+    .gap-tabs-container .table thead.table-dark th {
+        background: transparent !important;
+        color: white !important;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 0.875rem 1rem;
+        border: none;
+        letter-spacing: 0.02em;
+    }
+
+    .gap-tabs-container .table tbody td {
+        padding: 0.875rem 1rem;
+        vertical-align: middle;
+        border-color: #f1f5f9;
+        color: #334155;
+    }
+
+    .gap-tabs-container .table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    .gap-tabs-container .table-bordered {
+        border: 1px solid var(--un-border-color);
+        border-radius: var(--input-radius);
+        overflow: hidden;
+    }
+
+    /* ========== CHART CONTAINERS ========== */
+    .gap-tabs-container .chart-container,
+    .gap-tabs-container [class*="chart"] {
+        background: white;
+        border-radius: var(--card-radius);
+        padding: 1rem;
+        border: 1px solid var(--un-border-color);
+    }
+
+    /* ========== HELPER TEXT ========== */
+    .gap-tabs-container .text-muted {
+        color: #64748b !important;
+        font-size: 0.8rem;
+    }
+
+    .gap-tabs-container small.text-muted {
+        display: block;
+        margin-top: 0.25rem;
+    }
+
+    /* ========== CHECKBOX STYLING ========== */
+    .gap-tabs-container .form-check-input {
+        width: 1.1rem;
+        height: 1.1rem;
+        border: 2px solid #cbd5e1;
+        border-radius: 4px;
+    }
+
+    .gap-tabs-container .form-check-input:checked {
+        background-color: var(--un-dark-blue);
+        border-color: var(--un-dark-blue);
+    }
+
+    .gap-tabs-container .form-check-input:focus {
+        box-shadow: 0 0 0 3px rgba(0, 104, 157, 0.2);
+    }
+
+    .gap-tabs-container .form-check-label {
+        font-size: 0.875rem;
+        color: #64748b;
+        margin-left: 0.25rem;
+    }
+
+    /* ========== SECTION DIVIDERS ========== */
+    .gap-tabs-container hr {
+        border-color: var(--un-border-color);
+        margin: 1.5rem 0;
+    }
+
+    /* ========== RESPONSIVE ADJUSTMENTS ========== */
+    @@media (max-width: 992px) {
+        .gap-tabs-container .card-body {
+            padding: 1rem;
+        }
+
+        .gap-tabs-container .form-control {
+            font-size: 0.9rem;
+        }
+    }
+
+    /* ========== ANIMATION FOR CALCULATED VALUES ========== */
+    .gap-tabs-container .form-control[readonly] {
+        transition: background-color 0.3s ease;
+    }
+
+    .gap-tabs-container .form-control.value-updated {
+        animation: highlightValue 0.5s ease;
+    }
+
+    @@keyframes highlightValue {
+        0% { background-color: #fef3c7; }
+        100% { background-color: var(--un-calculated-bg); }
+    }
+
+    /* ========== STREAM HEADER STYLING (Generic Streams) ========== */
+    .generic-stream-gap-analysis .stream-name-editor input {
+        border-bottom: 2px dashed var(--un-border-color) !important;
+        transition: border-color 0.2s;
+    }
+
+    .generic-stream-gap-analysis .stream-name-editor input:focus {
+        border-bottom-color: var(--un-dark-blue) !important;
+        outline: none;
+    }
+
+    .generic-stream-gap-analysis .delete-stream-btn {
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .generic-stream-gap-analysis .delete-stream-btn:hover {
+        background-color: #fee2e2;
+        border-color: #fecaca;
+        color: #dc2626;
+    }
+</style>
+
+<div class="gap-tabs-container">
+    <!-- Gap Analysis Intro Section -->
+    <div class="gap-analysis-intro-section">
+        <div class="intro-text-box">
+            <i class="bi bi-info-circle-fill intro-icon"></i>
+            <p class="intro-text">Fill in the requested inputs for each OSR stream. Add or remove streams as needed to match your context. Once you have entered all available data, go to the Prioritisation tab to see the headline results and start sequencing streams for reform planning.</p>
         </div>
-        <div class="card-body">
-            <!-- Static Tab Navigation -->
-            <div class="mb-3">
-                <div class="list-group list-group-horizontal-md flex-wrap mb-3" role="tablist">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-primary active" onclick="showTab('property-tax')">Property Tax</button>
-                        <button type="button" class="btn btn-outline-primary" onclick="showTab('license')">License</button>
-                        <button type="button" class="btn btn-outline-primary" onclick="showTab('short-term')">Short Term</button>
-                        <button type="button" class="btn btn-outline-primary" onclick="showTab('long-term')">Long Term</button>
-                        <button type="button" class="btn btn-outline-primary" onclick="showTab('mixed')">Mixed</button>
-                        <button type="button" class="btn btn-outline-primary" onclick="showTab('total')">Total</button>
+    </div>
+
+    <!-- Modern Tab Navigation -->
+    <div class="gap-tabs-nav" role="tablist" id="gapTabsNav">
+        <!-- Property Tax Tab (Fixed - Renameable) -->
+        <button type="button" class="gap-tab-btn active" onclick="showTab('property-tax')" data-tab="property-tax">
+            <i class="bi bi-house"></i>
+            <span class="stream-name-label" id="propertyTaxLabel">@Model.PropertyTaxDisplayName</span>
+            @if (!isViewMode)
+            {
+                <span class="rename-tab-btn" onclick="event.stopPropagation(); openRenameModal('property-tax', '@Model.PropertyTaxDisplayName');" title="Rename this tab">
+                    <i class="bi bi-pencil"></i>
+                </span>
+            }
+        </button>
+        <input type="hidden" id="propertyTaxDisplayName" name="PropertyTaxDisplayName" value="@Model.PropertyTaxDisplayName" />
+
+        <!-- Business License Tab (Fixed - Renameable) -->
+        <button type="button" class="gap-tab-btn" onclick="showTab('license')" data-tab="license">
+            <i class="bi bi-file-earmark-text"></i>
+            <span class="stream-name-label" id="businessLicenseLabel">@Model.BusinessLicenseDisplayName</span>
+            @if (!isViewMode)
+            {
+                <span class="rename-tab-btn" onclick="event.stopPropagation(); openRenameModal('license', '@Model.BusinessLicenseDisplayName');" title="Rename this tab">
+                    <i class="bi bi-pencil"></i>
+                </span>
+            }
+        </button>
+        <input type="hidden" id="businessLicenseDisplayName" name="BusinessLicenseDisplayName" value="@Model.BusinessLicenseDisplayName" />
+
+        <!-- Dynamic Stream Tabs Container -->
+        <div id="dynamicStreamTabs" class="d-contents" style="display: contents;">
+            @if (Model.GenericStreams != null && Model.GenericStreams.Count > 0)
+            {
+                @for (int i = 0; i < Model.GenericStreams.Count; i++)
+                {
+                    var stream = Model.GenericStreams[i];
+                    <button type="button" class="gap-tab-btn" onclick="showTab('stream@(i)')" data-tab="stream@(i)" id="stream@(i)-btn">
+                        <i class="bi bi-bar-chart-line"></i>
+                        <span class="stream-name-label">@stream.StreamName</span>
+                        @if (!isViewMode)
+                        {
+                            <span class="close-tab" onclick="event.stopPropagation(); deleteStream(@i);" title="Remove stream">&times;</span>
+                        }
+                    </button>
+                }
+            }
+        </div>
+
+        <!-- Add Stream Button -->
+        @if (!isViewMode)
+        {
+            <button type="button" class="add-stream-btn" onclick="openAddStreamModal()" title="Add a new revenue stream">
+                <i class="bi bi-plus-circle"></i>
+                Add Stream
+            </button>
+        }
+    </div>
+
+    <!-- Tab Content -->
+    <div class="gap-tab-content">
+        <!-- Property Tax Tab -->
+        <div id="property-tax-tab" class="revenue-tab" style="display: block;">
+            @await Html.PartialAsync("_GapAnalysisPropertyTaxFixed", Model)
+        </div>
+
+        <!-- Business License Tab -->
+        <div id="license-tab" class="revenue-tab" style="display: none;">
+            @await Html.PartialAsync("_GapAnalysisLicense", Model)
+        </div>
+
+        <!-- Dynamic Stream Tab Contents -->
+        <div id="dynamicStreamContents">
+            @if (Model.GenericStreams != null && Model.GenericStreams.Count > 0)
+            {
+                @for (int i = 0; i < Model.GenericStreams.Count; i++)
+                {
+                    var stream = Model.GenericStreams[i];
+                    stream.StreamIndex = i;
+                    <div id="stream@(i)-tab" class="revenue-tab" style="display: none;">
+                        @await Html.PartialAsync("_GapAnalysisGenericStream", stream, new ViewDataDictionary(ViewData) { { "CurrencySymbol", currencySymbol } })
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Add Stream Modal -->
+<div class="modal fade stream-name-modal" id="addStreamModal" tabindex="-1" aria-labelledby="addStreamModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStreamModalLabel">
+                    <i class="bi bi-plus-circle me-2"></i>Add New Revenue Stream
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="newStreamName" class="form-label">Stream Name</label>
+                    <input type="text" class="form-control" id="newStreamName" placeholder="e.g., Parking Fees, Market Stall Fees, Advertising Permits...">
+                    <small class="text-muted">Enter a descriptive name for this revenue stream</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Quick Templates</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="Parking Fees">
+                            <i class="bi bi-p-circle"></i> Parking Fees
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="Market Stall Fees">
+                            <i class="bi bi-shop"></i> Market Stall Fees
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="Advertising Permits">
+                            <i class="bi bi-megaphone"></i> Advertising Permits
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="User Fees">
+                            <i class="bi bi-people"></i> User Fees
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="Building Permits">
+                            <i class="bi bi-building"></i> Building Permits
+                        </button>
                     </div>
                 </div>
             </div>
-            
-            <!-- Static Tab Content -->
-            <div>
-                <!-- Property Tax Tab -->
-                <div id="property-tax-tab" class="revenue-tab" style="display: block;">
-                    @await Html.PartialAsync("_GapAnalysisPropertyTaxFixed", Model)
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addNewStream()">
+                    <i class="bi bi-plus-circle me-1"></i>Add Stream
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteStreamModal" tabindex="-1" aria-labelledby="deleteStreamModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteStreamModalLabel">
+                    <i class="bi bi-trash me-2"></i>Delete Stream
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the stream "<strong id="deleteStreamName"></strong>"?</p>
+                <p class="text-danger"><small>This action cannot be undone. All data for this stream will be lost.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="bi bi-trash me-1"></i>Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rename Stream Modal -->
+<div class="modal fade stream-name-modal" id="renameStreamModal" tabindex="-1" aria-labelledby="renameStreamModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="renameStreamModalLabel">
+                    <i class="bi bi-pencil-square me-2"></i>Rename Revenue Stream
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="renameStreamInput" class="form-label">New Name</label>
+                    <input type="text" class="form-control" id="renameStreamInput" placeholder="Enter new name for this stream">
+                    <small class="text-muted">This changes only the display name, not the underlying data type.</small>
                 </div>
-                
-                <!-- License Tab -->
-                <div id="license-tab" class="revenue-tab" style="display: none;">
-                    @await Html.PartialAsync("_GapAnalysisLicense", Model)
-                </div>
-                
-                <!-- Short Term User Charge Tab -->
-                <div id="short-term-tab" class="revenue-tab" style="display: none;">
-                    @await Html.PartialAsync("_GapAnalysisShortTerm", Model)
-                </div>
-                
-                <!-- Long Term User Charge Tab -->
-                <div id="long-term-tab" class="revenue-tab" style="display: none;">
-                    @await Html.PartialAsync("_GapAnalysisLongTerm", Model)
-                </div>
-                
-                <!-- Mixed User Charge Tab -->
-                <div id="mixed-tab" class="revenue-tab" style="display: none;">
-                    @await Html.PartialAsync("_GapAnalysisMixed", Model)
-                </div>
-                
-                <!-- Total Estimate Tab -->
-                <div id="total-tab" class="revenue-tab" style="display: none;">
-                    @await Html.PartialAsync("_GapAnalysisTotal", Model)
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmRenameBtn">
+                    <i class="bi bi-check-circle me-1"></i>Save
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    // Track the current stream count
+    let streamCount = @(Model.GenericStreams?.Count ?? 0);
+    let deleteStreamIndex = -1;
+    let renameStreamId = null;
+
+    // ===== STREAM RENAMING FUNCTIONALITY =====
+    // Open Rename Modal
+    function openRenameModal(streamId, currentName) {
+        renameStreamId = streamId;
+        document.getElementById('renameStreamInput').value = currentName;
+        const modal = new bootstrap.Modal(document.getElementById('renameStreamModal'));
+        modal.show();
+        // Focus the input after modal is shown
+        setTimeout(() => document.getElementById('renameStreamInput').focus(), 300);
+    }
+
+    // Confirm Rename
+    document.getElementById('confirmRenameBtn').addEventListener('click', function() {
+        if (!renameStreamId) return;
+
+        const newName = document.getElementById('renameStreamInput').value.trim();
+        if (!newName) {
+            alert('Please enter a name');
+            return;
+        }
+
+        // Update the label in the tab button
+        if (renameStreamId === 'property-tax') {
+            document.getElementById('propertyTaxLabel').textContent = newName;
+            document.getElementById('propertyTaxDisplayName').value = newName;
+            localStorage.setItem('rosraPropertyTaxDisplayName', newName);
+        } else if (renameStreamId === 'license') {
+            document.getElementById('businessLicenseLabel').textContent = newName;
+            document.getElementById('businessLicenseDisplayName').value = newName;
+            localStorage.setItem('rosraBusinessLicenseDisplayName', newName);
+        }
+
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('renameStreamModal'));
+        modal.hide();
+        renameStreamId = null;
+    });
+
+    // Restore saved display names from localStorage on page load
+    function restoreSavedDisplayNames() {
+        const savedPropertyTaxName = localStorage.getItem('rosraPropertyTaxDisplayName');
+        const savedBusinessLicenseName = localStorage.getItem('rosraBusinessLicenseDisplayName');
+
+        if (savedPropertyTaxName) {
+            document.getElementById('propertyTaxLabel').textContent = savedPropertyTaxName;
+            document.getElementById('propertyTaxDisplayName').value = savedPropertyTaxName;
+        }
+        if (savedBusinessLicenseName) {
+            document.getElementById('businessLicenseLabel').textContent = savedBusinessLicenseName;
+            document.getElementById('businessLicenseDisplayName').value = savedBusinessLicenseName;
+        }
+    }
+
+    // Call restore on page load
+    document.addEventListener('DOMContentLoaded', restoreSavedDisplayNames);
+
     // Function to switch between tabs
     function showTab(tabId) {
         // Hide all tab contents
@@ -70,129 +815,687 @@
         tabContents.forEach(content => {
             content.style.display = 'none';
         });
-        
+
         // Show the selected tab content
         const selectedContent = document.getElementById(tabId + '-tab');
         if (selectedContent) {
             selectedContent.style.display = 'block';
         }
-        
+
         // Update active state on buttons
-        const tabButtons = document.querySelectorAll('.btn-group .btn');
+        const tabButtons = document.querySelectorAll('.gap-tab-btn');
         tabButtons.forEach(button => {
             button.classList.remove('active');
         });
-        
+
         // Find the button that was clicked and make it active
-        const activeButton = Array.from(tabButtons).find(button => {
-            return button.onclick.toString().includes(`showTab('${tabId}'`);
-        });
-        
+        const activeButton = document.querySelector(`.gap-tab-btn[data-tab="${tabId}"]`);
         if (activeButton) {
             activeButton.classList.add('active');
         }
-        
-        // If showing the Total tab, calculate totals
-        if (tabId === 'total') {
-            calculateTotals();
-        }
-        
-        // Calculate gap for property tax
-        if (tabId === 'property-tax') {
-            calculatePropertyTaxGap();
-        }
-        
-        // Prevent form submission
-        return false;
+
+        // Dispatch a custom event to notify that the tab has been shown
+        const tabShownEvent = new CustomEvent('tabShown', { detail: { tabId: tabId } });
+        document.dispatchEvent(tabShownEvent);
+
+        // Save the active tab to localStorage
+        localStorage.setItem('activeGapAnalysisTab', tabId);
     }
-    
-    // Calculate gap for property tax
-    function calculatePropertyTaxGap() {
-        const currentValue = parseFloat(document.getElementById('propertyTaxCurrentValue')?.value.replace(/,/g, '')) || 0;
-        const potentialValue = parseFloat(document.getElementById('propertyTaxPotentialValue')?.value.replace(/,/g, '')) || 0;
-        const gap = potentialValue - currentValue;
-        
-        const gapInput = document.getElementById('propertyTaxGap');
-        if (gapInput) {
-            gapInput.value = gap.toLocaleString('en-US', {maximumFractionDigits: 2});
-        }
+
+    // Open Add Stream Modal
+    function openAddStreamModal() {
+        document.getElementById('newStreamName').value = '';
+        const modal = new bootstrap.Modal(document.getElementById('addStreamModal'));
+        modal.show();
     }
-    
-    // Function to calculate totals from all tabs
-    function calculateTotals() {
-        // Get values from all tabs
-        const propertyTaxCurrent = parseFloat(document.getElementById('propertyTaxCurrentValue')?.value.replace(/,/g, '')) || 0;
-        const licenseCurrent = parseFloat(document.getElementById('licenseCurrentValue')?.value.replace(/,/g, '')) || 0;
-        const shortTermCurrent = parseFloat(document.getElementById('shortTermCurrentValue')?.value.replace(/,/g, '')) || 0;
-        const longTermCurrent = parseFloat(document.getElementById('longTermCurrentValue')?.value.replace(/,/g, '')) || 0;
-        const mixedCurrent = parseFloat(document.getElementById('mixedCurrentValue')?.value.replace(/,/g, '')) || 0;
-        
-        const propertyTaxPotential = parseFloat(document.getElementById('propertyTaxPotentialValue')?.value.replace(/,/g, '')) || 0;
-        const licensePotential = parseFloat(document.getElementById('licensePotentialValue')?.value.replace(/,/g, '')) || 0;
-        const shortTermPotential = parseFloat(document.getElementById('shortTermPotentialValue')?.value.replace(/,/g, '')) || 0;
-        const longTermPotential = parseFloat(document.getElementById('longTermPotentialValue')?.value.replace(/,/g, '')) || 0;
-        const mixedPotential = parseFloat(document.getElementById('mixedPotentialValue')?.value.replace(/,/g, '')) || 0;
-        
-        // Calculate totals
-        const totalCurrentRevenue = propertyTaxCurrent + licenseCurrent + shortTermCurrent + longTermCurrent + mixedCurrent;
-        const totalPotentialRevenue = propertyTaxPotential + licensePotential + shortTermPotential + longTermPotential + mixedPotential;
-        const totalRevenueGap = totalPotentialRevenue - totalCurrentRevenue;
-        
-        // Update total fields
-        const totalCurrentRevenueInput = document.getElementById('totalCurrentRevenue');
-        const totalPotentialRevenueInput = document.getElementById('totalPotentialRevenue');
-        const totalRevenueGapInput = document.getElementById('totalRevenueGap');
-        const totalCurrentValueInput = document.getElementById('totalCurrentValue');
-        const totalPotentialValueInput = document.getElementById('totalPotentialValue');
-        const totalGapInput = document.getElementById('totalGap');
-        
-        if (totalCurrentRevenueInput) totalCurrentRevenueInput.value = totalCurrentRevenue.toLocaleString('en-US', {maximumFractionDigits: 2});
-        if (totalPotentialRevenueInput) totalPotentialRevenueInput.value = totalPotentialRevenue.toLocaleString('en-US', {maximumFractionDigits: 2});
-        if (totalRevenueGapInput) totalRevenueGapInput.value = totalRevenueGap.toLocaleString('en-US', {maximumFractionDigits: 2});
-        if (totalCurrentValueInput) totalCurrentValueInput.value = totalCurrentRevenue.toLocaleString('en-US', {maximumFractionDigits: 2});
-        if (totalPotentialValueInput) totalPotentialValueInput.value = totalPotentialRevenue.toLocaleString('en-US', {maximumFractionDigits: 2});
-        if (totalGapInput) totalGapInput.value = totalRevenueGap.toLocaleString('en-US', {maximumFractionDigits: 2});
+
+    // Add New Stream
+    function addNewStream() {
+        const streamName = document.getElementById('newStreamName').value.trim();
+        if (!streamName) {
+            alert('Please enter a stream name');
+            return;
+        }
+
+        const streamIndex = streamCount;
+        const streamId = 'stream' + streamIndex;
+        const currencySymbol = window.AppContext ? window.AppContext.get('currencySymbol') : '@currencySymbol';
+
+        // Create tab button
+        const tabButton = document.createElement('button');
+        tabButton.type = 'button';
+        tabButton.className = 'gap-tab-btn';
+        tabButton.setAttribute('onclick', `showTab('${streamId}')`);
+        tabButton.setAttribute('data-tab', streamId);
+        tabButton.id = streamId + '-btn';
+        tabButton.innerHTML = `
+            <i class="bi bi-bar-chart-line"></i>
+            <span class="stream-name-label">${escapeHtml(streamName)}</span>
+            <span class="close-tab" onclick="event.stopPropagation(); deleteStream(${streamIndex});" title="Remove stream">&times;</span>
+        `;
+
+        // Insert before the Add Stream button
+        const dynamicContainer = document.getElementById('dynamicStreamTabs');
+        dynamicContainer.appendChild(tabButton);
+
+        // Create tab content (we'll need to load the partial via AJAX or create it dynamically)
+        const tabContent = document.createElement('div');
+        tabContent.id = streamId + '-tab';
+        tabContent.className = 'revenue-tab';
+        tabContent.style.display = 'none';
+        tabContent.innerHTML = createGenericStreamHtml(streamIndex, streamName, currencySymbol);
+
+        document.getElementById('dynamicStreamContents').appendChild(tabContent);
+
+        // Close modal and switch to new tab
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addStreamModal'));
+        modal.hide();
+
+        streamCount++;
+        showTab(streamId);
+
+        // Initialize the new stream's JavaScript
+        initializeStreamScripts(streamIndex, streamId, currencySymbol);
     }
-    
-    // Format number inputs with commas
-    function formatNumberWithCommas(input) {
-        const value = input.value.replace(/,/g, '');
-        if (!isNaN(parseFloat(value))) {
-            input.value = parseFloat(value).toLocaleString('en-US', {maximumFractionDigits: 2});
-        }
+
+    // Delete Stream
+    function deleteStream(index) {
+        deleteStreamIndex = index;
+        const streamBtn = document.getElementById('stream' + index + '-btn');
+        const streamName = streamBtn ? streamBtn.querySelector('.stream-name-label').textContent : 'Stream ' + (index + 1);
+        document.getElementById('deleteStreamName').textContent = streamName;
+
+        const modal = new bootstrap.Modal(document.getElementById('deleteStreamModal'));
+        modal.show();
     }
-    
-    // Initialize when the page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        // Set up event listeners for property tax calculations
-        const propertyTaxCurrentValue = document.getElementById('propertyTaxCurrentValue');
-        const propertyTaxPotentialValue = document.getElementById('propertyTaxPotentialValue');
-        
-        if (propertyTaxCurrentValue) {
-            propertyTaxCurrentValue.addEventListener('blur', function() {
-                formatNumberWithCommas(this);
-                calculatePropertyTaxGap();
-            });
-        }
-        
-        if (propertyTaxPotentialValue) {
-            propertyTaxPotentialValue.addEventListener('blur', function() {
-                formatNumberWithCommas(this);
-                calculatePropertyTaxGap();
-            });
-        }
-        
-        // Set up event listeners for the number formatting
-        const numberFormatInputs = document.querySelectorAll('.number-format');
-        numberFormatInputs.forEach(input => {
-            if (input !== propertyTaxCurrentValue && input !== propertyTaxPotentialValue) {
-                input.addEventListener('blur', function() {
-                    formatNumberWithCommas(this);
-                });
-            }
+
+    // Confirm Delete
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (deleteStreamIndex < 0) return;
+
+        const streamId = 'stream' + deleteStreamIndex;
+
+        // Remove tab button
+        const tabBtn = document.getElementById(streamId + '-btn');
+        if (tabBtn) tabBtn.remove();
+
+        // Remove tab content
+        const tabContent = document.getElementById(streamId + '-tab');
+        if (tabContent) tabContent.remove();
+
+        // Get the modal element
+        const modalElement = document.getElementById('deleteStreamModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+
+        // Wait for modal to be fully hidden before switching tabs
+        // This prevents the layout snap bug caused by 100vw calculation
+        // happening while modal-open class is still on body
+        modalElement.addEventListener('hidden.bs.modal', function onHidden() {
+            // Remove this one-time listener
+            modalElement.removeEventListener('hidden.bs.modal', onHidden);
+
+            // Clean up any remaining Bootstrap modal artifacts
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            document.querySelectorAll('.modal-backdrop').forEach(function(el) { el.remove(); });
+
+            // Now safely switch to Property Tax tab
+            showTab('property-tax');
+            deleteStreamIndex = -1;
         });
-        
-        // Calculate initial gaps
-        calculatePropertyTaxGap();
+
+        // Start hiding the modal
+        modal.hide();
+    });
+
+    // Template button click handlers
+    document.querySelectorAll('.stream-template-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('newStreamName').value = this.getAttribute('data-name');
+        });
+    });
+
+    // Helper function to escape HTML
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Create generic stream HTML (matching Property Tax design)
+    function createGenericStreamHtml(streamIndex, streamName, currencySymbol) {
+        const streamId = 'stream' + streamIndex;
+        return `
+            <div class="generic-stream-gap-analysis" data-stream-index="${streamIndex}" id="${streamId}-container">
+                <!-- Stream Header -->
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="bi bi-bar-chart-line fs-4 text-primary"></i>
+                        <div class="stream-name-editor">
+                            <input type="text" class="form-control form-control-lg border-0 fw-bold"
+                                   id="${streamId}Name" name="GenericStreams[${streamIndex}].StreamName"
+                                   value="${escapeHtml(streamName)}" placeholder="Enter stream name..."
+                                   style="font-size: 1.25rem; background: transparent; width: auto; min-width: 250px;">
+                            <small class="text-muted ms-2">Click to edit stream name</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-danger btn-sm delete-stream-btn"
+                            data-stream-index="${streamIndex}" onclick="deleteStream(${streamIndex})" title="Delete this stream">
+                        <i class="bi bi-trash"></i> Delete Stream
+                    </button>
+                </div>
+
+                <input type="hidden" name="GenericStreams[${streamIndex}].StreamIndex" value="${streamIndex}" />
+                <input type="hidden" name="GenericStreams[${streamIndex}].StreamId" value="${streamId}" />
+
+                <div class="row">
+                    <!-- Left Column - Data Input Section (col-lg-4) -->
+                    <div class="col-lg-4">
+                        <!-- Required Data + Derived Metrics -->
+                        <div class="card mb-3 shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0"><i class="bi bi-input-cursor-text me-2"></i>Entry of required information + Processed Metrics</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="small text-muted mb-3">Complete the cells shaded in gray and bold.</p>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Registered Units</label>
+                                    <input type="text" class="form-control number-format bg-light fw-bold"
+                                           id="${streamId}RegisteredUnits" name="GenericStreams[${streamIndex}].RegisteredUnits"
+                                           placeholder="Enter value" data-input="true">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Est. % Unregistered</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control number-format bg-light fw-bold"
+                                               id="${streamId}EstimatedUnregisteredPercent" name="GenericStreams[${streamIndex}].EstimatedUnregisteredPercent"
+                                               placeholder="%" data-input="true">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-primary">Total Estimated Units</label>
+                                    <input type="text" class="form-control" id="${streamId}TotalEstimatedUnits" readonly value="0" style="background-color: #e8f4fc;">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-primary">Compliant Units</label>
+                                    <input type="text" class="form-control" id="${streamId}CompliantUnits" readonly value="0" style="background-color: #e8f4fc;">
+                                    <small class="text-muted">= Registered × (Revenue / Billed)</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Billed Amount (${currencySymbol})</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text currency-symbol">${currencySymbol}</span>
+                                        <input type="text" class="form-control number-format bg-light fw-bold"
+                                               id="${streamId}BilledAmount" name="GenericStreams[${streamIndex}].BilledAmount"
+                                               placeholder="Enter value" data-input="true">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Outstanding Amount (${currencySymbol})</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text currency-symbol">${currencySymbol}</span>
+                                        <input type="text" class="form-control number-format bg-light fw-bold"
+                                               id="${streamId}OutstandingAmount" name="GenericStreams[${streamIndex}].OutstandingAmount"
+                                               placeholder="Enter value" data-input="true">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-primary">Revenue to Date (${currencySymbol})</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text currency-symbol">${currencySymbol}</span>
+                                        <input type="text" class="form-control" id="${streamId}RevenueToDate" readonly value="0" style="background-color: #e8f4fc;">
+                                    </div>
+                                    <small class="text-muted">= Billed - Outstanding</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Useful Average Values -->
+                        <div class="card mb-3 shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i class="bi bi-calculator me-2"></i>Useful Average Values</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Statutory Avg. Billed (${currencySymbol})</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text currency-symbol">${currencySymbol}</span>
+                                        <input type="text" class="form-control number-format bg-light fw-bold"
+                                               id="${streamId}StatutoryAverageBilled" name="GenericStreams[${streamIndex}].StatutoryAverageBilled"
+                                               placeholder="Enter value" data-input="true">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Realistic Improvement %</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control number-format bg-light fw-bold"
+                                               id="${streamId}RealisticImprovementPercent" name="GenericStreams[${streamIndex}].RealisticImprovementPercent"
+                                               placeholder="%" data-input="true">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small text-primary">Average Billed Amount</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text currency-symbol">${currencySymbol}</span>
+                                        <input type="text" class="form-control" id="${streamId}AvgBilledAmount" readonly style="background-color: #e8f4fc;">
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small text-primary">Achievable Avg. Bill</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text currency-symbol">${currencySymbol}</span>
+                                        <input type="text" class="form-control" id="${streamId}AchievableAvgBill" readonly style="background-color: #e8f4fc;">
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small text-primary">Delta A (ΔA)</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text currency-symbol">${currencySymbol}</span>
+                                        <input type="text" class="form-control" id="${streamId}DeltaA" readonly style="background-color: #e8f4fc;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- KPI Ratios -->
+                        <div class="card mb-3 shadow-sm">
+                            <div class="card-header bg-warning">
+                                <h6 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>Key Performance Indicators (KPI)</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label small mb-0">Compliance Ratio</label>
+                                        <span id="${streamId}ComplianceRatioValue" class="badge bg-success">0%</span>
+                                    </div>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" role="progressbar" id="${streamId}ComplianceRatioBar" style="width: 0%;"></div>
+                                    </div>
+                                    <small class="text-muted">Revenue to Date / Billed Amount</small>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label small mb-0">Coverage Ratio</label>
+                                        <span id="${streamId}CoverageRatioValue" class="badge bg-info">0%</span>
+                                    </div>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" role="progressbar" id="${streamId}CoverageRatioBar" style="width: 0%;"></div>
+                                    </div>
+                                    <small class="text-muted">Registered / Total Estimated</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Results Section (col-lg-8) -->
+                    <div class="col-lg-8">
+                        <div class="card mb-3 shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Graphical Representation of Analyzed Data</h6>
+                            </div>
+                            <div class="card-body">
+                                <!-- Potential Revenue Breakdown Table -->
+                                <div class="mb-4">
+                                    <h6 class="text-center mb-3">Potential Revenue Breakdown</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered table-striped table-hover">
+                                            <thead class="table-dark">
+                                                <tr><th>Revenue & Gaps</th><th class="text-end">Amount (${currencySymbol})</th><th class="text-end">Share (%)</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="table-success"><td>Revenue to date</td><td class="text-end" id="${streamId}TableRevenueToDate">0</td><td class="text-end" id="${streamId}TableRevenueToDatePct">0%</td></tr>
+                                                <tr><td>Compliance Gap</td><td class="text-end" id="${streamId}TableComplianceGap">0</td><td class="text-end" id="${streamId}TableComplianceGapPct">0%</td></tr>
+                                                <tr><td>Coverage Gap</td><td class="text-end" id="${streamId}TableCoverageGap">0</td><td class="text-end" id="${streamId}TableCoverageGapPct">0%</td></tr>
+                                                <tr><td>Liability Gap</td><td class="text-end" id="${streamId}TableLiabilityGap">0</td><td class="text-end" id="${streamId}TableLiabilityGapPct">0%</td></tr>
+                                                <tr><td>Mixed Gap (Comp.+Liab.)</td><td class="text-end" id="${streamId}TableMixedCompliance">0</td><td class="text-end" id="${streamId}TableMixedCompliancePct">0%</td></tr>
+                                                <tr><td>Mixed Gap (Cov.+Liab.)</td><td class="text-end" id="${streamId}TableMixedCoverage">0</td><td class="text-end" id="${streamId}TableMixedCoveragePct">0%</td></tr>
+                                                <tr class="table-secondary fw-bold"><td>TOTAL (Potential Revenue)</td><td class="text-end" id="${streamId}TableTotalPotential">0</td><td class="text-end">100%</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Revenue and Gaps Pie Chart -->
+                                <div class="mb-4">
+                                    <h6 class="text-center mb-3">Revenue and Functional Gaps</h6>
+                                    <div class="d-flex justify-content-center">
+                                        <div style="height: 300px; width: 450px; position: relative;">
+                                            <canvas id="${streamId}PotentialRevenueChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <p class="small text-muted mt-2 text-center">
+                                        <strong>DESCRIPTION:</strong> This pie chart shows the distribution of total potential revenue and each type of gap.
+                                    </p>
+                                </div>
+
+                                <hr>
+
+                                <!-- Matrix Dashboard -->
+                                <div class="mb-4">
+                                    <h6 class="text-center mb-3">${escapeHtml(streamName)} Gap Analysis - Dashboard</h6>
+                                    <div class="matrix-container position-relative" style="height: 320px; border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden; background: #fff;">
+                                        <!-- Y-axis Title -->
+                                        <div class="position-absolute d-flex align-items-center justify-content-center" style="left: 0; top: 0; bottom: 40px; width: 24px; background: #f8f9fa; border-right: 1px solid #dee2e6;">
+                                            <span style="transform: rotate(-90deg); white-space: nowrap; font-size: 0.65rem; color: #666;"># of Units</span>
+                                        </div>
+                                        <!-- Y-axis Labels -->
+                                        <div class="position-absolute" style="left: 24px; top: 0; bottom: 40px; width: 60px; display: flex; flex-direction: column; justify-content: space-around; padding: 5px 3px; font-size: 0.65rem; background: #f8f9fa; border-right: 1px solid #dee2e6;">
+                                            <div class="text-end pe-1"><small class="text-muted">Estimated</small><br><span id="${streamId}MatrixEstimatedLabel" class="fw-bold">0</span></div>
+                                            <div class="text-end pe-1"><small class="text-muted">Registered</small><br><span id="${streamId}MatrixRegisteredLabel" class="fw-bold">0</span></div>
+                                            <div class="text-end pe-1"><small class="text-muted">Compliant</small><br><span id="${streamId}MatrixCompliantLabel" class="fw-bold">0</span></div>
+                                        </div>
+                                        <!-- Matrix Grid -->
+                                        <div class="position-absolute" style="left: 84px; top: 0; right: 0; bottom: 40px; display: flex; flex-direction: column;">
+                                            <div id="${streamId}MatrixRowUnreg" class="d-flex" style="flex: 1;">
+                                                <div class="d-flex align-items-center justify-content-center" style="flex: 1; background: #FF9800; border: 1px solid rgba(255,255,255,0.3); color: white;">
+                                                    <div class="text-center p-1"><small>Coverage Gap</small><br><span id="${streamId}MatrixCoverageGapVal" class="fw-bold">${currencySymbol} 0</span></div>
+                                                </div>
+                                                <div class="d-flex align-items-center justify-content-center" style="flex: 1; background: #E91E63; border: 1px solid rgba(255,255,255,0.3); color: white;">
+                                                    <div class="text-center p-1"><small>Mixed (Cov.+Liab.)</small><br><span id="${streamId}MatrixMixedCoverageVal" class="fw-bold">${currencySymbol} 0</span></div>
+                                                </div>
+                                            </div>
+                                            <div id="${streamId}MatrixRowNonCompliant" class="d-flex" style="flex: 1;">
+                                                <div class="d-flex align-items-center justify-content-center" style="flex: 1; background: #F44336; border: 1px solid rgba(255,255,255,0.3); color: white;">
+                                                    <div class="text-center p-1"><small>Compliance Gap</small><br><span id="${streamId}MatrixComplianceGapVal" class="fw-bold">${currencySymbol} 0</span></div>
+                                                </div>
+                                                <div class="d-flex align-items-center justify-content-center" style="flex: 1; background: #9C27B0; border: 1px solid rgba(255,255,255,0.3); color: white;">
+                                                    <div class="text-center p-1"><small>Mixed (Comp.+Liab.)</small><br><span id="${streamId}MatrixMixedComplianceVal" class="fw-bold">${currencySymbol} 0</span></div>
+                                                </div>
+                                            </div>
+                                            <div id="${streamId}MatrixRowCompliant" class="d-flex" style="flex: 1;">
+                                                <div class="d-flex align-items-center justify-content-center" style="flex: 1; background: #4CAF50; border: 1px solid rgba(255,255,255,0.3); color: white;">
+                                                    <div class="text-center p-1"><small>Actual Revenue</small><br><span id="${streamId}MatrixActualRevenueVal" class="fw-bold">${currencySymbol} 0</span></div>
+                                                </div>
+                                                <div class="d-flex align-items-center justify-content-center" style="flex: 1; background: #2196F3; border: 1px solid rgba(255,255,255,0.3); color: white;">
+                                                    <div class="text-center p-1"><small>Liability Gap</small><br><span id="${streamId}MatrixLiabilityGapVal" class="fw-bold">${currencySymbol} 0</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- X-axis Labels -->
+                                        <div class="position-absolute d-flex" style="left: 84px; right: 0; bottom: 0; height: 40px; background: #f8f9fa; border-top: 1px solid #dee2e6;">
+                                            <div class="flex-fill text-center d-flex flex-column justify-content-center" style="font-size: 0.7rem;"><small class="text-muted">Average billed</small><span id="${streamId}MatrixAvgBilledLabel" class="fw-bold">${currencySymbol} 0</span></div>
+                                            <div class="flex-fill text-center d-flex flex-column justify-content-center" style="font-size: 0.7rem;"><small class="text-muted">Achievable avg. bill</small><span id="${streamId}MatrixAchievableLabel" class="fw-bold">${currencySymbol} 0</span></div>
+                                        </div>
+                                    </div>
+                                    <p class="small text-muted mt-3 text-center">
+                                        <strong>DESCRIPTION:</strong> Matrix shows gaps across two dimensions: units (vertical) and billing level (horizontal).
+                                    </p>
+                                </div>
+
+                                <hr>
+
+                                <!-- Administrative Gap Breakdown Table -->
+                                <div class="mb-4">
+                                    <h6 class="text-center mb-3">Administrative Gap Breakdown (${currencySymbol})</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered table-striped table-hover">
+                                            <thead class="table-dark">
+                                                <tr><th>Administrative Gaps</th><th class="text-end">Amount (${currencySymbol})</th><th class="text-end">Share (%)</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr><td>Compliance Gap</td><td class="text-end" id="${streamId}GapComplianceGap">0</td><td class="text-end" id="${streamId}GapComplianceGapPct">0%</td></tr>
+                                                <tr><td>Coverage Gap</td><td class="text-end" id="${streamId}GapCoverageGap">0</td><td class="text-end" id="${streamId}GapCoverageGapPct">0%</td></tr>
+                                                <tr><td>Liability Gap</td><td class="text-end" id="${streamId}GapLiabilityGap">0</td><td class="text-end" id="${streamId}GapLiabilityGapPct">0%</td></tr>
+                                                <tr><td>Mixed Gap (Comp.+Liab.)</td><td class="text-end" id="${streamId}GapMixedCompliance">0</td><td class="text-end" id="${streamId}GapMixedCompliancePct">0%</td></tr>
+                                                <tr><td>Mixed Gap (Cov.+Liab.)</td><td class="text-end" id="${streamId}GapMixedCoverage">0</td><td class="text-end" id="${streamId}GapMixedCoveragePct">0%</td></tr>
+                                                <tr class="table-secondary fw-bold"><td>Total adm/Functional Gap</td><td class="text-end" id="${streamId}TotalFunctionalGap">0</td><td class="text-end">100%</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Gap Breakdown Pie Chart -->
+                                <div class="mb-4">
+                                    <h6 class="text-center mb-3">Breakdown of Functional Gaps</h6>
+                                    <div class="d-flex justify-content-center">
+                                        <div style="height: 300px; width: 450px; position: relative;">
+                                            <canvas id="${streamId}GapBreakdownChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <p class="small text-muted mt-2 text-center">
+                                        <strong>DESCRIPTION:</strong> This pie chart shows the contribution of each gap type to total uncollected revenue.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Initialize stream scripts for dynamically created streams
+    function initializeStreamScripts(streamIndex, streamId, currencySymbol) {
+        let potentialRevenueChart = null;
+        let gapBreakdownChart = null;
+
+        function parseNumber(value) {
+            if (!value) return 0;
+            return parseFloat(value.toString().replace(/[^0-9.-]/g, '')) || 0;
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+        }
+
+        function formatPercentage(value) {
+            return value.toFixed(2) + '%';
+        }
+
+        function formatCompact(value) {
+            if (value >= 1000000000) return currencySymbol + ' ' + (value / 1000000000).toFixed(1) + 'B';
+            if (value >= 1000000) return currencySymbol + ' ' + (value / 1000000).toFixed(1) + 'M';
+            if (value >= 1000) return currencySymbol + ' ' + (value / 1000).toFixed(1) + 'K';
+            return currencySymbol + ' ' + formatCurrency(value);
+        }
+
+        function formatUnitCount(value) {
+            if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+            if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
+            return Math.round(value).toLocaleString();
+        }
+
+        function updateKPIBar(name, value) {
+            const bar = document.getElementById(streamId + name + 'Bar');
+            const valueSpan = document.getElementById(streamId + name + 'Value');
+            const cappedValue = Math.min(Math.max(value, 0), 100);
+
+            let colorClass, badgeClass;
+            if (value >= 80) { colorClass = 'bg-success'; badgeClass = 'bg-success'; }
+            else if (value >= 60) { colorClass = 'bg-warning'; badgeClass = 'bg-warning text-dark'; }
+            else { colorClass = 'bg-danger'; badgeClass = 'bg-danger'; }
+
+            if (bar) {
+                bar.style.width = cappedValue + '%';
+                bar.classList.remove('bg-success', 'bg-warning', 'bg-danger', 'bg-info', 'bg-primary');
+                bar.classList.add(colorClass);
+            }
+            if (valueSpan) {
+                valueSpan.textContent = value.toFixed(0) + '%';
+                valueSpan.classList.remove('bg-success', 'bg-warning', 'bg-danger', 'bg-info', 'bg-primary', 'text-dark');
+                badgeClass.split(' ').forEach(cls => valueSpan.classList.add(cls));
+            }
+        }
+
+        function calculateGaps() {
+            const registeredUnits = parseNumber(document.getElementById(streamId + 'RegisteredUnits')?.value);
+            const estimatedUnregisteredPercent = parseNumber(document.getElementById(streamId + 'EstimatedUnregisteredPercent')?.value);
+            const billedAmount = parseNumber(document.getElementById(streamId + 'BilledAmount')?.value);
+            const outstandingAmount = parseNumber(document.getElementById(streamId + 'OutstandingAmount')?.value);
+            const statutoryAverageBilled = parseNumber(document.getElementById(streamId + 'StatutoryAverageBilled')?.value);
+            const realisticImprovementPercent = parseNumber(document.getElementById(streamId + 'RealisticImprovementPercent')?.value);
+
+            const totalEstimatedUnits = registeredUnits * (1 + estimatedUnregisteredPercent / 100);
+            const revenueToDate = billedAmount - outstandingAmount;
+            const compliantUnits = registeredUnits > 0 && billedAmount > 0 ? registeredUnits * (revenueToDate / billedAmount) : 0;
+            const nonCompliantUnits = registeredUnits - compliantUnits;
+            const unregisteredUnits = totalEstimatedUnits - registeredUnits;
+            const avgBilledAmount = registeredUnits > 0 ? billedAmount / registeredUnits : 0;
+            const achievableAvgBill = avgBilledAmount + (realisticImprovementPercent / 100) * Math.max(0, statutoryAverageBilled - avgBilledAmount);
+            const deltaA = achievableAvgBill - avgBilledAmount;
+
+            const complianceGap = outstandingAmount;
+            const coverageGap = unregisteredUnits * avgBilledAmount;
+            const liabilityGap = compliantUnits * deltaA;
+            const mixedGapCompliance = nonCompliantUnits * deltaA;
+            const mixedGapCoverage = unregisteredUnits * deltaA;
+            const totalPotentialRevenue = revenueToDate + complianceGap + coverageGap + liabilityGap + mixedGapCompliance + mixedGapCoverage;
+            const totalFunctionalGap = complianceGap + coverageGap + liabilityGap + mixedGapCompliance + mixedGapCoverage;
+
+            const complianceRatio = billedAmount > 0 ? (revenueToDate / billedAmount) * 100 : 0;
+            const coverageRatio = totalEstimatedUnits > 0 ? (registeredUnits / totalEstimatedUnits) * 100 : 0;
+
+            // Update derived metrics
+            document.getElementById(streamId + 'TotalEstimatedUnits').value = formatCurrency(totalEstimatedUnits).replace('.00', '');
+            document.getElementById(streamId + 'RevenueToDate').value = formatCurrency(revenueToDate);
+            document.getElementById(streamId + 'CompliantUnits').value = formatCurrency(compliantUnits).replace('.00', '');
+            document.getElementById(streamId + 'AvgBilledAmount').value = formatCurrency(avgBilledAmount);
+            document.getElementById(streamId + 'AchievableAvgBill').value = formatCurrency(achievableAvgBill);
+            document.getElementById(streamId + 'DeltaA').value = formatCurrency(deltaA);
+
+            // Update KPIs with color-coded bars and badges
+            updateKPIBar('ComplianceRatio', complianceRatio);
+            updateKPIBar('CoverageRatio', coverageRatio);
+
+            // Calculate percentages
+            const revenueToDatePct = totalPotentialRevenue > 0 ? (revenueToDate / totalPotentialRevenue) * 100 : 0;
+            const complianceGapPct = totalPotentialRevenue > 0 ? (complianceGap / totalPotentialRevenue) * 100 : 0;
+            const coverageGapPct = totalPotentialRevenue > 0 ? (coverageGap / totalPotentialRevenue) * 100 : 0;
+            const liabilityGapPct = totalPotentialRevenue > 0 ? (liabilityGap / totalPotentialRevenue) * 100 : 0;
+            const mixedCompliancePct = totalPotentialRevenue > 0 ? (mixedGapCompliance / totalPotentialRevenue) * 100 : 0;
+            const mixedCoveragePct = totalPotentialRevenue > 0 ? (mixedGapCoverage / totalPotentialRevenue) * 100 : 0;
+
+            // Update Potential Revenue table
+            document.getElementById(streamId + 'TableRevenueToDate').textContent = formatCurrency(revenueToDate);
+            document.getElementById(streamId + 'TableRevenueToDatePct').textContent = formatPercentage(revenueToDatePct);
+            document.getElementById(streamId + 'TableComplianceGap').textContent = formatCurrency(complianceGap);
+            document.getElementById(streamId + 'TableComplianceGapPct').textContent = formatPercentage(complianceGapPct);
+            document.getElementById(streamId + 'TableCoverageGap').textContent = formatCurrency(coverageGap);
+            document.getElementById(streamId + 'TableCoverageGapPct').textContent = formatPercentage(coverageGapPct);
+            document.getElementById(streamId + 'TableLiabilityGap').textContent = formatCurrency(liabilityGap);
+            document.getElementById(streamId + 'TableLiabilityGapPct').textContent = formatPercentage(liabilityGapPct);
+            document.getElementById(streamId + 'TableMixedCompliance').textContent = formatCurrency(mixedGapCompliance);
+            document.getElementById(streamId + 'TableMixedCompliancePct').textContent = formatPercentage(mixedCompliancePct);
+            document.getElementById(streamId + 'TableMixedCoverage').textContent = formatCurrency(mixedGapCoverage);
+            document.getElementById(streamId + 'TableMixedCoveragePct').textContent = formatPercentage(mixedCoveragePct);
+            document.getElementById(streamId + 'TableTotalPotential').textContent = formatCurrency(totalPotentialRevenue);
+
+            // Update Admin Gap table
+            const gapCompliancePct = totalFunctionalGap > 0 ? (complianceGap / totalFunctionalGap) * 100 : 0;
+            const gapCoveragePct = totalFunctionalGap > 0 ? (coverageGap / totalFunctionalGap) * 100 : 0;
+            const gapLiabilityPct = totalFunctionalGap > 0 ? (liabilityGap / totalFunctionalGap) * 100 : 0;
+            const gapMixedCompliancePct = totalFunctionalGap > 0 ? (mixedGapCompliance / totalFunctionalGap) * 100 : 0;
+            const gapMixedCoveragePct = totalFunctionalGap > 0 ? (mixedGapCoverage / totalFunctionalGap) * 100 : 0;
+
+            document.getElementById(streamId + 'GapComplianceGap').textContent = formatCurrency(complianceGap);
+            document.getElementById(streamId + 'GapComplianceGapPct').textContent = formatPercentage(gapCompliancePct);
+            document.getElementById(streamId + 'GapCoverageGap').textContent = formatCurrency(coverageGap);
+            document.getElementById(streamId + 'GapCoverageGapPct').textContent = formatPercentage(gapCoveragePct);
+            document.getElementById(streamId + 'GapLiabilityGap').textContent = formatCurrency(liabilityGap);
+            document.getElementById(streamId + 'GapLiabilityGapPct').textContent = formatPercentage(gapLiabilityPct);
+            document.getElementById(streamId + 'GapMixedCompliance').textContent = formatCurrency(mixedGapCompliance);
+            document.getElementById(streamId + 'GapMixedCompliancePct').textContent = formatPercentage(gapMixedCompliancePct);
+            document.getElementById(streamId + 'GapMixedCoverage').textContent = formatCurrency(mixedGapCoverage);
+            document.getElementById(streamId + 'GapMixedCoveragePct').textContent = formatPercentage(gapMixedCoveragePct);
+            document.getElementById(streamId + 'TotalFunctionalGap').textContent = formatCurrency(totalFunctionalGap);
+
+            // Update Matrix
+            document.getElementById(streamId + 'MatrixEstimatedLabel').textContent = formatUnitCount(totalEstimatedUnits);
+            document.getElementById(streamId + 'MatrixRegisteredLabel').textContent = formatUnitCount(registeredUnits);
+            document.getElementById(streamId + 'MatrixCompliantLabel').textContent = formatUnitCount(compliantUnits);
+            document.getElementById(streamId + 'MatrixAvgBilledLabel').textContent = formatCompact(avgBilledAmount);
+            document.getElementById(streamId + 'MatrixAchievableLabel').textContent = formatCompact(achievableAvgBill);
+            document.getElementById(streamId + 'MatrixActualRevenueVal').textContent = formatCompact(revenueToDate);
+            document.getElementById(streamId + 'MatrixLiabilityGapVal').textContent = formatCompact(liabilityGap);
+            document.getElementById(streamId + 'MatrixComplianceGapVal').textContent = formatCompact(complianceGap);
+            document.getElementById(streamId + 'MatrixMixedComplianceVal').textContent = formatCompact(mixedGapCompliance);
+            document.getElementById(streamId + 'MatrixCoverageGapVal').textContent = formatCompact(coverageGap);
+            document.getElementById(streamId + 'MatrixMixedCoverageVal').textContent = formatCompact(mixedGapCoverage);
+
+            // Update matrix row flex
+            const totalUnits = totalEstimatedUnits || 1;
+            const unregFlex = Math.max(0.5, (unregisteredUnits / totalUnits) * 3);
+            const nonCompliantFlex = Math.max(0.5, (nonCompliantUnits / totalUnits) * 3);
+            const compliantFlex = Math.max(0.5, (compliantUnits / totalUnits) * 3);
+            const rowUnreg = document.getElementById(streamId + 'MatrixRowUnreg');
+            const rowNonCompliant = document.getElementById(streamId + 'MatrixRowNonCompliant');
+            const rowCompliant = document.getElementById(streamId + 'MatrixRowCompliant');
+            if (rowUnreg) rowUnreg.style.flex = unregFlex.toString();
+            if (rowNonCompliant) rowNonCompliant.style.flex = nonCompliantFlex.toString();
+            if (rowCompliant) rowCompliant.style.flex = compliantFlex.toString();
+
+            // Update charts
+            updateCharts(revenueToDate, complianceGap, coverageGap, liabilityGap, mixedGapCompliance, mixedGapCoverage);
+        }
+
+        function updateCharts(revenueToDate, complianceGap, coverageGap, liabilityGap, mixedCompliance, mixedCoverage) {
+            const potentialCtx = document.getElementById(streamId + 'PotentialRevenueChart');
+            const gapCtx = document.getElementById(streamId + 'GapBreakdownChart');
+
+            if (potentialCtx) {
+                const potentialData = {
+                    labels: ['Revenue to date', 'Compliance Gap', 'Coverage Gap', 'Liability Gap', 'Mixed (Comp.+Liab.)', 'Mixed (Cov.+Liab.)'],
+                    datasets: [{
+                        data: [Math.max(0, revenueToDate), Math.max(0, complianceGap), Math.max(0, coverageGap), Math.max(0, liabilityGap), Math.max(0, mixedCompliance), Math.max(0, mixedCoverage)],
+                        backgroundColor: ['#4CAF50', '#F44336', '#FF9800', '#2196F3', '#9C27B0', '#E91E63'],
+                        borderWidth: 2, borderColor: '#ffffff'
+                    }]
+                };
+                if (potentialRevenueChart) {
+                    potentialRevenueChart.data = potentialData;
+                    potentialRevenueChart.update();
+                } else {
+                    potentialRevenueChart = new Chart(potentialCtx.getContext('2d'), {
+                        type: 'pie', data: potentialData,
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } } } }
+                    });
+                }
+            }
+
+            if (gapCtx) {
+                const gapData = {
+                    labels: ['Compliance Gap', 'Coverage Gap', 'Liability Gap', 'Mixed (Comp.+Liab.)', 'Mixed (Cov.+Liab.)'],
+                    datasets: [{
+                        data: [Math.max(0, complianceGap), Math.max(0, coverageGap), Math.max(0, liabilityGap), Math.max(0, mixedCompliance), Math.max(0, mixedCoverage)],
+                        backgroundColor: ['#F44336', '#FF9800', '#2196F3', '#9C27B0', '#E91E63'],
+                        borderWidth: 2, borderColor: '#ffffff'
+                    }]
+                };
+                if (gapBreakdownChart) {
+                    gapBreakdownChart.data = gapData;
+                    gapBreakdownChart.update();
+                } else {
+                    gapBreakdownChart = new Chart(gapCtx.getContext('2d'), {
+                        type: 'pie', data: gapData,
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } } } }
+                    });
+                }
+            }
+        }
+
+        // Add event listeners to input fields
+        const inputFields = document.querySelectorAll('#' + streamId + '-container input[data-input="true"]');
+        inputFields.forEach(function(input) {
+            input.addEventListener('input', calculateGaps);
+            input.addEventListener('change', calculateGaps);
+        });
+
+        // Initial calculation
+        setTimeout(calculateGaps, 100);
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Restore active tab from localStorage
+        const savedTab = localStorage.getItem('activeGapAnalysisTab');
+        if (savedTab) {
+            const tabBtn = document.querySelector(`.gap-tab-btn[data-tab="${savedTab}"]`);
+            if (tabBtn) {
+                showTab(savedTab);
+            }
+        }
     });
 </script>

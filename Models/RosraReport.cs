@@ -64,5 +64,33 @@ namespace RosraApp.Models
         // Recommendations Tab
         public string? RecommendationSummary { get; set; }
         public string? ActionItems { get; set; } // Stored as JSON
+        
+        // Top 5 OSR Configuration
+        public string? TopOsrConfigData { get; set; } // Stored as JSON
+
+        // Dynamic Generic Streams (stored as JSON)
+        public string? GenericStreamsData { get; set; }
+
+        // Additional fields
+        public string? GovernmentType { get; set; }
+        public string? IncomeLevel { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? OtherRevenue { get; set; }
+
+        // Prioritization Tab Data (stored as JSON)
+        public string? PrioritizationData { get; set; }
+
+        // Overview Selection Tab Data (stored as JSON)
+        public string? SelectedSolutionsData { get; set; }
+
+        // Implementation Progress Data (stored as JSON)
+        public string? ImplementationProgressData { get; set; }
+
+        /// <summary>
+        /// Peer SNG data for Within-Country OSR Frontier analysis (stored as JSON)
+        /// Contains: selected peer SNGs, their OSR/GCP values, analysis results
+        /// </summary>
+        public string? PeerSNGData { get; set; }
     }
 }

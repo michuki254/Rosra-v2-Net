@@ -1,116 +1,1870 @@
 @model RosraApp.Models.ViewModels.RosraFormViewModel
 
-<div class="tab-content-container">
-    <h5 class="mb-3">Recommendations</h5>
-    
-    <div class="row g-3">
-        <div class="col-md-12">
-            <div class="form-floating mb-3">
-                <textarea class="form-control" id="recommendationSummary" name="RecommendationSummary" style="height: 80px" placeholder="Summarize your recommendations">@Model.RecommendationSummary</textarea>
-                <label for="recommendationSummary">Recommendation Summary</label>
+<div class="recommendations-container">
+    <!-- Header Section -->
+    <div class="recommendations-header">
+        <div class="header-content">
+            <h2><i class="fas fa-lightbulb"></i> Recommended Solutions and Implementation Guidance</h2>
+            <p class="section-description">
+                This tab provides detailed solution cards for the options you selected previously.
+                Solutions appear according to the established prioritization order. Use these recommendations
+                to create your city's tailored Revenue Enhancement Action Plan.
+            </p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-outline-secondary" onclick="RecommendationsModule.goToOverviewSelection()">
+                <i class="fas fa-arrow-left me-2"></i> Back to Overview Selection
+            </button>
+            <button class="btn btn-primary" onclick="RecommendationsModule.openReportModal()">
+                <i class="fas fa-file-pdf me-2"></i> Generate Report
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="recommendations-summary" id="recommendationsSummary">
+        <div class="summary-card">
+            <div class="summary-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="summary-content">
+                <span class="summary-value" id="totalSelectedCount">0</span>
+                <span class="summary-label">Solutions Selected</span>
             </div>
         </div>
-        
-        <div class="col-md-12">
-            <label class="form-label">Action Items</label>
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" id="actionItemInput" placeholder="Enter an action item">
-                <select class="form-select" id="prioritySelect" style="max-width: 120px;">
-                    <option value="high">High</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="low">Low</option>
-                </select>
-                <button class="btn btn-outline-secondary" type="button" id="addActionItemBtn">Add</button>
+        <div class="summary-card">
+            <div class="summary-icon quick-win"><i class="fas fa-bolt"></i></div>
+            <div class="summary-content">
+                <span class="summary-value" id="quickWinsCount">0</span>
+                <span class="summary-label">Quick Wins (&lt;1 year)</span>
             </div>
-            
-            <ul class="list-group" id="actionItemsList">
-                @for (int i = 0; i < Model.ActionItems.Count; i++)
-                {
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            @Model.ActionItems[i].Description
-                            <span class="badge @GetPriorityBadgeClass(Model.ActionItems[i].Priority) ms-2">@Model.ActionItems[i].Priority</span>
-                            <input type="hidden" name="ActionItems[@i].Description" value="@Model.ActionItems[i].Description" />
-                            <input type="hidden" name="ActionItems[@i].Priority" value="@Model.ActionItems[i].Priority" />
-                        </div>
-                        <button class="btn btn-sm btn-outline-danger remove-action-item" data-index="@i">×</button>
-                    </li>
-                }
-            </ul>
+        </div>
+        <div class="summary-card">
+            <div class="summary-icon medium-term"><i class="fas fa-calendar-alt"></i></div>
+            <div class="summary-content">
+                <span class="summary-value" id="mediumTermCount">0</span>
+                <span class="summary-label">Medium Term (1-3 years)</span>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-icon long-term"><i class="fas fa-clock"></i></div>
+            <div class="summary-content">
+                <span class="summary-value" id="longTermCount">0</span>
+                <span class="summary-label">Long Term (3+ years)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Toggle -->
+    <div class="view-toggle-container">
+        <div class="btn-group view-toggle" role="group">
+            <button type="button" class="btn btn-outline-primary active" data-view="cards" onclick="RecommendationsModule.switchView('cards')">
+                <i class="fas fa-th-large me-1"></i> Solution Cards
+            </button>
+            <button type="button" class="btn btn-outline-primary" data-view="timeline" onclick="RecommendationsModule.switchView('timeline')">
+                <i class="fas fa-stream me-1"></i> Timeline View
+            </button>
+            <button type="button" class="btn btn-outline-primary" data-view="progress" onclick="RecommendationsModule.switchView('progress')">
+                <i class="fas fa-tasks me-1"></i> Progress Tracker
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="recommendations-content">
+        <!-- Solution Cards View -->
+        <div class="view-panel active" id="cardsView">
+            <div class="no-selections-message" id="noSelectionsMessage" style="display: none;">
+                <div class="empty-state">
+                    <i class="fas fa-clipboard-list empty-icon"></i>
+                    <h3>No Solutions Selected</h3>
+                    <p>Please go to the Overview Selection tab and select solutions to see detailed recommendations here.</p>
+                    <button class="btn btn-primary" onclick="RecommendationsModule.goToOverviewSelection()">
+                        <i class="fas fa-arrow-left me-2"></i> Go to Overview Selection
+                    </button>
+                </div>
+            </div>
+            <div id="solutionCardsContainer"></div>
+        </div>
+
+        <!-- Timeline View -->
+        <div class="view-panel" id="timelineView" style="display: none;">
+            <div class="timeline-container">
+                <div class="timeline-header">
+                    <h4><i class="fas fa-stream me-2"></i> Implementation Timeline</h4>
+                    <p>Solutions organized by implementation timeframe</p>
+                </div>
+                <div class="timeline-content" id="timelineContent"></div>
+            </div>
+        </div>
+
+        <!-- Progress Tracker View -->
+        <div class="view-panel" id="progressView" style="display: none;">
+            <div class="progress-tracker-container">
+                <div class="progress-header">
+                    <h4><i class="fas fa-tasks me-2"></i> Implementation Progress Tracker</h4>
+                    <p>Track progress on implementation milestones</p>
+                    <div class="progress-actions">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="RecommendationsModule.resetAllProgress()">
+                            <i class="fas fa-undo me-1"></i> Reset All
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="RecommendationsModule.exportProgress()">
+                            <i class="fas fa-download me-1"></i> Export Progress
+                        </button>
+                    </div>
+                </div>
+                <div class="progress-content" id="progressContent"></div>
+            </div>
         </div>
     </div>
 </div>
 
-@functions {
-    public string GetPriorityBadgeClass(string priority)
-    {
-        return priority.ToLower() switch
-        {
-            "high" => "bg-danger",
-            "medium" => "bg-warning",
-            "low" => "bg-success",
-            _ => "bg-secondary"
-        };
-    }
-}
+<!-- Report Generation Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-file-pdf me-2"></i> Generate Revenue Enhancement Action Plan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="report-options">
+                    <h6>Include in Report:</h6>
+                    <div class="report-checkboxes">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="includeExecSummary" checked>
+                            <label class="form-check-label" for="includeExecSummary">Executive Summary</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="includeGapAnalysis" checked>
+                            <label class="form-check-label" for="includeGapAnalysis">Gap Analysis Results</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="includeStreamPrioritization" checked>
+                            <label class="form-check-label" for="includeStreamPrioritization">Stream Prioritization</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="includeGapSequencing" checked>
+                            <label class="form-check-label" for="includeGapSequencing">Gap Sequencing</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="includeSelectedSolutions" checked>
+                            <label class="form-check-label" for="includeSelectedSolutions">Selected Solutions (Full Detail)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="includeSkippedSolutions">
+                            <label class="form-check-label" for="includeSkippedSolutions">Solutions Not Selected (Summary Only)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="includeTimeline" checked>
+                            <label class="form-check-label" for="includeTimeline">Implementation Timeline</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="includeResources" checked>
+                            <label class="form-check-label" for="includeResources">Resource Requirements</label>
+                        </div>
+                    </div>
 
+                    <div class="report-format mt-4">
+                        <h6>Report Format:</h6>
+                        <select class="form-select" id="reportFormat">
+                            <option value="pdf">PDF Document</option>
+                            <option value="html">HTML (Print-friendly)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="RecommendationsModule.generateReport()">
+                    <i class="fas fa-download me-2"></i> Generate Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ============================================
+       UN-Habitat Design System - Recommendations Module
+       ============================================ */
+
+    .recommendations-container {
+        /* UN-Habitat Brand Colors */
+        --un-blue: #00b2e3;
+        --un-blue-light: #4dc9ed;
+        --un-blue-dark: #0095c0;
+        --un-dark-blue: #00689D;
+        --un-dark-blue-light: #0080bf;
+        --un-orange: #FD9D24;
+        --un-orange-dark: #E8891A;
+        --un-orange-light: #FFB54D;
+
+        /* Gap Colors */
+        --gap-compliance: #dc3545;
+        --gap-coverage: var(--un-orange);
+        --gap-valuation: var(--un-blue);
+        --gap-liability: var(--un-blue);
+
+        /* Timeline Colors */
+        --timeline-quick: #10b981;
+        --timeline-quick-light: #d1fae5;
+        --timeline-medium: #f59e0b;
+        --timeline-medium-light: #fef3c7;
+        --timeline-long: var(--un-orange);
+        --timeline-long-light: #ffedd5;
+
+        /* Semantic Colors */
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+
+        /* Design Tokens */
+        --card-radius: 12px;
+        --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        --card-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.12);
+        --transition-fast: 0.2s ease;
+        --transition-normal: 0.3s ease;
+
+        padding: 20px 0;
+    }
+
+    /* Header */
+    .recommendations-container .recommendations-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .recommendations-container .header-content h2 {
+        color: var(--un-blue);
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .recommendations-container .header-content h2 i {
+        color: var(--un-orange);
+        margin-right: 10px;
+    }
+
+    .recommendations-container .section-description {
+        color: #6c757d;
+        font-size: 0.95rem;
+        max-width: 700px;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .recommendations-container .header-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .recommendations-container .header-actions .btn-primary {
+        background: var(--un-blue);
+        border: none;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 104, 157, 0.3);
+    }
+
+    .recommendations-container .header-actions .btn-primary:hover {
+        background: linear-gradient(135deg, #005a87 0%, #004a70 100%);
+        transform: translateY(-1px);
+    }
+
+    .recommendations-container .header-actions .btn-outline-secondary {
+        border-color: var(--un-blue);
+        color: var(--un-blue);
+        font-weight: 600;
+    }
+
+    .recommendations-container .header-actions .btn-outline-secondary:hover {
+        background: var(--un-blue);
+        color: white;
+    }
+
+    /* Summary Stats */
+    .recommendations-container .recommendations-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .recommendations-container .summary-card {
+        background: white;
+        border-radius: var(--card-radius);
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: var(--card-shadow);
+        border: none;
+        transition: var(--transition-normal);
+    }
+
+    .recommendations-container .summary-card:hover {
+        box-shadow: var(--card-shadow-hover);
+        transform: translateY(-2px);
+    }
+
+    .recommendations-container .summary-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--un-blue);
+        color: white;
+        font-size: 1.4rem;
+        box-shadow: 0 4px 10px rgba(0, 104, 157, 0.3);
+    }
+
+    .recommendations-container .summary-icon.quick-win {
+        background: linear-gradient(135deg, var(--timeline-quick) 0%, #059669 100%);
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .recommendations-container .summary-icon.medium-term {
+        background: linear-gradient(135deg, var(--timeline-medium) 0%, #d97706 100%);
+        box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+    }
+
+    .recommendations-container .summary-icon.long-term {
+        background: linear-gradient(135deg, var(--un-orange) 0%, var(--un-orange-dark) 100%);
+        box-shadow: 0 4px 10px rgba(253, 157, 36, 0.3);
+    }
+
+    .recommendations-container .summary-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .recommendations-container .summary-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--un-blue);
+        line-height: 1;
+    }
+
+    .recommendations-container .summary-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    /* View Toggle */
+    .recommendations-container .view-toggle-container {
+        margin-bottom: 25px;
+    }
+
+    .recommendations-container .view-toggle .btn {
+        padding: 12px 24px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: var(--transition-fast);
+    }
+
+    .recommendations-container .view-toggle .btn-outline-primary {
+        border-color: var(--un-blue);
+        color: var(--un-blue);
+    }
+
+    .recommendations-container .view-toggle .btn-outline-primary:hover {
+        background: rgba(0, 104, 157, 0.1);
+        border-color: var(--un-blue);
+        color: var(--un-blue);
+    }
+
+    .recommendations-container .view-toggle .btn.active {
+        background: var(--un-blue);
+        border-color: var(--un-blue);
+        color: white;
+        box-shadow: 0 4px 10px rgba(0, 104, 157, 0.3);
+    }
+
+    /* Solution Cards */
+    .recommendations-container .stream-section {
+        background: white;
+        border-radius: var(--card-radius);
+        margin-bottom: 25px;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        transition: var(--transition-normal);
+    }
+
+    .recommendations-container .stream-section:hover {
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    .recommendations-container .stream-header {
+        background: var(--un-blue);
+        color: white;
+        padding: 18px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .recommendations-container .stream-header h3 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    .recommendations-container .stream-header h3 i {
+        color: var(--un-orange);
+    }
+
+    .recommendations-container .stream-rank {
+        background: linear-gradient(135deg, var(--un-orange) 0%, var(--un-orange-dark) 100%);
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .recommendations-container .gap-section {
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .recommendations-container .gap-section:last-child {
+        border-bottom: none;
+    }
+
+    .recommendations-container .gap-header {
+        padding: 15px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: var(--transition-fast);
+    }
+
+    .recommendations-container .gap-header:hover {
+        background: #f8f9fa;
+    }
+
+    .recommendations-container .gap-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .recommendations-container .gap-indicator {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .recommendations-container .gap-indicator.compliance { background: var(--gap-compliance); }
+    .recommendations-container .gap-indicator.coverage { background: var(--gap-coverage); }
+    .recommendations-container .gap-indicator.valuation { background: var(--gap-valuation); }
+    .recommendations-container .gap-indicator.liability { background: var(--gap-liability); }
+
+    .recommendations-container .gap-title {
+        font-weight: 700;
+        color: #2d3748;
+        font-size: 1.05rem;
+    }
+
+    .recommendations-container .gap-badge {
+        font-size: 0.8rem;
+        color: white;
+        margin-left: 10px;
+        background: linear-gradient(135deg, var(--un-orange) 0%, var(--un-orange-dark) 100%);
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    .recommendations-container .gap-solutions-list {
+        padding: 0 24px 20px;
+    }
+
+    /* Individual Solution Card */
+    .recommendations-container .solution-card {
+        background: linear-gradient(180deg, #fafbfc 0%, #f4f5f7 100%);
+        border-radius: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        transition: var(--transition-normal);
+    }
+
+    .recommendations-container .solution-card:hover {
+        box-shadow: var(--card-shadow);
+        transform: translateY(-2px);
+    }
+
+    .recommendations-container .solution-card-header {
+        padding: 18px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        cursor: pointer;
+        transition: var(--transition-fast);
+    }
+
+    .recommendations-container .solution-card-header:hover {
+        background: white;
+    }
+
+    .recommendations-container .solution-title-section {
+        flex: 1;
+    }
+
+    .recommendations-container .solution-id {
+        font-size: 0.85rem;
+        color: var(--un-blue);
+        font-weight: 700;
+        margin-bottom: 5px;
+        font-family: 'Roboto Mono', monospace;
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        padding: 3px 10px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    .recommendations-container .solution-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 8px;
+    }
+
+    .recommendations-container .solution-meta {
+        display: flex;
+        gap: 15px;
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .recommendations-container .timeline-badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .recommendations-container .timeline-badge.quick {
+        background: linear-gradient(135deg, var(--timeline-quick-light) 0%, #a7f3d0 100%);
+        color: #065f46;
+    }
+
+    .recommendations-container .timeline-badge.medium {
+        background: linear-gradient(135deg, var(--timeline-medium-light) 0%, #fde68a 100%);
+        color: #92400e;
+    }
+
+    .recommendations-container .timeline-badge.long {
+        background: linear-gradient(135deg, var(--timeline-long-light) 0%, #fed7aa 100%);
+        color: #9a3412;
+    }
+
+    .recommendations-container .solution-expand-btn {
+        background: none;
+        border: none;
+        color: var(--un-blue);
+        font-size: 1.2rem;
+        padding: 5px;
+        cursor: pointer;
+        transition: transform var(--transition-normal);
+    }
+
+    .recommendations-container .solution-expand-btn:hover {
+        color: var(--un-orange);
+    }
+
+    .recommendations-container .solution-expand-btn.expanded {
+        transform: rotate(180deg);
+    }
+
+    .recommendations-container .solution-overview {
+        padding: 0 20px 15px;
+        color: #4b5563;
+        line-height: 1.7;
+    }
+
+    /* Expandable Sections */
+    .recommendations-container .solution-details {
+        display: none;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .recommendations-container .solution-details.expanded {
+        display: block;
+    }
+
+    .recommendations-container .detail-section {
+        padding: 18px 20px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .recommendations-container .detail-section:last-child {
+        border-bottom: none;
+    }
+
+    .recommendations-container .detail-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        margin-bottom: 12px;
+    }
+
+    .recommendations-container .detail-section-title {
+        font-weight: 700;
+        color: var(--un-blue);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .recommendations-container .detail-section-title i {
+        color: var(--un-orange);
+    }
+
+    .recommendations-container .detail-section-content {
+        color: #4b5563;
+        line-height: 1.7;
+    }
+
+    .recommendations-container .detail-section-content ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .recommendations-container .detail-section-content li {
+        margin-bottom: 8px;
+    }
+
+    .recommendations-container .milestone-item {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 12px;
+        padding: 12px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .recommendations-container .milestone-number {
+        width: 32px;
+        height: 32px;
+        background: var(--un-blue);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        box-shadow: 0 2px 6px rgba(0, 104, 157, 0.3);
+    }
+
+    .recommendations-container .milestone-text {
+        flex: 1;
+        padding-top: 5px;
+        color: #374151;
+    }
+
+    .recommendations-container .case-notes {
+        background: white;
+        border-left: 4px solid var(--un-orange);
+        padding: 15px;
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
+        color: #4b5563;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Solution Actions */
+    .recommendations-container .solution-actions {
+        display: flex;
+        gap: 10px;
+        padding: 15px 20px;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        border-top: 1px solid #e9ecef;
+    }
+
+    .recommendations-container .solution-actions .btn-outline-primary {
+        border-color: var(--un-blue);
+        color: var(--un-blue);
+        font-weight: 600;
+    }
+
+    .recommendations-container .solution-actions .btn-outline-primary:hover {
+        background: var(--un-blue);
+        border-color: var(--un-blue);
+        color: white;
+    }
+
+    .recommendations-container .solution-actions button {
+        font-size: 0.85rem;
+    }
+
+    /* Timeline View */
+    .recommendations-container .timeline-container {
+        background: white;
+        border-radius: var(--card-radius);
+        padding: 25px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .recommendations-container .timeline-header {
+        margin-bottom: 25px;
+        border-bottom: 3px solid var(--un-blue);
+        padding-bottom: 15px;
+    }
+
+    .recommendations-container .timeline-header h4 {
+        color: var(--un-blue);
+        margin-bottom: 5px;
+        font-weight: 700;
+    }
+
+    .recommendations-container .timeline-header h4 i {
+        color: var(--un-orange);
+    }
+
+    .recommendations-container .timeline-header p {
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .recommendations-container .timeline-section {
+        margin-bottom: 30px;
+    }
+
+    .recommendations-container .timeline-section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid;
+    }
+
+    .recommendations-container .timeline-section-header.quick { border-color: var(--timeline-quick); }
+    .recommendations-container .timeline-section-header.medium { border-color: var(--timeline-medium); }
+    .recommendations-container .timeline-section-header.long { border-color: var(--un-orange); }
+
+    .recommendations-container .timeline-section-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .recommendations-container .timeline-section-icon.quick {
+        background: linear-gradient(135deg, var(--timeline-quick) 0%, #059669 100%);
+    }
+
+    .recommendations-container .timeline-section-icon.medium {
+        background: linear-gradient(135deg, var(--timeline-medium) 0%, #d97706 100%);
+        color: white;
+    }
+
+    .recommendations-container .timeline-section-icon.long {
+        background: linear-gradient(135deg, var(--un-orange) 0%, var(--un-orange-dark) 100%);
+    }
+
+    .recommendations-container .timeline-section-title {
+        font-weight: 700;
+        color: var(--un-blue);
+    }
+
+    .recommendations-container .timeline-items {
+        display: grid;
+        gap: 12px;
+    }
+
+    .recommendations-container .timeline-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 14px 18px;
+        background: linear-gradient(180deg, #fafbfc 0%, #f4f5f7 100%);
+        border-radius: 10px;
+        border-left: 5px solid;
+        transition: var(--transition-fast);
+    }
+
+    .recommendations-container .timeline-item:hover {
+        box-shadow: var(--card-shadow);
+        transform: translateX(4px);
+    }
+
+    .recommendations-container .timeline-item.quick { border-color: var(--timeline-quick); }
+    .recommendations-container .timeline-item.medium { border-color: var(--timeline-medium); }
+    .recommendations-container .timeline-item.long { border-color: var(--un-orange); }
+
+    .recommendations-container .timeline-item-id {
+        font-weight: 700;
+        color: var(--un-blue);
+        min-width: 85px;
+        font-family: 'Roboto Mono', monospace;
+    }
+
+    .recommendations-container .timeline-item-title {
+        flex: 1;
+        color: #1e293b;
+        font-weight: 500;
+    }
+
+    .recommendations-container .timeline-item-stream {
+        font-size: 0.85rem;
+        color: white;
+        padding: 4px 12px;
+        background: var(--un-blue);
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    /* Progress Tracker */
+    .recommendations-container .progress-tracker-container {
+        background: white;
+        border-radius: var(--card-radius);
+        padding: 25px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .recommendations-container .progress-header {
+        margin-bottom: 25px;
+        border-bottom: 3px solid var(--un-blue);
+        padding-bottom: 15px;
+    }
+
+    .recommendations-container .progress-header h4 {
+        color: var(--un-blue);
+        margin-bottom: 5px;
+        font-weight: 700;
+    }
+
+    .recommendations-container .progress-header h4 i {
+        color: var(--un-orange);
+    }
+
+    .recommendations-container .progress-header p {
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+
+    .recommendations-container .progress-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .recommendations-container .progress-actions .btn-outline-primary {
+        border-color: var(--un-blue);
+        color: var(--un-blue);
+        font-weight: 600;
+    }
+
+    .recommendations-container .progress-actions .btn-outline-primary:hover {
+        background: var(--un-blue);
+        border-color: var(--un-blue);
+        color: white;
+    }
+
+    .recommendations-container .progress-solution {
+        background: linear-gradient(180deg, #fafbfc 0%, #f4f5f7 100%);
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+
+    .recommendations-container .progress-solution-header {
+        padding: 15px 20px;
+        background: white;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .recommendations-container .progress-solution-title {
+        font-weight: 700;
+        color: var(--un-blue);
+    }
+
+    .recommendations-container .progress-percentage {
+        font-weight: 700;
+        color: var(--un-orange);
+        font-size: 1.1rem;
+    }
+
+    .recommendations-container .progress-bar-container {
+        height: 8px;
+        background: #e9ecef;
+        margin: 0 20px 15px;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .recommendations-container .progress-bar-fill {
+        height: 100%;
+        background: var(--un-blue);
+        border-radius: 4px;
+        transition: width var(--transition-normal);
+    }
+
+    .recommendations-container .progress-milestones {
+        padding: 0 20px 20px;
+    }
+
+    .recommendations-container .progress-milestone {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .recommendations-container .progress-milestone:last-child {
+        border-bottom: none;
+    }
+
+    .recommendations-container .progress-milestone-check {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid #d1d5db;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition-fast);
+    }
+
+    .recommendations-container .progress-milestone-check:hover {
+        border-color: var(--un-blue);
+        background: rgba(0, 104, 157, 0.1);
+    }
+
+    .recommendations-container .progress-milestone-check.completed {
+        background: var(--un-blue);
+        border-color: var(--un-blue);
+        color: white;
+        box-shadow: 0 2px 6px rgba(0, 104, 157, 0.3);
+    }
+
+    .recommendations-container .progress-milestone-text {
+        flex: 1;
+        color: #4b5563;
+    }
+
+    .recommendations-container .progress-milestone.completed .progress-milestone-text {
+        text-decoration: line-through;
+        color: #9ca3af;
+    }
+
+    .recommendations-container .progress-milestone-status {
+        font-size: 0.8rem;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    .recommendations-container .progress-milestone-status.not-started {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+
+    .recommendations-container .progress-milestone-status.in-progress {
+        background: var(--timeline-medium-light);
+        color: #92400e;
+    }
+
+    .recommendations-container .progress-milestone-status.completed {
+        background: var(--timeline-quick-light);
+        color: #065f46;
+    }
+
+    .recommendations-container .progress-milestone-status.blocked {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    /* Empty State */
+    .recommendations-container .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+    }
+
+    .recommendations-container .empty-icon {
+        font-size: 4rem;
+        color: var(--un-blue);
+        margin-bottom: 20px;
+        opacity: 0.4;
+    }
+
+    .recommendations-container .empty-state h3 {
+        color: var(--un-blue);
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .recommendations-container .empty-state p {
+        color: #6c757d;
+        margin-bottom: 25px;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .recommendations-container .empty-state .btn-primary {
+        background: var(--un-blue);
+        border: none;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 104, 157, 0.3);
+    }
+
+    /* Report Modal */
+    .recommendations-container ~ .modal .modal-header {
+        background: var(--un-blue);
+        color: white;
+        border-bottom: none;
+    }
+
+    .recommendations-container ~ .modal .modal-title {
+        font-weight: 700;
+    }
+
+    .recommendations-container ~ .modal .modal-title i {
+        color: var(--un-orange);
+    }
+
+    .recommendations-container ~ .modal .btn-close {
+        filter: brightness(0) invert(1);
+    }
+
+    .report-checkboxes {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .report-checkboxes .form-check {
+        padding: 12px 15px;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        transition: var(--transition-fast);
+    }
+
+    .report-checkboxes .form-check:hover {
+        background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+    }
+
+    .report-checkboxes .form-check-input:checked {
+        background-color: var(--un-blue);
+        border-color: var(--un-blue);
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .recommendations-container .recommendations-header {
+            flex-direction: column;
+        }
+
+        .recommendations-container .header-actions {
+            width: 100%;
+        }
+
+        .recommendations-container .header-actions button {
+            flex: 1;
+        }
+
+        .recommendations-container .recommendations-summary {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .report-checkboxes {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<!-- Solutions Data Modules (must load before solutionsDatabase.js) -->
+<script src="/js/solutionsData-PT-Compliance.js"></script>
+<script src="/js/solutionsData-PT-Coverage.js"></script>
+<script src="/js/solutionsData-PT-Valuation.js"></script>
+<script src="/js/solutionsData-BL.js"></script>
+<script src="/js/solutionsData-Generic.js"></script>
+<!-- Core Solutions Database API -->
+<script src="/js/solutionsDatabase.js"></script>
+<!-- Full Solutions Database (detailed solution information) -->
+<script src="/js/solutionsFullDatabase.js"></script>
 <script>
+        // Recommendations Module
+        const RecommendationsModule = (function() {
+            'use strict';
+
+            // Currency symbol from AppContext (single source of truth)
+            let currencySymbol = '$';
+
+            function getCurrencyFromContext() {
+                if (typeof AppContext !== 'undefined') {
+                    return AppContext.get('currencySymbol') || '$';
+                }
+                return localStorage.getItem('selectedCurrencySymbol') || '$';
+            }
+
+            // Format currency helper (for future use)
+            function formatCurrency(amount) {
+                return currencySymbol + ' ' + new Intl.NumberFormat('en-US', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).format(amount);
+            }
+
+            let selectedSolutions = [];
+            let progressData = {};
+
+            // Initialize module
+            function init() {
+                // Get initial currency from AppContext
+                currencySymbol = getCurrencyFromContext();
+                console.log('Recommendations: Initial currency symbol:', currencySymbol);
+
+                loadSelectedSolutions();
+                loadProgressData();
+                renderSolutionCards();
+                updateSummaryStats();
+
+                // Subscribe to currency changes from AppContext
+                if (typeof AppContext !== 'undefined') {
+                    AppContext.subscribe('currencySymbol', function(newSymbol) {
+                        console.log('Recommendations: Currency changed to', newSymbol);
+                        currencySymbol = newSymbol || '$';
+                        // Re-render if needed (currently no currency values displayed)
+                    });
+                }
+            }
+
+            // Load selected solutions from form field (primary) with localStorage fallback
+            function loadSelectedSolutions() {
+                try {
+                    // Use FormStateManager for form field binding (best practice)
+                    if (typeof FormStateManager !== 'undefined') {
+                        const data = FormStateManager.getData('rosraSelectedSolutions');
+                        if (data && Array.isArray(data)) {
+                            selectedSolutions = data;
+                            console.log('Recommendations: Loaded', selectedSolutions.length, 'solutions from FormStateManager');
+                            return;
+                        }
+                    }
+
+                    // Fallback to localStorage
+                    const stored = localStorage.getItem('rosraSelectedSolutions');
+                    if (stored) {
+                        selectedSolutions = JSON.parse(stored);
+                        console.log('Recommendations: Loaded', selectedSolutions.length, 'solutions from localStorage (fallback)');
+                    }
+                } catch (e) {
+                    console.error('Error loading selected solutions:', e);
+                    selectedSolutions = [];
+                }
+            }
+
+            // Load progress data from form field (primary) with localStorage fallback
+            function loadProgressData() {
+                try {
+                    // Use FormStateManager for form field binding (best practice)
+                    if (typeof FormStateManager !== 'undefined') {
+                        const data = FormStateManager.getData('rosraImplementationProgress');
+                        if (data && typeof data === 'object') {
+                            progressData = data;
+                            console.log('Recommendations: Loaded progress data from FormStateManager');
+                            return;
+                        }
+                    }
+
+                    // Fallback to localStorage
+                    const stored = localStorage.getItem('rosraImplementationProgress');
+                    if (stored) {
+                        progressData = JSON.parse(stored);
+                        console.log('Recommendations: Loaded progress data from localStorage (fallback)');
+                    }
+                } catch (e) {
+                    console.error('Error loading progress data:', e);
+                    progressData = {};
+                }
+            }
+
+            // Save progress data to form field (primary) and localStorage (backup)
+            function saveProgressData() {
+                try {
+                    // Use FormStateManager for form field binding (best practice)
+                    if (typeof FormStateManager !== 'undefined') {
+                        FormStateManager.setData('rosraImplementationProgress', progressData);
+                        console.log('Recommendations: Saved progress data via FormStateManager');
+                    } else {
+                        // Fallback to localStorage only
+                        localStorage.setItem('rosraImplementationProgress', JSON.stringify(progressData));
+                    }
+                } catch (e) {
+                    console.error('Error saving progress data:', e);
+                }
+            }
+
+            // Update summary statistics
+            function updateSummaryStats() {
+                const total = selectedSolutions.length;
+                const quickWins = selectedSolutions.filter(s => s.timeline === '<1 year').length;
+                const mediumTerm = selectedSolutions.filter(s => s.timeline === '1-3 years').length;
+                const longTerm = selectedSolutions.filter(s => s.timeline === '3+ years').length;
+
+                document.getElementById('totalSelectedCount').textContent = total;
+                document.getElementById('quickWinsCount').textContent = quickWins;
+                document.getElementById('mediumTermCount').textContent = mediumTerm;
+                document.getElementById('longTermCount').textContent = longTerm;
+            }
+
+            // Render solution cards grouped by stream and gap
+            function renderSolutionCards() {
+                const container = document.getElementById('solutionCardsContainer');
+                const noSelectionsMsg = document.getElementById('noSelectionsMessage');
+
+                if (selectedSolutions.length === 0) {
+                    noSelectionsMsg.style.display = 'block';
+                    container.innerHTML = '';
+                    return;
+                }
+
+                noSelectionsMsg.style.display = 'none';
+
+                // Group by stream
+                const streamGroups = {};
+                selectedSolutions.forEach(solution => {
+                    const streamName = solution.streamName || 'Other';
+                    if (!streamGroups[streamName]) {
+                        streamGroups[streamName] = {
+                            rank: solution.streamRank || 999,
+                            gaps: {}
+                        };
+                    }
+                    const gapType = solution.gapType || 'Other';
+                    if (!streamGroups[streamName].gaps[gapType]) {
+                        streamGroups[streamName].gaps[gapType] = {
+                            priority: solution.gapPriority || 999,
+                            solutions: []
+                        };
+                    }
+                    streamGroups[streamName].gaps[gapType].solutions.push(solution);
+                });
+
+                // Sort streams by rank
+                const sortedStreams = Object.entries(streamGroups)
+                    .sort((a, b) => a[1].rank - b[1].rank);
+
+                let html = '';
+
+                sortedStreams.forEach(([streamName, streamData]) => {
+                    html += `
+                        <div class="stream-section">
+                            <div class="stream-header">
+                                <h3><i class="fas fa-chart-bar me-2"></i> ${streamName}</h3>
+                                <span class="stream-rank">Rank #${streamData.rank}</span>
+                            </div>
+                    `;
+
+                    // Sort gaps by priority
+                    const sortedGaps = Object.entries(streamData.gaps)
+                        .sort((a, b) => a[1].priority - b[1].priority);
+
+                    sortedGaps.forEach(([gapType, gapData]) => {
+                        const gapClass = gapType.toLowerCase();
+                        html += `
+                            <div class="gap-section">
+                                <div class="gap-header">
+                                    <div class="gap-info">
+                                        <span class="gap-indicator ${gapClass}"></span>
+                                        <span class="gap-title">${gapType}</span>
+                                        <span class="gap-badge">(Priority ${gapData.priority})</span>
+                                    </div>
+                                    <span>${gapData.solutions.length} solution${gapData.solutions.length !== 1 ? 's' : ''}</span>
+                                </div>
+                                <div class="gap-solutions-list">
+                        `;
+
+                        gapData.solutions.forEach(solution => {
+                            html += renderSolutionCard(solution);
+                        });
+
+                        html += `
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    html += `</div>`;
+                });
+
+                container.innerHTML = html;
+            }
+
+            // Render individual solution card
+            function renderSolutionCard(solution) {
+                const fullSolution = getCompleteSolution(solution.solutionId);
+                if (!fullSolution) return '';
+
+                const timelineClass = solution.timeline === '<1 year' ? 'quick' :
+                                      solution.timeline === '1-3 years' ? 'medium' : 'long';
+
+                return `
+                    <div class="solution-card" data-solution-id="${solution.solutionId}">
+                        <div class="solution-card-header" onclick="RecommendationsModule.toggleSolution('${solution.solutionId}')">
+                            <div class="solution-title-section">
+                                <div class="solution-id">${solution.solutionId}</div>
+                                <div class="solution-title">${fullSolution.title}</div>
+                                <div class="solution-meta">
+                                    <span class="timeline-badge ${timelineClass}">${solution.timeline}</span>
+                                    <span>${solution.streamName} | ${solution.gapType}</span>
+                                </div>
+                            </div>
+                            <button class="solution-expand-btn" id="expand-btn-${solution.solutionId}">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        <div class="solution-overview">
+                            ${escapeForTemplate(fullSolution.overview?.whatThisSolves || (fullSolution.howItWorks ? fullSolution.howItWorks.substring(0, 300) + '...' : ''))}
+                        </div>
+                        <div class="solution-details" id="details-${solution.solutionId}">
+                            ${renderDetailSections(fullSolution)}
+                        </div>
+                        <div class="solution-actions">
+                            <button class="btn btn-sm btn-outline-primary" onclick="RecommendationsModule.copyToClipboard('${solution.solutionId}')">
+                                <i class="fas fa-clipboard me-1"></i> Copy
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="RecommendationsModule.printSolution('${solution.solutionId}')">
+                                <i class="fas fa-print me-1"></i> Print
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Helper function to escape content for safe embedding in template literals
+            function escapeForTemplate(str) {
+                if (!str) return '';
+                return String(str)
+                    .replace(/\\/g, '\\\\')
+                    .replace(/`/g, '\\`')
+                    .replace(/\${/g, '\\${');
+            }
+
+            // Render detail sections for a solution
+            function renderDetailSections(solution) {
+                let html = '';
+
+                // Legal Essentials
+                if (solution.legalEssentials && solution.legalEssentials.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="fas fa-gavel"></i> Legal Essentials</span></div>';
+                    html += '<div class="detail-section-content"><ul>';
+                    html += solution.legalEssentials.map(item => '<li>' + escapeForTemplate(item) + '</li>').join('');
+                    html += '</ul></div></div>';
+                }
+
+                // How It Works
+                if (solution.howItWorks) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="fas fa-cogs"></i> How It Works</span></div>';
+                    html += '<div class="detail-section-content"><p>' + escapeForTemplate(solution.howItWorks).replace(/\n/g, '<br>') + '</p></div>';
+                    html += '</div>';
+                }
+
+                // Implementation Milestones
+                if (solution.implementationMilestones && solution.implementationMilestones.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="fas fa-tasks"></i> Implementation Milestones</span></div>';
+                    html += '<div class="detail-section-content">';
+                    html += solution.implementationMilestones.map((item, index) => '<div class="milestone-item"><span class="milestone-number">' + (index + 1) + '</span><span class="milestone-text">' + escapeForTemplate(item) + '</span></div>').join('');
+                    html += '</div></div>';
+                }
+
+                // Administrative Essentials
+                if (solution.administrativeEssentials && solution.administrativeEssentials.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="fas fa-users-cog"></i> Administrative Essentials</span></div>';
+                    html += '<div class="detail-section-content"><ul>';
+                    html += solution.administrativeEssentials.map(item => '<li>' + escapeForTemplate(item) + '</li>').join('');
+                    html += '</ul></div></div>';
+                }
+
+                // When Not Applicable
+                if (solution.whenNotApplicable && solution.whenNotApplicable.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="fas fa-exclamation-triangle"></i> When It May Not Be Applicable</span></div>';
+                    html += '<div class="detail-section-content"><ul>';
+                    html += solution.whenNotApplicable.map(item => '<li>' + escapeForTemplate(item) + '</li>').join('');
+                    html += '</ul></div></div>';
+                }
+
+                // Case Notes
+                if (solution.caseNotes) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="fas fa-book-open"></i> Case Notes & Resources</span></div>';
+                    html += '<div class="detail-section-content"><div class="case-notes">' + escapeForTemplate(solution.caseNotes) + '</div></div>';
+                    html += '</div>';
+                }
+
+                return html;
+            }
+
+            // Get complete solution with full details
+            function getCompleteSolution(solutionId) {
+                if (typeof SolutionsFullDatabase !== 'undefined') {
+                    return SolutionsFullDatabase.getCompleteSolution(solutionId);
+                } else if (typeof SolutionsDatabase !== 'undefined') {
+                    return SolutionsDatabase.getSolutionById(solutionId);
+                }
+                return null;
+            }
+
+            // Toggle solution details
+            function toggleSolution(solutionId) {
+                const details = document.getElementById(`details-${solutionId}`);
+                const btn = document.getElementById(`expand-btn-${solutionId}`);
+
+                if (details.classList.contains('expanded')) {
+                    details.classList.remove('expanded');
+                    btn.classList.remove('expanded');
+                } else {
+                    details.classList.add('expanded');
+                    btn.classList.add('expanded');
+                }
+            }
+
+            // Switch between views
+            function switchView(viewName) {
+                // Update buttons
+                document.querySelectorAll('.view-toggle .btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.view === viewName);
+                });
+
+                // Update panels
+                document.querySelectorAll('.view-panel').forEach(panel => {
+                    panel.style.display = 'none';
+                });
+
+                const activePanel = document.getElementById(viewName + 'View');
+                if (activePanel) {
+                    activePanel.style.display = 'block';
+
+                    // Render content for the view
+                    if (viewName === 'timeline') {
+                        renderTimelineView();
+                    } else if (viewName === 'progress') {
+                        renderProgressView();
+                    }
+                }
+            }
+
+            // Render timeline view
+            function renderTimelineView() {
+                const container = document.getElementById('timelineContent');
+
+                const quickWins = selectedSolutions.filter(s => s.timeline === '<1 year');
+                const mediumTerm = selectedSolutions.filter(s => s.timeline === '1-3 years');
+                const longTerm = selectedSolutions.filter(s => s.timeline === '3+ years');
+
+                let html = '';
+
+                if (quickWins.length > 0) {
+                    html += renderTimelineSection('Quick Wins', 'Less than 1 year', 'quick', quickWins);
+                }
+                if (mediumTerm.length > 0) {
+                    html += renderTimelineSection('Medium Term', '1-3 years', 'medium', mediumTerm);
+                }
+                if (longTerm.length > 0) {
+                    html += renderTimelineSection('Long Term', '3+ years', 'long', longTerm);
+                }
+
+                if (html === '') {
+                    html = '<div class="empty-state"><p>No solutions selected</p></div>';
+                }
+
+                container.innerHTML = html;
+            }
+
+            // Render timeline section
+            function renderTimelineSection(title, subtitle, className, solutions) {
+                return `
+                    <div class="timeline-section">
+                        <div class="timeline-section-header ${className}">
+                            <div class="timeline-section-icon ${className}">
+                                <i class="fas fa-${className === 'quick' ? 'bolt' : className === 'medium' ? 'calendar-alt' : 'clock'}"></i>
+                            </div>
+                            <div>
+                                <div class="timeline-section-title">${title}</div>
+                                <div style="font-size: 0.85rem; color: #6c757d;">${subtitle} - ${solutions.length} solution${solutions.length !== 1 ? 's' : ''}</div>
+                            </div>
+                        </div>
+                        <div class="timeline-items">
+                            ${solutions.map(s => `
+                                <div class="timeline-item ${className}">
+                                    <span class="timeline-item-id">${s.solutionId}</span>
+                                    <span class="timeline-item-title">${s.title || getCompleteSolution(s.solutionId)?.title || 'Unknown'}</span>
+                                    <span class="timeline-item-stream">${s.streamName}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Render progress view
+            function renderProgressView() {
+                const container = document.getElementById('progressContent');
+
+                if (selectedSolutions.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><p>No solutions selected</p></div>';
+                    return;
+                }
+
+                let html = '';
+
+                selectedSolutions.forEach(solution => {
+                    const fullSolution = getCompleteSolution(solution.solutionId);
+                    const milestones = fullSolution?.implementationMilestones || [];
+                    const solutionProgress = progressData[solution.solutionId] || {};
+
+                    const completedCount = Object.values(solutionProgress).filter(v => v === 'completed').length;
+                    const percentage = milestones.length > 0 ? Math.round((completedCount / milestones.length) * 100) : 0;
+
+                    html += `
+                        <div class="progress-solution">
+                            <div class="progress-solution-header">
+                                <span class="progress-solution-title">${solution.solutionId}: ${fullSolution?.title || 'Unknown'}</span>
+                                <span class="progress-percentage">${percentage}%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: ${percentage}%"></div>
+                            </div>
+                            <div class="progress-milestones">
+                                ${milestones.map((milestone, index) => {
+                                    const status = solutionProgress[index] || 'not-started';
+                                    return `
+                                        <div class="progress-milestone ${status === 'completed' ? 'completed' : ''}">
+                                            <div class="progress-milestone-check ${status === 'completed' ? 'completed' : ''}"
+                                                 onclick="RecommendationsModule.toggleMilestone('${solution.solutionId}', ${index})">
+                                                ${status === 'completed' ? '<i class="fas fa-check"></i>' : ''}
+                                            </div>
+                                            <span class="progress-milestone-text">${milestone}</span>
+                                            <select class="progress-milestone-status ${status}"
+                                                    onchange="RecommendationsModule.updateMilestoneStatus('${solution.solutionId}', ${index}, this.value)">
+                                                <option value="not-started" ${status === 'not-started' ? 'selected' : ''}>Not Started</option>
+                                                <option value="in-progress" ${status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                                                <option value="completed" ${status === 'completed' ? 'selected' : ''}>Completed</option>
+                                                <option value="blocked" ${status === 'blocked' ? 'selected' : ''}>Blocked</option>
+                                            </select>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            }
+
+            // Toggle milestone completion
+            function toggleMilestone(solutionId, milestoneIndex) {
+                if (!progressData[solutionId]) {
+                    progressData[solutionId] = {};
+                }
+
+                const currentStatus = progressData[solutionId][milestoneIndex] || 'not-started';
+                progressData[solutionId][milestoneIndex] = currentStatus === 'completed' ? 'not-started' : 'completed';
+
+                saveProgressData();
+                renderProgressView();
+            }
+
+            // Update milestone status
+            function updateMilestoneStatus(solutionId, milestoneIndex, status) {
+                if (!progressData[solutionId]) {
+                    progressData[solutionId] = {};
+                }
+                progressData[solutionId][milestoneIndex] = status;
+                saveProgressData();
+                renderProgressView();
+            }
+
+            // Reset all progress
+            function resetAllProgress() {
+                if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+                    progressData = {};
+                    saveProgressData();
+                    renderProgressView();
+                }
+            }
+
+            // Export progress
+            function exportProgress() {
+                const data = {
+                    exportDate: new Date().toISOString(),
+                    solutions: selectedSolutions.map(s => ({
+                        ...s,
+                        progress: progressData[s.solutionId] || {}
+                    }))
+                };
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'rosra-implementation-progress.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            // Go to Overview Selection
+            function goToOverviewSelection() {
+                window.location.href = '/Rosra?activeTab=overview-selection';
+            }
+
+            // Open report modal
+            function openReportModal() {
+                const modal = new bootstrap.Modal(document.getElementById('reportModal'));
+                modal.show();
+            }
+
+            // Generate report
+            function generateReport() {
+                const format = document.getElementById('reportFormat').value;
+
+                // Gather selected options
+                const options = {
+                    includeExecSummary: document.getElementById('includeExecSummary').checked,
+                    includeGapAnalysis: document.getElementById('includeGapAnalysis').checked,
+                    includeStreamPrioritization: document.getElementById('includeStreamPrioritization').checked,
+                    includeGapSequencing: document.getElementById('includeGapSequencing').checked,
+                    includeSelectedSolutions: document.getElementById('includeSelectedSolutions').checked,
+                    includeSkippedSolutions: document.getElementById('includeSkippedSolutions').checked,
+                    includeTimeline: document.getElementById('includeTimeline').checked,
+                    includeResources: document.getElementById('includeResources').checked
+                };
+
+                if (format === 'html') {
+                    generateHTMLReport(options);
+                } else {
+                    generatePDFReport(options);
+                }
+
+                // Close modal
+                bootstrap.Modal.getInstance(document.getElementById('reportModal')).hide();
+            }
+
+            // Generate HTML report
+            function generateHTMLReport(options) {
+                let html = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Revenue Enhancement Action Plan</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 40px; }
+                            h1 { color: #1976D2; border-bottom: 3px solid #1976D2; padding-bottom: 10px; }
+                            h2 { color: #2c3e50; margin-top: 30px; }
+                            h3 { color: #555; }
+                            .solution-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 15px 0; }
+                            .solution-title { font-size: 1.2em; font-weight: bold; color: #1976D2; }
+                            .section { margin: 20px 0; }
+                            .section-title { font-weight: bold; color: #333; margin-bottom: 10px; }
+                            ul { margin: 10px 0; padding-left: 25px; }
+                            .milestone { display: flex; gap: 10px; margin: 8px 0; }
+                            .milestone-num { background: #667eea; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+                            .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 0.9em; color: #666; }
+                            @@media print { body { padding: 20px; } }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Revenue Enhancement Action Plan</h1>
+                        <p><strong>Generated:</strong> ${new Date().toLocaleDateString()}</p>
+                `;
+
+                if (options.includeExecSummary) {
+                    html += `
+                        <h2>Executive Summary</h2>
+                        <p><strong>Total Solutions Selected:</strong> ${selectedSolutions.length}</p>
+                        <p><strong>Quick Wins (&lt;1 year):</strong> ${selectedSolutions.filter(s => s.timeline === '<1 year').length}</p>
+                        <p><strong>Medium Term (1-3 years):</strong> ${selectedSolutions.filter(s => s.timeline === '1-3 years').length}</p>
+                        <p><strong>Long Term (3+ years):</strong> ${selectedSolutions.filter(s => s.timeline === '3+ years').length}</p>
+                    `;
+                }
+
+                if (options.includeSelectedSolutions) {
+                    html += `<h2>Selected Solutions</h2>`;
+
+                    selectedSolutions.forEach(solution => {
+                        const fullSolution = getCompleteSolution(solution.solutionId);
+                        if (fullSolution) {
+                            html += '<div class="solution-card">';
+                            html += '<div class="solution-title">' + escapeForTemplate(solution.solutionId) + ': ' + escapeForTemplate(fullSolution.title) + '</div>';
+                            html += '<p><strong>Stream:</strong> ' + escapeForTemplate(solution.streamName) + ' | <strong>Gap:</strong> ' + escapeForTemplate(solution.gapType) + ' | <strong>Timeline:</strong> ' + escapeForTemplate(solution.timeline) + '</p>';
+
+                            if (fullSolution.overview?.whatThisSolves) {
+                                html += '<div class="section"><div class="section-title">Overview</div><p>' + escapeForTemplate(fullSolution.overview.whatThisSolves) + '</p></div>';
+                            }
+
+                            if (fullSolution.legalEssentials?.length) {
+                                html += '<div class="section"><div class="section-title">Legal Essentials</div><ul>';
+                                html += fullSolution.legalEssentials.map(item => '<li>' + escapeForTemplate(item) + '</li>').join('');
+                                html += '</ul></div>';
+                            }
+
+                            if (fullSolution.implementationMilestones?.length) {
+                                html += '<div class="section"><div class="section-title">Implementation Milestones</div>';
+                                html += fullSolution.implementationMilestones.map((m, i) => '<div class="milestone"><span class="milestone-num">' + (i+1) + '</span><span>' + escapeForTemplate(m) + '</span></div>').join('');
+                                html += '</div>';
+                            }
+
+                            if (fullSolution.administrativeEssentials?.length) {
+                                html += '<div class="section"><div class="section-title">Administrative Essentials</div><ul>';
+                                html += fullSolution.administrativeEssentials.map(item => '<li>' + escapeForTemplate(item) + '</li>').join('');
+                                html += '</ul></div>';
+                            }
+
+                            html += '</div>';
+                        }
+                    });
+                }
+
+                html += `
+                        <div class="footer">
+                            <p>Generated by ROSRA - Rapid Own-Source Revenue Analysis Tool</p>
+                            <p>UN-Habitat</p>
+                        </div>
+                    </body>
+                    </html>
+                `;
+
+                // Open in new window for printing
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(html);
+                printWindow.document.close();
+                printWindow.focus();
+                setTimeout(() => printWindow.print(), 500);
+            }
+
+            // Generate PDF report (simplified - opens print dialog)
+            function generatePDFReport(options) {
+                // For now, use the HTML report with print to PDF
+                generateHTMLReport(options);
+            }
+
+            // Copy solution to clipboard
+            function copyToClipboard(solutionId) {
+                const fullSolution = getCompleteSolution(solutionId);
+                if (!fullSolution) return;
+
+                let text = `${solutionId}: ${fullSolution.title}\n\n`;
+
+                if (fullSolution.overview?.whatThisSolves) {
+                    text += `OVERVIEW\n${fullSolution.overview.whatThisSolves}\n\n`;
+                }
+
+                if (fullSolution.legalEssentials?.length) {
+                    text += `LEGAL ESSENTIALS\n${fullSolution.legalEssentials.map((item, i) => `${i+1}. ${item}`).join('\n')}\n\n`;
+                }
+
+                if (fullSolution.implementationMilestones?.length) {
+                    text += `IMPLEMENTATION MILESTONES\n${fullSolution.implementationMilestones.map((item, i) => `${i+1}. ${item}`).join('\n')}\n\n`;
+                }
+
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Solution copied to clipboard!');
+                });
+            }
+
+            // Print single solution
+            function printSolution(solutionId) {
+                const fullSolution = getCompleteSolution(solutionId);
+                if (!fullSolution) return;
+
+                const solution = selectedSolutions.find(s => s.solutionId === solutionId) || { streamName: '', gapType: '', timeline: '' };
+
+                const html = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>${solutionId}: ${fullSolution.title}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; }
+                            h1 { color: #1976D2; font-size: 1.5em; }
+                            h2 { color: #333; font-size: 1.1em; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+                            ul { margin: 10px 0; padding-left: 25px; }
+                            .milestone { display: flex; gap: 10px; margin: 8px 0; }
+                            .milestone-num { background: #667eea; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>${solutionId}: ${fullSolution.title}</h1>
+                        <p><strong>Stream:</strong> ${solution.streamName} | <strong>Gap:</strong> ${solution.gapType} | <strong>Timeline:</strong> ${solution.timeline}</p>
+
+                        ${fullSolution.overview?.whatThisSolves ? '<h2>Overview</h2><p>' + escapeForTemplate(fullSolution.overview.whatThisSolves) + '</p>' : ''}
+
+                        ${fullSolution.legalEssentials?.length ? '<h2>Legal Essentials</h2><ul>' + fullSolution.legalEssentials.map(item => '<li>' + escapeForTemplate(item) + '</li>').join('') + '</ul>' : ''}
+
+                        ${fullSolution.howItWorks ? '<h2>How It Works</h2><p>' + escapeForTemplate(fullSolution.howItWorks).replace(/\n/g, '<br>') + '</p>' : ''}
+
+                        ${fullSolution.implementationMilestones?.length ? '<h2>Implementation Milestones</h2>' + fullSolution.implementationMilestones.map((m, i) => '<div class="milestone"><span class="milestone-num">' + (i+1) + '</span><span>' + escapeForTemplate(m) + '</span></div>').join('') : ''}
+
+                        ${fullSolution.administrativeEssentials?.length ? '<h2>Administrative Essentials</h2><ul>' + fullSolution.administrativeEssentials.map(item => '<li>' + escapeForTemplate(item) + '</li>').join('') + '</ul>' : ''}
+
+                        ${fullSolution.whenNotApplicable?.length ? '<h2>When It May Not Be Applicable</h2><ul>' + fullSolution.whenNotApplicable.map(item => '<li>' + escapeForTemplate(item) + '</li>').join('') + '</ul>' : ''}
+
+                        ${fullSolution.caseNotes ? '<h2>Case Notes</h2><p><em>' + escapeForTemplate(fullSolution.caseNotes) + '</em></p>' : ''}
+                    </body>
+                    </html>
+                `;
+
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(html);
+                printWindow.document.close();
+                printWindow.focus();
+                setTimeout(() => printWindow.print(), 500);
+            }
+
+            // Public API
+            return {
+                init,
+                toggleSolution,
+                switchView,
+                toggleMilestone,
+                updateMilestoneStatus,
+                resetAllProgress,
+                exportProgress,
+                goToOverviewSelection,
+                openReportModal,
+                generateReport,
+                copyToClipboard,
+                printSolution
+            };
+        })();
+
+    // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', function() {
-        // Add action item
-        document.getElementById('addActionItemBtn').addEventListener('click', function() {
-            var input = document.getElementById('actionItemInput');
-            var description = input.value.trim();
-            var prioritySelect = document.getElementById('prioritySelect');
-            var priority = prioritySelect.value;
-            
-            if (description) {
-                var list = document.getElementById('actionItemsList');
-                var index = list.children.length;
-                
-                var badgeClass = getBadgeClass(priority);
-                
-                var li = document.createElement('li');
-                li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                li.innerHTML = '<div>' + description + 
-                    '<span class="badge ' + badgeClass + ' ms-2">' + priority + '</span>' +
-                    '<input type="hidden" name="ActionItems[' + index + '].Description" value="' + description + '" />' +
-                    '<input type="hidden" name="ActionItems[' + index + '].Priority" value="' + priority + '" />' +
-                    '</div>' +
-                    '<button class="btn btn-sm btn-outline-danger remove-action-item" data-index="' + index + '">×</button>';
-                
-                list.appendChild(li);
-                input.value = '';
-                
-                // Add event listener to the new remove button
-                li.querySelector('.remove-action-item').addEventListener('click', removeActionItem);
-            }
-        });
-        
-        // Remove action item
-        var removeButtons = document.querySelectorAll('.remove-action-item');
-        removeButtons.forEach(function(button) {
-            button.addEventListener('click', removeActionItem);
-        });
-        
-        function removeActionItem() {
-            this.closest('li').remove();
-            // Reindex the remaining items
-            var items = document.querySelectorAll('#actionItemsList li');
-            items.forEach(function(item, index) {
-                var hiddenInputs = item.querySelectorAll('input[type="hidden"]');
-                hiddenInputs[0].name = 'ActionItems[' + index + '].Description';
-                hiddenInputs[1].name = 'ActionItems[' + index + '].Priority';
-                item.querySelector('.remove-action-item').dataset.index = index;
-            });
-        }
-        
-        function getBadgeClass(priority) {
-            switch(priority.toLowerCase()) {
-                case 'high': return 'bg-danger';
-                case 'medium': return 'bg-warning';
-                case 'low': return 'bg-success';
-                default: return 'bg-secondary';
-            }
-        }
+        RecommendationsModule.init();
     });
 </script>

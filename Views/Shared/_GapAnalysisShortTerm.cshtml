@@ -5,6 +5,10 @@
 
 <!-- Add jQuery if not already included -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Add Chart.js for visualizations -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <div class="gap-analysis-tab-content">
     <div class="row">
@@ -34,8 +38,8 @@
                     
                     <!-- Add Category Button -->
                     <div class="mt-3 mb-3">
-                        <button type="button" class="btn btn-primary" id="openCreateCategoryModalBtn" @(isViewMode ? "disabled" : "")>
-                            <i class="fas fa-plus"></i> Add New Category
+                        <button type="button" class="btn btn-outline-primary rounded-pill shadow-sm" id="addCategoryBtn" data-bs-toggle="modal" data-bs-target="#addShortTermCategoryModal" @(isViewMode ? "disabled" : "")>
+                            <i class="fas fa-plus me-1"></i> Add Category
                         </button>
                     </div>
                     
@@ -45,12 +49,12 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <h6 class="mb-0 category-title">Category A</h6>
-                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameShortTermCategoryModal" @(isViewMode ? "disabled" : "")>
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </div>
                                 <div>
-                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
+                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteShortTermCategoryModal" @(isViewMode ? "disabled" : "")>
                                         <i class="fas fa-trash"></i>
                                     </button>
                                     <i class="fas fa-chevron-down ms-2"></i>
@@ -93,12 +97,12 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <h6 class="mb-0 category-title">Category B</h6>
-                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameShortTermCategoryModal" @(isViewMode ? "disabled" : "")>
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </div>
                                 <div>
-                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
+                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteShortTermCategoryModal" @(isViewMode ? "disabled" : "")>
                                         <i class="fas fa-trash"></i>
                                     </button>
                                     <i class="fas fa-chevron-down ms-2"></i>
@@ -141,12 +145,12 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <h6 class="mb-0 category-title">Category C</h6>
-                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameShortTermCategoryModal" @(isViewMode ? "disabled" : "")>
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </div>
                                 <div>
-                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
+                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteShortTermCategoryModal" @(isViewMode ? "disabled" : "")>
                                         <i class="fas fa-trash"></i>
                                     </button>
                                     <i class="fas fa-chevron-down ms-2"></i>
@@ -184,7 +188,7 @@
                     </div>
                     
                     <!-- Container for dynamically added categories -->
-                    <div id="dynamicCategoriesContainer">
+                    <div id="dynamicShortTermCategoriesContainer">
                         <!-- Dynamic categories will be added here -->
                         @if (Model.ShortTermUserCharge.DynamicCategories != null && Model.ShortTermUserCharge.DynamicCategories.Count > 0)
                         {
@@ -195,12 +199,12 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center">
                                                 <h6 class="mb-0 category-title">@category.Name</h6>
-                                                <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameCategoryModal" @(isViewMode ? "disabled" : "")>
+                                                <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
                                                     <i class="fas fa-edit"></i>
                                                 </button>
                                             </div>
                                             <div>
-                                                <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" @(isViewMode ? "disabled" : "")>
+                                                <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                                 <i class="fas fa-chevron-down ms-2"></i>
@@ -242,48 +246,48 @@
                     </div>
                     
                     <!-- Template for new category (hidden) -->
-                    <div id="categoryTemplate" style="display: none;">
+                    <div id="shortTermCategoryTemplate" style="display: none;">
                         <div class="card mb-3 category-card">
-                            <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#newCategoryCollapse" aria-expanded="false" style="cursor: pointer;">
+                            <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#categoryTemplateCollapse" aria-expanded="false" aria-controls="categoryTemplateCollapse" style="cursor: pointer;">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center">
                                         <h6 class="mb-0 category-title">New Category</h6>
-                                        <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" @(isViewMode ? "disabled" : "")>
+                                        <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameShortTermCategoryModal">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     </div>
                                     <div>
-                                        <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" @(isViewMode ? "disabled" : "")>
-                                            <i class="fas fa-trash"></i>
+                                        <button type="button" class="btn btn-sm btn-danger remove-category-btn" title="Delete Category" data-bs-toggle="modal" data-bs-target="#deleteShortTermCategoryModal">
+                                            <i class="bi bi-trash"></i>
                                         </button>
                                         <i class="fas fa-chevron-down ms-2"></i>
                                     </div>
                                 </div>
                             </div>
-                            <div class="collapse category-content">
+                            <div id="categoryTemplateCollapse" class="collapse">
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <div class="form-group">
                                             <label>Estimated Number of Daily Fees</label>
-                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value">
                                         </div>
                                     </div>
                                     <div class="mb-3">
                                         <div class="form-group">
                                             <label>Actual Number of Daily Fees</label>
-                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value">
                                         </div>
                                     </div>
                                     <div class="mb-3">
                                         <div class="form-group">
                                             <label>Potential Rate payable by Leasees</label>
-                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value">
                                         </div>
                                     </div>
                                     <div class="mb-3">
                                         <div class="form-group">
                                             <label>Actual Rate paid by Leasees</label>
-                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
+                                            <input type="text" class="form-control number-format" placeholder="Enter value">
                                         </div>
                                     </div>
                                 </div>
@@ -315,331 +319,1786 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
 
-<!-- Rename Category Modal -->
-<div class="modal fade" id="renameCategoryModal" tabindex="-1" aria-labelledby="renameCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="renameCategoryModalLabel">Rename Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="newCategoryName">New Category Name</label>
-                    <input type="text" class="form-control" id="newCategoryName" placeholder="Enter new category name">
+            <!-- Gap Analysis Summary Card -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">Gap Analysis Summary</h6>
+        </div>
+                <div class="card-body p-3">
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-dollar-sign text-white"></i>
+                                        </div>
+                                        <span class="text-muted text-uppercase small">ACTUAL REVENUE</span>
+                                    </div>
+                                    <h3 class="mb-1 fw-bold" id="actualRevenue">0.0</h3>
+                                    <p class="text-muted small mb-0">Current collected revenue</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="rounded-circle bg-danger d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-chart-line text-white"></i>
+                                        </div>
+                                        <span class="text-muted text-uppercase small">POTENTIAL REVENUE</span>
+                                    </div>
+                                    <h3 class="mb-1 fw-bold" id="potentialRevenue">0.0</h3>
+                                    <p class="text-muted small mb-0">Maximum possible revenue</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-calculator text-white"></i>
+                                        </div>
+                                        <span class="text-muted text-uppercase small">TOTAL GAP</span>
+                                    </div>
+                                    <h3 class="mb-1 fw-bold" id="totalGap">0.0</h3>
+                                    <p class="text-muted small mb-0">Revenue gap to be addressed</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-percentage text-white"></i>
+                                        </div>
+                                        <span class="text-muted text-uppercase small">POTENTIAL LEVERAGED</span>
+                                    </div>
+                                    <h3 class="mb-1 fw-bold"><span id="percentageLeveraged">0.0</span> %</h3>
+                                    <p class="text-muted small mb-0">Percentage of potential collected</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formula Details Collapsible Section -->
+                    <div class="mt-3 mb-3">
+                        <button class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#formulaDetails" aria-expanded="false" aria-controls="formulaDetails">
+                            <span><i class="fas fa-calculator me-2"></i> Formula Details</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="collapse mt-3" id="formulaDetails">
+                            <!-- Actual Revenue Formula Card -->
+                            <div class="card mb-3">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px;">
+                                            <i class="fas fa-dollar-sign text-white"></i>
+                                        </div>
+                                        <h5 class="mb-0">Actual Revenue</h5>
+                                    </div>
+                                    
+                                    <div class="ms-2 ps-3 border-start border-primary">
+                                        <div class="bg-light p-3 rounded mb-3">
+                                            <code class="text-dark">
+                                                (ADFₐ × ARₐ × 365) + (ADFᵦ × ARᵦ × 365) + (ADFc × ARc × 365)
+                                            </code>
+                                        </div>
+                                        
+                                        <p class="mb-2">Where:</p>
+                                        <ul class="mb-0">
+                                            <li class="mb-1">ADFₐ = Actual Daily Fees Category A</li>
+                                            <li class="mb-1">ARₐ = Actual Rate paid by Leasees Category A</li>
+                                            <li class="mb-1">ADFᵦ = Actual Daily Fees Category B</li>
+                                            <li class="mb-1">ARᵦ = Actual Rate paid by Leasees Category B</li>
+                                            <li class="mb-1">ADFc = Actual Daily Fees Category C</li>
+                                            <li class="mb-1">ARc = Actual Rate paid by Leasees Category C</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Potential Revenue Formula Card -->
+                            <div class="card mb-3">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px;">
+                                            <i class="fas fa-chart-line text-white"></i>
+                                        </div>
+                                        <h5 class="mb-0">Total Potential Revenue</h5>
+                                    </div>
+                                    
+                                    <div class="ms-2 ps-3 border-start border-danger">
+                                        <div class="bg-light p-3 rounded mb-3">
+                                            <code class="text-dark">
+                                                (EDFₐ × PRₐ × 365) + (EDFᵦ × PRᵦ × 365) + (EDFc × PRc × 365)
+                                            </code>
+                                        </div>
+                                        
+                                        <p class="mb-2">Where:</p>
+                                        <ul class="mb-0">
+                                            <li class="mb-1">EDFₐ = Estimated Daily Fees Category A</li>
+                                            <li class="mb-1">PRₐ = Potential Rate payable by Leasees Category A</li>
+                                            <li class="mb-1">EDFᵦ = Estimated Daily Fees Category B</li>
+                                            <li class="mb-1">PRᵦ = Potential Rate payable by Leasees Category B</li>
+                                            <li class="mb-1">EDFc = Estimated Daily Fees Category C</li>
+                                            <li class="mb-1">PRc = Potential Rate payable by Leasees Category C</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Total Gap Formula Card -->
+                            <div class="card mb-3">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px;">
+                                            <i class="fas fa-minus-circle text-white"></i>
+                                        </div>
+                                        <h5 class="mb-0">Total Gap Short-term Fees</h5>
+                                    </div>
+                                    
+                                    <div class="ms-2 ps-3 border-start border-secondary">
+                                        <div class="bg-light p-3 rounded mb-3">
+                                            <code class="text-dark">
+                                                Total Potential Revenue - Actual Revenue
+                                            </code>
+                                        </div>
+                                        
+                                        <p class="mb-2">Simple difference between:</p>
+                                        <ul class="mb-0">
+                                            <li class="mb-1">Total Potential Revenue (calculated above)</li>
+                                            <li class="mb-1">Actual Revenue (calculated above)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Potential Leveraged Formula Card -->
+                            <div class="card mb-3">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px;">
+                                            <i class="fas fa-percentage text-white"></i>
+                                        </div>
+                                        <h5 class="mb-0">% of Potential Leveraged</h5>
+                                    </div>
+                                    
+                                    <div class="ms-2 ps-3 border-start border-warning">
+                                        <div class="bg-light p-3 rounded mb-3">
+                                            <code class="text-dark">
+                                                (Actual Revenue ÷ Total Potential Revenue) × 100%
+                                            </code>
+                                        </div>
+                                        
+                                        <p class="mb-2">Interpretation:</p>
+                                        <ul class="mb-0">
+                                            <li class="mb-1">100% = Full potential leveraged</li>
+                                            <li class="mb-1">< 50% = Significant opportunity for improvement</li>
+                                            <li class="mb-1">< 25% = Critical revenue leakage</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <!-- Actual Revenue Card with Calculation Details -->
+                            <div class="card mb-3 border-success">
+                                <div class="card-body p-3">
+                                    <h6 class="text-success">Actual Revenue</h6>
+                                    <p class="text-muted small mb-2">Sum of (Actual Daily Fees × Actual Rate × 365)</p>
+                                    <h4 class="text-success" id="actualRevenueDetail">$0.00</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <!-- Potential Revenue Card with Calculation Details -->
+                            <div class="card mb-3 border-primary">
+                                <div class="card-body p-3">
+                                    <h6 class="text-primary">Total Potential Revenue</h6>
+                                    <p class="text-muted small mb-2">Sum of (Estimated Daily Fees × Potential Rate × 365)</p>
+                                    <h4 class="text-primary" id="potentialRevenueDetail">$0.00</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- Total Gap Card with Calculation Details -->
+                            <div class="card mb-3 border-danger">
+                                <div class="card-body p-3">
+                                    <h6 class="text-danger">Total Gap Short-term Fees</h6>
+                                    <p class="text-muted small mb-2">Potential Revenue - Actual Revenue</p>
+                                    <h4 class="text-danger" id="totalGapDetail">$0.00</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <!-- Percentage Leveraged Card with Calculation Details -->
+                            <div class="card mb-3 border-info">
+                                <div class="card-body p-3">
+                                    <h6 class="text-info">% of Potential Leveraged</h6>
+                                    <p class="text-muted small mb-2">Actual Revenue ÷ Potential Revenue</p>
+                                    <h4 class="text-info" id="percentageLeveragedDetail">0%</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="saveCategoryNameBtn">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Delete Category Modal -->
-<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteCategoryModalLabel">Delete Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete the category <span id="categoryToDeleteName"></span>?</p>
-                <p class="text-danger">This action cannot be undone.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteCategoryBtn">Delete</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Create Category Modal -->
-<div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createCategoryModalLabel">Create New Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="newCategoryNameCreate">Category Name</label>
-                    <input type="text" class="form-control" id="newCategoryNameCreate" placeholder="Enter category name">
+            <!-- Category Gaps Table -->
+            <div class="mt-4">
+                <h6 class="mb-3">Category Gaps</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="categoryGapsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Category</th>
+                                <th>Potential Revenue</th>
+                                <th>Actual Revenue</th>
+                                <th>Gap</th>
+                                <th>% Leveraged</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be filled via JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="createCategoryBtn">Create</button>
+
+            <!-- Detailed Gap Analysis -->
+            <div class="mt-4">
+                <h6 class="mb-3">Detailed Gap Analysis</h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-users text-white"></i>
+                                    </div>
+                                    <span class="text-muted text-uppercase small">COMPLIANCE GAP</span>
+                                </div>
+                                <h3 class="mb-1 fw-bold" id="complianceGapSummary">0.0</h3>
+                                <p class="text-muted small mb-0">Gap due to non-compliance</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="rounded-circle bg-orange d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px; background-color: #fd7e14;">
+                                        <i class="fas fa-tag text-white"></i>
+                                    </div>
+                                    <span class="text-muted text-uppercase small">RATE GAP</span>
+                                </div>
+                                <h3 class="mb-1 fw-bold" id="rateGapSummary">0.0</h3>
+                                <p class="text-muted small mb-0">Gap due to lower rates</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="rounded-circle bg-danger d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-layer-group text-white"></i>
+                                    </div>
+                                    <span class="text-muted text-uppercase small">COMBINED GAPS</span>
+                                </div>
+                                <h3 class="mb-1 fw-bold" id="combinedGapsSummary">0.0</h3>
+                                <p class="text-muted small mb-0">Other uncategorized gaps</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gap Components Formulas Collapsible Section -->
+                <div class="mt-3 mb-3">
+                    <button class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#gapFormulaDetails" aria-expanded="false" aria-controls="gapFormulaDetails">
+                        <span><i class="fas fa-calculator me-2"></i> Gap Components Formulas</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="collapse mt-3" id="gapFormulaDetails">
+                        <!-- Compliance Gap Formula Card -->
+                        <div class="card mb-3">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px;">
+                                        <i class="fas fa-users text-white"></i>
+                                    </div>
+                                    <h5 class="mb-0">Compliance Gap</h5>
+                                </div>
+                                
+                                <div class="ms-2 ps-3 border-start border-warning">
+                                    <div class="bg-light p-3 rounded mb-3">
+                                        <code class="text-dark">
+                                            ((EDFₐ - ADFₐ) × ARₐ × 365) + ((EDFᵦ - ADFᵦ) × ARᵦ × 365) + ((EDFc - ADFc) × ARc × 365)
+                                        </code>
+                                    </div>
+                                    
+                                    <p class="mb-2">Where:</p>
+                                    <ul class="mb-0">
+                                        <li class="mb-1">EDFₐ = Estimated Daily Fees Category A</li>
+                                        <li class="mb-1">ADFₐ = Actual Daily Fees Category A</li>
+                                        <li class="mb-1">ARₐ = Actual Rate paid by Leasees Category A</li>
+                                        <li class="mb-1">EDFᵦ = Estimated Daily Fees Category B</li>
+                                        <li class="mb-1">ADFᵦ = Actual Daily Fees Category B</li>
+                                        <li class="mb-1">ARᵦ = Actual Rate paid by Leasees Category B</li>
+                                        <li class="mb-1">EDFc = Estimated Daily Fees Category C</li>
+                                        <li class="mb-1">ADFc = Actual Daily Fees Category C</li>
+                                        <li class="mb-1">ARc = Actual Rate paid by Leasees Category C</li>
+                                    </ul>
+                                    
+                                    <p class="mt-3 mb-0">Measures the revenue gap due to fewer actual daily fees than estimated (non-compliance).</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Rate Gap Formula Card -->
+                        <div class="card mb-3">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-orange rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px; background-color: #fd7e14;">
+                                        <i class="fas fa-tag text-white"></i>
+                                    </div>
+                                    <h5 class="mb-0">Rate Gap</h5>
+                                </div>
+                                
+                                <div class="ms-2 ps-3 border-start" style="border-color: #fd7e14 !important;">
+                                    <div class="bg-light p-3 rounded mb-3">
+                                        <code class="text-dark">
+                                            ((PRₐ - ARₐ) × ADFₐ × 365) + ((PRᵦ - ARᵦ) × ADFᵦ × 365) + ((PRc - ARc) × ADFc × 365)
+                                        </code>
+                                    </div>
+                                    
+                                    <p class="mb-2">Where:</p>
+                                    <ul class="mb-0">
+                                        <li class="mb-1">PRₐ = Potential Rate payable by Leasees Category A</li>
+                                        <li class="mb-1">ARₐ = Actual Rate paid by Leasees Category A</li>
+                                        <li class="mb-1">ADFₐ = Actual Daily Fees Category A</li>
+                                        <li class="mb-1">PRᵦ = Potential Rate payable by Leasees Category B</li>
+                                        <li class="mb-1">ARᵦ = Actual Rate paid by Leasees Category B</li>
+                                        <li class="mb-1">ADFᵦ = Actual Daily Fees Category B</li>
+                                        <li class="mb-1">PRc = Potential Rate payable by Leasees Category C</li>
+                                        <li class="mb-1">ARc = Actual Rate paid by Leasees Category C</li>
+                                        <li class="mb-1">ADFc = Actual Daily Fees Category C</li>
+                                    </ul>
+                                    
+                                    <p class="mt-3 mb-0">Measures the revenue gap due to actual rates being lower than potential rates.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Combined Gaps Formula Card -->
+                        <div class="card mb-3">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px;">
+                                        <i class="fas fa-layer-group text-white"></i>
+                                    </div>
+                                    <h5 class="mb-0">Combined Gaps</h5>
+                                </div>
+                                
+                                <div class="ms-2 ps-3 border-start border-danger">
+                                    <div class="bg-light p-3 rounded mb-3">
+                                        <code class="text-dark">
+                                            Total Gap - (Compliance Gap + Rate Gap)
+                                        </code>
+                                    </div>
+                                    
+                                    <p class="mb-2">Where:</p>
+                                    <ul class="mb-0">
+                                        <li class="mb-1">Total Gap = Total Potential Revenue - Actual Revenue</li>
+                                        <li class="mb-1">Compliance Gap = Formula above</li>
+                                        <li class="mb-1">Rate Gap = Formula above</li>
+                                    </ul>
+                                    
+                                    <p class="mt-3 mb-0">Represents additional gaps beyond compliance and rate issues, such as uncategorized or administrative factors.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gap Visualization -->
+            <div class="mt-4">
+                <h6 class="mb-3">Gap Visualization</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Overall Gap Analysis</h6>
+                                <span class="badge bg-light text-primary rounded-pill">Chart</span>
+                            </div>
+                            <div class="card-body">
+                                <div id="chartErrorMessage" class="alert alert-danger d-none">
+                                    Error loading chart. Please check console for details.
+                                </div>
+                                
+                                <div class="stacked-bar-chart" style="height: 300px; position: relative;">
+                                    <div class="d-flex justify-content-center align-items-end h-100 pb-5">
+                                        <div class="stacked-bar-container text-center" style="width: 60%; max-width: 300px;">
+                                            <div id="gapBar" class="bar bg-warning" style="height: 0%; transition: height 0.5s ease;"></div>
+                                            <div id="actualRevenueBar" class="bar bg-primary" style="height: 0%; transition: height 0.5s ease;"></div>
+                                            <div class="y-axis-labels">
+                                                <div class="y-axis-label" style="bottom: 0%;">0</div>
+                                                <div class="y-axis-label" style="bottom: 25%;">244K</div>
+                                                <div class="y-axis-label" style="bottom: 50%;">488K</div>
+                                                <div class="y-axis-label" style="bottom: 75%;">732K</div>
+                                                <div class="y-axis-label" style="bottom: 100%;">975K</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Legend -->
+                                    <div class="legend d-flex justify-content-center mt-3">
+                                        <div class="legend-item me-4">
+                                            <span class="legend-color bg-primary"></span>
+                                            <span class="legend-text">Actual Revenue</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <span class="legend-color bg-warning"></span>
+                                            <span class="legend-text">Total Gap Short-term Fees</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- X-axis labels with actual values -->
+                                    <div class="x-axis-labels d-flex justify-content-center mt-3">
+                                        <div class="x-axis-label me-4">
+                                            <span>$0</span>
+                                        </div>
+                                        <div class="x-axis-label">
+                                            <span id="totalValueDisplay">$0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <!-- Gap Types Chart -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card mb-3">
+                            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Breakdown</h6>
+                                <span class="badge bg-light text-primary rounded-pill">Chart</span>
+                            </div>
+                            <div class="card-body">
+                                <div id="breakdownChartErrorMessage" class="alert alert-danger d-none">
+                                    Error loading breakdown chart. Please check console for details.
+                                </div>
+                                
+                                <div class="stacked-bar-chart" style="height: 300px; position: relative;">
+                                    <div class="d-flex justify-content-center align-items-end h-100 pb-5">
+                                        <div class="stacked-bar-container text-center" style="width: 60%; max-width: 300px;">
+                                            <div id="combinedGapBar" class="bar bg-secondary" style="height: 0%; transition: height 0.5s ease;"></div>
+                                            <div id="rateGapBar" class="bar bg-warning" style="height: 0%; transition: height 0.5s ease;"></div>
+                                            <div id="complianceGapBar" class="bar bg-primary" style="height: 0%; transition: height 0.5s ease;"></div>
+                                            <div class="y-axis-labels">
+                                                <div class="y-axis-label" style="bottom: 0%;">0</div>
+                                                <div class="y-axis-label" style="bottom: 25%;">150K</div>
+                                                <div class="y-axis-label" style="bottom: 50%;">300K</div>
+                                                <div class="y-axis-label" style="bottom: 75%;">450K</div>
+                                                <div class="y-axis-label" style="bottom: 100%;">600K</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Legend -->
+                                    <div class="legend d-flex justify-content-center mt-3">
+                                        <div class="legend-item me-3">
+                                            <span class="legend-color bg-primary"></span>
+                                            <span class="legend-text">Compliance Gap</span>
+                                        </div>
+                                        <div class="legend-item me-3">
+                                            <span class="legend-color bg-warning"></span>
+                                            <span class="legend-text">Rate Gap</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <span class="legend-color bg-secondary"></span>
+                                            <span class="legend-text">Combined Gaps</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text Analysis Area -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card mb-3">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0">Short-term User Charge Gap Analysis</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert" id="gapAnalysisAlert">
+                                <p id="gapAnalysisText" class="mb-0"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Breakdown Analysis Area -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card mb-3">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0">Short-term User Charge Breakdown Analysis</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert" id="breakdownAnalysisAlert">
+                                <p id="breakdownAnalysisText" class="mb-0"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Gaps Analysis Card -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card mb-3">
+                        <div class="card-header bg-light d-flex align-items-center">
+                            <i class="fas fa-layer-group me-2 text-primary"></i>
+                            <h6 class="mb-0">Category Gaps Analysis</h6>
+                            <span class="ms-auto badge bg-primary" id="totalCategoriesCount">0 categories</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-borderless mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="text-muted fw-normal ps-4" style="width: 60%;">CATEGORY GAPS</th>
+                                            <th class="text-muted fw-normal text-end pe-4" style="width: 40%;">AMOUNT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="categoryGapsAnalysisBody">
+                                        <!-- Will be populated via JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include the rename category modal partial view -->
+@await Html.PartialAsync("_RenameShortTermCategoryModal")
+
+<!-- Include the delete category modal partial view -->
+@await Html.PartialAsync("_DeleteShortTermCategoryModal")
+
+<!-- Add Category Modal -->
+<div class="modal" id="addShortTermCategoryModal" tabindex="-1" aria-labelledby="addShortTermCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light border-0">
+                <h5 class="modal-title" id="addShortTermCategoryModalLabel">Add Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4 py-4">
+                <div class="mb-3">
+                    <label for="newShortTermCategoryNameModalInput" class="form-label text-muted small">CATEGORY NAME</label>
+                    <input type="text" class="form-control form-control-lg border-0 bg-light" id="newShortTermCategoryNameModalInput" placeholder="Enter category name" required>
+                    <div class="invalid-feedback">
+                        Please enter a category name.
+                </div>
+            </div>
+            </div>
+            <div class="modal-footer border-0 px-4 pb-4">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4" id="confirmAddShortTermCategoryBtn">Create</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    $(document).ready(function() {
+    document.addEventListener('DOMContentLoaded', function() {
         // Initialize counter for unique IDs - start with count of existing dynamic categories
-        let categoryCounter = @(Model.ShortTermUserCharge.DynamicCategories != null ? Model.ShortTermUserCharge.DynamicCategories.Count : 0) + 1;
+        let shortTermCategoryCounter = @(Model.ShortTermUserCharge.DynamicCategories != null ? Model.ShortTermUserCharge.DynamicCategories.Count : 0) + 1;
         
-        // Variables to store current category being edited/deleted
-        let currentCategory = null;
+        // Initialize Add Category Modal with no animations (like License)
+        const addCategoryModal = document.getElementById('addShortTermCategoryModal');
+        let addModalInstance = null;
         
-        // Function to safely show a modal with fallback methods
-        function showModal(modalId) {
-            const $modal = $('#' + modalId);
+        if (addCategoryModal) {
+            // Remove fade class to eliminate animations
+            addCategoryModal.classList.remove('fade');
             
-            // Try jQuery modal method first (works with both Bootstrap 4 and 5)
-            try {
-                $modal.modal('show');
-            } catch (e) {
-                console.warn('Error showing modal with jQuery:', e);
-                
-                // Try native Bootstrap 5 API
-                try {
-                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                        const modalEl = document.getElementById(modalId);
-                        const bsModal = new bootstrap.Modal(modalEl);
-                        bsModal.show();
-                    } else {
-                        throw new Error('Bootstrap Modal API not available');
-                    }
-                } catch (e2) {
-                    console.warn('Error showing modal with Bootstrap API:', e2);
-                    
-                    // Last resort: show modal manually via DOM
-                    $modal.addClass('show').css('display', 'block');
-                    $('body').addClass('modal-open').append('<div class="modal-backdrop fade show"></div>');
-                }
-            }
-        }
-        
-        // Function to safely hide a modal with fallback methods
-        function hideModal(modalId) {
-            const $modal = $('#' + modalId);
-            
-            // Try jQuery modal method first
-            try {
-                $modal.modal('hide');
-            } catch (e) {
-                console.warn('Error hiding modal with jQuery:', e);
-                
-                // Try native Bootstrap 5 API
-                try {
-                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                        const modalEl = document.getElementById(modalId);
-                        const bsModal = bootstrap.Modal.getInstance(modalEl);
-                        if (bsModal) {
-                            bsModal.hide();
-                        } else {
-                            throw new Error('Bootstrap Modal instance not found');
-                        }
-                    } else {
-                        throw new Error('Bootstrap Modal API not available');
-                    }
-                } catch (e2) {
-                    console.warn('Error hiding modal with Bootstrap API:', e2);
-                    
-                    // Last resort: hide modal manually via DOM
-                    $modal.removeClass('show').css('display', 'none');
-                    $('.modal-backdrop').remove();
-                    $('body').removeClass('modal-open').css('overflow', '');
-                }
-            }
-        }
-        
-        // Handle Add Category button click
-        $('#openCreateCategoryModalBtn').click(function() {
-            // Clear input field
-            $('#newCategoryNameCreate').val('');
-            
-            // Show the modal using our safe method
-            showModal('createCategoryModal');
-        });
-        
-        // Handle Create Category button click
-        $('#createCategoryBtn').click(function() {
-            const categoryName = $('#newCategoryNameCreate').val().trim();
-            
-            if (!categoryName) {
-                alert('Please enter a category name');
-                return;
-            }
-            
-            // Check for duplicate category names
-            let isDuplicate = false;
-            $('.category-title').each(function() {
-                if ($(this).text().trim() === categoryName) {
-                    isDuplicate = true;
-                    return false; // break the loop
-                }
+            // Initialize modal instance with no animations
+            addModalInstance = new bootstrap.Modal(addCategoryModal, {
+                backdrop: true,
+                keyboard: true,
+                focus: false
             });
             
-            if (isDuplicate) {
-                alert('A category with this name already exists. Please use a different name.');
-                return;
-            }
-            
-            // Create the new category
-            createNewCategory(categoryName);
-            
-            // Close the modal
-            hideModal('createCategoryModal');
-        });
-        
-        // Handle edit button clicks (including dynamically added ones)
-        $(document).on('click', '.edit-category-btn', function(e) {
-                e.stopPropagation(); // Prevent collapse toggle
-            currentCategory = $(this).closest('.category-card');
-            const currentName = currentCategory.find('.category-title').text().trim();
+            addCategoryModal.addEventListener('shown.bs.modal', function() {
+                // Disable all transitions temporarily
+                document.body.classList.add('no-transitions');
                 
-                // Set the current name in the modal input
-            $('#newCategoryName').val(currentName);
-            
-            // Show the rename modal
-            showModal('renameCategoryModal');
-        });
+                // Clear the input field when modal is shown
+                document.getElementById('newShortTermCategoryNameModalInput').value = '';
+                document.getElementById('newShortTermCategoryNameModalInput').classList.remove('is-invalid');
         
-        // Handle remove button clicks (including dynamically added ones)
-        $(document).on('click', '.remove-category-btn', function(e) {
-            e.stopPropagation(); // Prevent collapse toggle
-            currentCategory = $(this).closest('.category-card');
-            const categoryName = currentCategory.find('.category-title').text().trim();
+                // Focus on the input field without delay
+                document.getElementById('newShortTermCategoryNameModalInput').focus();
+            });
             
-            // Set the category name in the modal
-            $('#categoryToDeleteName').text(categoryName);
-            
-            // Show the delete modal
-            showModal('deleteCategoryModal');
-        });
+            addCategoryModal.addEventListener('hidden.bs.modal', function() {
+                // Re-enable transitions
+                document.body.classList.remove('no-transitions');
+                    
+                // Clean up when modal is hidden
+                document.getElementById('newShortTermCategoryNameModalInput').classList.remove('is-invalid');
+                
+                // Force cleanup of any remaining backdrops
+                setTimeout(() => {
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    backdrops.forEach(backdrop => backdrop.remove());
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                }, 50);
+            });
+        }
         
-        // Handle Save Category Name button click
-        $('#saveCategoryNameBtn').click(function() {
-            if (currentCategory) {
-                const newName = $('#newCategoryName').val().trim();
-                if (newName) {
-                    // Update the category title
-                    currentCategory.find('.category-title').text(newName);
-                    
-                    // Update the hidden input value
-                    currentCategory.find('input[type="hidden"]').val(newName);
-                    
-                    // Close the modal
-                    hideModal('renameCategoryModal');
+        // Add event listener for the confirm add category button
+        const confirmAddCategoryBtn = document.getElementById('confirmAddShortTermCategoryBtn');
+        if (confirmAddCategoryBtn) {
+            confirmAddCategoryBtn.addEventListener('click', function() {
+                const categoryNameInput = document.getElementById('newShortTermCategoryNameModalInput');
+                const categoryName = categoryNameInput.value.trim();
+                
+                if (!categoryName) {
+                    categoryNameInput.classList.add('is-invalid');
+                    return;
                 }
-            }
-        });
-        
-        // Handle Confirm Delete button click
-        $('#confirmDeleteCategoryBtn').click(function() {
-            if (currentCategory) {
-                // Remove the category card
-                currentCategory.remove();
                 
-                // Close the modal
-                hideModal('deleteCategoryModal');
+                // Check for duplicates
+                const existingCategories = [];
                 
-                // Update indices for remaining dynamic categories
-                updateDynamicCategoryIndices();
-            }
-        });
+                // Check default categories
+                existingCategories.push('Category A', 'Category B', 'Category C');
+                
+                // Check dynamic categories
+                const dynamicCategoryElements = document.querySelectorAll('#dynamicShortTermCategoriesContainer .category-card .category-title');
+                dynamicCategoryElements.forEach(element => {
+                    const name = element.textContent.trim();
+                    if (name && name !== 'New Category') {
+                        existingCategories.push(name);
+                    }
+                });
+                
+                // Check for duplicates
+                const isDuplicate = existingCategories.some(name => name.toLowerCase() === categoryName.toLowerCase());
+                
+                if (isDuplicate) {
+                    categoryNameInput.classList.add('is-invalid');
+                    return;
+                }
+                
+                // Create the new category
+                createNewShortTermCategory(categoryName);
+                
+                // Hide the modal
+                addModalInstance.hide();
+            });
+        }
         
         // Function to create a new category
-        function createNewCategory(categoryName) {
+        function createNewShortTermCategory(categoryName) {
             // Clone the template
-            const template = $('#categoryTemplate');
-            const newCategory = template.find('.category-card').clone();
+                const template = document.getElementById('shortTermCategoryTemplate');
+                const newCategory = template.querySelector('.category-card').cloneNode(true);
             
             // Generate unique IDs
-            const categoryId = 'category-' + categoryCounter;
-            const collapseId = 'collapse-' + categoryCounter;
+                const categoryId = 'shortTermCategory-' + shortTermCategoryCounter;
+                const collapseId = 'shortTermCollapse-' + shortTermCategoryCounter;
             
             // Update IDs and attributes
-            newCategory.attr('id', categoryId);
-            newCategory.find('.card-header').attr('data-bs-target', '#' + collapseId);
-            newCategory.find('.card-header').attr('aria-controls', collapseId);
-            newCategory.find('.collapse').attr('id', collapseId);
+                newCategory.id = categoryId;
+                newCategory.querySelector('.card-header').setAttribute('data-bs-target', '#' + collapseId);
+                newCategory.querySelector('.card-header').setAttribute('aria-controls', collapseId);
+                newCategory.querySelector('.collapse').id = collapseId;
             
             // Set the user-provided category name
-            newCategory.find('.category-title').text(categoryName);
+                newCategory.querySelector('.category-title').textContent = categoryName;
             
-            // Update input names for form submission
-            newCategory.find('input').each(function(index) {
-                const fieldName = index === 0 ? 'EstimatedDailyFees' : 
-                                index === 1 ? 'ActualDailyFees' : 
-                                index === 2 ? 'PotentialRatePayable' : 'ActualRatePaid';
-                $(this).attr('name', `ShortTermUserCharge.DynamicCategories[${categoryCounter - 1}].${fieldName}`);
+            // Set name attributes for form submission
+                const inputs = newCategory.querySelectorAll('input');
+                inputs.forEach(function(input, index) {
+                if (input.classList.contains('number-format')) {
+                    const inputName = input.closest('.form-group').querySelector('label').textContent.trim();
+                    let fieldName = '';
+                    
+                    if (inputName.includes('Estimated Number of Daily Fees')) {
+                        fieldName = 'EstimatedDailyFees';
+                    } else if (inputName.includes('Actual Number of Daily Fees')) {
+                        fieldName = 'ActualDailyFees';
+                    } else if (inputName.includes('Potential Rate payable')) {
+                        fieldName = 'PotentialRatePayable';
+                    } else if (inputName.includes('Actual Rate paid')) {
+                        fieldName = 'ActualRatePaid';
+                    }
+                    
+                    input.name = `ShortTermUserCharge.DynamicCategories[${shortTermCategoryCounter-1}].${fieldName}`;
+                }
             });
             
             // Add hidden input for category name
-            const hiddenInput = $('<input>').attr({
-                type: 'hidden',
-                name: `ShortTermUserCharge.DynamicCategories[${categoryCounter - 1}].Name`,
-                value: categoryName
-            });
-            newCategory.find('.card-body').append(hiddenInput);
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+            hiddenInput.name = `ShortTermUserCharge.DynamicCategories[${shortTermCategoryCounter-1}].Name`;
+                hiddenInput.value = categoryName;
+                newCategory.querySelector('.card-body').appendChild(hiddenInput);
             
-            // Add to container
-            $('#dynamicCategoriesContainer').append(newCategory);
+            // Add event listeners for edit and delete buttons
+            attachEventListenersToShortTermCategory(newCategory);
+                
+                // Add to container and show
+                document.getElementById('dynamicShortTermCategoriesContainer').appendChild(newCategory);
             
-            // Increment counter for next category
-            categoryCounter++;
+            // Initialize number formatting for the new inputs
+            initializeShortTermNumberFormatting(newCategory.querySelectorAll('.number-format'));
             
             // Show the collapse
-            new bootstrap.Collapse(document.getElementById(collapseId)).show();
+            const collapseElement = newCategory.querySelector('.collapse');
+            new bootstrap.Collapse(collapseElement).show();
+            
+            // Increment counter for next category
+                shortTermCategoryCounter++;
+                
+            // Update calculations
+            updateCalculations();
         }
         
-        // Function to update indices for dynamic categories after deletion
-        function updateDynamicCategoryIndices() {
-            $('#dynamicCategoriesContainer .category-card').each(function(index) {
-                $(this).find('input').each(function() {
-                    const name = $(this).attr('name');
-                    if (name && name.includes('DynamicCategories[')) {
-                        $(this).attr('name', name.replace(/DynamicCategories\[\d+\]/, `DynamicCategories[${index}]`));
+        // Function to attach event listeners to a category
+        function attachEventListenersToShortTermCategory(category) {
+            // Input event listeners for number formatting and calculations
+            const inputs = category.querySelectorAll('input');
+            inputs.forEach(input => {
+                if (input.classList.contains('number-format')) {
+                    input.addEventListener('blur', function() {
+                        if (this.value) {
+                            const value = parseFloat(this.value.replace(/,/g, ''));
+                            this.value = isNaN(value) ? '' : value.toLocaleString('en-US');
+                        }
+            updateCalculations();
+        });
+                    
+                    input.addEventListener('focus', function() {
+                        this.value = this.value.replace(/,/g, '');
+                    });
+                    
+                    input.addEventListener('change', updateCalculations);
+                }
+            });
+        }
+        
+        // Initialize event listeners for existing categories
+        document.querySelectorAll('.category-card').forEach(category => {
+            attachEventListenersToShortTermCategory(category);
+        });
+        
+        // Function to update indices for remaining categories
+        function updateShortTermCategoryIndices() {
+            const dynamicCategories = document.querySelectorAll('#dynamicShortTermCategoriesContainer .category-card');
+            dynamicCategories.forEach((category, index) => {
+                const inputs = category.querySelectorAll('input');
+                inputs.forEach(input => {
+                    if (input.name && input.name.includes('DynamicCategories[')) {
+                        input.name = input.name.replace(/DynamicCategories\[\d+\]/, `DynamicCategories[${index}]`);
                     }
                 });
             });
         }
         
-        // Initialize number formatting for the input fields
-        $('.number-format').blur(function() {
-            const value = parseFloat($(this).val().replace(/,/g, '')) || 0;
-            $(this).val(value.toLocaleString('en-US'));
+        // Initialize number formatting
+        function initializeShortTermNumberFormatting(elements) {
+            elements.forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (this.value) {
+                        // Parse the input value as a number
+                        const value = parseFloat(this.value.replace(/,/g, ''));
+                        if (!isNaN(value)) {
+                            // Format with commas
+                            this.value = value.toLocaleString('en-US');
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Initialize number formatting for existing inputs
+        initializeShortTermNumberFormatting(document.querySelectorAll('.number-format'));
+        
+        // Initialize Delete Modal
+        const deleteModal = document.getElementById('deleteShortTermCategoryModal');
+        if (deleteModal) {
+            // Create modal instance without animation
+            const bsDeleteModal = new bootstrap.Modal(deleteModal, {
+                backdrop: true,
+                keyboard: true,
+                focus: true
+            });
+            
+            // Function to handle category deletion
+            function handleDeleteShortTermCategory(categoryCard) {
+                if (!categoryCard) return;
+                
+                // Get category data
+                const categoryName = categoryCard.querySelector('.category-title')?.textContent || 'Unknown Category';
+                const categoryId = categoryCard.getAttribute('id') || '';
+                
+                // Set data to modal
+                document.getElementById('deleteShortTermCategoryName').textContent = categoryName;
+                document.getElementById('shortTermCategoryToDeleteId').value = categoryId;
+                
+                // Get additional data
+                const estimatedInput = categoryCard.querySelector('input[name*="EstimatedDailyFees"]');
+                const actualInput = categoryCard.querySelector('input[name*="ActualDailyFees"]');
+                const potentialRateInput = categoryCard.querySelector('input[name*="PotentialRatePayable"]');
+                const actualRateInput = categoryCard.querySelector('input[name*="ActualRatePaid"]');
+                
+                document.getElementById('categoryEstimatedDailyFees').textContent = 
+                    estimatedInput ? estimatedInput.value : '-';
+                document.getElementById('categoryActualDailyFees').textContent = 
+                    actualInput ? actualInput.value : '-';
+                document.getElementById('categoryPotentialRate').textContent = 
+                    potentialRateInput ? potentialRateInput.value : '-';
+                document.getElementById('categoryActualRate').textContent = 
+                    actualRateInput ? actualRateInput.value : '-';
+                
+                // Show modal without animation
+                bsDeleteModal.show();
+            }
+            
+            // Event delegation for delete buttons
+            document.addEventListener('click', function(e) {
+                const button = e.target.closest('.remove-category-btn');
+                if (!button) return;
+                
+                console.log('Delete button clicked:', button); // Debug log
+                
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Find the category card
+                const categoryCard = button.closest('.category-card');
+                console.log('Category card found:', categoryCard); // Debug log
+                
+                if (categoryCard) {
+                    const categoryId = categoryCard.getAttribute('id');
+                    const categoryName = categoryCard.querySelector('.category-title')?.textContent;
+                    console.log('Attempting to delete category:', { categoryId, categoryName }); // Debug log
+                    
+                    // Set the data immediately before showing modal
+                    document.getElementById('deleteShortTermCategoryName').textContent = categoryName || 'Unknown Category';
+                    document.getElementById('shortTermCategoryToDeleteId').value = categoryId || '';
+                    
+                    // Get additional data
+                    const estimatedInput = categoryCard.querySelector('input[name*="EstimatedDailyFees"]');
+                    const actualInput = categoryCard.querySelector('input[name*="ActualDailyFees"]');
+                    const potentialRateInput = categoryCard.querySelector('input[name*="PotentialRatePayable"]');
+                    const actualRateInput = categoryCard.querySelector('input[name*="ActualRatePaid"]');
+                    
+                    document.getElementById('categoryEstimatedDailyFees').textContent = 
+                        estimatedInput ? estimatedInput.value : '-';
+                    document.getElementById('categoryActualDailyFees').textContent = 
+                        actualInput ? actualInput.value : '-';
+                    document.getElementById('categoryPotentialRate').textContent = 
+                        potentialRateInput ? potentialRateInput.value : '-';
+                    document.getElementById('categoryActualRate').textContent = 
+                        actualRateInput ? actualRateInput.value : '-';
+                    
+                    console.log('Modal data set:', {
+                        categoryName: document.getElementById('deleteShortTermCategoryName').textContent,
+                        categoryId: document.getElementById('shortTermCategoryToDeleteId').value
+                    });
+                }
+                
+                // Show modal manually instead of relying on Bootstrap data attributes
+                bsDeleteModal.show();
+            });
+            
+            // Button handlers
+            document.getElementById('closeDeleteShortTermModalBtn')?.addEventListener('click', function() {
+                bsDeleteModal.hide();
+            });
+            
+            document.getElementById('cancelDeleteShortTermBtn')?.addEventListener('click', function() {
+                bsDeleteModal.hide();
+            });
+            
+            document.getElementById('confirmDeleteShortTermCategoryBtn')?.addEventListener('click', function() {
+                const categoryId = document.getElementById('shortTermCategoryToDeleteId').value;
+                
+                console.log('Delete attempt for category ID:', categoryId); // Debug log
+                
+                if (!categoryId) {
+                    alert('No category selected for deletion.');
+                    return;
+                }
+                
+                const card = document.getElementById(categoryId);
+                
+                if (card) {
+                    console.log('Found card for deletion:', card); // Debug log
+                    
+                    // Get category name for confirmation
+                    const categoryName = card.querySelector('.category-title')?.textContent || 'Unknown';
+                    
+                    // Remove the category from DOM
+                    card.remove();
+                    console.log('Category removed:', categoryName); // Debug log
+                    
+                    // Update category indices for remaining dynamic categories
+                    updateShortTermCategoryIndices();
+                    
+                    // Update calculations
+                    updateCalculations();
+                    
+                    console.log('Short term category deleted successfully'); // Debug log
+                    
+                    // Hide modal immediately with multiple approaches
+                    console.log('Attempting to close modal...'); // Debug log
+                    
+                    // Method 1: Direct Bootstrap modal hide
+                    const modalElement = document.getElementById('deleteShortTermCategoryModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    
+                    if (modalInstance) {
+                        console.log('Found modal instance, hiding...'); // Debug log
+                        modalInstance.hide();
+                    } else {
+                        console.log('No modal instance found, creating new one...'); // Debug log
+                        const newModalInstance = new bootstrap.Modal(modalElement);
+                        newModalInstance.hide();
+                    }
+                    
+                    // Method 2: Trigger close button click
+                    setTimeout(function() {
+                        console.log('Triggering close button click...'); // Debug log
+                        const closeButton = document.getElementById('closeDeleteShortTermModalBtn');
+                        if (closeButton) {
+                            closeButton.click();
+                            console.log('Close button clicked'); // Debug log
+                        }
+                    }, 10);
+                    
+                    // Method 3: Manual cleanup (as final fallback)
+                    setTimeout(function() {
+                        console.log('Manual cleanup...'); // Debug log
+                        modalElement.style.display = 'none';
+                        modalElement.classList.remove('show');
+                        modalElement.setAttribute('aria-hidden', 'true');
+                        modalElement.removeAttribute('aria-modal');
+                        
+                        // Remove backdrop
+                        const backdrops = document.querySelectorAll('.modal-backdrop');
+                        backdrops.forEach(backdrop => backdrop.remove());
+                        
+                        // Clean up body
+                        document.body.classList.remove('modal-open');
+                        document.body.style.overflow = '';
+                        document.body.style.paddingRight = '';
+                        
+                        console.log('Modal cleanup complete'); // Debug log
+                    }, 100);
+                } else {
+                    console.error('Card not found for ID:', categoryId); // Debug log
+                    alert('Error: Category not found for deletion.');
+                    // Still hide modal even if deletion failed
+                    bsDeleteModal.hide();
+                }
+            });
+            
+            // Add event listener for when modal is about to be shown
+            deleteModal.addEventListener('show.bs.modal', function(event) {
+                console.log('Modal show event triggered'); // Debug log
+                
+                // If modal data is not set, try to get it from the triggering button
+                const categoryId = document.getElementById('shortTermCategoryToDeleteId').value;
+                if (!categoryId) {
+                    console.log('No category ID found, trying to get from event'); // Debug log
+                    
+                    // Get the button that triggered the modal
+                    const button = event.relatedTarget;
+                    if (button) {
+                        const categoryCard = button.closest('.category-card');
+                        if (categoryCard) {
+                            handleDeleteShortTermCategory(categoryCard);
+                        }
+                    }
+                }
+            });
+            
+            // Reset form when modal is hidden
+            deleteModal.addEventListener('hidden.bs.modal', function() {
+                document.getElementById('shortTermCategoryToDeleteId').value = '';
+                document.getElementById('deleteShortTermCategoryName').textContent = '';
+                document.getElementById('categoryEstimatedDailyFees').textContent = '-';
+                document.getElementById('categoryActualDailyFees').textContent = '-';
+                document.getElementById('categoryPotentialRate').textContent = '-';
+                document.getElementById('categoryActualRate').textContent = '-';
+                
+                // Clean up any stuck backdrops
+                setTimeout(function() {
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    backdrops.forEach(function(backdrop) {
+                        backdrop.remove();
+                    });
+                    
+                    // Also clean up body classes
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                }, 150);
+            });
+            
+            // Disable all CSS transitions when hovering to prevent flickering
+            const disableTransitions = function() {
+                document.body.classList.add('no-transitions');
+            };
+            
+            const enableTransitions = function() {
+                document.body.classList.remove('no-transitions');
+            };
+            
+            // Add transition disabling on modal interaction
+            deleteModal.addEventListener('mouseenter', disableTransitions, { passive: true });
+            deleteModal.addEventListener('mouseleave', enableTransitions, { passive: true });
+            
+            // Expose the handle function for external usage if needed
+            window.handleDeleteShortTermCategory = handleDeleteShortTermCategory;
+        }
+
+        // Initialize Rename Modal
+        const renameModal = document.getElementById('renameShortTermCategoryModal');
+        if (renameModal) {
+            // Create modal instance without animation
+            const bsRenameModal = new bootstrap.Modal(renameModal, {
+                backdrop: true,
+                keyboard: true,
+                focus: true
+            });
+            
+            // Function to handle category renaming
+            function handleRenameShortTermCategory(categoryCard) {
+                if (!categoryCard) return;
+                
+                // Get category name and ID
+                const categoryName = categoryCard.querySelector('.category-title')?.textContent || '';
+                const categoryId = categoryCard.getAttribute('id') || '';
+                
+                // Set data to modal
+                document.getElementById('newShortTermCategoryName').value = categoryName;
+                document.getElementById('shortTermCategoryToRenameId').value = categoryId;
+                
+                // Show modal
+                bsRenameModal.show();
+            }
+            
+            // Event delegation for edit buttons
+            document.addEventListener('click', function(e) {
+                const button = e.target.closest('.edit-category-btn');
+                if (!button) return;
+                
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Find the category card
+                const categoryCard = button.closest('.category-card');
+                
+                if (categoryCard) {
+                    const categoryId = categoryCard.getAttribute('id');
+                    console.log('Attempting to rename category:', categoryId); // Debug log
+                }
+                
+                handleRenameShortTermCategory(categoryCard);
+            });
+            
+            // Button handlers
+            document.getElementById('closeRenameShortTermModalBtn')?.addEventListener('click', function() {
+                bsRenameModal.hide();
+            });
+            
+            document.getElementById('cancelRenameShortTermBtn')?.addEventListener('click', function() {
+                bsRenameModal.hide();
+            });
+            
+            document.getElementById('saveShortTermCategoryNameBtn')?.addEventListener('click', function() {
+                const newName = document.getElementById('newShortTermCategoryName').value.trim();
+                const categoryId = document.getElementById('shortTermCategoryToRenameId').value;
+                
+                console.log('Rename attempt:', { newName, categoryId }); // Debug log
+                
+                if (!newName) {
+                    alert('Please enter a category name.');
+                    return;
+                }
+                
+                if (!categoryId) {
+                    alert('No category selected for renaming.');
+                    return;
+                }
+                
+                // Check for duplicates
+                const existingCategories = [];
+                
+                // Check default categories
+                existingCategories.push('Category A', 'Category B', 'Category C');
+                
+                // Check other dynamic categories (excluding the current one being renamed)
+                const dynamicCategoryElements = document.querySelectorAll('#dynamicShortTermCategoriesContainer .category-card .category-title');
+                dynamicCategoryElements.forEach(element => {
+                    const categoryCard = element.closest('.category-card');
+                    if (categoryCard && categoryCard.id !== categoryId) {
+                        const name = element.textContent.trim();
+                        if (name && name !== 'New Category') {
+                            existingCategories.push(name);
+                        }
+                    }
+                });
+                
+                // Check for duplicates
+                const isDuplicate = existingCategories.some(name => name.toLowerCase() === newName.toLowerCase());
+                
+                if (isDuplicate) {
+                    alert('A category with this name already exists. Please choose a different name.');
+                    return;
+                }
+                
+                const card = document.getElementById(categoryId);
+                if (card) {
+                    console.log('Found card for renaming:', card); // Debug log
+                    
+                    // Update the category title
+                    const titleElement = card.querySelector('.category-title');
+                    if (titleElement) {
+                        console.log('Updating title from:', titleElement.textContent, 'to:', newName); // Debug log
+                        titleElement.textContent = newName;
+                    }
+                    
+                    // Update the hidden input value if it exists
+                    const hiddenInput = card.querySelector('input[type="hidden"][name*="Name"]');
+                    if (hiddenInput) {
+                        console.log('Updating hidden input from:', hiddenInput.value, 'to:', newName); // Debug log
+                        hiddenInput.value = newName;
+                    }
+                    
+                    // Update the card ID to match the new name
+                    const newId = 'shortTermCategory-' + newName.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+                    card.id = newId;
+                    
+                    // Run any necessary update functions if they exist
+                    if (typeof updateShortTermCategoryIndices === 'function') {
+                        updateShortTermCategoryIndices();
+                    }
+                    if (typeof updateCalculations === 'function') {
+                        updateCalculations();
+                    }
+                    
+                    console.log('Short term category renamed successfully'); // Debug log
+                } else {
+                    console.error('Card not found for ID:', categoryId); // Debug log
+                    alert('Error: Category not found for renaming.');
+                }
+                
+                // Hide modal
+                bsRenameModal.hide();
+            });
+            
+            // Reset form when modal is hidden
+            renameModal.addEventListener('hidden.bs.modal', function() {
+                document.getElementById('newShortTermCategoryName').value = '';
+                document.getElementById('shortTermCategoryToRenameId').value = '';
+                
+                // Clean up any stuck backdrops
+                setTimeout(function() {
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    backdrops.forEach(function(backdrop) {
+                        backdrop.remove();
+                    });
+                    
+                    // Also clean up body classes
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                }, 150);
+            });
+            
+            // Disable all CSS transitions when hovering to prevent flickering
+            const disableTransitions = function() {
+                document.body.classList.add('no-transitions');
+            };
+            
+            const enableTransitions = function() {
+                document.body.classList.remove('no-transitions');
+            };
+            
+            // Add transition disabling on modal interaction
+            renameModal.addEventListener('mouseenter', disableTransitions, { passive: true });
+            renameModal.addEventListener('mouseleave', enableTransitions, { passive: true });
+            
+            // Expose the handle function for external usage if needed
+            window.handleRenameShortTermCategory = handleRenameShortTermCategory;
+        }
+        
+        // Toggle chevron icon when collapsing/expanding categories
+        const categoryHeaders = document.querySelectorAll('[data-bs-toggle="collapse"]');
+        
+        categoryHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const chevron = this.querySelector('.fas.fa-chevron-down');
+                const collapseId = this.getAttribute('data-bs-target');
+                const collapseElement = document.querySelector(collapseId);
+                
+                // Check if the collapse is currently shown
+                if (collapseElement.classList.contains('show')) {
+                    chevron.style.transform = 'rotate(0deg)';
+                } else {
+                    chevron.style.transform = 'rotate(180deg)';
+                }
+            });
         });
         
-        // Ensure Bootstrap is properly loaded
-        // If Bootstrap Modal is not working, try initializing it manually
-        if (typeof bootstrap === 'undefined' || typeof bootstrap.Modal === 'undefined') {
-            console.warn('Bootstrap or bootstrap.Modal is not defined. Loading Bootstrap JS...');
+        // Helper function to parse number from input element
+        function parseNumericValue(elementId) {
+            const element = document.getElementById(elementId);
+            if (!element) return 0;
             
-            // Create and append the Bootstrap script
-            const bootstrapScript = document.createElement('script');
-            bootstrapScript.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js';
-            bootstrapScript.integrity = 'sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p';
-            bootstrapScript.crossOrigin = 'anonymous';
-            document.body.appendChild(bootstrapScript);
-            
-            // Reinitialize modals after script loads
-            bootstrapScript.onload = function() {
-                console.log('Bootstrap loaded. Attempting to reinitialize modals...');
-                
-                // Try showing the create modal with timeout to ensure Bootstrap is ready
-                $('#openCreateCategoryModalBtn').off('click').on('click', function() {
-                    $('#newCategoryNameCreate').val('');
-                    setTimeout(function() {
-                        const modal = new bootstrap.Modal(document.getElementById('createCategoryModal'));
-                        modal.show();
-                    }, 100);
-                });
-            };
-        } else {
-            console.log('Bootstrap is properly loaded.');
+            const value = element.value.replace(/,/g, '').trim();
+            return value === '' ? 0 : parseFloat(value);
         }
-    });
+        
+        // Helper function to parse numeric value from element value
+    function parseNumeric(value) {
+            if (!value) return 0;
+            const cleanValue = value.toString().replace(/,/g, '').trim();
+            return cleanValue === '' ? 0 : parseFloat(cleanValue);
+        }
+        
+        // Format number for display
+        function formatNumber(value, decimals = 1) {
+            let suffix = '';
+            let formattedValue = value;
+
+            if (value >= 1000000) {
+                formattedValue = value / 1000000;
+                suffix = 'M';
+            } else if (value >= 1000) {
+                formattedValue = value / 1000;
+                suffix = 'K';
+            }
+
+            // Ensure we only show decimal for K values, not M values
+            if (suffix === 'M') {
+                return 'KSh ' + formattedValue.toFixed(1).replace('.0', '') + suffix;
+            } else {
+                return 'KSh ' + formattedValue.toFixed(1) + suffix;
+            }
+        }
+        
+        function formatCurrency(value) {
+            if (value >= 1000000) {
+                return 'KSh ' + (value / 1000000).toFixed(1) + 'M';
+            } else if (value >= 1000) {
+            alertElement.addClass('alert-success');
+            textElement.html(`
+                <strong>Strong Revenue Performance:</strong> The percentage of potential leveraged revenue from the Short-term User Charge Module 
+                exceeds 70% at <strong>${percentValue}</strong>, indicating that the government is performing well in maximizing revenue from this source. 
+                The government has successfully captured a substantial portion of the estimated potential revenue. This highlights the 
+                effectiveness of our current strategies and practices.
+            `);
+        }
+    }
+    
+    // Function to update the breakdown analysis text based on the largest gap
+    function updateBreakdownAnalysis(complianceGap, rateGap, combinedGaps) {
+        const alertElement = $('#breakdownAnalysisAlert');
+        const textElement = $('#breakdownAnalysisText');
+        
+        // Format the gap values as currency
+        const formattedComplianceGap = formatCurrency(complianceGap);
+        const formattedRateGap = formatCurrency(rateGap);
+        const formattedCombinedGaps = formatCurrency(combinedGaps);
+        
+        // Determine which gap is the largest
+        let largestGap = "";
+        if (complianceGap > rateGap && complianceGap > combinedGaps) {
+            largestGap = "Compliance Gap";
+        } else if (rateGap > complianceGap && rateGap > combinedGaps) {
+            largestGap = "Rate Gap";
+        } else {
+            largestGap = "Combined gaps";
+        }
+        
+        // Remove existing alert classes
+        alertElement.removeClass('alert-info alert-warning alert-danger');
+        
+        // Set text and class based on the largest gap
+        if (largestGap === "Compliance Gap") {
+            alertElement.addClass('alert-info');
+            textElement.html(`
+                <strong>Compliance Gap Analysis:</strong> The Compliance gap has been identified as the largest contributing factor to the 
+                Short-term user charge revenue gap with the value at <strong>${formattedComplianceGap}</strong>. This suggests that there is a 
+                significant discrepancy between the potential revenue that should be collected based on Compliance with established rates 
+                and the actual revenue collected. Some revenues which should be collected in Compliance are not actually collected by the government.
+            `);
+        } else if (largestGap === "Rate Gap") {
+            alertElement.addClass('alert-warning');
+            textElement.html(`
+                <strong>Rate Gap Analysis:</strong> The Rate Gap stands out as the largest contributor to the Short-term User Charge Revenue Gap, 
+                with the value of <strong>${formattedRateGap}</strong>. This indicates that there may be a misalignment between the established 
+                rates and the current market conditions or user expectations.
+            `);
+        } else {
+            alertElement.addClass('alert-danger');
+            textElement.html(`
+                <strong>Combined Gaps Analysis:</strong> The combined gaps from various sources have been identified as the largest contributing 
+                factor to the Short-term User Charge Revenue Gap with the value at <strong>${formattedCombinedGaps}</strong>. This highlights that 
+                there are multiple factors contributing to the revenue shortfall, including other factors like assessment and registration gaps. 
+                A comprehensive approach is required to address this problem.
+            `);
+        }
+    }
+
+    // Function to update the Category Gaps Analysis
+    function updateCategoryGapsAnalysis(categories, gaps) {
+        const tableBody = $('#categoryGapsAnalysisBody');
+        tableBody.empty();
+        
+        // Filter out categories with no gaps
+        const categoriesWithGaps = [];
+        const gapsFiltered = [];
+        
+        for (let i = 0; i < categories.length; i++) {
+            if (gaps[i] > 0) {
+                categoriesWithGaps.push(categories[i]);
+                gapsFiltered.push(gaps[i]);
+            }
+        }
+        
+        // Update the categories count
+        $('#totalCategoriesCount').text(`${categoriesWithGaps.length} categories`);
+        
+        if (categoriesWithGaps.length === 0) {
+            tableBody.append(`
+                <tr>
+                    <td colspan="2" class="text-center py-4 text-muted">No significant gaps found</td>
+                </tr>
+            `);
+            return;
+        }
+        
+        // Get the top categories with highest gaps
+        const indexedGaps = gapsFiltered.map((gap, index) => ({ gap, index }));
+        indexedGaps.sort((a, b) => b.gap - a.gap);
+        
+        // Add the category rows with appropriate icons
+        const iconClasses = [
+            'text-primary', // Primary category (blue)
+            'text-success', // Secondary category (green)
+            'text-warning', // Tertiary category (amber/yellow)
+            'text-danger',  // Fourth category (red)
+            'text-info'     // Fifth category (cyan/light blue)
+        ];
+        
+        const categoryLabels = [
+            'Primary category gap',
+            'Secondary category gap',
+            'Tertiary category gap',
+            'Additional category gap',
+            'Supplementary category gap'
+        ];
+        
+        // Add regular category gaps
+        for (let i = 0; i < Math.min(categoriesWithGaps.length, 3); i++) {
+            const originalIndex = indexedGaps[i].index;
+            const categoryName = categoriesWithGaps[originalIndex];
+            const gapValue = gapsFiltered[originalIndex];
+            
+            const iconClass = iconClasses[i];
+            const iconElement = i === 0 ? '<i class="fas fa-chart-line"></i>' :
+                               i === 1 ? '<i class="fas fa-chart-bar"></i>' :
+                               '<i class="fas fa-chart-pie"></i>';
+            
+            tableBody.append(`
+                <tr>
+                    <td class="ps-4">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3 ${iconClass}" style="width: 24px; text-align: center;">
+                                ${iconElement}
+                            </div>
+                            <div>
+                                <div class="fw-semibold">Gap Category ${categoryName}</div>
+                                <div class="text-muted small">${categoryLabels[i]}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-end pe-4 fw-bold ${iconClass}">KSh ${formatNumber(gapValue)}</td>
+                </tr>
+            `);
+        }
+        
+        // Add separator
+        tableBody.append(`<tr><td colspan="2" class="border-bottom"></td></tr>`);
+        
+        // Find the largest gap
+        const largestGapIndex = indexedGaps[0].index;
+        const largestGapValue = gapsFiltered[largestGapIndex];
+        const largestGapCategory = categoriesWithGaps[largestGapIndex];
+        
+        // Determine the type of largest gap
+        let gapType = "Undefined gap";
+        if (largestGapCategory.includes("A")) {
+            gapType = "Compliance Gap";
+        } else if (largestGapCategory.includes("B")) {
+            gapType = "Rate Gap";
+        } else if (largestGapCategory.includes("C")) {
+            gapType = "Assessment/Valuation gap";
+        } else {
+            gapType = "Registration/Documentation gap";
+        }
+        
+        // Add the largest gap row
+        tableBody.append(`
+            <tr>
+                <td class="ps-4">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 text-danger" style="width: 24px; text-align: center;">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Largest Gap</div>
+                            <div class="text-muted small">Highest value difference</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-end pe-4 fw-bold text-primary">${gapType}</td>
+            </tr>
+        `);
+        
+        // Add the category with largest gap row
+        tableBody.append(`
+            <tr>
+                <td class="ps-4">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 text-info" style="width: 24px; text-align: center;">
+                            <i class="fas fa-flag"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Category with Largest Gap</div>
+                            <div class="text-muted small">Most significant category</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-end pe-4 fw-bold text-info">Gap Category ${largestGapCategory}</td>
+            </tr>
+        `);
+    }
 </script>
+
+<style>
+    /* Modern table styles */
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .modern-table th,
+    .modern-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .modern-table thead th {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .modern-table tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    .modern-table .amount {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    /* Category icon styles */
+    .category-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+    
+    .category-icon .fas {
+        font-size: 1rem;
+    }
+    
+    /* Icon background colors */
+    .category-icon:nth-of-type(1) {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+    
+    .category-icon:nth-of-type(2) {
+        background-color: rgba(25, 135, 84, 0.1);
+    }
+    
+    .category-icon:nth-of-type(3) {
+        background-color: rgba(255, 193, 7, 0.1);
+    }
+    
+    .category-icon:nth-of-type(4) {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+    
+    .category-icon:nth-of-type(5) {
+        background-color: rgba(13, 202, 240, 0.1);
+    }
+    
+    /* Styles for the card headers with badge */
+    .card-header.bg-primary {
+        position: relative;
+    }
+    
+    .card-header .badge {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    /* Stacked Bar Chart Styles */
+    .stacked-bar-chart {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px 20px 40px 20px;
+        position: relative;
+    }
+
+    .stacked-bar-container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        position: relative;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .bar {
+        width: 100%;
+        transition: height 0.5s ease;
+    }
+
+    #actualRevenueBar {
+        background-color: #4e73df;
+        position: relative;
+        z-index: 2;
+        border-radius: 4px 4px 0 0;
+    }
+
+    #gapBar {
+        background-color: #f6c23e;
+        position: relative;
+        z-index: 1;
+    }
+    
+    #complianceGapBar {
+        background-color: #4e73df;
+        position: relative;
+        z-index: 1;
+        border-radius: 4px 4px 0 0;
+    }
+    
+    #rateGapBar {
+        background-color: #f6c23e;
+        position: relative;
+        z-index: 2;
+    }
+    
+    #combinedGapBar {
+        background-color: #858796;
+        position: relative;
+        z-index: 3;
+    }
+
+    .y-axis-labels {
+        position: absolute;
+        left: -80px;
+        top: 0;
+        bottom: 0;
+        width: 70px;
+        font-size: 12px;
+    }
+
+    .y-axis-label {
+        position: absolute;
+        right: 10px;
+        transform: translateY(50%);
+        color: #858796;
+    }
+
+    /* Horizontal grid lines */
+    .stacked-bar-chart::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background-image: linear-gradient(0deg, #f8f9fc 1px, transparent 1px);
+        background-size: 100% 25%;
+        z-index: 0;
+        margin: 0 20px 40px 20px;
+    }
+
+    /* Legend styles */
+    .legend {
+        margin-top: 20px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .legend-color {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+        border-radius: 3px;
+    }
+
+    .legend-text {
+        font-size: 14px;
+        color: #5a5c69;
+    }
+    
+    /* X-axis labels */
+    .x-axis-labels {
+        margin-top: 10px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        max-width: 300px;
+    }
+    
+    .x-axis-label {
+        font-size: 14px;
+        color: #5a5c69;
+    }
+
+    /* CSS to prevent flickering and enhance charts */
+    .modal-content {
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        will-change: transform;
+    }
+    
+    .modal-backdrop {
+        transition: opacity 0.15s linear;
+    }
+
+    .modal {
+        transition: opacity 0.15s linear;
+    }
+    
+    /* Disable transitions temporarily */
+    .no-transitions,
+    .no-transitions * {
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    /* Remove outline on buttons */
+    .btn:focus, .btn:active, .btn-close:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Prevent page shift */
+    body.modal-open {
+        overflow: hidden;
+        padding-right: 0 !important;
+    }
+    
+    /* Modal backdrop */
+    .modal-backdrop {
+        opacity: 0.5 !important;
+    }
+    
+    /* Hardware acceleration to prevent flickering */
+    .modal-content {
+        transform: translateZ(0);
+        -webkit-font-smoothing: subpixel-antialiased;
+        backface-visibility: hidden;
+    }
+    
+    /* Global style for no transitions */
+    .no-transitions * {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    /* Stable buttons with no transitions or transforms */
+    .stable-btn {
+        position: relative;
+        transform: translateZ(0);
+        -webkit-font-smoothing: subpixel-antialiased;
+        backface-visibility: hidden;
+    }
+
+    .stable-btn:hover {
+        background-image: none !important;
+    }
+
+    /* Static hover state for primary button */
+    .btn-primary.stable-btn:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+    }
+
+    /* Static hover state for light button */
+    .btn-light.stable-btn:hover {
+        background-color: #e9ecef;
+        border-color: #dadde1;
+        color: #000;
+    }
+</style>

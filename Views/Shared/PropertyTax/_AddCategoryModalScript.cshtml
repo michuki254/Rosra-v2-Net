@@ -1,0 +1,185 @@
+<script>
+    // Add Category Modal Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Button to open the add category modal
+        const addCategoryButton = document.getElementById('addPropertyTaxCategoryBtn');
+        if (addCategoryButton) {
+            addCategoryButton.addEventListener('click', function() {
+                const modalInputElement = document.getElementById('newPropertyTaxCategoryNameModalInput');
+                if (modalInputElement) {
+                    modalInputElement.value = ''; // Clear previous input
+                    modalInputElement.classList.remove('is-invalid'); // Clear validation state
+                    const feedbackElement = modalInputElement.nextElementSibling;
+                    if (feedbackElement && feedbackElement.classList.contains('invalid-feedback')) {
+                        feedbackElement.textContent = 'Please enter a category name.'; // Reset feedback
+                    }
+                }
+                
+                const addCategoryModalElement = document.getElementById('addPropertyTaxCategoryModal');
+                if (addCategoryModalElement) {
+                    // Ensure Bootstrap 5 Modal instance is correctly handled
+                    let modalInstance = bootstrap.Modal.getInstance(addCategoryModalElement);
+                    if (!modalInstance) {
+                        modalInstance = new bootstrap.Modal(addCategoryModalElement);
+                    }
+                    modalInstance.show();
+                } else {
+                    console.error('Add Property Tax Category Modal HTML not found.');
+                    alert('Error: Add category modal structure is missing.');
+                }
+            });
+        }
+
+        // Functionality for the Create Category button inside the modal
+        const confirmButton = document.getElementById('confirmAddPropertyTaxCategoryBtn');
+        if (confirmButton) {
+            confirmButton.addEventListener('click', function() {
+                const categoryNameInput = document.getElementById('newPropertyTaxCategoryNameModalInput');
+                const categoryName = categoryNameInput.value.trim();
+
+                if (!categoryName) {
+                    categoryNameInput.classList.add('is-invalid');
+                    const feedbackElement = categoryNameInput.nextElementSibling;
+                    if (feedbackElement && feedbackElement.classList.contains('invalid-feedback')) {
+                        feedbackElement.textContent = 'Please enter a category name.';
+                    }
+                    return;
+                } else {
+                    categoryNameInput.classList.remove('is-invalid');
+                }
+
+                // Prevent adding duplicate category names (case-insensitive check)
+                const existingCategories = document.querySelectorAll('.category-title'); // Simplified selector
+                let isDuplicate = false;
+                existingCategories.forEach(titleEl => {
+                    if (titleEl.textContent.trim().toLowerCase() === categoryName.toLowerCase()) {
+                        isDuplicate = true;
+                    }
+                });
+
+                if (isDuplicate) {
+                    categoryNameInput.classList.add('is-invalid');
+                    const feedbackElement = categoryNameInput.nextElementSibling;
+                    if (feedbackElement && feedbackElement.classList.contains('invalid-feedback')) {
+                        feedbackElement.textContent = 'This category name already exists.';
+                    }
+                    return;
+                }
+
+                // Clone the template and add category
+                const template = document.getElementById('propertyTaxCategoryTemplate');
+                if (!template) {
+                    console.error('Category template not found!');
+                    alert('Error: Category template is missing. Cannot add category.');
+                    return;
+                }
+                const newCategory = template.firstElementChild.cloneNode(true);
+
+                // Generate a unique ID for the new category
+                const uniqueIdPart = categoryName.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '').toLowerCase() || `new-${propertyTaxCategoryCounter++}`;
+                const newCategoryId = `category-${uniqueIdPart}`;
+                newCategory.id = newCategoryId;
+
+                // Update title and IDs within the new category card
+                newCategory.querySelector('.category-title').textContent = categoryName;
+                const collapseTargetId = `collapse-${uniqueIdPart}`;
+                const header = newCategory.querySelector('.card-header');
+                if (header) {
+                    header.setAttribute('data-bs-target', `#${collapseTargetId}`);
+                    header.setAttribute('aria-controls', collapseTargetId);
+                }
+                const collapseDiv = newCategory.querySelector('.collapse');
+                if (collapseDiv) {
+                    collapseDiv.id = collapseTargetId;
+                }
+                
+                // Update input names and IDs
+                const inputs = newCategory.querySelectorAll('input, select, textarea');
+                const dynamicCategoryIndex = document.querySelectorAll('#dynamicPropertyTaxCategoriesContainer .category-card').length;
+
+                inputs.forEach(input => {
+                    const originalId = input.id;
+                    const originalName = input.name;
+
+                    if (originalId) {
+                        // Update ID to be unique for this new category
+                        input.id = originalId.replace(/Category[A-Z0-9]+$/, '') + `-${uniqueIdPart}`;
+                    }
+                    if (originalName) {
+                        // Update name for proper model binding
+                        input.name = originalName.replace(/Categories\[[^\]]+\]/g, `DynamicCategories[${dynamicCategoryIndex}]`);
+                    }
+                    input.value = ''; // Clear values in the new category form
+                });
+                
+                // Update label 'for' attributes to match new input IDs
+                const labels = newCategory.querySelectorAll('label');
+                labels.forEach(label => {
+                    const originalFor = label.getAttribute('for');
+                    if (originalFor) {
+                        label.setAttribute('for', originalFor.replace(/Category[A-Z0-9]+$/, '') + `-${uniqueIdPart}`);
+                    }
+                });
+
+                // Add event listeners for rename button
+                const newRenameBtn = newCategory.querySelector('.rename-category-btn');
+                if (newRenameBtn) {
+                    newRenameBtn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        currentPropertyTaxCategory = this.closest('.category-card');
+                        document.getElementById('currentPropertyTaxCategoryName').value = currentPropertyTaxCategory.querySelector('.category-title').textContent;
+                        document.getElementById('newPropertyTaxCategoryName').value = ''; // Clear input
+                        var renameModal = new bootstrap.Modal(document.getElementById('renamePropertyTaxCategoryModal'));
+                        renameModal.show();
+                    });
+                }
+
+                // Add event listeners for delete button
+                const newRemoveBtn = newCategory.querySelector('.remove-category-btn');
+                if (newRemoveBtn) {
+                    newRemoveBtn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        var card = this.closest('.category-card');
+                        if (card) {
+                            var catName = card.querySelector('.category-title').textContent;
+                            document.getElementById('deleteCategoryName').textContent = catName;
+                            document.getElementById('categoryToDeleteId').value = card.id;
+                            var deleteModal = new bootstrap.Modal(document.getElementById('deletePropertyTaxCategoryModal'));
+                            deleteModal.show();
+                        }
+                    });
+                }
+
+                // Append to the container
+                const container = document.getElementById('dynamicPropertyTaxCategoriesContainer');
+                if (container) {
+                    container.appendChild(newCategory);
+                } else {
+                    console.error('Dynamic categories container not found!');
+                    alert('Error: Could not find where to add the new category.');
+                    return;
+                }
+
+                // Re-initialize event listeners and update calculations
+                if (typeof initializeEventListenersForCategory === 'function') {
+                    initializeEventListenersForCategory(newCategory);
+                }
+                if (typeof updatePropertyTaxDynamicCategoryIndices === 'function') {
+                    updatePropertyTaxDynamicCategoryIndices();
+                }
+                if (typeof calculatePropertyTaxRevenue === 'function') {
+                    calculatePropertyTaxRevenue();
+                }
+
+                // Close the modal
+                const addCategoryModalElement = document.getElementById('addPropertyTaxCategoryModal');
+                if (addCategoryModalElement) {
+                    const modalInstance = bootstrap.Modal.getInstance(addCategoryModalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                }
+            });
+        }
+    });
+</script>

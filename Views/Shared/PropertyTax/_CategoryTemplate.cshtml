@@ -1,0 +1,67 @@
+<!-- Template for new category (hidden) -->
+<div id="propertyTaxCategoryTemplate" style="display: none;">
+    <div class="card mb-3 category-card">
+        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#templateCollapse" aria-expanded="false" aria-controls="templateCollapse" style="cursor: pointer;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <h6 class="mb-0 category-title">Template Category</h6>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline-primary rename-category-btn me-2" data-bs-toggle="tooltip" title="Rename Category">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-category-btn" data-bs-toggle="tooltip" title="Remove Category" data-bs-toggle="modal" data-bs-target="#deletePropertyTaxCategoryModal">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="btn btn-sm btn-link text-muted collapse-toggle ms-2" type="button">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="templateCollapse" class="collapse">
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="form-group">
+                        <label for="registeredTaxpayersTemplate">Registered Taxpayers</label>
+                        <input type="text" class="form-control number-format @(ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"] ? "bg-light" : "")" 
+                               id="registeredTaxpayersTemplate" 
+                               name="PropertyTax.Categories[TemplateCategory].RegisteredTaxpayers" 
+                               placeholder="Enter registered taxpayers" 
+                               @(ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"] ? "readonly" : "")>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-group">
+                        <label for="compliantTaxpayersTemplate">Compliant Taxpayers</label>
+                        <input type="text" class="form-control number-format @(ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"] ? "bg-light" : "")" 
+                               id="compliantTaxpayersTemplate" 
+                               name="PropertyTax.Categories[TemplateCategory].CompliantTaxpayers" 
+                               placeholder="Enter compliant taxpayers" 
+                               @(ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"] ? "readonly" : "")>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-group">
+                        <label for="avgValueLandPropertyTemplate">Average Value of Land/Property</label>
+                        <input type="text" class="form-control currency-format @(ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"] ? "bg-light" : "")" 
+                               id="avgValueLandPropertyTemplate" 
+                               name="PropertyTax.Categories[TemplateCategory].AveragePropertyValue" 
+                               placeholder="Enter average value" 
+                               @(ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"] ? "readonly" : "")>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-group">
+                        <label for="taxRateTemplate">Tax Rate (%)</label>
+                        <input type="text" class="form-control percentage-format @(ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"] ? "bg-light" : "")" 
+                               id="taxRateTemplate" 
+                               name="PropertyTax.Categories[TemplateCategory].TaxRate" 
+                               placeholder="Enter tax rate" 
+                               @(ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"] ? "readonly" : "")>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

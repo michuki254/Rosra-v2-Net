@@ -1,0 +1,224 @@
+@* Authentication Modal for Save Report functionality *@
+@* Shows when unauthenticated users try to save a report *@
+
+<div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header auth-modal-header">
+                <h5 class="modal-title" id="authModalLabel">
+                    <i class="bi bi-shield-lock me-2"></i>Sign In to Save Report
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs auth-tabs" id="authTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#loginPane" type="button" role="tab" aria-controls="loginPane" aria-selected="true">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#registerPane" type="button" role="tab" aria-controls="registerPane" aria-selected="false">
+                            <i class="bi bi-person-plus me-1"></i>Register
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content pt-4" id="authTabContent">
+                    <!-- Login Tab -->
+                    <div class="tab-pane fade show active" id="loginPane" role="tabpanel" aria-labelledby="login-tab">
+                        <form id="ajaxLoginForm">
+                            <div class="alert alert-danger d-none" id="loginError"></div>
+
+                            <div class="mb-3">
+                                <label for="loginEmail" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="loginEmail" name="Email" required placeholder="Enter your email">
+                                <div class="invalid-feedback" id="loginEmailError"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="loginPassword" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="loginPassword" name="Password" required placeholder="Enter your password">
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleLoginPassword">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback" id="loginPasswordError"></div>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="loginRememberMe" name="RememberMe">
+                                <label class="form-check-label" for="loginRememberMe">Remember me</label>
+                            </div>
+
+                            <button type="submit" class="btn btn-auth-primary w-100" id="loginSubmitBtn">
+                                <span class="btn-text">Sign In</span>
+                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Register Tab -->
+                    <div class="tab-pane fade" id="registerPane" role="tabpanel" aria-labelledby="register-tab">
+                        <form id="ajaxRegisterForm">
+                            <div class="alert alert-danger d-none" id="registerError"></div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="registerFirstName" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="registerFirstName" name="FirstName" required placeholder="First name">
+                                    <div class="invalid-feedback" id="registerFirstNameError"></div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="registerLastName" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="registerLastName" name="LastName" required placeholder="Last name">
+                                    <div class="invalid-feedback" id="registerLastNameError"></div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="registerEmail" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="registerEmail" name="Email" required placeholder="Enter your email">
+                                <div class="invalid-feedback" id="registerEmailError"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="registerOrganization" class="form-label">Organization <span class="text-muted">(optional)</span></label>
+                                <input type="text" class="form-control" id="registerOrganization" name="Organization" placeholder="Your organization">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="registerPassword" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="registerPassword" name="Password" required placeholder="Min. 6 characters">
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleRegisterPassword">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback" id="registerPasswordError"></div>
+                                <small class="text-muted">Password must be at least 6 characters with uppercase, lowercase, and a number.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="registerConfirmPassword" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="registerConfirmPassword" name="ConfirmPassword" required placeholder="Confirm your password">
+                                <div class="invalid-feedback" id="registerConfirmPasswordError"></div>
+                            </div>
+
+                            <button type="submit" class="btn btn-auth-primary w-100" id="registerSubmitBtn">
+                                <span class="btn-text">Create Account</span>
+                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer auth-modal-footer">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Your report data will be saved after signing in.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Authentication Modal Styles */
+    .auth-modal-header {
+        background: linear-gradient(135deg, #FD9D24 0%, #E8891A 100%);
+        color: white;
+        border-bottom: none;
+        border-radius: calc(0.5rem - 1px) calc(0.5rem - 1px) 0 0;
+    }
+
+    .auth-modal-header .modal-title {
+        font-weight: 600;
+    }
+
+    .auth-tabs {
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .auth-tabs .nav-link {
+        color: #6c757d;
+        border: none;
+        border-bottom: 3px solid transparent;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .auth-tabs .nav-link:hover {
+        color: #FD9D24;
+        border-bottom-color: rgba(253, 157, 36, 0.3);
+    }
+
+    .auth-tabs .nav-link.active {
+        color: #FD9D24;
+        background: transparent;
+        border-bottom-color: #FD9D24;
+    }
+
+    .btn-auth-primary {
+        background: linear-gradient(135deg, #FD9D24 0%, #E8891A 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-auth-primary:hover {
+        background: linear-gradient(135deg, #E8891A 0%, #D07815 100%);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(253, 157, 36, 0.3);
+    }
+
+    .btn-auth-primary:disabled {
+        opacity: 0.7;
+        transform: none;
+    }
+
+    .auth-modal-footer {
+        background: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+        justify-content: center;
+    }
+
+    #authModal .form-control {
+        border-radius: 8px;
+        border: 1.5px solid #E0E0E0;
+        padding: 0.625rem 0.875rem;
+    }
+
+    #authModal .form-control:focus {
+        border-color: #FD9D24;
+        box-shadow: 0 0 0 3px rgba(253, 157, 36, 0.15);
+    }
+
+    #authModal .form-label {
+        font-weight: 600;
+        color: #1B3A5C;
+        font-size: 0.875rem;
+    }
+
+    #authModal .input-group .btn-outline-secondary {
+        border-color: #E0E0E0;
+        border-left: none;
+    }
+
+    #authModal .input-group .form-control {
+        border-right: none;
+    }
+
+    #authModal .alert-danger {
+        border-radius: 8px;
+        border-left: 4px solid #dc3545;
+    }
+</style>

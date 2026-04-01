@@ -1,0 +1,264 @@
+<!-- Rename Long Term User Charge Category Modal -->
+<div class="modal" id="renameLongTermCategoryModal" tabindex="-1" aria-labelledby="renameLongTermCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title d-flex align-items-center" id="renameLongTermCategoryModalLabel">
+                    <i class="fas fa-edit me-2"></i>
+                    Rename Long Term User Charge Category
+                </h5>
+                <button type="button" class="btn-close btn-close-white" id="closeLongTermRenameModalBtn" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="form-group mb-3">
+                    <label for="newLongTermCategoryName" class="form-label">New Category Name</label>
+                    <input type="text" class="form-control" id="newLongTermCategoryName" placeholder="Enter new category name">
+                </div>
+                <input type="hidden" id="longTermCategoryToRenameId" value="">
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 stable-btn" id="cancelLongTermRenameBtn">
+                    <i class="fas fa-times me-2"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-primary rounded-pill px-4 stable-btn" id="saveLongTermCategoryNameBtn">
+                    <i class="fas fa-check me-2"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Modal styles */
+    .bg-primary {
+        background-color: #0d6efd;
+    }
+    
+    /* Stable buttons with no transitions or transforms */
+    .stable-btn {
+        position: relative;
+        transform: translateZ(0);
+        -webkit-font-smoothing: subpixel-antialiased;
+        backface-visibility: hidden;
+    }
+    
+    .stable-btn:hover {
+        background-image: none !important;
+    }
+    
+    /* Static hover state for primary button */
+    .btn-primary.stable-btn:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+    }
+    
+    /* Static hover state for outline button */
+    .btn-outline-secondary.stable-btn:hover {
+        background-color: #6c757d;
+        color: #fff;
+    }
+    
+    /* Remove outline on buttons */
+    .btn:focus, .btn:active, .btn-close:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Prevent page shift */
+    body.modal-open {
+        overflow: hidden;
+        padding-right: 0 !important;
+    }
+    
+    /* Modal backdrop */
+    .modal-backdrop {
+        opacity: 0.5 !important;
+    }
+    
+    /* Hardware acceleration to prevent flickering */
+    .modal-content {
+        transform: translateZ(0);
+        -webkit-font-smoothing: subpixel-antialiased;
+        backface-visibility: hidden;
+    }
+    
+    /* Global style for no transitions */
+    .no-transitions * {
+        transition: none !important;
+        animation: none !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get modal element
+        const renameLongTermModal = document.getElementById('renameLongTermCategoryModal');
+        if (!renameLongTermModal) return;
+        
+        // Create modal instance without animation
+        const bsLongTermRenameModal = new bootstrap.Modal(renameLongTermModal, {
+            backdrop: true,
+            keyboard: true,
+            focus: false
+        });
+        
+        // Function to handle category renaming
+        function handleRenameLongTermCategory(categoryCard) {
+            if (!categoryCard) return;
+            
+            // Get category name and ID
+            const categoryName = categoryCard.querySelector('.category-title')?.textContent || '';
+            const categoryId = categoryCard.getAttribute('id') || '';
+            
+            // Set data to modal
+            document.getElementById('newLongTermCategoryName').value = categoryName;
+            document.getElementById('longTermCategoryToRenameId').value = categoryId;
+            
+            // Show modal
+            bsLongTermRenameModal.show();
+        }
+        
+        // Event delegation for edit buttons
+        document.addEventListener('click', function(e) {
+            const button = e.target.closest('.edit-category-btn');
+            if (!button) return;
+            
+            // Only handle Long Term edit buttons (check if we're in Long Term context)
+            const longTermModal = document.getElementById('renameLongTermCategoryModal');
+            if (!longTermModal) return;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Find the category card
+            const categoryCard = button.closest('.category-card');
+            handleRenameLongTermCategory(categoryCard);
+        });
+        
+        // Button handlers
+        document.getElementById('closeLongTermRenameModalBtn').addEventListener('click', function() {
+            bsLongTermRenameModal.hide();
+        });
+        
+        document.getElementById('cancelLongTermRenameBtn').addEventListener('click', function() {
+            bsLongTermRenameModal.hide();
+        });
+        
+        document.getElementById('saveLongTermCategoryNameBtn').addEventListener('click', function() {
+            const newName = document.getElementById('newLongTermCategoryName').value.trim();
+            const categoryId = document.getElementById('longTermCategoryToRenameId').value;
+            
+            console.log('Long Term Rename attempt:', { newName, categoryId }); // Debug log
+            
+            if (!newName) {
+                alert('Please enter a category name.');
+                return;
+            }
+            
+            if (!categoryId) {
+                alert('No category selected for renaming.');
+                return;
+            }
+            
+            // Check for duplicates
+            const existingCategories = [];
+            
+            // Check default categories
+            existingCategories.push('Category A', 'Category B', 'Category C');
+            
+            // Check other dynamic categories (excluding the current one being renamed)
+            const dynamicCategoryElements = document.querySelectorAll('#dynamicCategoriesContainer .category-card .category-title');
+            dynamicCategoryElements.forEach(element => {
+                const categoryCard = element.closest('.category-card');
+                if (categoryCard && categoryCard.id !== categoryId) {
+                    const name = element.textContent.trim();
+                    if (name && name !== 'New Category') {
+                        existingCategories.push(name);
+                    }
+                }
+            });
+            
+            // Check for duplicates
+            const isDuplicate = existingCategories.some(name => name.toLowerCase() === newName.toLowerCase());
+            
+            if (isDuplicate) {
+                alert('A category with this name already exists. Please choose a different name.');
+                return;
+            }
+            
+            const card = document.getElementById(categoryId);
+            if (card) {
+                console.log('Found card for renaming:', card); // Debug log
+                
+                // Update the category title
+                const titleElement = card.querySelector('.category-title');
+                if (titleElement) {
+                    console.log('Updating title from:', titleElement.textContent, 'to:', newName); // Debug log
+                    titleElement.textContent = newName;
+                }
+                
+                // Update the hidden input value if it exists
+                const hiddenInput = card.querySelector('input[type="hidden"][name*="Name"]');
+                if (hiddenInput) {
+                    console.log('Updating hidden input from:', hiddenInput.value, 'to:', newName); // Debug log
+                    hiddenInput.value = newName;
+                }
+                
+                // Update the card ID to match the new name
+                const newId = 'longterm-category-' + newName.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+                card.id = newId;
+                
+                // Run any necessary update functions if they exist
+                if (typeof updateLongTermDynamicCategoryIndices === 'function') {
+                    updateLongTermDynamicCategoryIndices();
+                }
+                if (typeof updateCalculations === 'function') {
+                    updateCalculations();
+                }
+                
+                console.log('Long Term category renamed successfully'); // Debug log
+            } else {
+                console.error('Card not found for ID:', categoryId); // Debug log
+                alert('Error: Category not found for renaming.');
+            }
+            
+            // Hide modal
+            bsLongTermRenameModal.hide();
+        });
+        
+        // Reset form when modal is hidden
+        renameLongTermModal.addEventListener('hidden.bs.modal', function() {
+            document.getElementById('newLongTermCategoryName').value = '';
+            document.getElementById('longTermCategoryToRenameId').value = '';
+            
+            // Clean up any stuck backdrops
+            setTimeout(function() {
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(function(backdrop) {
+                    backdrop.remove();
+                });
+                
+                // Also clean up body classes
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            }, 150);
+        });
+        
+        // Disable all CSS transitions when hovering to prevent flickering
+        const disableTransitions = function() {
+            document.body.classList.add('no-transitions');
+        };
+        
+        const enableTransitions = function() {
+            document.body.classList.remove('no-transitions');
+        };
+        
+        // Add transition disabling on modal interaction
+        renameLongTermModal.addEventListener('mouseenter', disableTransitions, { passive: true });
+        renameLongTermModal.addEventListener('mouseleave', enableTransitions, { passive: true });
+        
+        // Expose the handle function for external usage if needed
+        window.handleRenameLongTermCategory = handleRenameLongTermCategory;
+    });
+</script> 

@@ -1,0 +1,222 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize counter for unique IDs
+        let propertyTaxCategoryCounter = document.querySelectorAll('.category-card').length + 1;
+        
+        // Variables to store current category being edited/deleted
+        let currentPropertyTaxCategory = null;
+        
+        // Initialize charts
+        let revenueComparisonChart = null;
+        let gapDistributionChart = null;
+        let chartType = 'bar';
+        let gapChartType = 'stacked';
+        
+        // Initialize the page
+        initializePropertyTaxPage();
+        
+        function initializePropertyTaxPage() {
+            // Add event listeners to all inputs that affect calculations
+            addCalculationEventListeners();
+            
+            // Initial calculation
+            calculatePropertyTaxRevenue();
+            
+            // Initialize tooltips
+            initializeTooltips();
+        }
+        
+        function initializeTooltips() {
+            // Initialize Bootstrap tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+        
+        function addCalculationEventListeners() {
+            // Add event listeners to all inputs that affect calculations
+            const calculationInputs = document.querySelectorAll('#totalPropertyTaxPayers, #registeredPropertyTaxPayers, ' +
+                '.category-card input[type="text"]');
+                
+            calculationInputs.forEach(function(input) {
+                input.addEventListener('change', calculatePropertyTaxRevenue);
+                input.addEventListener('keyup', calculatePropertyTaxRevenue);
+            });
+            
+            // Add event listeners to collapse toggles
+            document.querySelectorAll('.collapse-toggle').forEach(function(toggle) {
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const header = this.closest('.card-header');
+                    const targetId = header.getAttribute('data-bs-target');
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        const bsCollapse = new bootstrap.Collapse(target);
+                        const isExpanded = header.getAttribute('aria-expanded') === 'true';
+                        if (isExpanded) {
+                            bsCollapse.hide();
+                            header.setAttribute('aria-expanded', 'false');
+                        } else {
+                            bsCollapse.show();
+                            header.setAttribute('aria-expanded', 'true');
+                        }
+                        
+                        // Toggle the chevron icon
+                        const icon = this.querySelector('i');
+                        if (icon) {
+                            if (icon.classList.contains('fa-chevron-down')) {
+                                icon.classList.remove('fa-chevron-down');
+                                icon.classList.add('fa-chevron-up');
+                            } else {
+                                icon.classList.remove('fa-chevron-up');
+                                icon.classList.add('fa-chevron-down');
+                            }
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Function to initialize event listeners for a newly added category
+        function initializeEventListenersForCategory(categoryElement) {
+            const inputs = categoryElement.querySelectorAll('input[type="text"]');
+            inputs.forEach(function(input) {
+                input.addEventListener('change', calculatePropertyTaxRevenue);
+                input.addEventListener('keyup', calculatePropertyTaxRevenue);
+            });
+            
+            const collapseToggle = categoryElement.querySelector('.collapse-toggle');
+            if (collapseToggle) {
+                collapseToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const header = this.closest('.card-header');
+                    const targetId = header.getAttribute('data-bs-target');
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        const bsCollapse = new bootstrap.Collapse(target);
+                        const isExpanded = header.getAttribute('aria-expanded') === 'true';
+                        if (isExpanded) {
+                            bsCollapse.hide();
+                            header.setAttribute('aria-expanded', 'false');
+                        } else {
+                            bsCollapse.show();
+                            header.setAttribute('aria-expanded', 'true');
+                        }
+                        
+                        // Toggle the chevron icon
+                        const icon = this.querySelector('i');
+                        if (icon) {
+                            if (icon.classList.contains('fa-chevron-down')) {
+                                icon.classList.remove('fa-chevron-down');
+                                icon.classList.add('fa-chevron-up');
+                            } else {
+                                icon.classList.remove('fa-chevron-up');
+                                icon.classList.add('fa-chevron-down');
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Initialize tooltips for the new category
+            const tooltipTriggerList = [].slice.call(categoryElement.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+        
+        // Main calculation function
+        function calculatePropertyTaxRevenue() {
+            // Calculate actual revenue
+            const actualRevenue = calculateActualRevenue();
+            
+            // Calculate potential revenue
+            const potentialRevenue = calculatePotentialRevenue();
+            
+            // Calculate revenue gap
+            const revenueGap = calculateRevenueGap(potentialRevenue, actualRevenue);
+            
+            // Calculate specific gaps
+            const registrationGap = calculateRegistrationGap();
+            const complianceGap = calculateComplianceGap();
+            const assessmentGap = calculateAssessmentValuationGap();
+            const combinedGaps = calculateCombinedGaps(revenueGap, registrationGap, complianceGap, assessmentGap);
+            
+            // Update the UI with calculated values
+            updateCalculatedValues(actualRevenue, potentialRevenue, revenueGap, registrationGap, complianceGap, assessmentGap, combinedGaps);
+            
+            // Store values for other components to use
+            storePropertyTaxValues(actualRevenue, potentialRevenue, revenueGap, registrationGap, complianceGap, assessmentGap, combinedGaps);
+            
+            // Update hidden inputs for form submission
+            updateHiddenInputs(actualRevenue, potentialRevenue, revenueGap);
+            
+            // Update charts
+            updateRevenueComparisonChart(actualRevenue, potentialRevenue, revenueGap);
+            updateGapDistributionChart(registrationGap, complianceGap, assessmentGap, combinedGaps);
+            
+            // Update gap analysis
+            updateGapAnalysis();
+            
+            // Update breakdown analysis
+            updateBreakdownAnalysis();
+            
+            // Return calculated values
+            return {
+                actualRevenue,
+                potentialRevenue,
+                revenueGap,
+                registrationGap,
+                complianceGap,
+                assessmentGap,
+                combinedGaps
+            };
+        }
+        
+        // Helper function to parse numeric values from formatted inputs
+        function parseNumericValue(elementId) {
+            const element = document.getElementById(elementId);
+            if (!element) return 0;
+            
+            let value = element.value.trim();
+            if (!value) return 0;
+            
+            // Remove currency symbols, commas, and other non-numeric characters
+            value = value.replace(/[^0-9.-]/g, '');
+            
+            // Parse as float
+            const numericValue = parseFloat(value);
+            
+            // Return 0 if NaN
+            return isNaN(numericValue) ? 0 : numericValue;
+        }
+        
+        // Update the dynamic category indices for proper form submission
+        function updatePropertyTaxDynamicCategoryIndices() {
+            const dynamicCategories = document.querySelectorAll('#dynamicPropertyTaxCategoriesContainer .category-card');
+            
+            dynamicCategories.forEach(function(category, index) {
+                const inputs = category.querySelectorAll('input');
+                
+                inputs.forEach(function(input) {
+                    const name = input.name;
+                    if (name) {
+                        // Update the index in the name attribute
+                        input.name = name.replace(/DynamicCategories\[\d+\]/g, `DynamicCategories[${index}]`);
+                    }
+                });
+            });
+        }
+        
+        // Window resize event handler for charts
+        window.addEventListener('resize', function() {
+            if (revenueComparisonChart) {
+                revenueComparisonChart.resize();
+            }
+            if (gapDistributionChart) {
+                gapDistributionChart.resize();
+            }
+        });
+    });
+</script>

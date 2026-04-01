@@ -1,0 +1,1367 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+
+<div class="overview-selection-module">
+    <!-- Page Header -->
+    <div class="module-header mb-4">
+        <h4 class="mb-2">
+            <i class="bi bi-clipboard-check me-2"></i>
+            Pick Solutions for All Gaps Across Prioritised Streams
+        </h4>
+        <p class="text-muted mb-0">
+            Select or skip solution overviews for each administrative gap across all revenue streams
+            in the priority order defined in the "Prioritization" tab.
+        </p>
+    </div>
+
+    <!-- Filter/Navigation Panel -->
+    <div class="filter-panel card mb-4">
+        <div class="card-body py-3">
+            <div class="row align-items-center g-3">
+                <div class="col-md-3">
+                    <label class="form-label small mb-1">Filter by Stream</label>
+                    <select class="form-select form-select-sm" id="filterStream">
+                        <option value="all">All Streams</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small mb-1">Filter by Gap</label>
+                    <select class="form-select form-select-sm" id="filterGap">
+                        <option value="all">All Gaps</option>
+                        <option value="compliance">Compliance</option>
+                        <option value="coverage">Coverage</option>
+                        <option value="valuation">Valuation</option>
+                        <option value="liability">Liability</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small mb-1">Timeline</label>
+                    <select class="form-select form-select-sm" id="filterTimeline">
+                        <option value="all">All Timelines</option>
+                        <option value="<1 year">Quick Wins (&lt;1 year)</option>
+                        <option value="1-3 years">Medium-term (1-3 years)</option>
+                        <option value="3+ years">Long-term (3+ years)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small mb-1">Progress</label>
+                    <div class="progress-stats">
+                        <span id="progressReviewed">0</span>/<span id="progressTotal">0</span> reviewed |
+                        <span class="text-success"><span id="progressSelected">0</span> selected</span> |
+                        <span class="text-muted"><span id="progressSkipped">0</span> skipped</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content Area -->
+        <div class="col-lg-9">
+            <div id="solutionsContainer">
+                <!-- Solutions will be rendered here by JavaScript -->
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Loading solutions...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Sidebar -->
+        <div class="col-lg-3">
+            <div class="summary-sidebar sticky-top" style="top: 100px;">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">
+                            <i class="bi bi-list-check me-2"></i>Your Selection Summary
+                        </h6>
+                    </div>
+                    <div class="card-body" id="selectionSummary">
+                        <p class="text-muted small">No solutions selected yet.</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold">Total Selected:</span>
+                            <span class="badge bg-success fs-6" id="totalSelected">0</span>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm w-100 mb-2" id="expandAllBtn">
+                            <i class="bi bi-arrows-expand me-1"></i>Expand All Cards
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm w-100" id="collapseAllBtn">
+                            <i class="bi bi-arrows-collapse me-1"></i>Collapse All Cards
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="bi bi-lightning me-2"></i>Quick Actions</h6>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-outline-success btn-sm w-100 mb-2" id="selectAllQuickWins">
+                            <i class="bi bi-check-all me-1"></i>Select All Quick Wins
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm w-100 mb-2" id="clearSelections">
+                            <i class="bi bi-x-circle me-1"></i>Clear All Selections
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden fields for form submission -->
+    <div id="selectedSolutionsFields"></div>
+</div>
+
+<style>
+    /* ============================================
+       UN-Habitat Design System - Overview Selection Module
+       ============================================ */
+
+    .overview-selection-module {
+        /* UN-Habitat Brand Colors */
+        --un-blue: #00b2e3;
+        --un-blue-light: #4dc9ed;
+        --un-blue-dark: #0095c0;
+        --un-dark-blue: #00689D;
+        --un-dark-blue-light: #0080bf;
+        --un-orange: #FD9D24;
+        --un-orange-dark: #E8891A;
+        --un-orange-light: #FFB54D;
+
+        /* Gap Colors - UN-Habitat Branded */
+        --gap-compliance: #dc3545;
+        --gap-compliance-light: #e85c6a;
+        --gap-coverage: var(--un-orange);
+        --gap-coverage-light: var(--un-orange-light);
+        --gap-valuation: var(--un-blue);
+        --gap-valuation-light: var(--un-blue-light);
+        --gap-liability: var(--un-blue);
+        --gap-liability-light: var(--un-blue-light);
+
+        /* Semantic Colors */
+        --success-color: #10b981;
+        --success-light: #d1fae5;
+        --warning-color: #f59e0b;
+        --warning-light: #fef3c7;
+        --danger-color: #ef4444;
+        --danger-light: #fee2e2;
+
+        /* Design Tokens */
+        --card-radius: 12px;
+        --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        --card-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.12);
+        --transition-fast: 0.2s ease;
+        --transition-normal: 0.3s ease;
+
+        min-height: 600px;
+    }
+
+    /* Module Header */
+    .overview-selection-module .module-header {
+        border-bottom: 3px solid var(--un-blue);
+        padding-bottom: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .overview-selection-module .module-header h4 {
+        color: var(--un-blue);
+        font-weight: 700;
+    }
+
+    .overview-selection-module .module-header h4 i {
+        color: var(--un-orange);
+    }
+
+    /* Filter Panel */
+    .overview-selection-module .filter-panel {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: 1px solid #dee2e6;
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+    }
+
+    .overview-selection-module .filter-panel .form-select {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        transition: var(--transition-fast);
+    }
+
+    .overview-selection-module .filter-panel .form-select:focus {
+        border-color: var(--un-blue);
+        box-shadow: 0 0 0 0.2rem rgba(0, 104, 157, 0.15);
+    }
+
+    .overview-selection-module .progress-stats {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .overview-selection-module .progress-stats .text-success {
+        color: var(--success-color) !important;
+    }
+
+    /* Stream Section Styles */
+    .overview-selection-module .stream-section {
+        margin-bottom: 2rem;
+        border: none;
+        border-radius: var(--card-radius);
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition-normal);
+    }
+
+    .overview-selection-module .stream-section:hover {
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    .overview-selection-module .stream-header {
+        background: var(--un-blue);
+        color: white;
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .overview-selection-module .stream-header h5 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .overview-selection-module .stream-header h5 i {
+        color: var(--un-orange);
+    }
+
+    .overview-selection-module .stream-rank {
+        background: linear-gradient(135deg, var(--un-orange) 0%, var(--un-orange-dark) 100%);
+        padding: 0.35rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Gap Section Styles */
+    .overview-selection-module .gap-section {
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .overview-selection-module .gap-section:last-child {
+        border-bottom: none;
+    }
+
+    .overview-selection-module .gap-header {
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: var(--transition-fast);
+        background: white;
+    }
+
+    .overview-selection-module .gap-header:hover {
+        background: #f8f9fa;
+    }
+
+    .overview-selection-module .gap-header.compliance {
+        border-left: 5px solid var(--gap-compliance);
+    }
+    .overview-selection-module .gap-header.coverage {
+        border-left: 5px solid var(--gap-coverage);
+    }
+    .overview-selection-module .gap-header.valuation {
+        border-left: 5px solid var(--gap-valuation);
+    }
+    .overview-selection-module .gap-header.liability {
+        border-left: 5px solid var(--gap-liability);
+    }
+
+    .overview-selection-module .gap-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 700;
+        color: #2d3748;
+    }
+
+    .overview-selection-module .gap-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.85rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .overview-selection-module .gap-icon.compliance {
+        background: linear-gradient(135deg, var(--gap-compliance) 0%, var(--gap-compliance-light) 100%);
+    }
+    .overview-selection-module .gap-icon.coverage {
+        background: linear-gradient(135deg, var(--gap-coverage) 0%, var(--gap-coverage-light) 100%);
+    }
+    .overview-selection-module .gap-icon.valuation {
+        background: linear-gradient(135deg, var(--gap-valuation) 0%, var(--gap-valuation-light) 100%);
+    }
+    .overview-selection-module .gap-icon.liability {
+        background: linear-gradient(135deg, var(--gap-liability) 0%, var(--gap-liability-light) 100%);
+    }
+
+    .overview-selection-module .gap-title .badge {
+        background: linear-gradient(135deg, var(--un-orange) 0%, var(--un-orange-dark) 100%) !important;
+        color: white !important;
+        font-weight: 600;
+    }
+
+    .overview-selection-module .gap-stats {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.85rem;
+    }
+
+    .overview-selection-module .gap-amount {
+        color: var(--un-blue);
+        font-weight: 600;
+    }
+
+    .overview-selection-module .solutions-count {
+        background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .overview-selection-module .solutions-count .text-success {
+        color: var(--success-color) !important;
+    }
+
+    /* Solutions Container */
+    .overview-selection-module .solutions-grid {
+        padding: 1.25rem 1.5rem;
+        background: linear-gradient(180deg, #fafbfc 0%, #f0f2f5 100%);
+    }
+
+    /* Solution Card Styles */
+    .overview-selection-module .solution-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--card-radius);
+        margin-bottom: 1rem;
+        transition: var(--transition-normal);
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .overview-selection-module .solution-card:hover {
+        box-shadow: var(--card-shadow-hover);
+        transform: translateY(-2px);
+    }
+
+    .overview-selection-module .solution-card.selected {
+        border-color: var(--success-color);
+        border-width: 2px;
+        background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .overview-selection-module .solution-card.skipped {
+        opacity: 0.7;
+        border-color: #9ca3af;
+        background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
+    }
+
+    .overview-selection-module .solution-card-header {
+        padding: 0.875rem 1.25rem;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+    }
+
+    .overview-selection-module .solution-id {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 0.8rem;
+        color: var(--un-blue);
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        padding: 0.25rem 0.625rem;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+
+    .overview-selection-module .solution-card-header .badge.bg-success {
+        background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%) !important;
+        font-weight: 600;
+    }
+
+    .overview-selection-module .solution-card-header .badge.bg-secondary {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
+    }
+
+    .overview-selection-module .timeline-badge {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.65rem;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+
+    .overview-selection-module .timeline-badge.quick {
+        background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%) !important;
+        color: white !important;
+    }
+    .overview-selection-module .timeline-badge.medium {
+        background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%) !important;
+        color: white !important;
+    }
+    .overview-selection-module .timeline-badge.long {
+        background: linear-gradient(135deg, var(--un-orange) 0%, var(--un-orange-dark) 100%) !important;
+        color: white !important;
+    }
+
+    .overview-selection-module .solution-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid #e9ecef;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        color: #1e293b;
+    }
+
+    .overview-selection-module .solution-content {
+        padding: 0;
+    }
+
+    .overview-selection-module .solution-section {
+        padding: 0.875rem 1.25rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .overview-selection-module .solution-section:last-child {
+        border-bottom: none;
+    }
+
+    .overview-selection-module .solution-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #374151;
+        transition: var(--transition-fast);
+    }
+
+    .overview-selection-module .solution-section-header:hover {
+        color: var(--un-blue);
+    }
+
+    .overview-selection-module .solution-section-header i.bi-lightbulb,
+    .overview-selection-module .solution-section-header i.bi-gear,
+    .overview-selection-module .solution-section-header i.bi-calendar-check,
+    .overview-selection-module .solution-section-header i.bi-check2-square {
+        color: var(--un-orange);
+    }
+
+    .overview-selection-module .solution-section-content {
+        margin-top: 0.625rem;
+        font-size: 0.9rem;
+        color: #4b5563;
+        line-height: 1.6;
+    }
+
+    .overview-selection-module .solution-actions {
+        padding: 0.875rem 1.25rem;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.625rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .overview-selection-module .btn-skip {
+        background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+        border: none;
+        color: #4b5563;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: var(--transition-fast);
+    }
+
+    .overview-selection-module .btn-skip:hover {
+        background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+        color: #1f2937;
+        transform: translateY(-1px);
+    }
+
+    .overview-selection-module .btn-select {
+        background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+        transition: var(--transition-fast);
+    }
+
+    .overview-selection-module .btn-select:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+    }
+
+    .overview-selection-module .btn-undo {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: var(--transition-fast);
+    }
+
+    .overview-selection-module .btn-undo:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        transform: translateY(-1px);
+    }
+
+    /* Selection Badge */
+    .overview-selection-module .selection-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        font-size: 0.7rem;
+    }
+
+    /* Summary Sidebar */
+    .overview-selection-module .summary-sidebar .card {
+        box-shadow: var(--card-shadow);
+        border: none;
+        border-radius: var(--card-radius);
+        overflow: hidden;
+    }
+
+    .overview-selection-module .summary-sidebar .card-header.bg-primary {
+        background: var(--un-blue) !important;
+        border: none;
+        padding: 1rem 1.25rem;
+    }
+
+    .overview-selection-module .summary-sidebar .card-header.bg-primary h6 {
+        font-weight: 700;
+    }
+
+    .overview-selection-module .summary-sidebar .card-header.bg-primary i {
+        color: var(--un-orange);
+    }
+
+    .overview-selection-module .summary-sidebar .card-header:not(.bg-primary) {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-bottom: 2px solid var(--un-orange);
+        padding: 0.875rem 1.25rem;
+    }
+
+    .overview-selection-module .summary-sidebar .card-header:not(.bg-primary) h6 {
+        font-weight: 700;
+        color: var(--un-blue);
+    }
+
+    .overview-selection-module .summary-sidebar .card-header:not(.bg-primary) i {
+        color: var(--un-orange);
+    }
+
+    .overview-selection-module .summary-sidebar .card-footer {
+        background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+        border-top: 1px solid #dee2e6;
+        padding: 1rem 1.25rem;
+    }
+
+    .overview-selection-module .summary-sidebar .card-footer .badge.bg-success {
+        background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%) !important;
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .overview-selection-module .summary-sidebar .btn-outline-primary {
+        border-color: var(--un-blue);
+        color: var(--un-blue);
+        font-weight: 600;
+        border-radius: 8px;
+        transition: var(--transition-fast);
+    }
+
+    .overview-selection-module .summary-sidebar .btn-outline-primary:hover {
+        background: var(--un-blue);
+        border-color: var(--un-blue);
+        color: white;
+    }
+
+    .overview-selection-module .summary-sidebar .btn-outline-secondary {
+        font-weight: 600;
+        border-radius: 8px;
+        transition: var(--transition-fast);
+    }
+
+    .overview-selection-module .summary-sidebar .btn-outline-success {
+        border-color: var(--success-color);
+        color: var(--success-color);
+        font-weight: 600;
+        border-radius: 8px;
+        transition: var(--transition-fast);
+    }
+
+    .overview-selection-module .summary-sidebar .btn-outline-success:hover {
+        background: var(--success-color);
+        border-color: var(--success-color);
+        color: white;
+    }
+
+    .overview-selection-module .summary-sidebar .btn-outline-warning {
+        border-color: var(--warning-color);
+        color: #b45309;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: var(--transition-fast);
+    }
+
+    .overview-selection-module .summary-sidebar .btn-outline-warning:hover {
+        background: var(--warning-color);
+        border-color: var(--warning-color);
+        color: white;
+    }
+
+    .overview-selection-module .summary-stream {
+        margin-bottom: 0.875rem;
+        padding-bottom: 0.875rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .overview-selection-module .summary-stream:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .overview-selection-module .summary-stream-name {
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-bottom: 0.375rem;
+        color: var(--un-blue);
+    }
+
+    .overview-selection-module .summary-gap {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        padding: 0.2rem 0;
+        padding-left: 0.625rem;
+        color: #4b5563;
+    }
+
+    .overview-selection-module .summary-gap i {
+        margin-right: 0.375rem;
+    }
+
+    /* Collapse Animation */
+    .overview-selection-module .solutions-grid.collapsed {
+        display: none;
+    }
+
+    .overview-selection-module .gap-header .collapse-icon {
+        transition: transform var(--transition-fast);
+        color: var(--un-blue);
+    }
+
+    .overview-selection-module .gap-header.collapsed .collapse-icon {
+        transform: rotate(-90deg);
+    }
+
+    /* No Solutions Message */
+    .overview-selection-module .no-solutions {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6b7280;
+        background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+    }
+
+    .overview-selection-module .no-solutions i {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        color: var(--un-blue);
+        opacity: 0.4;
+    }
+
+    .overview-selection-module .no-solutions h5 {
+        color: var(--un-blue);
+        font-weight: 700;
+    }
+
+    /* Loading Spinner */
+    .overview-selection-module .spinner-border.text-primary {
+        color: var(--un-blue) !important;
+    }
+
+    /* Responsive */
+    @@media (max-width: 991px) {
+        .overview-selection-module .summary-sidebar {
+            position: relative !important;
+            top: 0 !important;
+            margin-top: 2rem;
+        }
+    }
+</style>
+
+<!-- Solutions Data Modules (must load before solutionsDatabase.js) -->
+<script src="~/js/solutionsData-PT-Compliance.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-PT-Coverage.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-PT-Valuation.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-BL.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-Generic.js" asp-append-version="true"></script>
+<!-- Core Solutions Database API -->
+<script src="~/js/solutionsDatabase.js" asp-append-version="true"></script>
+<script>
+(function() {
+    'use strict';
+
+    // Currency symbol from AppContext (single source of truth)
+    let currencySymbol = '$';
+
+    function getCurrencyFromContext() {
+        if (typeof AppContext !== 'undefined') {
+            return AppContext.get('currencySymbol') || '$';
+        }
+        return localStorage.getItem('selectedCurrencySymbol') || '$';
+    }
+
+    // State management for selections
+    const selections = {
+        selected: new Set(),
+        skipped: new Set()
+    };
+
+    // Load selections from form field (primary) with localStorage fallback
+    function loadSelections() {
+        try {
+            // Use FormStateManager for form field binding (best practice)
+            if (typeof FormStateManager !== 'undefined') {
+                const data = FormStateManager.getData('rosraOverviewSelections');
+                if (data) {
+                    selections.selected = new Set(data.selected || []);
+                    selections.skipped = new Set(data.skipped || []);
+                    console.log('OverviewSelection: Loaded selections from FormStateManager');
+                    return;
+                }
+            }
+
+            // Fallback to localStorage for backward compatibility
+            const saved = localStorage.getItem('rosraOverviewSelections');
+            if (saved) {
+                const data = JSON.parse(saved);
+                selections.selected = new Set(data.selected || []);
+                selections.skipped = new Set(data.skipped || []);
+                console.log('OverviewSelection: Loaded selections from localStorage (fallback)');
+            }
+        } catch (e) {
+            console.error('Error loading selections:', e);
+        }
+    }
+
+    // Save selections to form field (primary) and localStorage (backup)
+    function saveSelections() {
+        try {
+            const selectionsData = {
+                selected: Array.from(selections.selected),
+                skipped: Array.from(selections.skipped)
+            };
+
+            // Use FormStateManager for form field binding (best practice)
+            if (typeof FormStateManager !== 'undefined') {
+                FormStateManager.setData('rosraOverviewSelections', selectionsData);
+                console.log('OverviewSelection: Saved selections via FormStateManager');
+            } else {
+                // Fallback to localStorage only
+                localStorage.setItem('rosraOverviewSelections', JSON.stringify(selectionsData));
+            }
+
+            // Also save full solution data for Recommendations module
+            saveSelectedSolutionsForRecommendations();
+        } catch (e) {
+            console.error('Error saving selections:', e);
+        }
+    }
+
+    // Save full solution data for Recommendations module
+    function saveSelectedSolutionsForRecommendations() {
+        try {
+            const selectedSolutions = [];
+            const priorityData = getPrioritizationData();
+
+            selections.selected.forEach(solutionId => {
+                // Parse solution ID to get stream/gap info (e.g., PT-COM-01)
+                const parts = solutionId.split('-');
+                const streamPrefix = parts[0];
+                const gapCode = parts[1];
+
+                // Get full solution from database
+                let solution = null;
+                if (typeof SolutionsDatabase !== 'undefined') {
+                    solution = SolutionsDatabase.getSolutionById(solutionId);
+                }
+
+                // Find stream and gap info from prioritization data
+                let streamInfo = null;
+                let gapInfo = null;
+
+                const streamMap = {
+                    'PT': 'Property Tax',
+                    'BL': 'Business License',
+                    'UF': 'User Fees',
+                    'PK': 'Parking Fees',
+                    'MK': 'Market Fees',
+                    'AD': 'Advertisement',
+                    'BP': 'Building Permits'
+                };
+
+                const gapMap = {
+                    'COM': 'Compliance',
+                    'COV': 'Coverage',
+                    'VAL': 'Valuation',
+                    'LIA': 'Liability'
+                };
+
+                const streamName = streamMap[streamPrefix] || solution?.stream || 'Unknown';
+                const gapType = gapMap[gapCode] || solution?.gap || 'Unknown';
+
+                // Find rank and priority from prioritization data
+                streamInfo = priorityData.find(s => s.name === streamName);
+                if (streamInfo) {
+                    gapInfo = streamInfo.gaps.find(g => g.type === gapType);
+                }
+
+                selectedSolutions.push({
+                    solutionId: solutionId,
+                    streamName: streamName,
+                    streamRank: streamInfo?.rank || 999,
+                    gapType: gapType,
+                    gapPriority: gapInfo?.priority || 999,
+                    timeline: solution?.timeline || '1-3 years',
+                    title: solution?.title || solution?.shortTitle || solutionId
+                });
+            });
+
+            // Sort by stream rank then gap priority
+            selectedSolutions.sort((a, b) => {
+                if (a.streamRank !== b.streamRank) return a.streamRank - b.streamRank;
+                return a.gapPriority - b.gapPriority;
+            });
+
+            // Use FormStateManager for form field binding (best practice)
+            if (typeof FormStateManager !== 'undefined') {
+                FormStateManager.setData('rosraSelectedSolutions', selectedSolutions);
+                console.log('OverviewSelection: Saved', selectedSolutions.length, 'solutions via FormStateManager');
+            } else {
+                // Fallback to localStorage only
+                localStorage.setItem('rosraSelectedSolutions', JSON.stringify(selectedSolutions));
+                console.log('Saved', selectedSolutions.length, 'solutions for Recommendations (localStorage)');
+            }
+        } catch (e) {
+            console.error('Error saving solutions for Recommendations:', e);
+        }
+    }
+
+    // Get prioritization data from RosraStateManager or localStorage
+    function getPrioritizationData() {
+        let streams = [];
+
+        // Try RosraStateManager first
+        if (typeof RosraStateManager !== 'undefined') {
+            const stateStreams = RosraStateManager.getStreamsByGapRanking();
+            if (stateStreams.length > 0) {
+                streams = stateStreams.map((s, idx) => ({
+                    rank: s.finalRank || (idx + 1),
+                    name: s.name,
+                    type: s.type,
+                    gaps: getGapsForStream(s)
+                }));
+            }
+        }
+
+        // Fallback to default test data if no streams
+        if (streams.length === 0) {
+            streams = [
+                {
+                    rank: 1,
+                    name: 'Property Tax',
+                    type: 'property-tax',
+                    gaps: [
+                        { priority: 1, type: 'Compliance', amount: 123880968 },
+                        { priority: 2, type: 'Coverage', amount: 20050682 },
+                        { priority: 3, type: 'Valuation', amount: 85209032 }
+                    ]
+                },
+                {
+                    rank: 2,
+                    name: 'Business License',
+                    type: 'business-license',
+                    gaps: [
+                        { priority: 1, type: 'Compliance', amount: 55623018 },
+                        { priority: 2, type: 'Liability', amount: 8431774 },
+                        { priority: 3, type: 'Coverage', amount: 6992212 }
+                    ]
+                }
+            ];
+        }
+
+        return streams;
+    }
+
+    // Extract gaps from a stream object
+    function getGapsForStream(stream) {
+        const gaps = [];
+        const priorities = stream.gapPriorities || { compliance: 1, coverage: 2, third: 3 };
+
+        if (stream.complianceGap > 0) {
+            gaps.push({
+                priority: priorities.compliance || 1,
+                type: 'Compliance',
+                amount: stream.complianceGap
+            });
+        }
+        if (stream.coverageGap > 0) {
+            gaps.push({
+                priority: priorities.coverage || 2,
+                type: 'Coverage',
+                amount: stream.coverageGap
+            });
+        }
+        if (stream.valuationGap > 0) {
+            gaps.push({
+                priority: priorities.third || 3,
+                type: 'Valuation',
+                amount: stream.valuationGap
+            });
+        }
+        if (stream.liabilityGap > 0) {
+            gaps.push({
+                priority: priorities.third || 3,
+                type: 'Liability',
+                amount: stream.liabilityGap
+            });
+        }
+
+        // Sort by priority
+        gaps.sort((a, b) => a.priority - b.priority);
+        return gaps;
+    }
+
+    // Format currency
+    function formatCurrency(amount) {
+        return currencySymbol + ' ' + new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
+    }
+
+    // Get timeline badge class
+    function getTimelineBadgeClass(timeline) {
+        if (timeline === '<1 year') return 'timeline-badge quick';
+        if (timeline === '1-3 years') return 'timeline-badge medium';
+        return 'timeline-badge long';
+    }
+
+    // Render a single solution card
+    function renderSolutionCard(solution) {
+        const isSelected = selections.selected.has(solution.solutionId);
+        const isSkipped = selections.skipped.has(solution.solutionId);
+        const cardClass = isSelected ? 'selected' : (isSkipped ? 'skipped' : '');
+
+        return `
+            <div class="solution-card ${cardClass}" data-solution-id="${solution.solutionId}" data-timeline="${solution.timeline}">
+                <div class="solution-card-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="solution-id">${solution.solutionId}</span>
+                        ${isSelected ? '<span class="badge bg-success">Selected</span>' : ''}
+                        ${isSkipped ? '<span class="badge bg-secondary">Skipped</span>' : ''}
+                    </div>
+                    <span class="badge ${getTimelineBadgeClass(solution.timeline)}">${solution.timeline}</span>
+                </div>
+                <div class="solution-title">${solution.title}</div>
+                <div class="solution-content">
+                    <div class="solution-section">
+                        <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-what">
+                            <span><i class="bi bi-lightbulb me-2"></i>What this solves</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+                        <div class="collapse show" id="${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-what">
+                            <div class="solution-section-content">${solution.overview.whatThisSolves}</div>
+                        </div>
+                    </div>
+                    <div class="solution-section">
+                        <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-do">
+                            <span><i class="bi bi-gear me-2"></i>What you do</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+                        <div class="collapse" id="${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-do">
+                            <div class="solution-section-content">${solution.overview.whatYouDo}</div>
+                        </div>
+                    </div>
+                    <div class="solution-section">
+                        <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-when">
+                            <span><i class="bi bi-calendar-check me-2"></i>When this fits best</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+                        <div class="collapse" id="${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-when">
+                            <div class="solution-section-content">${solution.overview.whenThisFitsBest}</div>
+                        </div>
+                    </div>
+                    <div class="solution-section">
+                        <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-min">
+                            <span><i class="bi bi-check2-square me-2"></i>Minimum enablers</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+                        <div class="collapse" id="${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-min">
+                            <div class="solution-section-content">${solution.overview.minimumEnablers}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="solution-actions">
+                    ${isSelected || isSkipped ? `
+                        <button class="btn btn-sm btn-undo" onclick="undoSelection('${solution.solutionId}')">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>Undo
+                        </button>
+                    ` : `
+                        <button class="btn btn-sm btn-skip" onclick="skipSolution('${solution.solutionId}')">
+                            <i class="bi bi-x-lg me-1"></i>Skip
+                        </button>
+                        <button class="btn btn-sm btn-select" onclick="selectSolution('${solution.solutionId}')">
+                            <i class="bi bi-check-lg me-1"></i>Select
+                        </button>
+                    `}
+                </div>
+            </div>
+        `;
+    }
+
+    // Render a gap section
+    function renderGapSection(streamName, gap, solutions) {
+        const gapType = gap.type.toLowerCase();
+        const gapId = `${streamName.replace(/\s+/g, '')}-${gapType}`;
+        const selectedCount = solutions.filter(s => selections.selected.has(s.solutionId)).length;
+
+        return `
+            <div class="gap-section" data-gap-type="${gapType}">
+                <div class="gap-header ${gapType}" data-bs-toggle="collapse" data-bs-target="#${gapId}-solutions">
+                    <div class="gap-title">
+                        <span class="gap-icon ${gapType}">
+                            <i class="bi bi-${gapType === 'compliance' ? 'check-circle' : gapType === 'coverage' ? 'geo-alt' : 'currency-dollar'}"></i>
+                        </span>
+                        <span>${gap.type.toUpperCase()} GAP</span>
+                        <span class="badge bg-light text-dark ms-2">#${gap.priority}</span>
+                    </div>
+                    <div class="gap-stats">
+                        <span class="gap-amount">${formatCurrency(gap.amount)}</span>
+                        <span class="solutions-count">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>${selectedCount} / ${solutions.length} solutions
+                        </span>
+                        <i class="bi bi-chevron-down collapse-icon"></i>
+                    </div>
+                </div>
+                <div class="collapse show" id="${gapId}-solutions">
+                    <div class="solutions-grid">
+                        ${solutions.map(s => renderSolutionCard(s)).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Render a stream section
+    function renderStreamSection(stream) {
+        let html = `
+            <div class="stream-section" data-stream="${stream.name}">
+                <div class="stream-header">
+                    <h5><i class="bi bi-bar-chart-line me-2"></i>${stream.name}</h5>
+                    <span class="stream-rank">Rank #${stream.rank}</span>
+                </div>
+        `;
+
+        stream.gaps.forEach(gap => {
+            const solutions = SolutionsDatabase.getSolutionsByStreamAndGap(stream.name, gap.type);
+            if (solutions.length > 0) {
+                html += renderGapSection(stream.name, gap, solutions);
+            }
+        });
+
+        html += '</div>';
+        return html;
+    }
+
+    // Render all solutions
+    function renderSolutions() {
+        const container = document.getElementById('solutionsContainer');
+        const streams = getPrioritizationData();
+
+        if (streams.length === 0) {
+            container.innerHTML = `
+                <div class="no-solutions">
+                    <i class="bi bi-inbox"></i>
+                    <h5>No Prioritization Data Available</h5>
+                    <p>Please complete the Prioritization step first to see available solutions.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Populate stream filter
+        const streamFilter = document.getElementById('filterStream');
+        streamFilter.innerHTML = '<option value="all">All Streams</option>';
+        streams.forEach(stream => {
+            streamFilter.innerHTML += `<option value="${stream.name}">${stream.name}</option>`;
+        });
+
+        // Render all streams
+        container.innerHTML = streams.map(s => renderStreamSection(s)).join('');
+
+        // Update progress
+        updateProgress();
+        updateSummary();
+    }
+
+    // Select a solution
+    window.selectSolution = function(solutionId) {
+        selections.selected.add(solutionId);
+        selections.skipped.delete(solutionId);
+        saveSelections();
+        updateCardState(solutionId);
+        updateProgress();
+        updateSummary();
+        updateHiddenFields();
+    };
+
+    // Skip a solution
+    window.skipSolution = function(solutionId) {
+        selections.skipped.add(solutionId);
+        selections.selected.delete(solutionId);
+        saveSelections();
+        updateCardState(solutionId);
+        updateProgress();
+        updateSummary();
+        updateHiddenFields();
+    };
+
+    // Undo selection
+    window.undoSelection = function(solutionId) {
+        selections.selected.delete(solutionId);
+        selections.skipped.delete(solutionId);
+        saveSelections();
+        updateCardState(solutionId);
+        updateProgress();
+        updateSummary();
+        updateHiddenFields();
+    };
+
+    // Update card visual state
+    function updateCardState(solutionId) {
+        const card = document.querySelector(`[data-solution-id="${solutionId}"]`);
+        if (!card) return;
+
+        const solution = SolutionsDatabase.getSolutionById(solutionId);
+        if (!solution) return;
+
+        // Re-render the card
+        const newCard = document.createElement('div');
+        newCard.innerHTML = renderSolutionCard(solution);
+        card.replaceWith(newCard.firstElementChild);
+    }
+
+    // Update progress stats
+    function updateProgress() {
+        const total = SolutionsDatabase.getAllSolutions().length;
+        const reviewed = selections.selected.size + selections.skipped.size;
+
+        document.getElementById('progressTotal').textContent = total;
+        document.getElementById('progressReviewed').textContent = reviewed;
+        document.getElementById('progressSelected').textContent = selections.selected.size;
+        document.getElementById('progressSkipped').textContent = selections.skipped.size;
+        document.getElementById('totalSelected').textContent = selections.selected.size;
+    }
+
+    // Update summary sidebar
+    function updateSummary() {
+        const summaryEl = document.getElementById('selectionSummary');
+        const streams = getPrioritizationData();
+
+        if (selections.selected.size === 0) {
+            summaryEl.innerHTML = '<p class="text-muted small">No solutions selected yet.</p>';
+            return;
+        }
+
+        let html = '';
+        streams.forEach(stream => {
+            const streamSolutions = SolutionsDatabase.getSolutionsByStream(stream.name);
+            const selectedInStream = streamSolutions.filter(s => selections.selected.has(s.solutionId));
+
+            if (selectedInStream.length > 0) {
+                html += `<div class="summary-stream">`;
+                html += `<div class="summary-stream-name">${stream.name}</div>`;
+
+                stream.gaps.forEach(gap => {
+                    const gapSolutions = SolutionsDatabase.getSolutionsByStreamAndGap(stream.name, gap.type);
+                    const selectedInGap = gapSolutions.filter(s => selections.selected.has(s.solutionId));
+                    const gapColor = SolutionsDatabase.getGapColor(gap.type);
+
+                    html += `
+                        <div class="summary-gap">
+                            <span><i class="bi bi-check-circle-fill" style="color: ${gapColor}"></i>${gap.type}:</span>
+                            <span>${selectedInGap.length} of ${gapSolutions.length}</span>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+            }
+        });
+
+        summaryEl.innerHTML = html;
+    }
+
+    // Update hidden form fields
+    function updateHiddenFields() {
+        const container = document.getElementById('selectedSolutionsFields');
+        container.innerHTML = '';
+
+        let index = 0;
+        selections.selected.forEach(solutionId => {
+            const solution = SolutionsDatabase.getSolutionById(solutionId);
+            if (solution) {
+                container.innerHTML += `
+                    <input type="hidden" name="SelectedSolutions[${index}].SolutionId" value="${solution.solutionId}" />
+                    <input type="hidden" name="SelectedSolutions[${index}].Title" value="${solution.title}" />
+                    <input type="hidden" name="SelectedSolutions[${index}].Timeline" value="${solution.timeline}" />
+                `;
+                index++;
+            }
+        });
+    }
+
+    // Apply filters
+    function applyFilters() {
+        const streamFilter = document.getElementById('filterStream').value;
+        const gapFilter = document.getElementById('filterGap').value;
+        const timelineFilter = document.getElementById('filterTimeline').value;
+
+        // Filter stream sections
+        document.querySelectorAll('.stream-section').forEach(section => {
+            const streamName = section.dataset.stream;
+            const matchesStream = streamFilter === 'all' || streamName === streamFilter;
+            section.style.display = matchesStream ? '' : 'none';
+        });
+
+        // Filter gap sections
+        document.querySelectorAll('.gap-section').forEach(section => {
+            const gapType = section.dataset.gapType;
+            const matchesGap = gapFilter === 'all' || gapType === gapFilter;
+            section.style.display = matchesGap ? '' : 'none';
+        });
+
+        // Filter solution cards by timeline
+        document.querySelectorAll('.solution-card').forEach(card => {
+            const timeline = card.dataset.timeline;
+            const matchesTimeline = timelineFilter === 'all' || timeline === timelineFilter;
+            card.style.display = matchesTimeline ? '' : 'none';
+        });
+    }
+
+    // Select all quick wins
+    function selectAllQuickWins() {
+        const quickWins = SolutionsDatabase.getAllSolutions().filter(s => s.timeline === '<1 year');
+        quickWins.forEach(s => {
+            selections.selected.add(s.solutionId);
+            selections.skipped.delete(s.solutionId);
+        });
+        saveSelections();
+        renderSolutions();
+    }
+
+    // Clear all selections
+    function clearAllSelections() {
+        if (confirm('Are you sure you want to clear all selections?')) {
+            selections.selected.clear();
+            selections.skipped.clear();
+            saveSelections();
+            renderSolutions();
+        }
+    }
+
+    // Expand all cards
+    function expandAllCards() {
+        document.querySelectorAll('.solution-content .collapse').forEach(el => {
+            bootstrap.Collapse.getOrCreateInstance(el).show();
+        });
+    }
+
+    // Collapse all cards
+    function collapseAllCards() {
+        document.querySelectorAll('.solution-content .collapse').forEach(el => {
+            bootstrap.Collapse.getOrCreateInstance(el).hide();
+        });
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wait for SolutionsDatabase to be available
+        if (typeof SolutionsDatabase === 'undefined') {
+            console.error('SolutionsDatabase not loaded');
+            return;
+        }
+
+        // Get initial currency from AppContext
+        currencySymbol = getCurrencyFromContext();
+        console.log('OverviewSelection: Initial currency symbol:', currencySymbol);
+
+        loadSelections();
+        renderSolutions();
+
+        // Filter event listeners
+        document.getElementById('filterStream').addEventListener('change', applyFilters);
+        document.getElementById('filterGap').addEventListener('change', applyFilters);
+        document.getElementById('filterTimeline').addEventListener('change', applyFilters);
+
+        // Quick action buttons
+        document.getElementById('selectAllQuickWins').addEventListener('click', selectAllQuickWins);
+        document.getElementById('clearSelections').addEventListener('click', clearAllSelections);
+        document.getElementById('expandAllBtn').addEventListener('click', expandAllCards);
+        document.getElementById('collapseAllBtn').addEventListener('click', collapseAllCards);
+
+        // Subscribe to RosraStateManager updates
+        if (typeof RosraStateManager !== 'undefined') {
+            RosraStateManager.subscribe('streams', function() {
+                renderSolutions();
+            });
+        }
+
+        // Subscribe to currency changes from AppContext for reactive updates
+        if (typeof AppContext !== 'undefined') {
+            AppContext.subscribe('currencySymbol', function(newSymbol) {
+                console.log('OverviewSelection: Currency changed to', newSymbol);
+                currencySymbol = newSymbol || '$';
+                renderSolutions();
+            });
+        }
+    });
+})();
+</script>

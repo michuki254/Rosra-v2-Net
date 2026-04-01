@@ -4,133 +4,634 @@
     int currentYear = DateTime.Now.Year;
 }
 
-<div class="tab-content-container">
-    <h5 class="mb-3">Potential Estimates</h5>
-    
-    <div class="row">
-        <!-- Left side (1/3 width) -->
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Location Information</h6>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label">Country</label>
-                        <select class="form-select @(isViewMode ? "bg-light" : "")" id="country" name="Country" @(isViewMode ? "disabled" : "")>
-                            <option value="">Select a country</option>
-                            <option value="US">United States</option>
-                            <option value="CA">Canada</option>
-                            <option value="UK">United Kingdom</option>
-                            <option value="AU">Australia</option>
-                            <option value="KE">Kenya</option>
-                            <option value="NG">Nigeria</option>
-                            <option value="ZA">South Africa</option>
-                            <option value="IN">India</option>
-                            <option value="CN">China</option>
-                            <option value="JP">Japan</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">State/Region</label>
-                        <select class="form-select @(isViewMode ? "bg-light" : "")" id="region" name="Region" @(isViewMode ? "disabled" : "")>
-                            <option value="">Select a state/region</option>
-                            <!-- Regions will be populated dynamically based on the selected country -->
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">City</label>
-                        <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="city" name="City" value="@Model.City" placeholder="Enter city name" @(isViewMode ? "readonly" : "")>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Currency</label>
-                        <div class="input-group">
-                            <span class="input-group-text" id="currency-symbol">$</span>
-                            <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="currency" name="Currency" value="@Model.Currency" placeholder="Currency" @(isViewMode ? "readonly" : "")>
-                            <input type="hidden" id="currencySymbol" name="CurrencySymbol" value="@Model.CurrencySymbol">
+<div class="potential-estimates-container">
+    <!-- Top-Down Analysis Intro Section -->
+    <div class="top-down-intro-section mb-4">
+        <div class="intro-text-box">
+            <i class="bi bi-info-circle-fill intro-icon"></i>
+            <p class="intro-text">A quick snapshot comparing the SNG's own-source revenues with similar domestic or international peers. Even if the snapshot looks strong (or suggests limited room), the bottom-up analysis remains the main reference because it measures gaps directly by revenue stream. Where benchmark data is not available, skip this step and go to bottom-up.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Top Panel - Compact Input Form (Full Width) -->
+        <div class="col-12">
+            <div class="input-panel">
+                <!-- Combined Data Input Card -->
+                <div class="input-card compact-card">
+                    <div class="input-card-header compact-header collapsible-header" data-bs-toggle="collapse" data-bs-target="#dataInputBody" aria-expanded="true" aria-controls="dataInputBody" style="cursor: pointer;">
+                        <div class="header-icon">
+                            <i class="bi bi-pencil-square"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="card-title mb-0">Data Input Block</h5>
+                            <p class="card-subtitle mb-0">Enter required information below</p>
+                        </div>
+                        <div class="collapse-toggle-btn">
+                            <i class="bi bi-chevron-up collapse-icon"></i>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Financial Year</label>
-                        <select class="form-select @(isViewMode ? "bg-light" : "")" id="financialYear" name="FinancialYear" @(isViewMode ? "disabled" : "")>
-                            <option value="">Select financial year</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Financial Data Section -->
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Financial Data (<span id="financial-year-display">2018</span>)</h6>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label">Actual OSR in <span class="year-display">2018</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text" id="actual-osr-currency">$</span>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="actualOsr" name="ActualOsr" value="@(Model.ActualOsr?.ToString("#,##0.##"))" placeholder="Enter actual OSR" @(isViewMode ? "readonly" : "")>
+                    <div class="collapse show" id="dataInputBody">
+                    <div class="input-card-body compact-body">
+                        <input type="hidden" id="currencySymbol" name="CurrencySymbol" value="@Model.CurrencySymbol">
+
+                        <!-- Row 1: Country & Financial Year -->
+                        <div class="compact-row">
+                            <div class="compact-field">
+                                <label class="compact-label">Country</label>
+                                <div class="country-select-wrapper">
+                                    <img id="country-flag" class="country-flag" src="" alt="" style="display: none;">
+                                    <select class="form-select form-select-sm @(isViewMode ? "readonly" : "")" id="country" name="Country" @(isViewMode ? "disabled" : "")>
+                                        <option value="">Select a country</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="compact-field">
+                                <label class="compact-label">Financial Year</label>
+                                <select class="form-select form-select-sm @(isViewMode ? "readonly" : "")" id="financialYear" name="FinancialYear" @(isViewMode ? "disabled" : "")>
+                                    <option value="">Select year</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Budgeted OSR in <span class="year-display">2018</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text" id="budgeted-osr-currency">$</span>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="budgetedOsr" name="BudgetedOsr" value="@(Model.BudgetedOsr?.ToString("#,##0.##"))" placeholder="Enter budgeted OSR" @(isViewMode ? "readonly" : "")>
+
+                        <!-- Row 2: Government Unit Level 1 (hidden until country selected) -->
+                        <div class="compact-row single" id="govUnitLevel1Row" style="display: none;">
+                            <div class="compact-field full-width">
+                                <label class="compact-label">Government Unit Level 1</label>
+                                <small class="gov-unit-helper">e.g. region, state, province, county, department, governorate</small>
+                                <select class="form-select form-select-sm @(isViewMode ? "readonly" : "")" id="region" name="Region" @(isViewMode ? "disabled" : "")>
+                                    <option value="">Select a level 1 unit</option>
+                                </select>
+                                <div class="form-check mt-1">
+                                    <input class="form-check-input" type="checkbox" id="level1IsFinal" @(isViewMode ? "disabled" : "")>
+                                    <label class="form-check-label gov-unit-checkbox-label" for="level1IsFinal">
+                                        This assessment applies to the selected Level 1 unit as a whole
+                                    </label>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Population in <span class="year-display">2018</span></label>
-                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="population" name="Population" value="@(Model.Population?.ToString("#,##0"))" placeholder="Enter population" @(isViewMode ? "readonly" : "")>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">GDP per capita in <span class="year-display">2018</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text" id="gdp-currency">$</span>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="gdpPerCapita" name="GdpPerCapita" value="@(Model.GdpPerCapita?.ToString("#,##0.##"))" placeholder="Enter GDP per capita" @(isViewMode ? "readonly" : "")>
+
+                        <!-- Row 3: Government Unit Level 2 (hidden until L1 selected & L1 unchecked) -->
+                        <div class="compact-row single" id="govUnitLevel2Row" style="display: none;">
+                            <div class="compact-field full-width">
+                                <label class="compact-label">Government Unit Level 2</label>
+                                <small class="gov-unit-helper">e.g. city, municipality, district, canton, commune</small>
+                                <input type="text" class="form-control form-control-sm @(isViewMode ? "readonly" : "")"
+                                       id="city" name="City" value="@Model.City"
+                                       placeholder="Enter level 2 unit" @(isViewMode ? "readonly" : "")>
+                                <div class="form-check mt-1">
+                                    <input class="form-check-input" type="checkbox" id="level2IsFinal" @(isViewMode ? "disabled" : "")>
+                                    <label class="form-check-label gov-unit-checkbox-label" for="level2IsFinal">
+                                        This assessment applies to the selected Level 2 unit as a whole
+                                    </label>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Row 4: Government Unit Level 3 (hidden until L2 filled & L2 unchecked) -->
+                        <div class="compact-row single" id="govUnitLevel3Row" style="display: none;">
+                            <div class="compact-field full-width">
+                                <label class="compact-label">Government Unit Level 3</label>
+                                <small class="gov-unit-helper">e.g. ward, borough, arrondissement, subcounty, zone, neighborhood</small>
+                                <input type="text" class="form-control form-control-sm @(isViewMode ? "readonly" : "")"
+                                       id="govUnitLevel3" name="GovUnitLevel3" value="@Model.GovUnitLevel3"
+                                       placeholder="Enter level 3 unit" @(isViewMode ? "readonly" : "")>
+                            </div>
+                        </div>
+
+                        <!-- Hidden field for final unit level -->
+                        <input type="hidden" id="finalUnitLevel" name="FinalUnitLevel" value="@Model.FinalUnitLevel">
+
+                        <!-- Hierarchy note -->
+                        <div class="gov-unit-note" id="hierarchyNote" style="display: none;">
+                            <i class="bi bi-info-circle"></i>
+                            <span>Examples are illustrative only and may vary by country. Complete the form up to the government unit for which the ROSRA is being conducted.</span>
+                        </div>
+
+                        <!-- Row 5: Currency (auto) & Income Level (auto) -->
+                        <div class="compact-row">
+                            <div class="compact-field">
+                                <label class="compact-label">Currency</label>
+                                <div class="auto-value-display" id="currency-display">
+                                    <span class="currency-badge" id="currency-symbol">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "-" : Model.CurrencySymbol)</span>
+                                    <input type="text" class="form-control form-control-sm readonly-auto"
+                                           id="currency" name="Currency" value="@Model.Currency"
+                                           placeholder="-" readonly>
+                                </div>
+                            </div>
+                            <div class="compact-field">
+                                <label class="compact-label">Income Level</label>
+                                <input type="text" class="form-control form-control-sm readonly-auto"
+                                       id="incomeLevel" name="IncomeLevel" value="@Model.IncomeLevel"
+                                       placeholder="-" readonly>
+                            </div>
+                        </div>
+
+                        <!-- Row 5b: Currency Override Toggle -->
+                        <div class="compact-row single" id="currencyOverrideRow">
+                            <div class="compact-field full-width">
+                                <div class="currency-override-toggle">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="useDifferentCurrency" @(isViewMode ? "disabled" : "")>
+                                        <label class="form-check-label" for="useDifferentCurrency">
+                                            Use a different currency for analysis outputs
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="currency-override-select" id="currencyOverrideSelect" style="display: none;">
+                                    <label class="compact-label">Override Currency</label>
+                                    <select class="form-select form-select-sm" id="overrideCurrency" @(isViewMode ? "disabled" : "")>
+                                        <option value="">-- Select currency --</option>
+                                        <option value="USD" data-symbol="$" data-name="US Dollar">USD – US Dollar ($)</option>
+                                        <option value="EUR" data-symbol="€" data-name="Euro">EUR – Euro (€)</option>
+                                        <option value="GBP" data-symbol="£" data-name="British Pound">GBP – British Pound (£)</option>
+                                        <option value="JPY" data-symbol="¥" data-name="Japanese Yen">JPY – Japanese Yen (¥)</option>
+                                        <option value="CHF" data-symbol="CHF" data-name="Swiss Franc">CHF – Swiss Franc (CHF)</option>
+                                        <option value="CAD" data-symbol="CA$" data-name="Canadian Dollar">CAD – Canadian Dollar (CA$)</option>
+                                        <option value="AUD" data-symbol="A$" data-name="Australian Dollar">AUD – Australian Dollar (A$)</option>
+                                        <option value="CNY" data-symbol="¥" data-name="Chinese Yuan">CNY – Chinese Yuan (¥)</option>
+                                        <option value="INR" data-symbol="₹" data-name="Indian Rupee">INR – Indian Rupee (₹)</option>
+                                        <option value="ZAR" data-symbol="R" data-name="South African Rand">ZAR – South African Rand (R)</option>
+                                        <option value="BRL" data-symbol="R$" data-name="Brazilian Real">BRL – Brazilian Real (R$)</option>
+                                        <option value="NGN" data-symbol="₦" data-name="Nigerian Naira">NGN – Nigerian Naira (₦)</option>
+                                        <option value="EGP" data-symbol="E£" data-name="Egyptian Pound">EGP – Egyptian Pound (E£)</option>
+                                        <option value="SAR" data-symbol="﷼" data-name="Saudi Riyal">SAR – Saudi Riyal (SAR)</option>
+                                        <option value="AED" data-symbol="د.إ" data-name="UAE Dirham">AED – UAE Dirham (AED)</option>
+                                        <option value="SGD" data-symbol="S$" data-name="Singapore Dollar">SGD – Singapore Dollar (S$)</option>
+                                    </select>
+                                    <small class="text-muted mt-1 d-block">
+                                        <i class="bi bi-info-circle me-1"></i>This changes the display currency for all analysis outputs.
+                                    </small>
+                                </div>
+                                <input type="hidden" id="overrideCurrencySymbol" name="OverrideCurrencySymbol" value="">
+                            </div>
+                        </div>
+
+                        <!-- Row 6: Government Type (full width, auto) -->
+                        <div class="compact-row single">
+                            <div class="compact-field full-width">
+                                <label class="compact-label">Government Type</label>
+                                <input type="text" class="form-control form-control-sm readonly-auto"
+                                       id="governmentType" name="GovernmentType" value="@Model.GovernmentType"
+                                       placeholder="-" readonly>
+                            </div>
+                        </div>
+
+                        <!-- Financial Metrics Section - Hidden (not useful for Top-Down analysis) -->
+                        <div id="financialMetricsSection" style="display: none;">
+                            <!-- Divider -->
+                            <div class="compact-divider">
+                                <span>Financial Metrics <span class="year-display">2024</span></span>
+                            </div>
+
+                            <!-- Row 5: Actual OSR & Budgeted OSR -->
+                            <div class="compact-row">
+                                <div class="compact-field">
+                                    <label class="compact-label">Actual OSR</label>
+                                    <div class="compact-currency-input">
+                                        <span class="currency-prefix" id="actual-osr-currency">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "" : Model.CurrencySymbol)</span>
+                                        <input type="text" class="form-control form-control-sm number-format @(isViewMode ? "readonly" : "")"
+                                               id="actualOsr" name="ActualOsr" value="@(Model.ActualOsr?.ToString("#,##0.##"))"
+                                               placeholder="0" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="compact-field">
+                                    <label class="compact-label">Budgeted OSR</label>
+                                    <div class="compact-currency-input">
+                                        <span class="currency-prefix" id="budgeted-osr-currency">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "" : Model.CurrencySymbol)</span>
+                                        <input type="text" class="form-control form-control-sm number-format @(isViewMode ? "readonly" : "")"
+                                               id="budgetedOsr" name="BudgetedOsr" value="@(Model.BudgetedOsr?.ToString("#,##0.##"))"
+                                               placeholder="0" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 6: Population & GDP per capita -->
+                            <div class="compact-row">
+                                <div class="compact-field">
+                                    <label class="compact-label">Population</label>
+                                    <div class="compact-currency-input">
+                                        <span class="currency-prefix"><i class="bi bi-people-fill"></i></span>
+                                        <input type="text" class="form-control form-control-sm number-format @(isViewMode ? "readonly" : "")"
+                                               id="population" name="Population" value="@(Model.Population?.ToString("#,##0"))"
+                                               placeholder="0" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                                <div class="compact-field">
+                                    <label class="compact-label">GDP per capita <span class="usd-indicator" id="gdpUsdIndicator">(USD)</span></label>
+                                    <div class="compact-currency-input">
+                                        <span class="currency-prefix">$</span>
+                                        <input type="text" class="form-control form-control-sm number-format @(isViewMode ? "readonly" : "")"
+                                               id="gdpPerCapita" name="GdpPerCapita" value="@(Model.GdpPerCapita?.ToString("#,##0.##"))"
+                                               placeholder="0" @(isViewMode ? "readonly" : "")>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- End hidden Financial Metrics Section -->
                     </div>
+                    </div> <!-- Close collapse wrapper -->
                 </div>
             </div>
         </div>
-        
-        <!-- Right side (2/3 width) -->
-        <div class="col-md-8">
-            <div class="card h-100">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Project Details</h6>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <div class="form-floating">
-                            <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="projectName" name="ProjectName" value="@Model.ProjectName" placeholder="Enter project name" @(isViewMode ? "readonly" : "")>
-                            <label for="projectName">Project Name</label>
+
+        <!-- Bottom Panel - Frontier Analysis (Full Width) -->
+        <div class="col-12">
+            <div class="analysis-panel">
+                <!-- Within-Country OSR Frontier Header (PRIMARY) -->
+                <div class="frontier-card">
+                    <div class="frontier-header">
+                        <div class="frontier-header-icon">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <div class="frontier-header-content">
+                            <h4 class="frontier-title">Within-Country OSR Frontier (Peer SNGs)</h4>
+                            <p class="frontier-subtitle">Compare against domestic peer subnational governments</p>
                         </div>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Project Description</label>
-                        <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="projectDescription" name="ProjectDescription" rows="4" placeholder="Enter a detailed description of the project" @(isViewMode ? "readonly" : "")>@Model.ProjectDescription</textarea>
+
+                    <!-- Placeholder when no country selected -->
+                    <div class="frontier-placeholder" id="frontierPlaceholder">
+                        <i class="bi bi-geo-alt"></i>
+                        <p>Select a country and subnational government to view OSR frontier analysis</p>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Key Objectives</label>
-                        <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="keyObjectives" name="KeyObjectives" rows="4" placeholder="Enter the key objectives of the project" @(isViewMode ? "readonly" : "")>@Model.KeyObjectives</textarea>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Start Date</label>
-                                <input type="date" class="form-control @(isViewMode ? "bg-light" : "")" id="startDate" name="StartDate" value="@Model.StartDate?.ToString("yyyy-MM-dd")" @(isViewMode ? "readonly" : "")>
+
+                    <!-- Frontier Analysis Content -->
+                    <div class="frontier-content" id="frontierContent" style="display: none;">
+                        <!-- PRIMARY ANALYSIS: Within-Country OSR Frontier - MOVED TO TOP -->
+                        <div class="module2-section" id="withinCountryModuleTop">
+                            <div class="module2-header">
+                                <span class="module-number">1</span>
+                                <div class="module-title-block">
+                                    <h5 class="module-title">Within-Country OSR Frontier (Peer SNGs) <span class="badge bg-primary ms-2" style="font-size: 0.65rem;">Primary Analysis</span></h5>
+                                    <p class="module-subtitle">Compare against domestic peer subnational governments</p>
+                                </div>
+                            </div>
+
+                            <!-- SNG Selection -->
+                            <div class="module2-selection">
+                                <label class="compact-label">Subnational Government</label>
+                                <select class="form-select form-select-sm" id="peerSngSelectTop">
+                                    <option value="">Select a subnational government...</option>
+                                </select>
+                            </div>
+
+                            <!-- Peer Data Input Section (for non-Kenya countries) -->
+                            <div id="peerDataInputSection" class="peer-data-input-section" style="display: none;">
+                                <div class="peer-data-alert">
+                                    <i class="bi bi-info-circle"></i>
+                                    <span>No peer SNG data found for this country. Upload peer data or enter manually below.</span>
+                                </div>
+
+                                <!-- CSV Upload Option -->
+                                <div class="peer-upload-option mb-3">
+                                    <label class="form-label fw-bold small">Option 1: Upload CSV File</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="file" class="form-control" id="peerCsvUpload" accept=".csv">
+                                        <button type="button" class="btn btn-primary" onclick="uploadPeerCSV()">
+                                            <i class="bi bi-upload"></i> Upload
+                                        </button>
+                                    </div>
+                                    <small class="text-muted">CSV format: SNG,OSR,GCP (one row per subnational government)</small>
+                                </div>
+
+                                <!-- Manual Entry Option -->
+                                <div class="peer-manual-entry">
+                                    <label class="form-label fw-bold small">Option 2: Manual Entry</label>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered" id="peerManualEntryTable">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>SNG Name</th>
+                                                    <th>OSR</th>
+                                                    <th>GCP</th>
+                                                    <th style="width: 40px;"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="peerManualEntryBody">
+                                                <tr>
+                                                    <td><input type="text" class="form-control form-control-sm" placeholder="Name"></td>
+                                                    <td><input type="number" class="form-control form-control-sm" placeholder="0" step="any"></td>
+                                                    <td><input type="number" class="form-control form-control-sm" placeholder="0" step="any"></td>
+                                                    <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removePeerRow(this)"><i class="bi bi-trash"></i></button></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="d-flex gap-2 mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addPeerRow()">
+                                            <i class="bi bi-plus"></i> Add Row
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-primary" onclick="savePeerDataManually()">
+                                            <i class="bi bi-save"></i> Save Peer Data
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Module Placeholder -->
+                            <div class="module2-placeholder" id="module2PlaceholderTop">
+                                <i class="bi bi-geo-alt"></i>
+                                <p>Select a subnational government to view the OSR frontier analysis</p>
+                            </div>
+
+                            <!-- Module Content (hidden by default) -->
+                            <div class="module2-content" id="module2ContentTop" style="display: none;">
+                                <!-- Metrics Section -->
+                                <div class="module2-metrics">
+                                    <div class="metric-row">
+                                        <span class="metric-label">
+                                            Own Source Revenues (OSRs) per capita
+                                            <button type="button" class="formula-tooltip-btn" data-formula="XLOOKUP(SNG, Peers[SNG], Peers[OSR])">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        </span>
+                                        <span class="metric-value" id="m2ActualOSRTop" style="font-size: 0.9rem;">-</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">
+                                            Subnational GDP per capita
+                                            <button type="button" class="formula-tooltip-btn" data-formula="XLOOKUP(SNG, Peers[SNG], Peers[GCP])">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        </span>
+                                        <span class="metric-value" id="m2SubnationalGDPTop" style="font-size: 0.9rem;">-</span>
+                                    </div>
+                                    <div class="metric-row highlight">
+                                        <span class="metric-label">
+                                            Peer frontier multiplier (Top-20% avg OSR/GDP per capita)
+                                            <button type="button" class="formula-tooltip-btn" data-formula="LET(m, SORT(FILTER(Peers[Mult], Peers[Mult]>0), ,-1), k, MAX(1,ROUNDUP(ROWS(m)*0.2,0)), AVERAGE(TAKE(m,k)))">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        </span>
+                                        <span class="metric-value" id="m2FrontierMultiplierTop" style="font-size: 0.9rem;">-</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label">
+                                            Subject multiplier
+                                            <button type="button" class="formula-tooltip-btn" data-formula="IFERROR(OSR / GDP, 0)">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        </span>
+                                        <span class="metric-value" id="m2SubjectMultiplierTop" style="font-size: 0.9rem;">-</span>
+                                    </div>
+                                    <div class="metric-row result">
+                                        <span class="metric-label bold">
+                                            Frontier benchmark per capita
+                                            <button type="button" class="formula-tooltip-btn" data-formula="Frontier_Multiplier × Subnational_GDP_per_capita">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        </span>
+                                        <span class="metric-value bold" id="m2OSRPotentialTop" style="font-size: 0.9rem;">-</span>
+                                    </div>
+                                    <div class="metric-row gap">
+                                        <span class="metric-label gap-label">
+                                            Gap to frontier benchmark
+                                            <button type="button" class="formula-tooltip-btn" data-formula="Frontier_Benchmark - Current_OSR_per_capita">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        </span>
+                                        <span class="metric-value gap-value" id="m2OSRGapTop" style="font-size: 0.9rem;">-</span>
+                                    </div>
+                                    <div class="metric-row with-bar">
+                                        <span class="metric-label accent">
+                                            Performance Index
+                                            <button type="button" class="formula-tooltip-btn" data-formula="IFERROR(Actual_OSR / OSR_Potential, 0)">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        </span>
+                                        <div class="metric-bar-container">
+                                            <div class="metric-bar" id="m2PerformanceBarTop" style="width: 0%;"></div>
+                                            <span class="metric-bar-value" id="m2PerformanceIndexTop">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Peer SNG Chart -->
+                                <div class="module2-chart-section">
+                                    <h6 class="chart-title">OSR/GDP per capita Multiplier Comparison</h6>
+                                    <div class="chart-container" style="height: 350px;">
+                                        <canvas id="peerSngChartTop"></canvas>
+                                    </div>
+                                </div>
+
+                                <!-- Actual vs DFA Potential Bar Chart -->
+                                <div class="module2-chart-section" style="margin-top: 2rem;">
+                                    <h6 class="chart-title">Current OSR vs Frontier Benchmark per capita</h6>
+                                    <div class="chart-container" style="height: 180px;">
+                                        <canvas id="actualVsPotentialChart"></canvas>
+                                    </div>
+                                </div>
+
+                                <!-- Analysis Result -->
+                                <div class="analysis-result-section module2-result">
+                                    <div class="analysis-result-header">
+                                        <i class="bi bi-lightbulb"></i>
+                                        <span>Within-Country OSR Frontier (Peer SNGs) Result:</span>
+                                    </div>
+                                    <p class="analysis-result-text" id="module2ResultTextTop">
+                                        Select a subnational government to view the analysis result.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">End Date</label>
-                                <input type="date" class="form-control @(isViewMode ? "bg-light" : "")" id="endDate" name="EndDate" value="@Model.EndDate?.ToString("yyyy-MM-dd")" @(isViewMode ? "readonly" : "")>
+
+                        <hr class="my-4">
+
+                        <!-- OPTIONAL ANALYSIS SECTION HEADER -->
+                        <div class="optional-analysis-header mb-3">
+                            <h5 class="text-muted"><i class="bi bi-sliders me-2"></i>Optional: Cross-Country Fiscal Analysis</h5>
+                            <p class="small text-muted">The following analyses compare your country's position in the global fiscal decentralisation space.</p>
+                        </div>
+
+                        <!-- Optional Analysis: Funding Decentralization -->
+                        <div class="frontier-section" id="fundingDecentralizationSection">
+                            <div class="frontier-section-header">
+                                <span class="frontier-section-number">A</span>
+                                <h5 class="frontier-section-title">Funding Decentralization Frontier <span class="badge bg-secondary" style="font-size: 0.6rem;">Optional</span></h5>
                             </div>
+                            <div class="frontier-metrics">
+                                <div class="frontier-row">
+                                    <div class="tooltip-trigger">
+                                        <span class="frontier-label">SNG revenue per capita</span>
+                                        <button type="button" class="info-btn" data-tooltip-id="tip-sng-rev">
+                                            <i class="bi bi-info"></i>
+                                        </button>
+                                        <div class="formula-tooltip" id="tip-sng-rev">
+                                            <div class="tooltip-header">
+                                                <i class="bi bi-database"></i>
+                                                <span>Data Source</span>
+                                            </div>
+                                            <div class="formula-content">DB_Countries.SNG_total_rev_pc</div>
+                                        </div>
+                                    </div>
+                                    <span class="frontier-value" id="sngRevenuePerCapita">-</span>
+                                </div>
+                                <div class="frontier-row highlight">
+                                    <div class="tooltip-trigger">
+                                        <span class="frontier-label">Peer benchmark (top-20% avg)</span>
+                                        <button type="button" class="info-btn" data-tooltip-id="tip-peer-funding">
+                                            <i class="bi bi-info"></i>
+                                        </button>
+                                        <div class="formula-tooltip" id="tip-peer-funding">
+                                            <div class="tooltip-header">
+                                                <i class="bi bi-database"></i>
+                                                <span>Data Source</span>
+                                            </div>
+                                            <div class="formula-content">DB_Frontiers.SNG_total_rev_pc_frontier</div>
+                                        </div>
+                                    </div>
+                                    <span class="frontier-value" id="peerBenchmarkFunding">-</span>
+                                </div>
+                                <div class="frontier-row with-bar">
+                                    <div class="tooltip-trigger">
+                                        <span class="frontier-label accent">Funding index</span>
+                                        <button type="button" class="info-btn" data-tooltip-id="tip-funding-index">
+                                            <i class="bi bi-info"></i>
+                                        </button>
+                                        <div class="formula-tooltip" id="tip-funding-index">
+                                            <div class="tooltip-header">
+                                                <i class="bi bi-calculator"></i>
+                                                <span>Formula</span>
+                                            </div>
+                                            <div class="formula-content">(SNG rev pc ÷ Peer benchmark) × 100</div>
+                                        </div>
+                                    </div>
+                                    <div class="frontier-bar-container">
+                                        <div class="frontier-bar" id="fundingIndexBar" style="width: 0%"></div>
+                                        <span class="frontier-bar-value" id="fundingIndex">-</span>
+                                    </div>
+                                </div>
+                                <div class="frontier-row result">
+                                    <div class="tooltip-trigger">
+                                        <span class="frontier-label bold">Funding headroom (USD per capita)</span>
+                                        <button type="button" class="info-btn" data-tooltip-id="tip-funding-headroom">
+                                            <i class="bi bi-info"></i>
+                                        </button>
+                                        <div class="formula-tooltip" id="tip-funding-headroom">
+                                            <div class="tooltip-header">
+                                                <i class="bi bi-calculator"></i>
+                                                <span>Formula</span>
+                                            </div>
+                                            <div class="formula-content">Peer benchmark - SNG rev pc</div>
+                                        </div>
+                                    </div>
+                                    <span class="frontier-value bold" id="fundingHeadroom">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Optional Analysis: Subnational Revenue Autonomy -->
+                        <div class="frontier-section" id="revenueAutonomySection">
+                            <div class="frontier-section-header">
+                                <span class="frontier-section-number">B</span>
+                                <h5 class="frontier-section-title">Subnational Revenue Autonomy <span class="badge bg-secondary" style="font-size: 0.6rem;">Optional</span></h5>
+                            </div>
+                            <div class="frontier-metrics">
+                                <div class="frontier-row">
+                                    <div class="tooltip-trigger">
+                                        <span class="frontier-label">Non-grants share of SNG revenue (%)</span>
+                                        <button type="button" class="info-btn" data-tooltip-id="tip-non-grants">
+                                            <i class="bi bi-info"></i>
+                                        </button>
+                                        <div class="formula-tooltip" id="tip-non-grants">
+                                            <div class="tooltip-header">
+                                                <i class="bi bi-database"></i>
+                                                <span>Data Source</span>
+                                            </div>
+                                            <div class="formula-content">DB_Countries.Revenue_Autonomy × 100</div>
+                                        </div>
+                                    </div>
+                                    <span class="frontier-value" id="nonGrantsShare">-</span>
+                                </div>
+                                <div class="frontier-row highlight">
+                                    <div class="tooltip-trigger">
+                                        <span class="frontier-label">Peer benchmark (top-20% avg)</span>
+                                        <button type="button" class="info-btn" data-tooltip-id="tip-peer-autonomy">
+                                            <i class="bi bi-info"></i>
+                                        </button>
+                                        <div class="formula-tooltip" id="tip-peer-autonomy">
+                                            <div class="tooltip-header">
+                                                <i class="bi bi-database"></i>
+                                                <span>Data Source</span>
+                                            </div>
+                                            <div class="formula-content">DB_Frontiers.Revenue_Autonomy_frontier × 100</div>
+                                        </div>
+                                    </div>
+                                    <span class="frontier-value" id="peerBenchmarkAutonomy">-</span>
+                                </div>
+                                <div class="frontier-row with-bar">
+                                    <div class="tooltip-trigger">
+                                        <span class="frontier-label accent">Autonomy index</span>
+                                        <button type="button" class="info-btn" data-tooltip-id="tip-autonomy-index">
+                                            <i class="bi bi-info"></i>
+                                        </button>
+                                        <div class="formula-tooltip" id="tip-autonomy-index">
+                                            <div class="tooltip-header">
+                                                <i class="bi bi-calculator"></i>
+                                                <span>Formula</span>
+                                            </div>
+                                            <div class="formula-content">(Non-grants share ÷ Peer benchmark) × 100</div>
+                                        </div>
+                                    </div>
+                                    <div class="frontier-bar-container">
+                                        <div class="frontier-bar autonomy" id="autonomyIndexBar" style="width: 0%"></div>
+                                        <span class="frontier-bar-value" id="autonomyIndex">-</span>
+                                    </div>
+                                </div>
+                                <div class="frontier-row">
+                                    <div class="tooltip-trigger">
+                                        <span class="frontier-label">Distance from peer benchmark (% points)</span>
+                                        <button type="button" class="info-btn" data-tooltip-id="tip-distance">
+                                            <i class="bi bi-info"></i>
+                                        </button>
+                                        <div class="formula-tooltip" id="tip-distance">
+                                            <div class="tooltip-header">
+                                                <i class="bi bi-calculator"></i>
+                                                <span>Formula</span>
+                                            </div>
+                                            <div class="formula-content">|Non-grants share - Peer benchmark|</div>
+                                        </div>
+                                    </div>
+                                    <span class="frontier-value" id="distanceFromBenchmark">-</span>
+                                </div>
+                                <div class="frontier-row result position">
+                                    <div class="tooltip-trigger">
+                                        <span class="frontier-label bold">Position relative to peer benchmark</span>
+                                        <button type="button" class="info-btn" data-tooltip-id="tip-position">
+                                            <i class="bi bi-info"></i>
+                                        </button>
+                                        <div class="formula-tooltip" id="tip-position">
+                                            <div class="tooltip-header">
+                                                <i class="bi bi-signpost-split"></i>
+                                                <span>Logic</span>
+                                            </div>
+                                            <div class="formula-content">Above if Non-grants > Benchmark, Below otherwise</div>
+                                        </div>
+                                    </div>
+                                    <span class="frontier-position" id="positionRelative">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Position in Fiscal Decentralisation Space Chart (OPTIONAL ANALYSIS) -->
+                        <div class="fiscal-chart-section" id="fiscalDecentralisationSection">
+                            <div class="fiscal-chart-header">
+                                <h5 class="fiscal-chart-title">Position in fiscal decentralisation space <span class="badge bg-secondary ms-2" style="font-size: 0.65rem;">Optional Analysis</span></h5>
+                            </div>
+                            <div class="fiscal-chart-container">
+                                <canvas id="fiscalDecentralisationChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Analysis Result Text for Optional Analysis -->
+                        <div class="analysis-result-section" id="analysisResultSection">
+                            <div class="analysis-result-header">
+                                <i class="bi bi-lightbulb"></i>
+                                <span>Cross-Country Fiscal Analysis Result:</span>
+                            </div>
+                            <p class="analysis-result-text" id="analysisResultText">
+                                Select a country to view the analysis result.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -139,18 +640,2127 @@
     </div>
 </div>
 
+<style>
+/* Country Flag Display */
+.country-select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.country-flag {
+    width: 28px;
+    height: 20px;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.country-select-wrapper .form-select {
+    flex: 1;
+}
+
+/* Top-Down Analysis Intro Section */
+.top-down-intro-section {
+    margin-bottom: 1.5rem;
+}
+
+.top-down-intro-section .intro-text-box {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-left: 4px solid #00b2e3;
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.top-down-intro-section .intro-icon {
+    color: #00b2e3;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.top-down-intro-section .intro-text {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #334155;
+    line-height: 1.5;
+}
+
+/* Potential Estimates Modern Design */
+.potential-estimates-container {
+    padding: 0;
+}
+
+/* Input Panel Styles */
+.input-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.input-card {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.input-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.header-icon {
+    width: 40px;
+    height: 40px;
+    background: #00b2e3;
+    color: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.card-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.card-subtitle {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #666;
+}
+
+/* Collapsible Header Styles */
+.collapsible-header {
+    user-select: none;
+}
+
+.collapsible-header:hover {
+    background-color: rgba(0, 178, 227, 0.85);
+}
+
+.collapse-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(0, 178, 227, 0.1);
+    border-radius: 8px;
+}
+
+.collapsible-header:hover .collapse-toggle-btn {
+    background: rgba(0, 178, 227, 0.2);
+}
+
+.collapse-icon {
+    font-size: 1rem;
+    color: #00b2e3;
+}
+
+/* Rotate icon when collapsed */
+.collapsible-header.collapsed .collapse-icon {
+    transform: rotate(180deg);
+}
+
+.input-card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #333;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.form-control, .form-select {
+    border: 2px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #00b2e3;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 178, 227, 0.1);
+}
+
+.form-control.readonly, .form-select:disabled {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    color: #6c757d;
+}
+
+.form-control.readonly-auto {
+    background-color: #e9f5ff;
+    border-color: #b8daff;
+    color: #004085;
+    cursor: not-allowed;
+    font-size: 0.8rem;
+}
+
+/* Compact Card Styles */
+.compact-card {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.compact-header {
+    padding: 1rem 1.25rem;
+    background: #00b2e3;
+    border-bottom: none;
+}
+
+.compact-header .header-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.compact-header .card-title {
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 0.15rem;
+}
+
+.compact-header .card-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.75rem;
+}
+
+.compact-body {
+    padding: 1rem;
+    gap: 0.75rem;
+}
+
+.compact-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.compact-row.single {
+    grid-template-columns: 1fr;
+}
+
+.compact-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.compact-field.full-width {
+    grid-column: 1 / -1;
+}
+
+.compact-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin: 0;
+}
+
+.gov-unit-helper {
+    font-size: 0.65rem;
+    color: #888;
+    font-style: italic;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.gov-unit-checkbox-label {
+    font-size: 0.7rem;
+    color: #555;
+}
+
+.gov-unit-note {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: #f8f9fa;
+    border-left: 3px solid var(--un-blue, #00b2e3);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.7rem;
+    color: #666;
+    font-style: italic;
+}
+
+.gov-unit-note i {
+    margin-right: 0.25rem;
+    color: var(--un-blue, #00b2e3);
+}
+
+.usd-indicator {
+    font-size: 0.6rem;
+    color: #0d6efd;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.compact-divider {
+    display: flex;
+    align-items: center;
+    margin: 0.75rem 0;
+    gap: 0.5rem;
+}
+
+.compact-divider::before,
+.compact-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #dee2e6, transparent);
+}
+
+.compact-divider span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #00b2e3;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.auto-value-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.currency-badge {
+    background: #00b2e3;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: center;
+}
+
+.auto-value-display .form-control {
+    flex: 1;
+}
+
+/* Currency Override Controls */
+.currency-override-toggle {
+    padding: 0.25rem 0;
+}
+
+.currency-override-toggle .form-check {
+    margin: 0;
+    padding-left: 2rem;
+}
+
+.currency-override-toggle .form-check-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+}
+
+.currency-override-toggle .form-switch .form-check-input {
+    width: 2.25rem;
+    height: 1.15rem;
+    cursor: pointer;
+    border-color: #cbd5e1;
+}
+
+.currency-override-toggle .form-switch .form-check-input:checked {
+    background-color: #00b2e3;
+    border-color: #00b2e3;
+}
+
+.currency-override-select {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #f0f9ff;
+    border-radius: 8px;
+    border: 1px solid #e0f2fe;
+}
+
+.currency-override-select .form-select {
+    border-color: #00b2e3;
+    font-size: 0.875rem;
+}
+
+.currency-override-select .form-select:focus {
+    border-color: #00b2e3;
+    box-shadow: 0 0 0 3px rgba(0, 178, 227, 0.15);
+}
+
+.compact-currency-input {
+    display: flex;
+    align-items: center;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    overflow: hidden;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.compact-currency-input:focus-within {
+    border-color: #00b2e3;
+    box-shadow: 0 0 0 2px rgba(0, 178, 227, 0.1);
+}
+
+.currency-prefix {
+    background: #f8f9fa;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #555;
+    border-right: 1px solid #dee2e6;
+    min-width: 35px;
+    text-align: center;
+}
+
+.compact-currency-input .form-control {
+    border: none;
+    box-shadow: none;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.compact-currency-input .form-control:focus {
+    box-shadow: none;
+}
+
+/* Responsive adjustments for compact layout */
+@@media (max-width: 576px) {
+    .compact-row {
+        grid-template-columns: 1fr;
+    }
+
+    .compact-field.full-width {
+        grid-column: 1;
+    }
+}
+
+.currency-input-group {
+    display: flex;
+    align-items: center;
+    border: 2px solid #e5e5e5;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.currency-input-group:focus-within {
+    border-color: #00b2e3;
+    box-shadow: 0 0 0 3px rgba(0, 178, 227, 0.1);
+}
+
+.currency-symbol {
+    background: #f8f9fa;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: #666;
+    border-right: 1px solid #e5e5e5;
+    min-width: 50px;
+    text-align: center;
+}
+
+.currency-input-group .form-control {
+    border: none;
+    margin: 0;
+    box-shadow: none;
+}
+
+.currency-input-group .form-control:focus {
+    box-shadow: none;
+}
+
+/* Analysis Panel Styles */
+.analysis-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Responsive Design */
+@@media (max-width: 768px) {
+    .input-card-header,
+    .input-card-body {
+        padding: 1rem;
+    }
+}
+
+/* Frontier Analysis Styles */
+.frontier-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.frontier-header {
+    background: #00b2e3;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.frontier-header-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.frontier-header-content {
+    flex: 1;
+}
+
+.frontier-title {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+}
+
+.frontier-subtitle {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.frontier-placeholder {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: #6c757d;
+}
+
+.frontier-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.frontier-placeholder p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.frontier-content {
+    padding: 1.5rem;
+}
+
+.frontier-section {
+    margin-bottom: 1.5rem;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.frontier-section:last-child {
+    margin-bottom: 0;
+}
+
+.frontier-section-header {
+    background: #00b2e3;
+    padding: 0.875rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.frontier-section-number {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+.frontier-section-title {
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.frontier-metrics {
+    padding: 0;
+}
+
+.frontier-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.frontier-row:last-child {
+    border-bottom: none;
+}
+
+.frontier-row.highlight {
+    background: #f8f9fa;
+}
+
+.frontier-row.result {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+}
+
+.frontier-row.position {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    background: #E6F9FC;
+    border-left: 4px solid #00b2e3;
+}
+
+.frontier-label {
+    font-size: 0.875rem;
+    color: #495057;
+}
+
+.frontier-label.accent {
+    color: #00b2e3;
+    font-weight: 500;
+}
+
+.frontier-label.bold {
+    font-weight: 600;
+    color: #212529;
+}
+
+.frontier-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.frontier-value.bold {
+    font-size: 1.1rem;
+    color: #198754;
+}
+
+.frontier-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    max-width: 200px;
+}
+
+.frontier-bar {
+    height: 24px;
+    background: #00b2e3;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    min-width: 4px;
+}
+
+.frontier-bar.autonomy {
+    background: #198754;
+}
+
+.frontier-bar-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #00b2e3;
+    min-width: 50px;
+}
+
+.frontier-position {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #00b2e3;
+    padding: 0.5rem 0.75rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #99e0f0;
+}
+
+.frontier-position.above {
+    color: #198754;
+    border-color: #a3cfbb;
+    background: #d1e7dd;
+}
+
+.frontier-position.below {
+    color: #dc3545;
+    border-color: #f1aeb5;
+    background: #f8d7da;
+}
+
+@@media (max-width: 768px) {
+    .frontier-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .frontier-bar-container {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+/* Tooltip Styles */
+.tooltip-trigger {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tooltip-trigger .info-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    font-size: 0.65rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.tooltip-trigger .info-btn:hover {
+    background: #00b2e3;
+    color: white;
+}
+
+.formula-tooltip {
+    display: none;
+    position: fixed;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    min-width: 240px;
+    max-width: 340px;
+}
+
+.formula-tooltip.active {
+    display: block;
+    animation: tooltipFadeIn 0.15s ease;
+}
+
+.formula-tooltip .tooltip-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.formula-tooltip .tooltip-header i {
+    color: #00b2e3;
+    font-size: 0.85rem;
+}
+
+.formula-tooltip .tooltip-header span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.formula-tooltip .formula-content {
+    font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+    font-size: 0.8rem;
+    color: #212529;
+    background: #f8f9fa;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    border-left: 3px solid #00b2e3;
+}
+
+/* Fiscal Decentralisation Chart Styles */
+.fiscal-chart-section {
+    margin-top: 1.5rem;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+}
+
+.fiscal-chart-header {
+    background: #f8f9fa;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.fiscal-chart-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #212529;
+    text-align: center;
+}
+
+.fiscal-chart-container {
+    position: relative;
+    padding: 1rem;
+    height: 350px;
+}
+
+.fiscal-chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Analysis Result Section */
+.analysis-result-section {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: #E6F9FC;
+    border: 1px solid #99e0f0;
+    border-radius: 8px;
+}
+
+.analysis-result-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.analysis-result-header i {
+    color: #00b2e3;
+    font-size: 1rem;
+}
+
+.analysis-result-header span {
+    font-weight: 600;
+    color: #00b2e3;
+    font-size: 0.85rem;
+}
+
+.analysis-result-text {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #495057;
+    line-height: 1.6;
+}
+
+/* Module 2: Within-Country OSR Frontier Styles */
+.module2-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e9ecef;
+}
+
+.module2-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.module-number {
+    width: 36px;
+    height: 36px;
+    background: #00b2e3;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.module-title-block {
+    flex: 1;
+}
+
+.module-title {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.module-subtitle {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.module2-selection {
+    margin-bottom: 1rem;
+}
+
+.module2-selection .compact-label {
+    margin-bottom: 0.35rem;
+}
+
+/* Peer Data Input Section Styles */
+.peer-data-input-section {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #fff8e6;
+    border: 1px solid #ffecb3;
+    border-radius: 8px;
+}
+
+.peer-data-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background: #fff3cd;
+    border-radius: 6px;
+    color: #856404;
+    font-size: 0.85rem;
+}
+
+.peer-data-alert i {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.peer-upload-option {
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed #dee2e6;
+}
+
+.peer-manual-entry {
+    padding-top: 0.5rem;
+}
+
+.peer-manual-entry .table {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+}
+
+.peer-manual-entry .table th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #666;
+}
+
+.peer-manual-entry .form-control {
+    font-size: 0.8rem;
+}
+
+.module2-placeholder {
+    padding: 2.5rem 2rem;
+    text-align: center;
+    color: #6c757d;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px dashed #dee2e6;
+}
+
+.module2-placeholder i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.5;
+    display: block;
+}
+
+.module2-placeholder p {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.module2-content {
+    animation: fadeIn 0.3s ease;
+}
+
+@@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.module2-metrics {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+}
+
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    background: white;
+}
+
+.metric-row:last-child {
+    border-bottom: none;
+}
+
+.metric-row.highlight {
+    background: #f8f9fa;
+}
+
+.metric-row.result {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+}
+
+.metric-row.gap {
+    background: rgba(253, 157, 36, 0.1);
+    border-left: 4px solid #FD9D24;
+}
+
+.metric-row.with-bar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.metric-label {
+    font-size: 0.85rem;
+    color: #495057;
+}
+
+.metric-label.accent {
+    color: #00b2e3;
+    font-weight: 500;
+}
+
+.metric-label.bold {
+    font-weight: 600;
+    color: #212529;
+}
+
+.metric-label.gap-label {
+    color: #FD9D24;
+    font-weight: 600;
+}
+
+.metric-value {
+    font-size: 0.85rem !important;
+    font-weight: 500;
+    color: #212529;
+}
+
+.metric-value.bold {
+    font-size: 0.9rem !important;
+    font-weight: 600;
+    color: #00b2e3;
+}
+
+.metric-value.gap-value {
+    color: #FD9D24;
+    font-weight: 600;
+    font-size: 0.85rem !important;
+}
+
+/* Ensure module 2 metric values are properly sized */
+.module2-metrics .metric-value {
+    font-size: 0.85rem !important;
+    font-weight: 500;
+}
+
+.module2-metrics .metric-row .metric-value,
+.module2-section .metric-value,
+#m2ActualOSR, #m2SubnationalGDP, #m2FrontierMultiplier,
+#m2SubjectMultiplier, #m2OSRPotential, #m2PerformanceIndex,
+#m2ActualOSR2, #m2OSRGap {
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+}
+
+.metric-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    max-width: 200px;
+    margin-left: auto;
+}
+
+.metric-bar {
+    height: 22px;
+    background: #00b2e3;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    min-width: 4px;
+}
+
+.metric-bar-value {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #00b2e3;
+    min-width: 60px;
+    text-align: right;
+}
+
+/* Module 2 Charts */
+.module2-charts-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.module2-chart-section {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+
+.chart-header {
+    background: #f8f9fa;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.chart-title {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #495057;
+    text-align: center;
+}
+
+.chart-container-small {
+    position: relative;
+    padding: 0.75rem;
+    height: 480px;
+}
+
+.chart-container-bar {
+    position: relative;
+    padding: 0.75rem;
+    height: 200px;
+}
+
+.chart-container-small canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* DFA Potential Card - Custom Bar Chart */
+.dfa-potential-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.dfa-card-header {
+    background: #00b2e3;
+    color: white;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.dfa-card-header i {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.dfa-card-body {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.dfa-bar-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.dfa-bar-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dfa-bar-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4b5563;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.dfa-bar-value {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1f2937;
+    font-family: 'SF Mono', 'Consolas', monospace;
+}
+
+.dfa-gap-value {
+    color: #dc2626;
+}
+
+.dfa-bar-track {
+    width: 100%;
+    height: 24px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.dfa-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.6s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    min-width: 0;
+}
+
+.dfa-bar-actual {
+    background: #00b2e3;
+}
+
+.dfa-bar-potential {
+    background: #00b2e3;
+}
+
+.dfa-bar-gap {
+    background: #FD9D24;
+}
+
+/* Module 2 Analysis Result */
+.analysis-result-section.module2-result {
+    background: #E6F9FC;
+    border-color: #99e0f0;
+}
+
+.analysis-result-section.module2-result .analysis-result-header i,
+.analysis-result-section.module2-result .analysis-result-header span {
+    color: #00b2e3;
+}
+
+/* Rationale Section */
+.rationale-section {
+    margin-top: 1rem;
+    margin-bottom: 1.25rem;
+    padding: 0.875rem 1rem;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+}
+
+.rationale-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.rationale-header i {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.rationale-header span {
+    font-weight: 600;
+    color: #6c757d;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.rationale-text {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #6c757d;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+@@media (max-width: 768px) {
+    .module2-charts-row {
+        grid-template-columns: 1fr;
+    }
+
+    .metric-row.with-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .metric-bar-container {
+        width: 100%;
+        max-width: none;
+        margin-left: 0;
+    }
+}
+
+/* Helpers Button */
+.helpers-button-container {
+    text-align: right;
+    margin: 0.75rem 0;
+}
+
+.helpers-button-container .btn {
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: #1a1a2e;
+    color: #fff;
+    border: 1px solid #1a1a2e;
+    border-radius: 6px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.helpers-button-container .btn:hover {
+    background: #16213e;
+    border-color: #16213e;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.helpers-button-container .btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.helpers-button-container .btn i {
+    margin-right: 0.4rem;
+}
+
+/* Helpers Modal - Bootstrap Style Grid */
+.helpers-grid-new {
+    background: white;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+}
+
+.helper-row-new {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.helper-row-new:last-child {
+    border-bottom: none;
+}
+
+.helper-row-new.highlight-new {
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.03));
+    margin: 0.25rem -0.5rem;
+    padding: 0.6rem 0.5rem;
+    border-radius: 8px;
+    border-bottom: none;
+}
+
+.helper-label-new {
+    font-size: 0.8rem;
+    color: #4b5563;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.helper-value-new {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1f2937;
+    font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+    background: #f3f4f6;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+}
+
+/* Formula Tooltip Button Styles */
+.formula-tooltip-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-left: 4px;
+    cursor: pointer;
+    color: #6c757d;
+    font-size: 0.7rem;
+    line-height: 1;
+    transition: all 0.2s ease;
+    position: relative;
+    vertical-align: middle;
+}
+
+.formula-tooltip-btn:hover {
+    color: #4472C4;
+    transform: scale(1.1);
+}
+
+.formula-tooltip-btn i {
+    font-size: 0.7rem;
+}
+
+/* Formula Popup Tooltip */
+.formula-popup {
+    position: fixed;
+    background: #1a1a2e;
+    color: #fff;
+    padding: 0.625rem 0.875rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+    max-width: 400px;
+    z-index: 10000;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    animation: formulaPopupIn 0.2s ease-out;
+    word-break: break-word;
+    line-height: 1.5;
+}
+
+.formula-popup::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 20px;
+    width: 12px;
+    height: 12px;
+    background: #1a1a2e;
+    transform: rotate(45deg);
+}
+
+.formula-popup.arrow-right::before {
+    left: auto;
+    right: 20px;
+}
+
+.formula-popup-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+    color: #8b93a6;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Roboto', Calibri, sans-serif;
+}
+
+.formula-popup-header i {
+    font-size: 0.7rem;
+    color: #00b2e3;
+}
+
+.formula-popup-content {
+    color: #a8d4ff;
+}
+
+@@keyframes formulaPopupIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Helper row with formula tooltip */
+.helper-label-wrapper {
+    display: flex;
+    align-items: center;
+}
+</style>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart.js Datalabels Plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<!-- Select2 for searchable dropdowns - CSS only, JS loaded after jQuery -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
+<style>
+/* Select2 Custom Styling */
+.select2-container--bootstrap-5 .select2-selection {
+    min-height: 31px !important;
+    font-size: 0.8rem !important;
+    border-color: #dee2e6 !important;
+}
+
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    padding: 0.25rem 0.5rem !important;
+    line-height: 1.5 !important;
+    font-size: 0.8rem !important;
+}
+
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+    height: 29px !important;
+}
+
+.select2-container--bootstrap-5 .select2-dropdown {
+    font-size: 0.8rem !important;
+}
+
+.select2-container--bootstrap-5 .select2-search--dropdown .select2-search__field {
+    font-size: 0.8rem !important;
+    padding: 0.375rem 0.5rem !important;
+}
+
+.select2-container--bootstrap-5 .select2-results__option {
+    padding: 0.375rem 0.5rem !important;
+}
+
+.select2-container {
+    width: 100% !important;
+}
+
+/* Match compact-field styling */
+.compact-field .select2-container--bootstrap-5 .select2-selection {
+    background-color: #fff;
+    border-radius: 6px;
+}
+
+.compact-field .select2-container--bootstrap-5 .select2-selection:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+</style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Set the selected country based on the model
+        // ========================================
+        // PEER SNG DATA ISOLATION
+        // Custom peer data stored per-report, not in global database
+        // ========================================
+
+        // Custom peer data - stores user-entered data in memory (saved with report)
+        // Schema: { dataSource: 'custom'|'reference', countryCode: string, customPeers: [{sng, osr, gcp, include}], timestamp: string }
+        let customPeerData = null;
+
+        // Function to get custom peer data (for use in report save)
+        window.getCustomPeerData = function() {
+            return customPeerData;
+        };
+
+        // Function to set custom peer data (for loading saved reports)
+        window.setCustomPeerData = function(data) {
+            customPeerData = data;
+            console.log('Custom peer data set:', data ? `${data.customPeers?.length || 0} peers` : 'null');
+        };
+
+        // Function to clear custom peer data (reset to reference data)
+        window.clearCustomPeerData = function() {
+            customPeerData = null;
+            console.log('Custom peer data cleared, using reference data');
+        };
+
+        // Get the country and region elements
         const countrySelect = document.getElementById('country');
-        const countryValue = '@Model.Country';
-        if (countryValue) {
-            for (let i = 0; i < countrySelect.options.length; i++) {
-                if (countrySelect.options[i].value === countryValue) {
-                    countrySelect.options[i].selected = true;
-                    break;
-                }
+        const regionSelect = document.getElementById('region');
+        const savedCountry = '@Model.Country' || 'Kenya';
+        const savedRegion = '@Model.Region' || 'Kiambu';
+        const savedCity = '@Model.City' || '';
+        const savedGovUnitLevel3 = '@Model.GovUnitLevel3' || '';
+        const savedFinalUnitLevel = parseInt('@Model.FinalUnitLevel') || 0;
+
+        // Government Unit Hierarchy elements
+        const govUnitLevel1Row = document.getElementById('govUnitLevel1Row');
+        const govUnitLevel2Row = document.getElementById('govUnitLevel2Row');
+        const govUnitLevel3Row = document.getElementById('govUnitLevel3Row');
+        const level1IsFinal = document.getElementById('level1IsFinal');
+        const level2IsFinal = document.getElementById('level2IsFinal');
+        const govUnitLevel3Input = document.getElementById('govUnitLevel3');
+        const cityInput = document.getElementById('city');
+        const finalUnitLevelInput = document.getElementById('finalUnitLevel');
+        const hierarchyNote = document.getElementById('hierarchyNote');
+
+        // Progressive disclosure for government unit hierarchy
+        function updateGovernmentUnitVisibility() {
+            const countrySelected = countrySelect.value !== '';
+            const level1Selected = regionSelect.value !== '';
+            const level1Checked = level1IsFinal.checked;
+            const level2Filled = cityInput.value.trim() !== '';
+            const level2Checked = level2IsFinal.checked;
+
+            // Show/hide Level 1 row
+            govUnitLevel1Row.style.display = countrySelected ? '' : 'none';
+
+            // Show/hide Level 2 row
+            govUnitLevel2Row.style.display = (countrySelected && level1Selected && !level1Checked) ? '' : 'none';
+
+            // Show/hide Level 3 row
+            govUnitLevel3Row.style.display = (countrySelected && level1Selected && !level1Checked && level2Filled && !level2Checked) ? '' : 'none';
+
+            // Show hierarchy note when country is selected
+            hierarchyNote.style.display = countrySelected ? '' : 'none';
+
+            // Update the hidden FinalUnitLevel field
+            if (level1Checked) {
+                finalUnitLevelInput.value = '1';
+            } else if (level2Checked) {
+                finalUnitLevelInput.value = '2';
+            } else if (govUnitLevel3Input.value.trim() !== '') {
+                finalUnitLevelInput.value = '3';
+            } else if (level2Filled) {
+                finalUnitLevelInput.value = '2';
+            } else if (level1Selected) {
+                finalUnitLevelInput.value = '1';
+            } else {
+                finalUnitLevelInput.value = '';
             }
+        }
+
+        // Level 1 checkbox change
+        level1IsFinal.addEventListener('change', function() {
+            if (this.checked) {
+                cityInput.value = '';
+                govUnitLevel3Input.value = '';
+                level2IsFinal.checked = false;
+            }
+            updateGovernmentUnitVisibility();
+        });
+
+        // Level 2 checkbox change
+        level2IsFinal.addEventListener('change', function() {
+            if (this.checked) {
+                govUnitLevel3Input.value = '';
+            }
+            updateGovernmentUnitVisibility();
+        });
+
+        // Level 2 text input change (triggers Level 3 visibility)
+        cityInput.addEventListener('input', function() {
+            updateGovernmentUnitVisibility();
+        });
+
+        // Level 3 text input change (updates final unit level)
+        govUnitLevel3Input.addEventListener('input', function() {
+            updateGovernmentUnitVisibility();
+        });
+
+        // Data Input Block collapse toggle event listeners
+        const dataInputBody = document.getElementById('dataInputBody');
+        const collapsibleHeader = document.querySelector('.collapsible-header[data-bs-target="#dataInputBody"]');
+
+        if (dataInputBody && collapsibleHeader) {
+            // When collapse starts hiding
+            dataInputBody.addEventListener('hide.bs.collapse', function() {
+                collapsibleHeader.classList.add('collapsed');
+            });
+
+            // When collapse starts showing
+            dataInputBody.addEventListener('show.bs.collapse', function() {
+                collapsibleHeader.classList.remove('collapsed');
+            });
+        }
+
+        // Fiscal Decentralisation Chart
+        let fiscalChart = null;
+
+        // Custom plugin to draw quadrant labels
+        const quadrantLabelsPlugin = {
+            id: 'quadrantLabels',
+            afterDraw: function(chart) {
+                const ctx = chart.ctx;
+                const chartArea = chart.chartArea;
+                const xScale = chart.scales.x;
+                const yScale = chart.scales.y;
+
+                // Get pixel positions for the threshold lines (80%)
+                const xThreshold = xScale.getPixelForValue(80);
+                const yThreshold = yScale.getPixelForValue(80);
+
+                // Calculate quadrant centers
+                const leftCenterX = (chartArea.left + xThreshold) / 2;
+                const rightCenterX = (xThreshold + chartArea.right) / 2;
+                const topCenterY = (chartArea.top + yThreshold) / 2;
+                const bottomCenterY = (yThreshold + chartArea.bottom) / 2;
+
+                // Set text style
+                ctx.save();
+                ctx.font = 'bold 12px Arial, sans-serif';
+                ctx.fillStyle = '#495057';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                // Top-left quadrant: "Small and self-reliant"
+                ctx.fillText('Small and', leftCenterX, topCenterY - 8);
+                ctx.fillText('self-reliant', leftCenterX, topCenterY + 8);
+
+                // Top-right quadrant: "Large & autonomous"
+                ctx.fillText('Large &', rightCenterX, topCenterY - 8);
+                ctx.fillText('autonomous', rightCenterX, topCenterY + 8);
+
+                // Bottom-left quadrant: "Small & dependent"
+                ctx.fillText('Small &', leftCenterX, bottomCenterY - 8);
+                ctx.fillText('dependent', leftCenterX, bottomCenterY + 8);
+
+                // Bottom-right quadrant: "Large but transfer"
+                ctx.fillText('Large but', rightCenterX, bottomCenterY - 8);
+                ctx.fillText('transfer', rightCenterX, bottomCenterY + 8);
+
+                ctx.restore();
+            }
+        };
+
+        function createFiscalDecentralisationChart(fundingIndex, autonomyIndex, countryName) {
+            const ctx = document.getElementById('fiscalDecentralisationChart');
+            if (!ctx) return;
+
+            // Destroy existing chart if it exists
+            if (fiscalChart) {
+                fiscalChart.destroy();
+            }
+
+            // Convert percentages to decimals for plotting (0-120 scale)
+            const fundingValue = fundingIndex;
+            const autonomyValue = autonomyIndex;
+
+            // Create the chart
+            fiscalChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        // Country data point
+                        {
+                            label: countryName,
+                            data: [{ x: fundingValue, y: autonomyValue }],
+                            backgroundColor: '#0d6efd',
+                            borderColor: '#0d6efd',
+                            pointRadius: 8,
+                            pointHoverRadius: 10,
+                            showLine: false
+                        },
+                        // Funding threshold (vertical line at 80%)
+                        {
+                            label: 'Funding threshold',
+                            data: [
+                                { x: 80, y: 0 },
+                                { x: 80, y: 120 }
+                            ],
+                            borderColor: '#17a2b8',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            showLine: true,
+                            fill: false
+                        },
+                        // Autonomy threshold (horizontal line at 80%)
+                        {
+                            label: 'Autonomy threshold',
+                            data: [
+                                { x: 0, y: 80 },
+                                { x: 120, y: 80 }
+                            ],
+                            borderColor: '#17a2b8',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            showLine: true,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: {
+                                    size: 11
+                                },
+                                filter: function(legendItem, data) {
+                                    // Only show country name in legend
+                                    return legendItem.datasetIndex === 0;
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 0) {
+                                        return `${context.dataset.label}: Funding ${context.parsed.x}%, Autonomy ${context.parsed.y}%`;
+                                    }
+                                    return null;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            min: 0,
+                            max: 120,
+                            title: {
+                                display: true,
+                                text: 'Funding index',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                stepSize: 20,
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: {
+                                color: '#e9ecef'
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            min: 0,
+                            max: 120,
+                            title: {
+                                display: true,
+                                text: 'Autonomy index',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                stepSize: 20,
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: {
+                                color: '#e9ecef'
+                            }
+                        }
+                    }
+                },
+                plugins: [quadrantLabelsPlugin]
+            });
+        }
+
+        function updateAnalysisResultText(fundingIndex, autonomyIndex) {
+            const resultText = document.getElementById('analysisResultText');
+            if (!resultText) return;
+
+            let analysis = '';
+            const fundingThreshold = 80; // 80% threshold
+            const autonomyThreshold = 80; // 80% threshold
+
+            if (fundingIndex >= fundingThreshold && autonomyIndex >= autonomyThreshold) {
+                // Template 1: Both high (funding >= 80% AND autonomy >= 80%)
+                analysis = `Funding is close to the peer frontier (${fundingIndex}%) and autonomy is also relatively high (${autonomyIndex}%). This points to a comparatively large and discretionary SNG envelope; further improvements will mainly need to be identified through the ROSRA administrative gap analysis.`;
+            } else if (fundingIndex >= fundingThreshold && autonomyIndex < autonomyThreshold) {
+                // Template 2: Funding high, autonomy low (funding >= 80% AND autonomy < 80%)
+                analysis = `Funding is close to the peer frontier (${fundingIndex}%), while autonomy is noticeably lower (${autonomyIndex}%). This suggests that the main constraint may lie in how revenues are shared and conditioned, even though there is still scope for administrative strengthening at the local level.`;
+            } else if (fundingIndex < fundingThreshold && autonomyIndex >= autonomyThreshold) {
+                // Template 3: Funding low, autonomy high (funding < 80% AND autonomy >= 80%)
+                analysis = `Funding is below the peer frontier (${fundingIndex}%) but autonomy is relatively strong (${autonomyIndex}%). This combination suggests that the overall SNG envelope is tight, even if local discretion over revenues is not unusually low. Administrative improvements remain relevant, and the adequacy of the funding assignment can also be discussed where needed.`;
+            } else {
+                // Template 4: Both low (funding < 80% AND autonomy < 80%)
+                analysis = `Both funding (${fundingIndex}% of the frontier) and autonomy (${autonomyIndex}%) are below peer benchmarks. This pattern indicates that SNGs may face constraints in both the size and the structure of their revenue; administrative options should be explored first, alongside a careful discussion of possible intergov. or policy adjust.`;
+            }
+
+            resultText.textContent = analysis;
+        }
+
+        console.log('Initial values - Country:', savedCountry, 'Region:', savedRegion);
+
+        // Load countries from API
+        async function loadCountries() {
+            try {
+                const response = await fetch('/Rosra/GetCountries');
+                const countries = await response.json();
+
+                console.log('Loaded', countries.length, 'countries from API');
+
+                // Clear existing options except the placeholder
+                countrySelect.innerHTML = '<option value="">Select a country</option>';
+
+                // Add countries to the dropdown
+                countries.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country.name;
+                    option.textContent = country.name;
+                    option.dataset.currency = country.currency || '';
+                    option.dataset.currencySymbol = country.currencySymbol || '';
+                    option.dataset.currencyName = country.currency || '';
+                    option.dataset.governmentType = country.governmentType || '';
+                    option.dataset.incomeLevel = country.incomeLevel || '';
+                    // Set country code from ISO codes mapping for peer SNG filtering
+                    option.dataset.code = countryIsoCodes[country.name] || '';
+
+                    // Select the saved country if it matches
+                    if (savedCountry && country.name === savedCountry) {
+                        option.selected = true;
+                        // Auto-populate Government Type and Income Level
+                        document.getElementById('governmentType').value = country.governmentType || '';
+                        document.getElementById('incomeLevel').value = country.incomeLevel || '';
+                        // Auto-populate Currency
+                        if (country.currency) {
+                            document.getElementById('currency').value = country.currency;
+                            localCurrencyName = country.currency;
+                        }
+                        localCurrencyCode = country.currencySymbol || '';
+                        if (country.currencySymbol) {
+                            updateCurrencySymbols(country.currencySymbol);
+                        }
+                    }
+
+                    countrySelect.appendChild(option);
+                });
+
+                // If a country was saved, load its states and fetch GDP per capita
+                if (savedCountry) {
+                    await loadStates(savedCountry, savedRegion);
+                    // Restore government unit hierarchy state
+                    if (savedFinalUnitLevel === 1) {
+                        level1IsFinal.checked = true;
+                    } else if (savedFinalUnitLevel === 2 && savedCity) {
+                        level2IsFinal.checked = true;
+                    }
+                    if (savedGovUnitLevel3) {
+                        govUnitLevel3Input.value = savedGovUnitLevel3;
+                    }
+                    updateGovernmentUnitVisibility();
+                    // Fetch GDP per capita from World Bank API for the auto-selected country
+                    fetchGdpPerCapita(savedCountry);
+                }
+
+                // Initialize Select2 for searchable country dropdown
+                if (typeof $ !== 'undefined' && $.fn.select2) {
+                    $(countrySelect).select2({
+                        theme: 'bootstrap-5',
+                        placeholder: 'Search for a country...',
+                        allowClear: true,
+                        width: '100%'
+                    });
+
+                    // Handle Select2 change event
+                    $(countrySelect).on('select2:select', function(e) {
+                        // Trigger the native change event
+                        const event = new Event('change', { bubbles: true });
+                        countrySelect.dispatchEvent(event);
+                    });
+
+                    $(countrySelect).on('select2:clear', function(e) {
+                        // Trigger the native change event when cleared
+                        const event = new Event('change', { bubbles: true });
+                        countrySelect.dispatchEvent(event);
+                    });
+                }
+
+                // Load peer SNGs after countries are loaded and selected country is set
+                loadSelect2ThenPeerSNGs();
+            } catch (error) {
+                console.error('Error loading countries:', error);
+            }
+        }
+
+        // Load states for a country from API
+        async function loadStates(countryName, selectedState = null) {
+            try {
+                const response = await fetch(`/Rosra/GetStatesByCountry?country=${encodeURIComponent(countryName)}`);
+                const states = await response.json();
+
+                console.log('Loaded', states.length, 'states for', countryName);
+
+                // Clear existing options
+                regionSelect.innerHTML = '<option value="">Select a state/region</option>';
+
+                // Add states to the dropdown
+                states.forEach(state => {
+                    const option = document.createElement('option');
+                    option.value = state.name;
+                    option.textContent = state.name;
+
+                    // Select the saved state if it matches
+                    if (selectedState && state.name === selectedState) {
+                        option.selected = true;
+                    }
+
+                    regionSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading states:', error);
+            }
+        }
+
+        // Country name to ISO code mapping for World Bank API
+        const countryIsoCodes = {
+            'Afghanistan': 'AFG', 'Albania': 'ALB', 'Algeria': 'DZA', 'Angola': 'AGO', 'Argentina': 'ARG',
+            'Armenia': 'ARM', 'Australia': 'AUS', 'Austria': 'AUT', 'Azerbaijan': 'AZE', 'Bahrain': 'BHR',
+            'Bangladesh': 'BGD', 'Belarus': 'BLR', 'Belgium': 'BEL', 'Benin': 'BEN', 'Bhutan': 'BTN',
+            'Bolivia': 'BOL', 'Bosnia and Herzegovina': 'BIH', 'Botswana': 'BWA', 'Brazil': 'BRA',
+            'Brunei': 'BRN', 'Bulgaria': 'BGR', 'Burkina Faso': 'BFA', 'Burundi': 'BDI', 'Cambodia': 'KHM',
+            'Cameroon': 'CMR', 'Canada': 'CAN', 'Central African Republic': 'CAF', 'Chad': 'TCD',
+            'Chile': 'CHL', 'China': 'CHN', 'Colombia': 'COL', 'Congo': 'COG', 'Costa Rica': 'CRI',
+            'Croatia': 'HRV', 'Cuba': 'CUB', 'Cyprus': 'CYP', 'Czech Republic': 'CZE', 'Czechia': 'CZE',
+            'Denmark': 'DNK', 'Dominican Republic': 'DOM', 'Ecuador': 'ECU', 'Egypt': 'EGY',
+            'El Salvador': 'SLV', 'Estonia': 'EST', 'Eswatini': 'SWZ', 'Ethiopia': 'ETH', 'Finland': 'FIN',
+            'France': 'FRA', 'Gabon': 'GAB', 'Gambia': 'GMB', 'Georgia': 'GEO', 'Germany': 'DEU',
+            'Ghana': 'GHA', 'Greece': 'GRC', 'Guatemala': 'GTM', 'Guinea': 'GIN', 'Haiti': 'HTI',
+            'Honduras': 'HND', 'Hungary': 'HUN', 'Iceland': 'ISL', 'India': 'IND', 'Indonesia': 'IDN',
+            'Iran': 'IRN', 'Iraq': 'IRQ', 'Ireland': 'IRL', 'Israel': 'ISR', 'Italy': 'ITA',
+            'Ivory Coast': 'CIV', "Cote d'Ivoire": 'CIV', 'Jamaica': 'JAM', 'Japan': 'JPN', 'Jordan': 'JOR',
+            'Kazakhstan': 'KAZ', 'Kenya': 'KEN', 'Kuwait': 'KWT', 'Kyrgyzstan': 'KGZ', 'Laos': 'LAO',
+            'Latvia': 'LVA', 'Lebanon': 'LBN', 'Lesotho': 'LSO', 'Liberia': 'LBR', 'Libya': 'LBY',
+            'Lithuania': 'LTU', 'Luxembourg': 'LUX', 'Madagascar': 'MDG', 'Malawi': 'MWI', 'Malaysia': 'MYS',
+            'Mali': 'MLI', 'Malta': 'MLT', 'Mauritania': 'MRT', 'Mauritius': 'MUS', 'Mexico': 'MEX',
+            'Moldova': 'MDA', 'Mongolia': 'MNG', 'Montenegro': 'MNE', 'Morocco': 'MAR', 'Mozambique': 'MOZ',
+            'Myanmar': 'MMR', 'Namibia': 'NAM', 'Nepal': 'NPL', 'Netherlands': 'NLD', 'New Zealand': 'NZL',
+            'Nicaragua': 'NIC', 'Niger': 'NER', 'Nigeria': 'NGA', 'North Macedonia': 'MKD', 'Norway': 'NOR',
+            'Oman': 'OMN', 'Pakistan': 'PAK', 'Panama': 'PAN', 'Papua New Guinea': 'PNG', 'Paraguay': 'PRY',
+            'Peru': 'PER', 'Philippines': 'PHL', 'Poland': 'POL', 'Portugal': 'PRT', 'Qatar': 'QAT',
+            'Romania': 'ROU', 'Russia': 'RUS', 'Russian Federation': 'RUS', 'Rwanda': 'RWA',
+            'Saudi Arabia': 'SAU', 'Senegal': 'SEN', 'Serbia': 'SRB', 'Sierra Leone': 'SLE',
+            'Singapore': 'SGP', 'Slovakia': 'SVK', 'Slovenia': 'SVN', 'Somalia': 'SOM', 'South Africa': 'ZAF',
+            'South Korea': 'KOR', 'Korea': 'KOR', 'South Sudan': 'SSD', 'Spain': 'ESP', 'Sri Lanka': 'LKA',
+            'Sudan': 'SDN', 'Sweden': 'SWE', 'Switzerland': 'CHE', 'Syria': 'SYR', 'Taiwan': 'TWN',
+            'Tajikistan': 'TJK', 'Tanzania': 'TZA', 'Thailand': 'THA', 'Togo': 'TGO',
+            'Trinidad and Tobago': 'TTO', 'Tunisia': 'TUN', 'Turkey': 'TUR', 'Turkmenistan': 'TKM',
+            'Uganda': 'UGA', 'Ukraine': 'UKR', 'United Arab Emirates': 'ARE', 'UAE': 'ARE',
+            'United Kingdom': 'GBR', 'UK': 'GBR', 'United States': 'USA', 'USA': 'USA', 'Uruguay': 'URY',
+            'Uzbekistan': 'UZB', 'Venezuela': 'VEN', 'Vietnam': 'VNM', 'Yemen': 'YEM', 'Zambia': 'ZMB',
+            'Zimbabwe': 'ZWE'
+        };
+
+        // Fetch GDP per capita from World Bank API based on selected year
+        async function fetchGdpPerCapita(countryName, year = null) {
+            const isoCode = countryIsoCodes[countryName];
+            if (!isoCode) {
+                console.log('No ISO code found for country:', countryName);
+                return null;
+            }
+
+            // Use selected financial year or default to current year
+            const selectedYear = year || document.getElementById('financialYear').value || new Date().getFullYear();
+
+            const gdpInput = document.getElementById('gdpPerCapita');
+            const originalPlaceholder = gdpInput.placeholder;
+            gdpInput.placeholder = 'Loading...';
+
+            try {
+                // Fetch GDP for the specific year (with fallback range of ±2 years)
+                const startYear = parseInt(selectedYear) - 2;
+                const endYear = parseInt(selectedYear) + 2;
+
+                const response = await fetch(
+                    `https://api.worldbank.org/v2/country/${isoCode}/indicator/NY.GDP.PCAP.CD?format=json&per_page=10&date=${startYear}:${endYear}`
+                );
+                const data = await response.json();
+
+                if (data && data[1] && data[1].length > 0) {
+                    // First try to find exact year match
+                    let gdpEntry = data[1].find(entry => entry.date === selectedYear.toString() && entry.value !== null);
+
+                    // If no exact match, find the closest year with data
+                    if (!gdpEntry) {
+                        for (const entry of data[1]) {
+                            if (entry.value !== null) {
+                                gdpEntry = entry;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (gdpEntry && gdpEntry.value !== null) {
+                        const gdpValue = Math.round(gdpEntry.value);
+                        console.log(`GDP per capita for ${countryName} (${gdpEntry.date}): $${gdpValue}`);
+                        gdpInput.value = formatNumberWithCommas(gdpValue.toString());
+                        gdpInput.placeholder = originalPlaceholder;
+                        // Trigger calculation update
+                        gdpInput.dispatchEvent(new Event('change'));
+                        return gdpValue;
+                    }
+                }
+                console.log('No GDP data found for:', countryName, 'year:', selectedYear);
+                gdpInput.placeholder = originalPlaceholder;
+                return null;
+            } catch (error) {
+                console.error('Error fetching GDP per capita:', error);
+                gdpInput.placeholder = originalPlaceholder;
+                return null;
+            }
+        }
+
+        // Load countries on page load
+        loadCountries();
+        
+        // Initialize formula collapse functionality
+        const formulaButton = document.querySelector('#formulaToggleBtn');
+        if (formulaButton) {
+            formulaButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const collapseElement = document.getElementById('formulaCollapse');
+                
+                if (collapseElement) {
+                    if (collapseElement.classList.contains('show')) {
+                        collapseElement.classList.remove('show');
+                        this.classList.remove('active');
+                    } else {
+                        collapseElement.classList.add('show');
+                        this.classList.add('active');
+                    }
+                }
+            });
         }
         
         // Number formatting with commas
@@ -201,25 +2811,45 @@
         
         // Populate financial years
         const financialYearSelect = document.getElementById('financialYear');
-        const financialYearValue = '@Model.FinancialYear';
-        
-        // Create financial year options for individual years 2010 through 2025
-        for (let i = 2010; i <= 2025; i++) {
+        const financialYearValue = '@Model.FinancialYear' || '2022'; // Default to 2022
+
+        // Create financial year options for individual years 2010 through 2045
+        for (let i = 2010; i <= 2045; i++) {
             const option = document.createElement('option');
             option.value = i.toString();
             option.textContent = i.toString();
-            
-            if (option.value === financialYearValue) {
+
+            // Select if matches saved value, or default to 2022
+            if (option.value === financialYearValue || (!financialYearValue && option.value === '2022')) {
                 option.selected = true;
             }
-            
+
             financialYearSelect.appendChild(option);
         }
-        
+
+        // Set default values for form fields if empty
+        const actualOsrInput = document.getElementById('actualOsr');
+        const budgetedOsrInput = document.getElementById('budgetedOsr');
+        const populationInput = document.getElementById('population');
+
+        // Default Actual OSR: 10,000,000
+        if (!actualOsrInput.value) {
+            actualOsrInput.value = '10,000,000';
+        }
+
+        // Default Budgeted OSR: 15,000,000
+        if (!budgetedOsrInput.value) {
+            budgetedOsrInput.value = '15,000,000';
+        }
+
+        // Default Population: 1,000,000
+        if (!populationInput.value) {
+            populationInput.value = '1,000,000';
+        }
+
         // Update year displays based on selected financial year
         function updateYearDisplays() {
-            const selectedYear = financialYearSelect.value || '2018';
-            document.getElementById('financial-year-display').textContent = selectedYear;
+            const selectedYear = financialYearSelect.value || '2022';
             document.querySelectorAll('.year-display').forEach(function(element) {
                 element.textContent = selectedYear;
             });
@@ -229,166 +2859,1471 @@
         updateYearDisplays();
         
         // Update year displays when financial year changes
-        financialYearSelect.addEventListener('change', updateYearDisplays);
-        
-        // Country-Region mapping
-        const regionsByCountry = {
-            'US': [
-                { value: 'AL', text: 'Alabama' },
-                { value: 'AK', text: 'Alaska' },
-                { value: 'AZ', text: 'Arizona' },
-                { value: 'AR', text: 'Arkansas' },
-                { value: 'CA', text: 'California' },
-                { value: 'CO', text: 'Colorado' },
-                { value: 'CT', text: 'Connecticut' },
-                { value: 'DE', text: 'Delaware' },
-                { value: 'FL', text: 'Florida' },
-                { value: 'GA', text: 'Georgia' },
-                { value: 'HI', text: 'Hawaii' },
-                { value: 'ID', text: 'Idaho' },
-                { value: 'IL', text: 'Illinois' },
-                { value: 'IN', text: 'Indiana' }
-            ],
-            'CA': [
-                { value: 'AB', text: 'Alberta' },
-                { value: 'BC', text: 'British Columbia' },
-                { value: 'MB', text: 'Manitoba' },
-                { value: 'NB', text: 'New Brunswick' },
-                { value: 'NL', text: 'Newfoundland and Labrador' },
-                { value: 'NS', text: 'Nova Scotia' },
-                { value: 'ON', text: 'Ontario' },
-                { value: 'PE', text: 'Prince Edward Island' },
-                { value: 'QC', text: 'Quebec' },
-                { value: 'SK', text: 'Saskatchewan' }
-            ],
-            'UK': [
-                { value: 'ENG', text: 'England' },
-                { value: 'SCT', text: 'Scotland' },
-                { value: 'WLS', text: 'Wales' },
-                { value: 'NIR', text: 'Northern Ireland' }
-            ],
-            'KE': [
-                { value: 'NAI', text: 'Nairobi' },
-                { value: 'MOM', text: 'Mombasa' },
-                { value: 'KIS', text: 'Kisumu' },
-                { value: 'NAK', text: 'Nakuru' },
-                { value: 'ELD', text: 'Eldoret' },
-                { value: 'NYE', text: 'Nyeri' },
-                { value: 'KAK', text: 'Kakamega' },
-                { value: 'KIT', text: 'Kitale' }
-            ],
-            'NG': [
-                { value: 'LAG', text: 'Lagos' },
-                { value: 'ABJ', text: 'Abuja' },
-                { value: 'KAN', text: 'Kano' },
-                { value: 'IBA', text: 'Ibadan' },
-                { value: 'PH', text: 'Port Harcourt' }
-            ],
-            'ZA': [
-                { value: 'GP', text: 'Gauteng' },
-                { value: 'WC', text: 'Western Cape' },
-                { value: 'EC', text: 'Eastern Cape' },
-                { value: 'KZN', text: 'KwaZulu-Natal' },
-                { value: 'FS', text: 'Free State' }
-            ],
-            'IN': [
-                { value: 'MH', text: 'Maharashtra' },
-                { value: 'DL', text: 'Delhi' },
-                { value: 'KA', text: 'Karnataka' },
-                { value: 'TN', text: 'Tamil Nadu' },
-                { value: 'UP', text: 'Uttar Pradesh' }
-            ],
-            'AU': [
-                { value: 'NSW', text: 'New South Wales' },
-                { value: 'VIC', text: 'Victoria' },
-                { value: 'QLD', text: 'Queensland' },
-                { value: 'WA', text: 'Western Australia' },
-                { value: 'SA', text: 'South Australia' },
-                { value: 'TAS', text: 'Tasmania' }
-            ]
-        };
-        
-        // Currency mapping by country
-        const currencyByCountry = {
-            'US': { name: 'US Dollar', symbol: '$' },
-            'CA': { name: 'Canadian Dollar', symbol: 'CA$' },
-            'UK': { name: 'British Pound', symbol: '£' },
-            'AU': { name: 'Australian Dollar', symbol: 'A$' },
-            'KE': { name: 'Kenyan Shilling', symbol: 'KSh' },
-            'NG': { name: 'Nigerian Naira', symbol: '₦' },
-            'ZA': { name: 'South African Rand', symbol: 'R' },
-            'IN': { name: 'Indian Rupee', symbol: '₹' },
-            'CN': { name: 'Chinese Yuan', symbol: '¥' },
-            'JP': { name: 'Japanese Yen', symbol: '¥' }
-        };
-        
-        // Function to update currency based on selected country
-        function updateCurrency() {
-            const countrySelect = document.getElementById('country');
-            const currencyInput = document.getElementById('currency');
-            const currencySymbolInput = document.getElementById('currencySymbol');
-            const currencySymbolSpan = document.getElementById('currency-symbol');
-            const actualOsrCurrency = document.getElementById('actual-osr-currency');
-            const budgetedOsrCurrency = document.getElementById('budgeted-osr-currency');
-            const gdpCurrency = document.getElementById('gdp-currency');
+        financialYearSelect.addEventListener('change', function() {
+            updateYearDisplays();
+
+            // Re-fetch GDP per capita if a country is selected
             const selectedCountry = countrySelect.value;
-            
-            if (selectedCountry && currencyByCountry[selectedCountry]) {
-                const currency = currencyByCountry[selectedCountry];
-                currencyInput.value = currency.name;
-                currencySymbolInput.value = currency.symbol;
-                currencySymbolSpan.textContent = currency.symbol;
-                actualOsrCurrency.textContent = currency.symbol;
-                budgetedOsrCurrency.textContent = currency.symbol;
-                gdpCurrency.textContent = currency.symbol;
-            } else {
-                currencyInput.value = '';
-                currencySymbolInput.value = '$';
-                currencySymbolSpan.textContent = '$';
-                actualOsrCurrency.textContent = '$';
-                budgetedOsrCurrency.textContent = '$';
-                gdpCurrency.textContent = '$';
+            if (selectedCountry) {
+                fetchGdpPerCapita(selectedCountry, this.value);
+            }
+        });
+        
+        // COUNTRY-REGION SELECTION - API-based implementation
+        // Add event listener for country change
+        countrySelect.addEventListener('change', async function() {
+            const selectedCountry = this.value;
+            console.log('Country changed to:', selectedCountry);
+
+            // Clear the region dropdown and all government unit levels
+            regionSelect.innerHTML = '<option value="">Select a level 1 unit</option>';
+            cityInput.value = '';
+            govUnitLevel3Input.value = '';
+            level1IsFinal.checked = false;
+            level2IsFinal.checked = false;
+            updateGovernmentUnitVisibility();
+
+            // If no country is selected, clear auto-populated fields and return
+            if (!selectedCountry) {
+                document.getElementById('governmentType').value = '';
+                document.getElementById('incomeLevel').value = '';
+                return;
+            }
+
+            // Load states from API
+            await loadStates(selectedCountry);
+
+            // Update fields based on selected country option's data attributes
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption) {
+                // Update currency name
+                if (selectedOption.dataset.currency) {
+                    document.getElementById('currency').value = selectedOption.dataset.currency;
+                    localCurrencyName = selectedOption.dataset.currency;
+                }
+                // Track local currency code for the override dropdown
+                localCurrencyCode = selectedOption.dataset.currencyName || selectedOption.dataset.currencySymbol || '';
+                // Update currency symbol
+                if (selectedOption.dataset.currencySymbol) {
+                    updateCurrencySymbols(selectedOption.dataset.currencySymbol);
+                } else {
+                    updateCurrencySymbols(''); // Clear if no symbol
+                }
+                // Update Government Type and Income Level (auto-populated)
+                document.getElementById('governmentType').value = selectedOption.dataset.governmentType || '';
+                document.getElementById('incomeLevel').value = selectedOption.dataset.incomeLevel || '';
+            }
+
+            // Fetch GDP per capita from World Bank API
+            fetchGdpPerCapita(selectedCountry);
+
+            // Reload peer SNGs for the new country
+            loadPeerSNGs();
+        });
+
+        // Track the auto-assigned (local) currency so we can revert to it
+        let localCurrencySymbol = '@(Model.CurrencySymbol ?? "")';
+        let localCurrencyName = '@(Model.Currency ?? "")';
+        let localCurrencyCode = '';
+
+        // Function to update all currency symbol displays
+        function updateCurrencySymbols(symbol) {
+            console.log('Setting currency symbol to:', symbol);
+
+            // Store the local (auto-assigned) currency
+            localCurrencySymbol = symbol || '';
+
+            // If override is active, don't change the active currency — just update the local option in the dropdown
+            const overrideToggle = document.getElementById('useDifferentCurrency');
+            if (overrideToggle && overrideToggle.checked) {
+                updateLocalCurrencyOption();
+                return; // Keep using the override currency
+            }
+
+            applyActiveCurrency(symbol);
+        }
+
+        // Apply a currency symbol across all displays and AppContext
+        function applyActiveCurrency(symbol) {
+            const displaySymbol = symbol || '-';
+            const valueSymbol = symbol || '';
+
+            // Update AppContext (single source of truth) - this notifies all subscribers
+            if (symbol && window.AppContext) {
+                window.AppContext.set('currencySymbol', symbol);
+            }
+
+            document.getElementById('currencySymbol').value = valueSymbol;
+            document.getElementById('currency-symbol').textContent = displaySymbol;
+            document.getElementById('actual-osr-currency').textContent = valueSymbol;
+            document.getElementById('budgeted-osr-currency').textContent = valueSymbol;
+
+            // Update the hidden override field
+            const overrideHidden = document.getElementById('overrideCurrencySymbol');
+            if (overrideHidden) {
+                const overrideToggle = document.getElementById('useDifferentCurrency');
+                overrideHidden.value = (overrideToggle && overrideToggle.checked) ? symbol : '';
             }
         }
-        
-        // Function to populate regions based on selected country
-        function populateRegions() {
-            const countrySelect = document.getElementById('country');
-            const regionSelect = document.getElementById('region');
-            const selectedCountry = countrySelect.value;
-            const regionValue = '@Model.Region';
-            
-            // Clear existing options
-            regionSelect.innerHTML = '<option value="">Select a state/region</option>';
-            
-            // If a country is selected and regions exist for that country
-            if (selectedCountry && regionsByCountry[selectedCountry]) {
-                // Add region options for the selected country
-                regionsByCountry[selectedCountry].forEach(function(region) {
-                    const option = document.createElement('option');
-                    option.value = region.value;
-                    option.textContent = region.text;
-                    
-                    // Set selected if it matches the model value
-                    if (region.value === regionValue) {
-                        option.selected = true;
+
+        // Update the "Local currency" option in the override dropdown
+        function updateLocalCurrencyOption() {
+            const dropdown = document.getElementById('overrideCurrency');
+            if (!dropdown) return;
+
+            // Remove existing local currency option if present
+            const existing = dropdown.querySelector('option[data-local="true"]');
+            if (existing) existing.remove();
+
+            // Add the current local currency as the first option after the placeholder
+            if (localCurrencySymbol) {
+                const countrySelect = document.getElementById('country');
+                const selectedOpt = countrySelect ? countrySelect.options[countrySelect.selectedIndex] : null;
+                const code = (selectedOpt && selectedOpt.dataset.currencyCode) || localCurrencyCode || localCurrencySymbol;
+                const name = localCurrencyName || 'Local Currency';
+
+                const opt = document.createElement('option');
+                opt.value = code;
+                opt.dataset.symbol = localCurrencySymbol;
+                opt.dataset.name = name;
+                opt.dataset.local = 'true';
+                opt.textContent = code + ' – ' + name + ' (' + localCurrencySymbol + ') ★';
+
+                // Insert after placeholder
+                const placeholder = dropdown.querySelector('option[value=""]');
+                if (placeholder && placeholder.nextSibling) {
+                    dropdown.insertBefore(opt, placeholder.nextSibling);
+                } else {
+                    dropdown.appendChild(opt);
+                }
+            }
+        }
+
+        // Currency override toggle handler
+        document.getElementById('useDifferentCurrency').addEventListener('change', function() {
+            const selectContainer = document.getElementById('currencyOverrideSelect');
+            const dropdown = document.getElementById('overrideCurrency');
+
+            if (this.checked) {
+                // Show the dropdown
+                selectContainer.style.display = 'block';
+                updateLocalCurrencyOption();
+                // If no selection yet, keep current currency active
+            } else {
+                // Hide the dropdown, revert to local currency
+                selectContainer.style.display = 'none';
+                dropdown.value = '';
+                applyActiveCurrency(localCurrencySymbol);
+            }
+        });
+
+        // Override currency dropdown change handler
+        document.getElementById('overrideCurrency').addEventListener('change', function() {
+            const selectedOpt = this.options[this.selectedIndex];
+            if (selectedOpt && selectedOpt.value) {
+                const symbol = selectedOpt.dataset.symbol || selectedOpt.value;
+                applyActiveCurrency(symbol);
+                console.log('Currency overridden to:', selectedOpt.value, '(' + symbol + ')');
+            }
+        });
+
+        // Fetch and display Frontier Analysis
+        async function fetchFrontierAnalysis(countryName) {
+            const placeholder = document.getElementById('frontierPlaceholder');
+            const content = document.getElementById('frontierContent');
+
+            if (!countryName) {
+                placeholder.style.display = 'block';
+                content.style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Rosra/GetFrontierAnalysis?country=${encodeURIComponent(countryName)}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    // Hide placeholder, show content
+                    placeholder.style.display = 'none';
+                    content.style.display = 'block';
+
+                    // Update Frontier 1 values
+                    document.getElementById('sngRevenuePerCapita').textContent =
+                        '$' + data.frontier1.sngRevenuePerCapita.toLocaleString();
+                    document.getElementById('peerBenchmarkFunding').textContent =
+                        '$' + data.frontier1.peerBenchmark.toLocaleString();
+                    document.getElementById('fundingIndex').textContent =
+                        data.frontier1.fundingIndex + '%';
+                    document.getElementById('fundingHeadroom').textContent =
+                        '$' + data.frontier1.fundingHeadroom.toLocaleString();
+
+                    // Update funding index bar
+                    const fundingIndexBar = document.getElementById('fundingIndexBar');
+                    fundingIndexBar.style.width = Math.min(data.frontier1.fundingIndex, 100) + '%';
+
+                    // Update Frontier 2 values
+                    document.getElementById('nonGrantsShare').textContent =
+                        data.frontier2.nonGrantsShare + '%';
+                    document.getElementById('peerBenchmarkAutonomy').textContent =
+                        data.frontier2.peerBenchmark + '%';
+                    document.getElementById('autonomyIndex').textContent =
+                        data.frontier2.autonomyIndex + '%';
+                    document.getElementById('distanceFromBenchmark').textContent =
+                        data.frontier2.distanceFromBenchmark + '%';
+
+                    // Update autonomy index bar
+                    const autonomyIndexBar = document.getElementById('autonomyIndexBar');
+                    autonomyIndexBar.style.width = Math.min(data.frontier2.autonomyIndex, 100) + '%';
+
+                    // Update position relative to benchmark
+                    const positionEl = document.getElementById('positionRelative');
+                    positionEl.textContent = data.frontier2.positionRelative;
+
+                    // Style the position based on above/below
+                    positionEl.classList.remove('above', 'below');
+                    if (data.frontier2.positionRelative.includes('Above')) {
+                        positionEl.classList.add('above');
+                    } else if (data.frontier2.positionRelative.includes('Below')) {
+                        positionEl.classList.add('below');
                     }
-                    
-                    regionSelect.appendChild(option);
+
+                    // Create the fiscal decentralisation chart
+                    createFiscalDecentralisationChart(
+                        data.frontier1.fundingIndex,
+                        data.frontier2.autonomyIndex,
+                        countryName
+                    );
+
+                    // Update analysis result text
+                    updateAnalysisResultText(
+                        data.frontier1.fundingIndex,
+                        data.frontier2.autonomyIndex
+                    );
+
+                    console.log('Frontier analysis loaded for:', countryName);
+                } else {
+                    console.log('Frontier analysis not available:', data.message);
+                    placeholder.innerHTML = `
+                        <i class="bi bi-exclamation-circle"></i>
+                        <p>${data.message || 'Frontier analysis not available for this country'}</p>
+                    `;
+                    placeholder.style.display = 'block';
+                    content.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error fetching frontier analysis:', error);
+                placeholder.innerHTML = `
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <p>Error loading frontier analysis</p>
+                `;
+                placeholder.style.display = 'block';
+                content.style.display = 'none';
+            }
+        }
+
+        // Call frontier analysis when country changes (add to country change handler)
+        countrySelect.addEventListener('change', function() {
+            fetchFrontierAnalysis(this.value);
+        });
+
+        // Load frontier analysis if country is already selected on page load
+        if (savedCountry) {
+            fetchFrontierAnalysis(savedCountry);
+        }
+
+        // Tooltip functionality
+        const tooltipButtons = document.querySelectorAll('.info-btn[data-tooltip-id]');
+        let activeTooltip = null;
+        let activeButton = null;
+
+        function positionTooltip(btn, tooltip) {
+            const btnRect = btn.getBoundingClientRect();
+            const tooltipWidth = 280; // approximate width
+            const tooltipHeight = 100; // approximate height
+            const padding = 10;
+
+            let left = btnRect.left + btnRect.width / 2;
+            let top = btnRect.bottom + 8;
+
+            // Check if tooltip would overflow right edge
+            if (left + tooltipWidth / 2 > window.innerWidth - padding) {
+                left = window.innerWidth - tooltipWidth - padding;
+            }
+            // Check if tooltip would overflow left edge
+            if (left - tooltipWidth / 2 < padding) {
+                left = padding;
+            } else {
+                left = left - tooltipWidth / 2 + 20; // offset to align with button
+            }
+
+            // Check if tooltip would overflow bottom edge
+            if (top + tooltipHeight > window.innerHeight - padding) {
+                // Position above the button instead
+                top = btnRect.top - tooltipHeight - 8;
+            }
+
+            tooltip.style.left = Math.max(padding, left) + 'px';
+            tooltip.style.top = top + 'px';
+        }
+
+        tooltipButtons.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const tooltipId = this.getAttribute('data-tooltip-id');
+                const tooltip = document.getElementById(tooltipId);
+
+                if (!tooltip) return;
+
+                // If clicking the same tooltip, toggle it off
+                if (activeTooltip === tooltip) {
+                    tooltip.classList.remove('active');
+                    activeTooltip = null;
+                    activeButton = null;
+                    return;
+                }
+
+                // Close any open tooltip
+                if (activeTooltip) {
+                    activeTooltip.classList.remove('active');
+                }
+
+                // Position and open the clicked tooltip
+                positionTooltip(this, tooltip);
+                tooltip.classList.add('active');
+                activeTooltip = tooltip;
+                activeButton = this;
+            });
+        });
+
+        // Reposition tooltip on scroll or resize
+        window.addEventListener('scroll', function() {
+            if (activeTooltip && activeButton) {
+                positionTooltip(activeButton, activeTooltip);
+            }
+        }, true);
+
+        window.addEventListener('resize', function() {
+            if (activeTooltip && activeButton) {
+                positionTooltip(activeButton, activeTooltip);
+            }
+        });
+
+        // Close tooltip when clicking outside
+        document.addEventListener('click', function(e) {
+            if (activeTooltip && !e.target.closest('.tooltip-trigger')) {
+                activeTooltip.classList.remove('active');
+                activeTooltip = null;
+            }
+        });
+
+        // Close tooltip on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && activeTooltip) {
+                activeTooltip.classList.remove('active');
+                activeTooltip = null;
+            }
+        });
+
+        // ========================================
+        // MODULE 2: Within-Country OSR Frontier
+        // ========================================
+        const peerSngSelect = document.getElementById('peerSngSelectTop');
+        const module2Placeholder = document.getElementById('module2PlaceholderTop');
+        const module2Content = document.getElementById('module2ContentTop');
+        let peerFrontierScatterChart = null;
+
+        // Load Peer SNGs from API
+        // Get current country code for peer SNG filtering
+        function getCurrentCountryCode() {
+            const countrySelect = document.getElementById('country');
+            if (countrySelect && countrySelect.value) {
+                // Try to get the country code from data attribute
+                const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+                if (selectedOption?.dataset?.code) {
+                    return selectedOption.dataset.code;
+                }
+                // Fallback: use countryIsoCodes mapping
+                return countryIsoCodes[countrySelect.value] || null;
+            }
+            return null;
+        }
+
+        // Check if peer data exists for a country
+        async function checkPeerDataAvailable(countryCode) {
+            if (!countryCode) return true; // Default assume data exists
+            try {
+                const response = await fetch(`/Rosra/GetPeerSNGs?countryCode=${countryCode}`);
+                const peers = await response.json();
+                return peers && peers.length > 0;
+            } catch (e) {
+                console.error('Error checking peer data:', e);
+                return false;
+            }
+        }
+
+        // Show/hide peer data input section
+        function togglePeerDataInputSection(show) {
+            const section = document.getElementById('peerDataInputSection');
+            if (section) {
+                section.style.display = show ? 'block' : 'none';
+            }
+        }
+
+        // Upload peer CSV file (parse client-side, store in memory)
+        async function uploadPeerCSV() {
+            const fileInput = document.getElementById('peerCsvUpload');
+            const countryCode = getCurrentCountryCode();
+
+            if (!fileInput.files || !fileInput.files[0]) {
+                alert('Please select a CSV file first');
+                return;
+            }
+
+            if (!countryCode) {
+                alert('Please select a country first');
+                return;
+            }
+
+            const file = fileInput.files[0];
+
+            try {
+                // Parse CSV client-side
+                const text = await file.text();
+                const lines = text.split('\n').filter(line => line.trim());
+
+                if (lines.length < 2) {
+                    alert('CSV file must have at least a header and one data row');
+                    return;
+                }
+
+                // Parse header to find column indices
+                const header = lines[0].split(',').map(h => h.trim().toLowerCase());
+                const sngIdx = header.findIndex(h => h === 'sng' || h === 'name');
+                const osrIdx = header.findIndex(h => h === 'osr');
+                const gcpIdx = header.findIndex(h => h === 'gcp' || h === 'gdp');
+
+                if (sngIdx === -1 || osrIdx === -1 || gcpIdx === -1) {
+                    alert('CSV must have columns: SNG (or Name), OSR, GCP (or GDP)');
+                    return;
+                }
+
+                // Parse data rows
+                const peers = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].split(',').map(c => c.trim());
+                    if (cols.length > Math.max(sngIdx, osrIdx, gcpIdx)) {
+                        const sng = cols[sngIdx];
+                        const osr = parseFloat(cols[osrIdx]) || 0;
+                        const gcp = parseFloat(cols[gcpIdx]) || 0;
+
+                        if (sng && (osr > 0 || gcp > 0)) {
+                            peers.push({ sng: sng, osr: osr, gcp: gcp, include: true });
+                        }
+                    }
+                }
+
+                if (peers.length === 0) {
+                    alert('No valid peer data found in CSV');
+                    return;
+                }
+
+                // Store custom data in memory (will be saved with report)
+                customPeerData = {
+                    dataSource: 'custom',
+                    countryCode: countryCode,
+                    customPeers: peers,
+                    timestamp: new Date().toISOString()
+                };
+
+                console.log('Custom peer data from CSV stored in memory:', customPeerData);
+
+                // Populate dropdown from custom data
+                populatePeerDropdownFromCustomData(peers);
+
+                // Hide input section and show success message
+                togglePeerDataInputSection(false);
+                showPeerDataSuccessMessage(`${peers.length} peers loaded from CSV. Data will be saved with your report.`);
+
+                // Clear file input
+                fileInput.value = '';
+
+            } catch (e) {
+                console.error('Error parsing CSV:', e);
+                alert('Error parsing CSV file. Please check the format and try again.');
+            }
+        }
+
+        // Add a row to manual peer entry table
+        function addPeerRow() {
+            const tbody = document.getElementById('peerManualEntryBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><input type="text" class="form-control form-control-sm" placeholder="Name"></td>
+                <td><input type="number" class="form-control form-control-sm" placeholder="0" step="any"></td>
+                <td><input type="number" class="form-control form-control-sm" placeholder="0" step="any"></td>
+                <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removePeerRow(this)"><i class="bi bi-trash"></i></button></td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        // Remove a row from manual peer entry table
+        function removePeerRow(btn) {
+            const row = btn.closest('tr');
+            const tbody = document.getElementById('peerManualEntryBody');
+            if (tbody.children.length > 1) {
+                row.remove();
+            } else {
+                alert('At least one row is required');
+            }
+        }
+
+        // Save manually entered peer data (to memory, not database)
+        async function savePeerDataManually() {
+            const countryCode = getCurrentCountryCode();
+            if (!countryCode) {
+                alert('Please select a country first');
+                return;
+            }
+
+            const tbody = document.getElementById('peerManualEntryBody');
+            const rows = tbody.querySelectorAll('tr');
+            const peers = [];
+
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const name = inputs[0].value.trim();
+                const osr = parseFloat(inputs[1].value) || 0;
+                const gcp = parseFloat(inputs[2].value) || 0;
+
+                if (name && (osr > 0 || gcp > 0)) {
+                    peers.push({ sng: name, osr: osr, gcp: gcp, include: true });
+                }
+            });
+
+            if (peers.length === 0) {
+                alert('Please enter at least one peer with valid data');
+                return;
+            }
+
+            try {
+                // Validate data with server (no database write)
+                const response = await fetch('/Rosra/SavePeerSNGs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ CountryCode: countryCode, Peers: peers.map(p => ({ SNG: p.sng, OSR: p.osr, GCP: p.gcp })) })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    // Store custom data in memory (will be saved with report)
+                    customPeerData = {
+                        dataSource: 'custom',
+                        countryCode: countryCode,
+                        customPeers: peers,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    console.log('Custom peer data stored in memory:', customPeerData);
+
+                    // Populate dropdown from custom data
+                    populatePeerDropdownFromCustomData(peers);
+
+                    // Hide input section and show success message
+                    togglePeerDataInputSection(false);
+                    showPeerDataSuccessMessage(`${peers.length} peers ready. Data will be saved with your report.`);
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (e) {
+                console.error('Error validating peer data:', e);
+                alert('Error validating data. Please try again.');
+            }
+        }
+
+        // Populate peer dropdown from custom data
+        function populatePeerDropdownFromCustomData(peers) {
+            peerSngSelect.innerHTML = '<option value="">Select a subnational government...</option>';
+
+            peers.forEach(peer => {
+                const option = document.createElement('option');
+                option.value = peer.sng;
+                option.textContent = peer.sng;
+                peerSngSelect.appendChild(option);
+            });
+
+            // Re-initialize Select2 if available
+            if (typeof $ !== 'undefined' && $.fn.select2) {
+                $(peerSngSelect).select2({
+                    theme: 'bootstrap-5',
+                    placeholder: 'Search for a subnational government...',
+                    allowClear: true,
+                    width: '100%'
+                });
+
+                $(peerSngSelect).on('select2:select', function(e) {
+                    const event = new Event('change', { bubbles: true });
+                    peerSngSelect.dispatchEvent(event);
+                });
+
+                $(peerSngSelect).on('select2:clear', function(e) {
+                    const event = new Event('change', { bubbles: true });
+                    peerSngSelect.dispatchEvent(event);
                 });
             }
+
+            console.log('Peer dropdown populated with', peers.length, 'custom peers');
         }
-        
-        // Initialize regions based on the initial country selection
-        populateRegions();
-        
-        // Initialize currency based on the initial country selection
-        updateCurrency();
-        
-        // Update regions and currency when country selection changes
-        document.getElementById('country').addEventListener('change', function() {
-            populateRegions();
-            updateCurrency();
+
+        // Show success message for peer data
+        function showPeerDataSuccessMessage(message) {
+            // Create or update success alert
+            let alertDiv = document.getElementById('peerDataSuccessAlert');
+            if (!alertDiv) {
+                alertDiv = document.createElement('div');
+                alertDiv.id = 'peerDataSuccessAlert';
+                alertDiv.className = 'alert alert-success alert-dismissible fade show mt-2';
+                alertDiv.innerHTML = `
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span id="peerDataSuccessMessage"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                const peerDataSection = document.getElementById('peerDataInputSection');
+                if (peerDataSection) {
+                    peerDataSection.parentNode.insertBefore(alertDiv, peerDataSection.nextSibling);
+                }
+            }
+            document.getElementById('peerDataSuccessMessage').textContent = message;
+            alertDiv.style.display = 'flex';
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                if (alertDiv) alertDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        async function loadPeerSNGs() {
+            try {
+                const countryCode = getCurrentCountryCode();
+
+                // If custom peer data exists for this country, use it instead of reference data
+                if (customPeerData && customPeerData.customPeers && customPeerData.customPeers.length > 0) {
+                    // Check if custom data matches current country
+                    if (!customPeerData.countryCode || customPeerData.countryCode === countryCode) {
+                        console.log('Using custom peer data:', customPeerData.customPeers.length, 'peers');
+                        populatePeerDropdownFromCustomData(customPeerData.customPeers);
+                        togglePeerDataInputSection(false);
+
+                        // Select saved SNG if available
+                        const defaultPeerSNG = savedRegion || customPeerData.customPeers[0]?.sng;
+                        if (defaultPeerSNG) {
+                            const matchingOption = Array.from(peerSngSelect.options).find(opt =>
+                                opt.value.toLowerCase() === defaultPeerSNG.toLowerCase()
+                            );
+                            if (matchingOption) {
+                                peerSngSelect.value = matchingOption.value;
+                                if (typeof $ !== 'undefined' && $.fn.select2 && $(peerSngSelect).data('select2')) {
+                                    $(peerSngSelect).trigger('change.select2');
+                                }
+                                fetchPeerSNGAnalysis(matchingOption.value);
+                            }
+                        }
+                        return;
+                    } else {
+                        // Country changed, clear custom data
+                        console.log('Country changed, clearing custom peer data');
+                        customPeerData = null;
+                    }
+                }
+
+                // Fetch reference data from database
+                const url = countryCode ? `/Rosra/GetPeerSNGs?countryCode=${countryCode}` : '/Rosra/GetPeerSNGs';
+                const response = await fetch(url);
+                const peers = await response.json();
+
+                console.log('Loaded', peers.length, 'peer SNGs from reference data for country:', countryCode);
+
+                // Clear existing options except the placeholder
+                peerSngSelect.innerHTML = '<option value="">Select a subnational government...</option>';
+
+                // Show/hide peer data input section based on availability
+                if (countryCode && countryCode !== 'KEN' && peers.length === 0) {
+                    togglePeerDataInputSection(true);
+                } else {
+                    togglePeerDataInputSection(false);
+                }
+
+                // Add peer SNGs to the dropdown
+                const defaultPeerSNG = savedRegion || 'Kiambu';
+                peers.forEach(peer => {
+                    const option = document.createElement('option');
+                    option.value = peer.name;
+                    option.textContent = peer.name;
+                    // Select default SNG
+                    if (peer.name === defaultPeerSNG) {
+                        option.selected = true;
+                    }
+                    peerSngSelect.appendChild(option);
+                });
+
+                // Initialize Select2 for searchable dropdown
+                if (typeof $ !== 'undefined' && $.fn.select2) {
+                    $(peerSngSelect).select2({
+                        theme: 'bootstrap-5',
+                        placeholder: 'Search for a subnational government...',
+                        allowClear: true,
+                        width: '100%'
+                    });
+
+                    // Handle Select2 change event
+                    $(peerSngSelect).on('select2:select', function(e) {
+                        const event = new Event('change', { bubbles: true });
+                        peerSngSelect.dispatchEvent(event);
+                    });
+
+                    $(peerSngSelect).on('select2:clear', function(e) {
+                        const event = new Event('change', { bubbles: true });
+                        peerSngSelect.dispatchEvent(event);
+                    });
+                }
+
+                // Fetch analysis for default SNG
+                if (peerSngSelect.value) {
+                    fetchPeerSNGAnalysis(peerSngSelect.value);
+                }
+            } catch (error) {
+                console.error('Error loading peer SNGs:', error);
+            }
+        }
+
+        // Load peer data from a saved report
+        window.loadReportPeerData = function(peerSNGDataJson) {
+            if (!peerSNGDataJson) {
+                console.log('No peer data in report, using reference data');
+                customPeerData = null;
+                loadPeerSNGs();
+                return;
+            }
+
+            try {
+                const data = JSON.parse(peerSNGDataJson);
+
+                if (data.dataSource === 'custom' && data.customPeers && data.customPeers.length > 0) {
+                    console.log('Loading custom peer data from report:', data.customPeers.length, 'peers');
+                    customPeerData = {
+                        dataSource: 'custom',
+                        countryCode: data.countryCode,
+                        customPeers: data.customPeers,
+                        timestamp: data.timestamp
+                    };
+                    populatePeerDropdownFromCustomData(data.customPeers);
+
+                    // Select saved SNG if available
+                    if (data.selectedSNG) {
+                        setTimeout(() => {
+                            const matchingOption = Array.from(peerSngSelect.options).find(opt =>
+                                opt.value.toLowerCase() === data.selectedSNG.toLowerCase()
+                            );
+                            if (matchingOption) {
+                                peerSngSelect.value = matchingOption.value;
+                                if (typeof $ !== 'undefined' && $.fn.select2 && $(peerSngSelect).data('select2')) {
+                                    $(peerSngSelect).trigger('change.select2');
+                                }
+                                fetchPeerSNGAnalysis(matchingOption.value);
+                            }
+                        }, 100);
+                    }
+                } else {
+                    // Reference data or no custom peers
+                    console.log('Report uses reference data');
+                    customPeerData = null;
+                    loadPeerSNGs();
+
+                    // Select saved SNG if available
+                    if (data.selectedSNG) {
+                        setTimeout(() => {
+                            const matchingOption = Array.from(peerSngSelect.options).find(opt =>
+                                opt.value.toLowerCase() === data.selectedSNG.toLowerCase()
+                            );
+                            if (matchingOption) {
+                                peerSngSelect.value = matchingOption.value;
+                                if (typeof $ !== 'undefined' && $.fn.select2 && $(peerSngSelect).data('select2')) {
+                                    $(peerSngSelect).trigger('change.select2');
+                                }
+                                fetchPeerSNGAnalysis(matchingOption.value);
+                            }
+                        }, 500);
+                    }
+                }
+            } catch (e) {
+                console.error('Error parsing report peer data:', e);
+                customPeerData = null;
+                loadPeerSNGs();
+            }
+        };
+
+        // Fetch and display Peer SNG Analysis
+        async function fetchPeerSNGAnalysis(sngName) {
+            if (!sngName) {
+                module2Placeholder.style.display = 'block';
+                module2Content.style.display = 'none';
+                return;
+            }
+
+            try {
+                let response;
+                const countryCode = getCurrentCountryCode();
+
+                // If custom peer data is available, send it with the request (POST)
+                if (customPeerData && customPeerData.customPeers && customPeerData.customPeers.length > 0) {
+                    console.log('Using custom peer data for analysis:', customPeerData.customPeers.length, 'peers');
+                    response = await fetch('/Rosra/GetPeerSNGAnalysisWithCustomPeers', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            Sng: sngName,
+                            CountryCode: countryCode,
+                            CustomPeers: customPeerData.customPeers.map(p => ({
+                                Sng: p.sng,
+                                Osr: p.osr,
+                                Gcp: p.gcp,
+                                Include: p.include !== false
+                            }))
+                        })
+                    });
+                } else {
+                    // Use reference data from database (GET)
+                    console.log('Using reference data for analysis');
+                    const url = countryCode
+                        ? `/Rosra/GetPeerSNGAnalysis?sng=${encodeURIComponent(sngName)}&countryCode=${encodeURIComponent(countryCode)}`
+                        : `/Rosra/GetPeerSNGAnalysis?sng=${encodeURIComponent(sngName)}`;
+                    response = await fetch(url);
+                }
+                const data = await response.json();
+
+                if (!data.success) {
+                    console.warn('Peer SNG Analysis failed:', data.message);
+                    module2Placeholder.style.display = 'block';
+                    module2Content.style.display = 'none';
+                    return;
+                }
+
+                // Debug logging - check browser console (F12) to see calculation details
+                console.log('=== Peer SNG Analysis Debug ===');
+                console.log('Selected SNG:', data.sng);
+                console.log('--- KEY VALUES ---');
+                console.log('Actual OSR:', data.metrics.actualOSR);
+                console.log('Subnational GDP:', data.metrics.subnationalGDP);
+                console.log('Peer Frontier Multiplier:', data.metrics.peerFrontierMultiplier);
+                console.log('OSR Potential:', data.metrics.osrPotential);
+                console.log('OSR Gap:', data.metrics.osrGap);
+                console.log('Performance Index:', data.metrics.performanceIndex, '%');
+                if (data.debug) {
+                    console.log('--- CALCULATION DEBUG ---');
+                    console.log('Total peers in DB:', data.debug.totalPeersInDb);
+                    console.log('Peers with Include=true:', data.debug.peersWithIncludeTrue);
+                    console.log('Peers with valid data:', data.debug.peersWithValidData);
+                    console.log('90th percentile threshold:', data.debug.percentile90Threshold);
+                    console.log('Top multipliers count:', data.debug.topMultipliersCount);
+                    console.log('Top multipliers:', data.debug.topMultipliers.join(', '));
+                    console.log('Calculation:', data.debug.calculationSteps.step5_osrPotential);
+                }
+
+                if (true) {
+                    // Hide placeholder, show content
+                    module2Placeholder.style.display = 'none';
+                    module2Content.style.display = 'block';
+
+                    // Extract metrics from the nested object
+                    const metrics = data.metrics;
+
+                    // Update metric values (format like Excel - multipliers as decimals, performance as decimal)
+                    document.getElementById('m2ActualOSRTop').textContent = formatCurrency(metrics.actualOSR);
+                    document.getElementById('m2SubnationalGDPTop').textContent = formatCurrency(metrics.subnationalGDP);
+                    document.getElementById('m2FrontierMultiplierTop').textContent = metrics.peerFrontierMultiplier.toFixed(6);
+                    document.getElementById('m2SubjectMultiplierTop').textContent = metrics.subjectMultiplier.toFixed(6);
+                    document.getElementById('m2OSRPotentialTop').textContent = formatCurrency(metrics.osrPotential);
+                    document.getElementById('m2OSRGapTop').textContent = formatCurrency(metrics.osrGap);
+                    document.getElementById('m2PerformanceIndexTop').textContent = (metrics.performanceIndex / 100).toFixed(6);
+
+                    // Update performance bar (performanceIndex is already a percentage from the API)
+                    const performanceBar = document.getElementById('m2PerformanceBarTop');
+                    const performancePercent = Math.min(metrics.performanceIndex, 100);
+                    performanceBar.style.width = performancePercent + '%';
+
+                    // Transform chartData to expected format (x = gdp, y = osr)
+                    const chartDataTransformed = data.chartData.map(p => ({
+                        name: p.name,
+                        x: p.gdp,
+                        y: p.osr
+                    }));
+
+                    // Create the Peer Frontier Scatter Chart with helper data for frontier line
+                    createPeerFrontierScatterChart(chartDataTransformed, data.frontierSlope, sngName, data.helpers);
+
+                    // Create the Actual vs Potential Bar Chart (including OSR Gap)
+                    createActualVsPotentialChart(metrics.actualOSR, metrics.osrPotential, metrics.osrGap);
+
+                    // Update the analysis result text (performanceIndex is already %, so divide by 100)
+                    updateModule2ResultText(metrics.performanceIndex / 100, metrics.osrGap, sngName, metrics.actualOSR, metrics.osrPotential);
+
+                    // Update helper values for the modal (if modal elements exist)
+                    if (data.helpers) {
+                        const h = data.helpers;
+                        const setTextIfExists = (id, value) => {
+                            const el = document.getElementById(id);
+                            if (el) el.textContent = value;
+                        };
+                        setTextIfExists('helperValidPeers', h.validPeersUsed);
+                        setTextIfExists('helperTop20Count', h.top20Count);
+                        setTextIfExists('helperFrontierMultiplier', h.frontierMultiplier.toFixed(8));
+                        setTextIfExists('helperPercentile80', h.percentile80Threshold.toFixed(8));
+                        setTextIfExists('helperMinGDP', formatCurrency(h.minGDP));
+                        setTextIfExists('helperMaxGDP', formatCurrency(h.maxGDP));
+                        setTextIfExists('helperFrontierYMin', h.frontierYAtMinGDP.toFixed(2));
+                        setTextIfExists('helperFrontierYMax', h.frontierYAtMaxGDP.toFixed(2));
+                        setTextIfExists('helperSubjectMultiplier', h.subjectMultiplier.toFixed(8));
+                        setTextIfExists('helperOSRPotential', h.osrPotential.toFixed(2));
+                        setTextIfExists('helperTopPerformers', h.topPerformersUsed);
+                        setTextIfExists('helperAbove80th', h.isAbove80thPercentile ? 'Above 80th percentile' : 'Below 80th percentile');
+                        setTextIfExists('helperActual', formatCurrency(metrics.actualOSR));
+                        setTextIfExists('helperPotential', h.osrPotential.toFixed(2));
+                    }
+
+                    console.log('Peer SNG analysis loaded for:', sngName);
+                } else {
+                    console.log('Peer SNG analysis not available:', data.message);
+                    module2Placeholder.innerHTML = `
+                        <i class="bi bi-exclamation-circle"></i>
+                        <p>${data.message || 'Analysis not available for this subnational government'}</p>
+                    `;
+                    module2Placeholder.style.display = 'block';
+                    module2Content.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error fetching peer SNG analysis:', error);
+                module2Placeholder.innerHTML = `
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <p>Error loading peer SNG analysis</p>
+                `;
+                module2Placeholder.style.display = 'block';
+                module2Content.style.display = 'none';
+            }
+        }
+
+        // Format currency helper
+        function formatCurrency(value) {
+            if (value === null || value === undefined || isNaN(value)) return '-';
+            return value.toLocaleString(undefined, { maximumFractionDigits: 0 });
+        }
+
+        // Format percentage helper
+        function formatPercentage(value) {
+            if (value === null || value === undefined || isNaN(value)) return '-';
+            return (value * 100).toFixed(2) + '%';
+        }
+
+        // Create Peer Frontier Scatter Chart
+        function createPeerFrontierScatterChart(chartData, frontierSlope, selectedSng, helpers) {
+            const ctx = document.getElementById('peerSngChartTop');
+            if (!ctx) return;
+
+            // Destroy existing chart if it exists
+            if (peerFrontierScatterChart) {
+                peerFrontierScatterChart.destroy();
+            }
+
+            // Separate the selected SNG from other peers
+            const otherPeers = chartData.filter(p => p.name !== selectedSng);
+            const selectedPeer = chartData.find(p => p.name === selectedSng);
+
+            // Calculate frontier line using helper values (from MinGDP to MaxGDP)
+            // This matches Excel: X = {MinGDP, MaxGDP}, Y = {FrontierY@Min, FrontierY@Max}
+            const frontierLineData = helpers ? [
+                { x: helpers.minGDP, y: helpers.frontierYAtMinGDP },
+                { x: helpers.maxGDP, y: helpers.frontierYAtMaxGDP }
+            ] : [
+                { x: 0, y: 0 },
+                { x: Math.max(...chartData.map(p => p.x)) * 1.1, y: Math.max(...chartData.map(p => p.x)) * 1.1 * frontierSlope }
+            ];
+
+            peerFrontierScatterChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        // Peers (all peer SNGs except selected)
+                        {
+                            label: 'Peers',
+                            data: otherPeers.map(p => ({ x: p.x, y: p.y, name: p.name })),
+                            backgroundColor: 'rgba(68, 114, 196, 0.7)',
+                            borderColor: '#4472C4',
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            pointStyle: 'circle',
+                            datalabels: {
+                                display: false // Don't show labels for all peers
+                            }
+                        },
+                        // Frontier line (Top-20% avg)
+                        {
+                            label: 'Frontier (Top-20% avg)',
+                            data: frontierLineData,
+                            borderColor: '#ED7D31',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            showLine: true,
+                            fill: false,
+                            tension: 0,
+                            datalabels: {
+                                display: false
+                            }
+                        },
+                        // Selected SNG (highlighted point)
+                        {
+                            label: selectedSng,
+                            data: selectedPeer ? [{ x: selectedPeer.x, y: selectedPeer.y }] : [],
+                            backgroundColor: '#70AD47',
+                            borderColor: '#70AD47',
+                            pointRadius: 10,
+                            pointHoverRadius: 12,
+                            pointStyle: 'circle',
+                            datalabels: {
+                                display: true,
+                                align: 'top',
+                                anchor: 'end',
+                                offset: 5,
+                                color: '#70AD47',
+                                font: { weight: 'bold', size: 11 },
+                                formatter: function(value) {
+                                    return selectedSng;
+                                }
+                            }
+                        }
+                    ]
+                },
+                plugins: [ChartDataLabels],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 10,
+                                font: { size: 10 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    // Skip tooltip for frontier line
+                                    if (context.datasetIndex === 1) return null;
+                                    const point = context.raw;
+                                    // For peers, try to find the name
+                                    if (context.datasetIndex === 0) {
+                                        const peerIndex = context.dataIndex;
+                                        const peerName = otherPeers[peerIndex]?.name || 'Peer';
+                                        return `${peerName}: GDP per capita ${point.x.toLocaleString()}, OSR per capita ${point.y.toLocaleString()}`;
+                                    }
+                                    // For selected SNG
+                                    return `${selectedSng}: GDP per capita ${point.x.toLocaleString()}, OSR per capita ${point.y.toLocaleString()}`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            display: false // Default off, enabled per dataset
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Subnational GDP per capita (economic base)',
+                                font: { size: 12, weight: 'bold' }
+                            },
+                            ticks: {
+                                font: { size: 11, weight: '500' },
+                                color: '#333',
+                                autoSkip: true,
+                                maxTicksLimit: 8,
+                                callback: function(value) {
+                                    if (value >= 1000000000) return (value / 1000000000).toFixed(1) + 'B';
+                                    if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+                                    if (value >= 1000) {
+                                        var k = value / 1000;
+                                        return (k % 1 === 0) ? k.toFixed(0) + 'K' : k.toFixed(1) + 'K';
+                                    }
+                                    return value.toLocaleString();
+                                }
+                            },
+                            grid: { color: '#e9ecef' },
+                            beginAtZero: true,
+                            suggestedMax: Math.max(...chartData.map(p => p.x)) * 1.2
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Own-Source Revenues (OSR) per capita',
+                                font: { size: 12, weight: 'bold' }
+                            },
+                            ticks: {
+                                font: { size: 11, weight: '500' },
+                                color: '#333',
+                                autoSkip: true,
+                                maxTicksLimit: 8,
+                                callback: function(value) {
+                                    if (value >= 1000000000) return (value / 1000000000).toFixed(1) + 'B';
+                                    if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+                                    if (value >= 1000) {
+                                        var k = value / 1000;
+                                        return (k % 1 === 0) ? k.toFixed(0) + 'K' : k.toFixed(1) + 'K';
+                                    }
+                                    return value.toLocaleString();
+                                }
+                            },
+                            grid: { color: '#e9ecef' },
+                            beginAtZero: true,
+                            suggestedMax: Math.max(...chartData.map(p => p.y)) * 1.2
+                        }
+                    }
+                }
+            });
+        }
+
+        // Custom plugin to draw values on bars
+        const barValuePlugin = {
+            id: 'barValuePlugin',
+            afterDatasetsDraw: function(chart) {
+                const ctx = chart.ctx;
+                const chartData = chart.data;
+                const colors = ['#00b2e3', '#0095c0', '#FD9D24'];
+
+                function formatValue(value) {
+                    if (value >= 1000000000) return (value / 1000000000).toFixed(2) + 'B';
+                    if (value >= 1000000) return (value / 1000000).toFixed(2) + 'M';
+                    if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
+                    return value.toLocaleString(undefined, { maximumFractionDigits: 0 });
+                }
+
+                chart.data.datasets.forEach(function(dataset, datasetIndex) {
+                    const meta = chart.getDatasetMeta(datasetIndex);
+                    meta.data.forEach(function(bar, index) {
+                        const value = dataset.data[index];
+                        const formattedValue = formatValue(value);
+
+                        ctx.save();
+                        ctx.font = 'bold 12px Arial';
+                        ctx.fillStyle = colors[index] || '#333';
+                        ctx.textAlign = 'left';
+                        ctx.textBaseline = 'middle';
+
+                        // Position text at end of bar + offset
+                        const x = bar.x + 10;
+                        const y = bar.y;
+
+                        ctx.fillText(formattedValue, x, y);
+                        ctx.restore();
+                    });
+                });
+            }
+        };
+
+        let actualVsPotentialChart = null;
+
+        // Create Actual vs Potential Bar Chart (Chart.js with custom plugin)
+        function createActualVsPotentialChart(actualOSR, osrPotential, osrGap) {
+            const ctx = document.getElementById('actualVsPotentialChart');
+            if (!ctx) return;
+
+            // Destroy existing chart
+            if (actualVsPotentialChart) {
+                actualVsPotentialChart.destroy();
+            }
+
+            actualVsPotentialChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Current OSR per capita', 'Frontier benchmark per capita', 'Gap to frontier benchmark'],
+                    datasets: [{
+                        data: [actualOSR, osrPotential, osrGap],
+                        backgroundColor: ['#00b2e3', '#0095c0', '#FD9D24'],
+                        borderWidth: 0,
+                        barThickness: 28
+                    }]
+                },
+                plugins: [barValuePlugin],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    layout: {
+                        padding: { right: 80 }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.x.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            ticks: {
+                                font: { size: 11, weight: '500' },
+                                color: '#333',
+                                autoSkip: true,
+                                callback: function(value) {
+                                    if (value >= 1000000000) return (value / 1000000000).toFixed(1) + 'B';
+                                    if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+                                    if (value >= 1000) {
+                                        var k = value / 1000;
+                                        return (k % 1 === 0) ? k.toFixed(0) + 'K' : k.toFixed(1) + 'K';
+                                    }
+                                    return value;
+                                }
+                            },
+                            grid: { color: '#e9ecef' },
+                            beginAtZero: true
+                        },
+                        y: {
+                            ticks: {
+                                font: { size: 11, weight: '500' },
+                                color: '#333'
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update Module 2 Analysis Result Text
+        function updateModule2ResultText(performanceIndex, osrGap, sngName, actualOSR, osrPotential) {
+            const resultText = document.getElementById('module2ResultTextTop');
+            if (!resultText) return;
+
+            // Format numbers with commas
+            const perfPercent = Math.round(performanceIndex * 100);
+            const actualFormatted = Math.round(actualOSR).toLocaleString();
+            const potentialFormatted = Math.round(osrPotential).toLocaleString();
+            const gapFormatted = Math.round(osrGap).toLocaleString();
+
+            let analysis = '';
+
+            if (performanceIndex < 0.3) {
+                // Template 1: Large gap (< 30%)
+                analysis = `Current OSR per capita is about ${perfPercent}% of the peer frontier benchmark within the country (around ${actualFormatted} compared with a benchmark of ${potentialFormatted}, leaving an indicative gap of ${gapFormatted}). This points to a large gap relative to today's top domestic performers under the same rules. The frontier is only a conservative peer benchmark; the ROSRA bottom-up analysis is needed to see how much of this gap can realistically be closed through administrative improvements in each OSR stream.`;
+            } else if (performanceIndex < 0.7) {
+                // Template 2: Meaningful gap (30% - 70%)
+                analysis = `Current OSR per capita is about ${perfPercent}% of the peer frontier benchmark within the country (around ${actualFormatted} compared with a benchmark of ${potentialFormatted}, leaving an indicative gap of ${gapFormatted}). This indicates a meaningful but not extreme gap compared with the better-performing SNGs under current rules. The frontier gives a quick sense of peer-based potential; the ROSRA bottom-up analysis will show, stream by stream, how much of this gap could be closed through improved administration.`;
+            } else {
+                // Template 3: Close to frontier (>= 70%)
+                analysis = `Current OSR per capita is about ${perfPercent}% of the peer frontier benchmark within the country (around ${actualFormatted} compared with a benchmark of ${potentialFormatted}, leaving an indicative gap of ${gapFormatted}). This suggests that, under current national rules, the city is relatively close to observed domestic good practice. However, the frontier itself may still be below the true long-term potential; ROSRA's bottom-up analysis remains essential to uncover remaining administrative gaps by stream and any further realistic revenue gains.`;
+            }
+
+            resultText.textContent = analysis;
+        }
+
+        // Handle Peer SNG selection change
+        peerSngSelect.addEventListener('change', function() {
+            fetchPeerSNGAnalysis(this.value);
+
+            // Sync with State/Region dropdown (two-way binding)
+            if (this.value && regionSelect) {
+                // Check if the value exists in regionSelect
+                const matchingOption = Array.from(regionSelect.options).find(opt =>
+                    opt.value.toLowerCase() === this.value.toLowerCase() ||
+                    opt.text.toLowerCase() === this.value.toLowerCase()
+                );
+                if (matchingOption && regionSelect.value !== matchingOption.value) {
+                    regionSelect.value = matchingOption.value;
+                    // Trigger change event on regionSelect to update any dependent logic
+                    regionSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                    // Update Select2 if used
+                    if (typeof $ !== 'undefined' && $.fn.select2 && $(regionSelect).data('select2')) {
+                        $(regionSelect).trigger('change.select2');
+                    }
+                }
+            }
         });
+
+        // ========================================
+        // SYNC STATE/REGION WITH SUBNATIONAL GOVERNMENT
+        // ========================================
+        // When State/Region changes, update Subnational Government dropdown
+        regionSelect.addEventListener('change', function() {
+            // Reset lower levels when Level 1 changes
+            if (!this.value) {
+                cityInput.value = '';
+                govUnitLevel3Input.value = '';
+                level1IsFinal.checked = false;
+                level2IsFinal.checked = false;
+            }
+            updateGovernmentUnitVisibility();
+
+            // Sync with PeerSNG dropdown
+            if (this.value && peerSngSelect) {
+                const matchingOption = Array.from(peerSngSelect.options).find(opt =>
+                    opt.value.toLowerCase() === this.value.toLowerCase() ||
+                    opt.text.toLowerCase() === this.value.toLowerCase()
+                );
+                if (matchingOption && peerSngSelect.value !== matchingOption.value) {
+                    peerSngSelect.value = matchingOption.value;
+                    if (typeof $ !== 'undefined' && $.fn.select2 && $(peerSngSelect).data('select2')) {
+                        $(peerSngSelect).trigger('change.select2');
+                    }
+                    fetchPeerSNGAnalysis(matchingOption.value);
+                }
+            }
+        });
+
+        // ========================================
+        // HELPERS MODAL HANDLING (Bootstrap)
+        // ========================================
+        const viewHelpersBtn = document.getElementById('viewHelpersBtn');
+        const helpersModalElement = document.getElementById('helpersModalOverlay');
+        let helpersModal = null;
+
+        // Initialize Bootstrap modal
+        if (helpersModalElement) {
+            helpersModal = new bootstrap.Modal(helpersModalElement);
+        }
+
+        // Open modal
+        if (viewHelpersBtn && helpersModal) {
+            viewHelpersBtn.addEventListener('click', function() {
+                helpersModal.show();
+            });
+        }
+
+        // ========================================
+        // FORMULA TOOLTIP HANDLING
+        // ========================================
+        let activeFormulaPopup = null;
+
+        function showFormulaPopup(button) {
+            // Remove any existing popup
+            hideFormulaPopup();
+
+            const formula = button.getAttribute('data-formula');
+            if (!formula) return;
+
+            // Create popup element
+            const popup = document.createElement('div');
+            popup.className = 'formula-popup';
+            popup.innerHTML = `
+                <div class="formula-popup-header">
+                    <i class="bi bi-code-slash"></i>
+                    <span>Formula</span>
+                </div>
+                <div class="formula-popup-content">${formula}</div>
+            `;
+
+            document.body.appendChild(popup);
+            activeFormulaPopup = popup;
+
+            // Position the popup near the button
+            const buttonRect = button.getBoundingClientRect();
+            const popupRect = popup.getBoundingClientRect();
+
+            // Calculate position
+            let left = buttonRect.left + (buttonRect.width / 2) - 20;
+            let top = buttonRect.bottom + 8;
+
+            // Check if popup goes off right edge
+            if (left + popupRect.width > window.innerWidth - 10) {
+                left = window.innerWidth - popupRect.width - 10;
+                popup.classList.add('arrow-right');
+            }
+
+            // Check if popup goes off bottom edge
+            if (top + popupRect.height > window.innerHeight - 10) {
+                top = buttonRect.top - popupRect.height - 8;
+                popup.style.setProperty('--arrow-position', 'bottom');
+            }
+
+            popup.style.left = `${Math.max(10, left)}px`;
+            popup.style.top = `${top}px`;
+        }
+
+        function hideFormulaPopup() {
+            if (activeFormulaPopup) {
+                activeFormulaPopup.remove();
+                activeFormulaPopup = null;
+            }
+        }
+
+        // Event delegation for formula tooltip buttons
+        document.addEventListener('click', function(e) {
+            const tooltipBtn = e.target.closest('.formula-tooltip-btn');
+
+            if (tooltipBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // If clicking the same button, toggle off
+                if (activeFormulaPopup && tooltipBtn.dataset.popupActive === 'true') {
+                    hideFormulaPopup();
+                    tooltipBtn.dataset.popupActive = 'false';
+                } else {
+                    // Remove active state from all buttons
+                    document.querySelectorAll('.formula-tooltip-btn').forEach(btn => {
+                        btn.dataset.popupActive = 'false';
+                    });
+
+                    showFormulaPopup(tooltipBtn);
+                    tooltipBtn.dataset.popupActive = 'true';
+                }
+            } else {
+                // Click outside - close popup
+                hideFormulaPopup();
+                document.querySelectorAll('.formula-tooltip-btn').forEach(btn => {
+                    btn.dataset.popupActive = 'false';
+                });
+            }
+        });
+
+        // Close popup on scroll
+        document.addEventListener('scroll', hideFormulaPopup, true);
+
+        // Load Select2 dynamically after jQuery is available, then load Peer SNGs
+        function loadSelect2ThenPeerSNGs() {
+            if (typeof $ !== 'undefined') {
+                // Check if Select2 is already loaded
+                if ($.fn.select2) {
+                    loadPeerSNGs();
+                } else {
+                    // Load Select2 script dynamically
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js';
+                    script.onload = function() {
+                        loadPeerSNGs();
+                    };
+                    script.onerror = function() {
+                        console.warn('Failed to load Select2, loading Peer SNGs without it');
+                        loadPeerSNGs();
+                    };
+                    document.head.appendChild(script);
+                }
+            } else {
+                // jQuery not loaded yet, wait and retry
+                setTimeout(loadSelect2ThenPeerSNGs, 100);
+            }
+        }
+
+        // Note: loadSelect2ThenPeerSNGs() is now called from loadCountries() after countries are loaded
+        // This ensures peer SNGs are loaded after the country dropdown is populated
+
+        // Expose functions to global scope for onclick handlers in HTML
+        window.addPeerRow = addPeerRow;
+        window.removePeerRow = removePeerRow;
+        window.savePeerDataManually = savePeerDataManually;
+        window.uploadPeerCSV = uploadPeerCSV;
+
     });
 </script>

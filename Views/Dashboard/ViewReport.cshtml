@@ -1,14 +1,15 @@
 @model RosraApp.Models.ViewModels.RosraReportViewModel
 @using System.Text.Json
+@using System.Collections.Generic
 @{
     ViewData["Title"] = "View Report";
-    
+
     // Helper function to deserialize JSON strings
     T DeserializeJson<T>(string json) where T : new()
     {
         if (string.IsNullOrEmpty(json))
             return new T();
-        
+
         try
         {
             return JsonSerializer.Deserialize<T>(json) ?? new T();
@@ -16,6 +17,22 @@
         catch
         {
             return new T();
+        }
+    }
+
+    // Helper to parse JSON to JsonDocument for dynamic access
+    JsonDocument ParseJsonDocument(string json)
+    {
+        if (string.IsNullOrEmpty(json))
+            return JsonDocument.Parse("{}");
+
+        try
+        {
+            return JsonDocument.Parse(json);
+        }
+        catch
+        {
+            return JsonDocument.Parse("{}");
         }
     }
 }
@@ -88,8 +105,13 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="causes-tab" data-bs-toggle="tab" data-bs-target="#causes" type="button" role="tab" aria-controls="causes" aria-selected="false">
-                        Causes Analysis
+                    <button class="nav-link" id="peersng-tab" data-bs-toggle="tab" data-bs-target="#peersng" type="button" role="tab" aria-controls="peersng" aria-selected="false">
+                        OSR Frontier
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="prioritization-tab" data-bs-toggle="tab" data-bs-target="#prioritization" type="button" role="tab" aria-controls="prioritization" aria-selected="false">
+                        Prioritization
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
@@ -126,10 +148,60 @@
                         <!-- Revenue Sources section will be displayed here -->
                     </div>
                 </div>
-                
-                <!-- Causes Analysis Tab -->
-                <div class="tab-pane fade" id="causes" role="tabpanel" aria-labelledby="causes-tab">
-                    <h5 class="mb-3">Causes Analysis</h5>
+
+                <!-- Peer SNG / OSR Frontier Tab -->
+                <div class="tab-pane fade" id="peersng" role="tabpanel" aria-labelledby="peersng-tab">
+                    <h5 class="mb-3">Within-Country OSR Frontier Analysis</h5>
+                    @if (!string.IsNullOrEmpty(Model.PeerSNGData))
+                    {
+                        @using (var peerDoc = ParseJsonDocument(Model.PeerSNGData))
+                        {
+                            var peerData = peerDoc.RootElement;
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-primary text-white">
+                                            <i class="bi bi-graph-up me-2"></i>Peer SNG Frontier Analysis
+                                        </div>
+                                        <div class="card-body">
+                                            @if (peerData.TryGetProperty("selectedPeerSNGs", out var selectedPeers) && selectedPeers.ValueKind != JsonValueKind.Null)
+                                            {
+                                                <div class="mb-3">
+                                                    <label class="fw-bold">Selected Peer SNGs:</label>
+                                                    <p class="text-muted">@selectedPeers.ToString()</p>
+                                                </div>
+                                            }
+                                            @if (peerData.TryGetProperty("analysisResults", out var analysisResults) && analysisResults.ValueKind != JsonValueKind.Null)
+                                            {
+                                                <div class="mb-3">
+                                                    <label class="fw-bold">Analysis Results:</label>
+                                                    <pre class="bg-light p-3 rounded">@JsonSerializer.Serialize(analysisResults, new JsonSerializerOptions { WriteIndented = true })</pre>
+                                                </div>
+                                            }
+                                            @if (peerData.TryGetProperty("timestamp", out var timestamp))
+                                            {
+                                                <div class="text-muted small">
+                                                    <i class="bi bi-clock me-1"></i>Analysis performed: @timestamp.ToString()
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            No Peer SNG frontier analysis data was saved with this report.
+                        </div>
+                    }
+                </div>
+
+                <!-- Prioritization Tab -->
+                <div class="tab-pane fade" id="prioritization" role="tabpanel" aria-labelledby="prioritization-tab">
+                    <h5 class="mb-3">Prioritization</h5>
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label class="fw-bold">Problem Statement:</label>

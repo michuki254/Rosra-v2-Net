@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.IO;
 
 namespace RosraApp.Controllers
 {
@@ -41,95 +42,169 @@ namespace RosraApp.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index(string activeTab = null, bool viewMode = false)
+        public IActionResult Index(string activeTab = null, string umbrellaTab = null, bool viewMode = false)
         {
             // Get or initialize visited tabs from session
             var visitedTabs = GetVisitedTabsFromSession();
-            
+
             // Get form data from session or initialize new
             var formData = GetFormDataFromSession() ?? new RosraFormViewModel { Id = 0 };
-            
+
             // Ensure Id is 0 for new reports
             if (formData.Id < 0)
             {
                 formData.Id = 0;
             }
-            
+
             // Set ViewMode flag in ViewData if specified
             if (viewMode)
             {
                 ViewData["ViewMode"] = true;
             }
-            
+
             // Create a view model for the tabs
             var tabsViewModel = new TabsContainerViewModel
             {
                 ContainerId = "rosraTabs",
                 Tabs = new List<TabViewModel>(),
+                UmbrellaTabs = new List<UmbrellaTabViewModel>(),
                 TabContentModel = formData
             };
 
-            // Add tabs to the model
-            var tabs = new List<TabViewModel>
+            // Determine which umbrella tab and sub-tab should be active
+            string activeUmbrellaId = umbrellaTab ?? "top-down";
+            string activeSubTabId = activeTab;
+
+            // Define Bottom-Up sub-tabs (4-step pipeline)
+            var bottomUpSubTabs = new List<TabViewModel>
             {
-                new TabViewModel
-                {
-                    Id = "potential-estimates",
-                    Title = "Potential Estimates",
-                    IsActive = activeTab == "potential-estimates" || activeTab == null,
-                    ContentPartialName = "_PotentialEstimates"
-                },
                 new TabViewModel
                 {
                     Id = "gap-analysis",
                     Title = "Gap Analysis",
-                    IsActive = activeTab == "gap-analysis",
-                    ContentPartialName = "_GapAnalysis"
+                    ContentPartialName = "_GapAnalysis",
+                    StepNumber = 1
                 },
                 new TabViewModel
                 {
-                    Id = "causes-analysis",
-                    Title = "Causes Analysis",
-                    IsActive = activeTab == "causes-analysis",
-                    ContentPartialName = "_CausesAnalysis"
+                    Id = "prioritization",
+                    Title = "Prioritization",
+                    ContentPartialName = "_Prioritization",
+                    StepNumber = 2
+                },
+                new TabViewModel
+                {
+                    Id = "overview-selection",
+                    Title = "Overview Selection",
+                    ContentPartialName = "_OverviewSelection",
+                    StepNumber = 3
                 },
                 new TabViewModel
                 {
                     Id = "recommendations",
                     Title = "Recommendations",
-                    IsActive = activeTab == "recommendations",
-                    ContentPartialName = "_Recommendations"
+                    ContentPartialName = "_Recommendations",
+                    StepNumber = 4
                 }
             };
 
-            // Find active tab index
-            int activeIndex = 0;
-            for (int i = 0; i < tabs.Count; i++)
+            // Check if activeTab belongs to bottom-up
+            var bottomUpTabIds = bottomUpSubTabs.Select(t => t.Id).ToList();
+            bool isBottomUpTab = activeSubTabId != null && bottomUpTabIds.Contains(activeSubTabId);
+
+            // If activeTab is a bottom-up tab, set umbrella to bottom-up
+            if (isBottomUpTab)
             {
-                if (tabs[i].IsActive)
+                activeUmbrellaId = "bottom-up";
+            }
+            else if (activeSubTabId == "potential-estimates" || activeSubTabId == null)
+            {
+                activeUmbrellaId = "top-down";
+                activeSubTabId = "potential-estimates";
+            }
+
+            // Set active states for bottom-up sub-tabs
+            if (activeUmbrellaId == "bottom-up")
+            {
+                // Default to first sub-tab if none specified
+                if (string.IsNullOrEmpty(activeSubTabId) || !bottomUpTabIds.Contains(activeSubTabId))
                 {
-                    activeIndex = i;
-                    break;
+                    activeSubTabId = "gap-analysis";
+                }
+
+                // Find active tab index in bottom-up tabs
+                int activeIndex = bottomUpSubTabs.FindIndex(t => t.Id == activeSubTabId);
+                if (activeIndex < 0) activeIndex = 0;
+
+                for (int i = 0; i < bottomUpSubTabs.Count; i++)
+                {
+                    bottomUpSubTabs[i].IsActive = bottomUpSubTabs[i].Id == activeSubTabId;
+                    bottomUpSubTabs[i].IsVisited = i <= activeIndex || visitedTabs.Contains(bottomUpSubTabs[i].Id);
+
+                    // Add current tab to visited tabs
+                    if (bottomUpSubTabs[i].IsActive && !visitedTabs.Contains(bottomUpSubTabs[i].Id))
+                    {
+                        visitedTabs.Add(bottomUpSubTabs[i].Id);
+                    }
                 }
             }
 
-            // Mark tabs as visited based on active tab
-            for (int i = 0; i < tabs.Count; i++)
+            // Create umbrella tabs
+            var umbrellaTabs = new List<UmbrellaTabViewModel>
             {
-                // Mark current and all previous tabs as visited
-                tabs[i].IsVisited = i <= activeIndex || visitedTabs.Contains(tabs[i].Id);
-                
-                // Add current tab to visited tabs
-                if (tabs[i].IsActive && !visitedTabs.Contains(tabs[i].Id))
+                new UmbrellaTabViewModel
                 {
-                    visitedTabs.Add(tabs[i].Id);
+                    Id = "top-down",
+                    Title = "Top-Down Analysis",
+                    Description = "Quick OSR Potential Estimate",
+                    Icon = "bi bi-arrow-down-circle",
+                    IsActive = activeUmbrellaId == "top-down",
+                    HasStepper = false,
+                    SubTabs = new List<TabViewModel>
+                    {
+                        new TabViewModel
+                        {
+                            Id = "potential-estimates",
+                            Title = "Quick OSR Potential Estimate",
+                            IsActive = true,
+                            IsVisited = true,
+                            ContentPartialName = "_PotentialEstimates"
+                        }
+                    }
+                },
+                new UmbrellaTabViewModel
+                {
+                    Id = "bottom-up",
+                    Title = "Bottom-Up Analysis",
+                    Description = "Detailed 4-Step Pipeline",
+                    Icon = "bi bi-arrow-up-circle",
+                    IsActive = activeUmbrellaId == "bottom-up",
+                    HasStepper = true,
+                    SubTabs = bottomUpSubTabs
                 }
-            }
+            };
 
             // Save visited tabs to session
             SaveVisitedTabsToSession(visitedTabs);
-            
-            tabsViewModel.Tabs = tabs;
+
+            tabsViewModel.UmbrellaTabs = umbrellaTabs;
+            tabsViewModel.ActiveUmbrellaTabId = activeUmbrellaId;
+            tabsViewModel.ActiveSubTabId = activeSubTabId;
+
+            // Also populate legacy Tabs for backward compatibility
+            var allTabs = new List<TabViewModel>
+            {
+                new TabViewModel
+                {
+                    Id = "potential-estimates",
+                    Title = "Potential Estimates",
+                    IsActive = activeSubTabId == "potential-estimates",
+                    ContentPartialName = "_PotentialEstimates"
+                }
+            };
+            allTabs.AddRange(bottomUpSubTabs);
+            tabsViewModel.Tabs = allTabs;
+
             return View(tabsViewModel);
         }
         
@@ -145,7 +220,7 @@ namespace RosraApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult SwitchTab(string tabId, RosraFormViewModel formData)
+        public IActionResult SwitchTab(string tabId, string umbrellaTabId, RosraFormViewModel formData)
         {
             // Parse formatted number values from the form
             if (!string.IsNullOrEmpty(Request.Form["Population"]))
@@ -156,7 +231,7 @@ namespace RosraApp.Controllers
                     formData.Population = population;
                 }
             }
-            
+
             if (!string.IsNullOrEmpty(Request.Form["ActualOsr"]))
             {
                 string actualOsrStr = Request.Form["ActualOsr"].ToString().Replace(",", "");
@@ -165,7 +240,7 @@ namespace RosraApp.Controllers
                     formData.ActualOsr = actualOsr;
                 }
             }
-            
+
             if (!string.IsNullOrEmpty(Request.Form["BudgetedOsr"]))
             {
                 string budgetedOsrStr = Request.Form["BudgetedOsr"].ToString().Replace(",", "");
@@ -174,7 +249,7 @@ namespace RosraApp.Controllers
                     formData.BudgetedOsr = budgetedOsr;
                 }
             }
-            
+
             if (!string.IsNullOrEmpty(Request.Form["GdpPerCapita"]))
             {
                 string gdpPerCapitaStr = Request.Form["GdpPerCapita"].ToString().Replace(",", "");
@@ -183,21 +258,21 @@ namespace RosraApp.Controllers
                     formData.GdpPerCapita = gdpPerCapita;
                 }
             }
-            
+
             // Save form data to session
             SaveFormDataToSession(formData);
-            
+
             // Check if we're in view mode (from hidden field in the form)
             bool isViewMode = Request.Form.ContainsKey("IsViewMode") && bool.TryParse(Request.Form["IsViewMode"], out bool viewMode) && viewMode;
-            
+
             // If in view mode, pass the view mode flag to the Index action
             if (isViewMode)
             {
                 ViewData["ViewMode"] = true;
-                return RedirectToAction("Index", new { activeTab = tabId, viewMode = true });
+                return RedirectToAction("Index", new { activeTab = tabId, umbrellaTab = umbrellaTabId, viewMode = true });
             }
-            
-            return RedirectToAction("Index", new { activeTab = tabId });
+
+            return RedirectToAction("Index", new { activeTab = tabId, umbrellaTab = umbrellaTabId });
         }
         
         [HttpPost]
@@ -279,7 +354,21 @@ namespace RosraApp.Controllers
                 RootCauses = JsonSerializer.Serialize(formData.RootCauses, _jsonOptions),
                 RecommendationSummary = formData.RecommendationSummary,
                 ActionItems = JsonSerializer.Serialize(formData.ActionItems, _jsonOptions),
-                CreatedAt = System.DateTime.UtcNow
+                // Top OSR Configuration
+                TopOsrConfigData = JsonSerializer.Serialize(formData.TopOsrConfig, _jsonOptions),
+                // Dynamic Generic Streams
+                GenericStreamsData = JsonSerializer.Serialize(formData.GenericStreams, _jsonOptions),
+                // Additional fields
+                GovernmentType = formData.GovernmentType,
+                IncomeLevel = formData.IncomeLevel,
+                OtherRevenue = formData.OtherRevenue,
+                CreatedAt = System.DateTime.UtcNow,
+                // New tab data fields
+                PrioritizationData = formData.PrioritizationData,
+                SelectedSolutionsData = formData.SelectedSolutionsData,
+                ImplementationProgressData = formData.ImplementationProgressData,
+                // Peer SNG data for Within-Country OSR Frontier analysis
+                PeerSNGData = formData.PeerSNGData
             };
             
             // Associate with current user if authenticated
@@ -338,6 +427,25 @@ namespace RosraApp.Controllers
                         existingReport.RecommendationSummary = formData.RecommendationSummary;
                         existingReport.ActionItems = JsonSerializer.Serialize(formData.ActionItems);
                         
+                        // Update Top OSR Configuration
+                        existingReport.TopOsrConfigData = JsonSerializer.Serialize(formData.TopOsrConfig);
+
+                        // Update Dynamic Generic Streams
+                        existingReport.GenericStreamsData = JsonSerializer.Serialize(formData.GenericStreams);
+
+                        // Update Additional fields
+                        existingReport.GovernmentType = formData.GovernmentType;
+                        existingReport.IncomeLevel = formData.IncomeLevel;
+                        existingReport.OtherRevenue = formData.OtherRevenue;
+
+                        // Update New tab data fields
+                        existingReport.PrioritizationData = formData.PrioritizationData;
+                        existingReport.SelectedSolutionsData = formData.SelectedSolutionsData;
+                        existingReport.ImplementationProgressData = formData.ImplementationProgressData;
+
+                        // Update Peer SNG data for Within-Country OSR Frontier analysis
+                        existingReport.PeerSNGData = formData.PeerSNGData;
+
                         _context.Update(existingReport);
                         await _context.SaveChangesAsync();
                         
@@ -408,6 +516,63 @@ namespace RosraApp.Controllers
                 GdpPerCapita = report.GdpPerCapita,
                 // Project Details
                 ProjectName = report.ProjectName,
+                EstimatedBudget = report.EstimatedBudget,
+                ProjectDescription = report.ProjectDescription,
+                KeyObjectives = report.KeyObjectives,
+                StartDate = report.StartDate,
+                EndDate = report.EndDate,
+            };
+            
+            // Load Top OSR Configuration if exists
+            if (!string.IsNullOrEmpty(report.TopOsrConfigData))
+            {
+                try
+                {
+                    formData.TopOsrConfig = JsonSerializer.Deserialize<List<TopOsrViewModel>>(report.TopOsrConfigData, _jsonOptions);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error deserializing Top OSR Config data");
+                }
+            }
+
+            // Load Generic Streams if exists
+            if (!string.IsNullOrEmpty(report.GenericStreamsData))
+            {
+                try
+                {
+                    formData.GenericStreams = JsonSerializer.Deserialize<List<GenericStreamViewModel>>(report.GenericStreamsData, _jsonOptions) ?? new List<GenericStreamViewModel>();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error deserializing Generic Streams data");
+                }
+            }
+
+            // Load additional fields
+            formData.GovernmentType = report.GovernmentType;
+            formData.IncomeLevel = report.IncomeLevel;
+            formData.OtherRevenue = report.OtherRevenue;
+
+            // Create a view model for the form
+            var formDataViewModel = new RosraFormViewModel
+            {
+                Id = report.Id,
+                Title = report.Title,
+                // Location Information
+                Country = report.Country,
+                Region = report.Region,
+                City = report.City,
+                Currency = report.Currency,
+                CurrencySymbol = report.CurrencySymbol,
+                FinancialYear = report.FinancialYear,
+                // Financial Data
+                ActualOsr = report.ActualOsr,
+                BudgetedOsr = report.BudgetedOsr,
+                Population = report.Population,
+                GdpPerCapita = report.GdpPerCapita,
+                // Project Details
+                ProjectName = report.ProjectName,
                 ProjectDescription = report.ProjectDescription,
                 KeyObjectives = report.KeyObjectives,
                 StartDate = report.StartDate,
@@ -439,20 +604,32 @@ namespace RosraApp.Controllers
                 RecommendationSummary = report.RecommendationSummary,
                 ActionItems = string.IsNullOrEmpty(report.ActionItems)
                     ? new List<ActionItemViewModel>()
-                    : JsonSerializer.Deserialize<List<ActionItemViewModel>>(report.ActionItems, _jsonOptions) ?? new List<ActionItemViewModel>()
+                    : JsonSerializer.Deserialize<List<ActionItemViewModel>>(report.ActionItems, _jsonOptions) ?? new List<ActionItemViewModel>(),
+                // Generic Streams
+                GenericStreams = string.IsNullOrEmpty(report.GenericStreamsData)
+                    ? new List<GenericStreamViewModel>()
+                    : JsonSerializer.Deserialize<List<GenericStreamViewModel>>(report.GenericStreamsData, _jsonOptions) ?? new List<GenericStreamViewModel>(),
+                // Additional fields
+                GovernmentType = report.GovernmentType,
+                IncomeLevel = report.IncomeLevel,
+                OtherRevenue = report.OtherRevenue,
+                // New tab data fields
+                PrioritizationData = report.PrioritizationData,
+                SelectedSolutionsData = report.SelectedSolutionsData,
+                ImplementationProgressData = report.ImplementationProgressData
             };
-            
+
             // Log the PropertyTax values to verify they are loaded correctly
-            _logger.LogInformation("View action - PropertyTax values: TotalPropertyTaxPayers={Total}, RegisteredPropertyTaxPayers={Registered}", 
-                formData.PropertyTax.TotalPropertyTaxPayers, formData.PropertyTax.RegisteredPropertyTaxPayers);
-            
+            _logger.LogInformation("Edit action - PropertyTax values: TotalPropertyTaxPayers={Total}, RegisteredPropertyTaxPayers={Registered}",
+                formDataViewModel.PropertyTax.TotalPropertyTaxPayers, formDataViewModel.PropertyTax.RegisteredPropertyTaxPayers);
+
             // Save form data to session
-            SaveFormDataToSession(formData);
-            
+            SaveFormDataToSession(formDataViewModel);
+
             // Redirect to the Rosra page with the form data
             return RedirectToAction("Index");
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> View(int id)
         {
@@ -535,67 +712,135 @@ namespace RosraApp.Controllers
                 RecommendationSummary = report.RecommendationSummary,
                 ActionItems = string.IsNullOrEmpty(report.ActionItems)
                     ? new List<ActionItemViewModel>()
-                    : JsonSerializer.Deserialize<List<ActionItemViewModel>>(report.ActionItems, _jsonOptions) ?? new List<ActionItemViewModel>()
+                    : JsonSerializer.Deserialize<List<ActionItemViewModel>>(report.ActionItems, _jsonOptions) ?? new List<ActionItemViewModel>(),
+                // Generic Streams
+                GenericStreams = string.IsNullOrEmpty(report.GenericStreamsData)
+                    ? new List<GenericStreamViewModel>()
+                    : JsonSerializer.Deserialize<List<GenericStreamViewModel>>(report.GenericStreamsData, _jsonOptions) ?? new List<GenericStreamViewModel>(),
+                // Additional fields
+                GovernmentType = report.GovernmentType,
+                IncomeLevel = report.IncomeLevel,
+                OtherRevenue = report.OtherRevenue,
+                // New tab data fields
+                PrioritizationData = report.PrioritizationData,
+                SelectedSolutionsData = report.SelectedSolutionsData,
+                ImplementationProgressData = report.ImplementationProgressData
             };
-            
+
             // Log the PropertyTax values to verify they are loaded correctly
-            _logger.LogInformation("View action - PropertyTax values: TotalPropertyTaxPayers={Total}, RegisteredPropertyTaxPayers={Registered}", 
+            _logger.LogInformation("View action - PropertyTax values: TotalPropertyTaxPayers={Total}, RegisteredPropertyTaxPayers={Registered}",
                 formData.PropertyTax.TotalPropertyTaxPayers, formData.PropertyTax.RegisteredPropertyTaxPayers);
-            
+
             // Save form data to session
             SaveFormDataToSession(formData);
-            
+
             // Set ViewMode flag in ViewData
             ViewData["ViewMode"] = true;
-            
-            // Create a view model for the tabs
+
+            // Create a view model for the tabs with umbrella structure
             var tabsViewModel = new TabsContainerViewModel
             {
                 ContainerId = "rosraTabs",
                 Tabs = new List<TabViewModel>(),
+                UmbrellaTabs = new List<UmbrellaTabViewModel>(),
                 TabContentModel = formData
             };
 
-            // Add tabs to the model
-            var tabs = new List<TabViewModel>
+            // Define Bottom-Up sub-tabs (4-step pipeline)
+            var bottomUpSubTabs = new List<TabViewModel>
             {
-                new TabViewModel
-                {
-                    Id = "potential-estimates",
-                    Title = "Potential Estimates",
-                    IsActive = true,
-                    ContentPartialName = "_PotentialEstimates"
-                },
                 new TabViewModel
                 {
                     Id = "gap-analysis",
                     Title = "Gap Analysis",
-                    IsActive = false,
-                    ContentPartialName = "_GapAnalysis"
+                    IsActive = true, // First bottom-up step active by default in view
+                    IsVisited = true,
+                    ContentPartialName = "_GapAnalysis",
+                    StepNumber = 1
                 },
                 new TabViewModel
                 {
-                    Id = "causes-analysis",
-                    Title = "Causes Analysis",
+                    Id = "prioritization",
+                    Title = "Prioritization",
                     IsActive = false,
-                    ContentPartialName = "_CausesAnalysis"
+                    IsVisited = true,
+                    ContentPartialName = "_Prioritization",
+                    StepNumber = 2
+                },
+                new TabViewModel
+                {
+                    Id = "overview-selection",
+                    Title = "Overview Selection",
+                    IsActive = false,
+                    IsVisited = true,
+                    ContentPartialName = "_OverviewSelection",
+                    StepNumber = 3
                 },
                 new TabViewModel
                 {
                     Id = "recommendations",
                     Title = "Recommendations",
                     IsActive = false,
-                    ContentPartialName = "_Recommendations"
+                    IsVisited = true,
+                    ContentPartialName = "_Recommendations",
+                    StepNumber = 4
                 }
             };
 
-            // Mark all tabs as visited in view mode
-            foreach (var tab in tabs)
+            // Create umbrella tabs - Top-Down active by default in view mode
+            var umbrellaTabs = new List<UmbrellaTabViewModel>
             {
-                tab.IsVisited = true;
-            }
+                new UmbrellaTabViewModel
+                {
+                    Id = "top-down",
+                    Title = "Top-Down Analysis",
+                    Description = "Quick OSR Potential Estimate",
+                    Icon = "bi bi-arrow-down-circle",
+                    IsActive = true,
+                    HasStepper = false,
+                    SubTabs = new List<TabViewModel>
+                    {
+                        new TabViewModel
+                        {
+                            Id = "potential-estimates",
+                            Title = "Quick OSR Potential Estimate",
+                            IsActive = true,
+                            IsVisited = true,
+                            ContentPartialName = "_PotentialEstimates"
+                        }
+                    }
+                },
+                new UmbrellaTabViewModel
+                {
+                    Id = "bottom-up",
+                    Title = "Bottom-Up Analysis",
+                    Description = "Detailed 4-Step Pipeline",
+                    Icon = "bi bi-arrow-up-circle",
+                    IsActive = false,
+                    HasStepper = true,
+                    SubTabs = bottomUpSubTabs
+                }
+            };
 
-            tabsViewModel.Tabs = tabs;
+            tabsViewModel.UmbrellaTabs = umbrellaTabs;
+            tabsViewModel.ActiveUmbrellaTabId = "top-down";
+            tabsViewModel.ActiveSubTabId = "potential-estimates";
+
+            // Also populate legacy Tabs for backward compatibility
+            var allTabs = new List<TabViewModel>
+            {
+                new TabViewModel
+                {
+                    Id = "potential-estimates",
+                    Title = "Potential Estimates",
+                    IsActive = true,
+                    IsVisited = true,
+                    ContentPartialName = "_PotentialEstimates"
+                }
+            };
+            allTabs.AddRange(bottomUpSubTabs);
+            tabsViewModel.Tabs = allTabs;
+
             return View("Index", tabsViewModel);
         }
         
@@ -604,13 +849,77 @@ namespace RosraApp.Controllers
         {
             // Save form data to session
             SaveFormDataToSession(formData);
-            
+
             // In a real application, we would generate a PDF or Excel file here
             // For now, we'll just redirect back with a success message
-            
+
             TempData["SuccessMessage"] = "Analysis exported successfully!";
-            
+
             return RedirectToAction("Index");
+        }
+
+        /// <summary>
+        /// Export analysis report as PDF
+        /// </summary>
+        [HttpPost]
+        public IActionResult ExportPdf()
+        {
+            try
+            {
+                // Get form data from session
+                var formData = GetFormDataFromSession();
+                if (formData == null)
+                {
+                    TempData["ErrorMessage"] = "No analysis data found. Please complete the analysis first.";
+                    return RedirectToAction("Index");
+                }
+
+                // Generate PDF using the ReportExportService
+                var exportService = new Services.ReportExportService();
+                var pdfBytes = exportService.GeneratePdfReport(formData, formData.Title ?? "ROSRA Analysis Report");
+
+                // Generate filename with timestamp
+                var filename = $"ROSRA_Report_{formData.City ?? "Analysis"}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+
+                // Return the PDF file
+                return File(pdfBytes, "application/pdf", filename);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating PDF report");
+                TempData["ErrorMessage"] = "Error generating PDF report. Please try again.";
+                return RedirectToAction("Index");
+            }
+        }
+
+        /// <summary>
+        /// Export analysis report as Excel (placeholder for future implementation)
+        /// </summary>
+        [HttpPost]
+        public IActionResult ExportExcel()
+        {
+            try
+            {
+                // Get form data from session
+                var formData = GetFormDataFromSession();
+                if (formData == null)
+                {
+                    TempData["ErrorMessage"] = "No analysis data found. Please complete the analysis first.";
+                    return RedirectToAction("Index");
+                }
+
+                // TODO: Implement Excel export using a library like ClosedXML or EPPlus
+                // For now, return a message that this feature is coming soon
+
+                TempData["InfoMessage"] = "Excel export is coming soon. Please use PDF export for now.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating Excel report");
+                TempData["ErrorMessage"] = "Error generating Excel report. Please try again.";
+                return RedirectToAction("Index");
+            }
         }
 
         private List<string> GetVisitedTabsFromSession()
@@ -777,6 +1086,16 @@ namespace RosraApp.Controllers
                 // Create a dynamic object to ensure proper serialization of large integers
                 var jsonObj = new
                 {
+                    // New ROSRA fields
+                    RegisteredProperties = propertyTax.RegisteredProperties,
+                    NonRegisteredProperties = propertyTax.NonRegisteredProperties,
+                    CompliantProperties = propertyTax.CompliantProperties,
+                    TotalFiscalBase = propertyTax.TotalFiscalBase,
+                    TotalMarketValue = propertyTax.TotalMarketValue,
+                    BilledAmount = propertyTax.BilledAmount,
+                    OutstandingAmount = propertyTax.OutstandingAmount,
+                    RevenueToDate = propertyTax.RevenueToDate,
+                    // Legacy fields for backward compatibility
                     TotalPropertyTaxPayers = propertyTax.TotalPropertyTaxPayers,
                     RegisteredPropertyTaxPayers = propertyTax.RegisteredPropertyTaxPayers,
                     Description = propertyTax.Description,
@@ -784,7 +1103,7 @@ namespace RosraApp.Controllers
                     CurrentValue = propertyTax.CurrentValue,
                     PotentialValue = propertyTax.PotentialValue,
                     Gap = propertyTax.Gap,
-                    // Include standard category fields
+                    // Include standard category fields (legacy)
                     RegisteredTaxpayersCategoryA = propertyTax.RegisteredTaxpayersCategoryA,
                     RegisteredTaxpayersCategoryB = propertyTax.RegisteredTaxpayersCategoryB,
                     RegisteredTaxpayersCategoryC = propertyTax.RegisteredTaxpayersCategoryC,
@@ -819,6 +1138,16 @@ namespace RosraApp.Controllers
                     // Create a simple JSON object with the key properties
                     var jsonObj = new
                     {
+                        // New ROSRA fields
+                        RegisteredProperties = propertyTax.RegisteredProperties,
+                        NonRegisteredProperties = propertyTax.NonRegisteredProperties,
+                        CompliantProperties = propertyTax.CompliantProperties,
+                        TotalFiscalBase = propertyTax.TotalFiscalBase,
+                        TotalMarketValue = propertyTax.TotalMarketValue,
+                        BilledAmount = propertyTax.BilledAmount,
+                        OutstandingAmount = propertyTax.OutstandingAmount,
+                        RevenueToDate = propertyTax.RevenueToDate,
+                        // Legacy fields
                         TotalPropertyTaxPayers = propertyTax.TotalPropertyTaxPayers,
                         RegisteredPropertyTaxPayers = propertyTax.RegisteredPropertyTaxPayers,
                         Description = propertyTax.Description,
@@ -920,6 +1249,893 @@ namespace RosraApp.Controllers
             {
                 _logger.LogError(ex, "Error deserializing PropertyTaxData");
                 return new GapAnalysisPropertyTaxViewModel();
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTopOsrConfig(int reportId)
+        {
+            try
+            {
+                // Get the current user
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return Unauthorized();
+                }
+                
+                // Get the report
+                var report = await _context.RosraReports.FirstOrDefaultAsync(r => r.Id == reportId);
+                if (report == null)
+                {
+                    return NotFound();
+                }
+                
+                // Check if the report belongs to the current user
+                if (report.UserId != user.Id)
+                {
+                    return Forbid();
+                }
+                
+                // Check if the report has Top OSR Configuration data
+                if (string.IsNullOrEmpty(report.TopOsrConfigData))
+                {
+                    return Json(new { success = false, message = "No OSR configuration data found" });
+                }
+                
+                // Deserialize the data
+                var topOsrConfig = JsonSerializer.Deserialize<List<TopOsrViewModel>>(report.TopOsrConfigData, _jsonOptions);
+                
+                // Return the data as JSON
+                return Json(new { 
+                    success = true, 
+                    topOsrConfig = topOsrConfig,
+                    otherRevenue = 0 // We need to add OtherRevenue to the report model in a future update
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving Top OSR Configuration data");
+                return Json(new { success = false, message = "Error retrieving OSR configuration data" });
+            }
+        }
+
+        /// <summary>
+        /// Get all distinct countries from the Country table with additional data from DB_Countries
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetCountries()
+        {
+            try
+            {
+                // Get distinct countries from Country table
+                var countries = await _context.Countries
+                    .Where(c => c.Name != null)
+                    .Select(c => new { name = c.Name, currency = c.Currency })
+                    .Distinct()
+                    .OrderBy(c => c.name)
+                    .ToListAsync();
+
+                // Get additional data from DB_Countries table (includes currency symbol)
+                var countryDataList = await _context.DB_Countries
+                    .Select(cd => new {
+                        country = cd.Country,
+                        governmentType = cd.Government_Type,
+                        incomeLevel = cd.Income_Level,
+                        currencySymbol = cd.CurrencySymbol,
+                        currencyCode = cd.CurrencyCode
+                    })
+                    .ToListAsync();
+
+                // Join the data
+                var result = countries.Select(c => {
+                    var countryData = countryDataList.FirstOrDefault(cd =>
+                        cd.country != null && c.name != null &&
+                        cd.country.Equals(c.name, StringComparison.OrdinalIgnoreCase));
+
+                    // Fallback for currency symbol: use symbol from DB_Countries, or currency code, or currency from Country table
+                    string symbol = "";
+                    if (!string.IsNullOrEmpty(countryData?.currencySymbol))
+                    {
+                        symbol = countryData.currencySymbol;
+                    }
+                    else if (!string.IsNullOrEmpty(countryData?.currencyCode))
+                    {
+                        symbol = countryData.currencyCode; // Use currency code as fallback (e.g., "KES")
+                    }
+                    else if (!string.IsNullOrEmpty(c.currency))
+                    {
+                        // Extract first word or abbreviation from currency name
+                        symbol = c.currency.Split(' ')[0];
+                        if (symbol.Length > 5) symbol = symbol.Substring(0, 3); // Truncate long names
+                    }
+
+                    return new {
+                        name = c.name,
+                        currency = c.currency,
+                        currencySymbol = symbol,
+                        governmentType = countryData?.governmentType ?? "",
+                        incomeLevel = countryData?.incomeLevel ?? ""
+                    };
+                }).ToList();
+
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving countries");
+                return Json(new List<object>());
+            }
+        }
+
+        /// <summary>
+        /// Get all states/regions for a specific country
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetStatesByCountry(string country)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(country))
+                {
+                    return Json(new List<object>());
+                }
+
+                var states = await _context.Countries
+                    .Where(c => c.Name == country && c.StateName != null)
+                    .Select(c => new {
+                        code = c.StateCode ?? c.StateName,
+                        name = c.StateName
+                    })
+                    .Distinct()
+                    .OrderBy(s => s.name)
+                    .ToListAsync();
+
+                return Json(states);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving states for country: {Country}", country);
+                return Json(new List<object>());
+            }
+        }
+
+        /// <summary>
+        /// Get Frontier Analysis data for a specific country
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetFrontierAnalysis(string country)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(country))
+                {
+                    return Json(new { success = false, message = "Country is required" });
+                }
+
+                // Get country data from DB_Countries
+                var countryData = await _context.DB_Countries
+                    .FirstOrDefaultAsync(c => c.Country.ToLower() == country.ToLower());
+
+                if (countryData == null)
+                {
+                    return Json(new { success = false, message = "Country not found in database" });
+                }
+
+                // Get peer benchmark based on income level and government type
+                var incomeLevel = countryData.Income_Level?.ToLower() ?? "";
+                var govType = countryData.Government_Type?.ToLower() ?? "";
+
+                // Normalize income level to match DB_Frontiers format
+                // DB_Countries has "Lower middle income", DB_Frontiers has "Lower-middle"
+                string normalizedIncomeLevel = incomeLevel
+                    .Replace("lower middle income", "lower-middle")
+                    .Replace("upper middle income", "upper-middle")
+                    .Replace("high income", "high")
+                    .Replace("low income", "low");
+
+                _logger.LogInformation("Looking for frontier: IncomeLevel={IncomeLevel}, Normalized={Normalized}, GovType={GovType}",
+                    incomeLevel, normalizedIncomeLevel, govType);
+
+                // Determine if federal or unitary
+                bool isFederal = govType == "federal";
+
+                // Try to find specific benchmark for federal if applicable
+                Frontier? frontier = null;
+                if (isFederal)
+                {
+                    frontier = await _context.DB_Frontiers
+                        .FirstOrDefaultAsync(f => f.Income_Level.ToLower() == normalizedIncomeLevel &&
+                                                  f.Government_Type != null &&
+                                                  f.Government_Type.ToLower() == "federal");
+                }
+
+                // If no federal match or not federal, get unitary benchmark
+                if (frontier == null)
+                {
+                    frontier = await _context.DB_Frontiers
+                        .FirstOrDefaultAsync(f => f.Income_Level.ToLower() == normalizedIncomeLevel &&
+                                                  (f.Government_Type == null ||
+                                                   f.Government_Type.ToLower() == "unitary" ||
+                                                   f.Government_Type == ""));
+                }
+
+                // Log if frontier not found
+                if (frontier == null)
+                {
+                    _logger.LogWarning("No frontier found for IncomeLevel={IncomeLevel}, GovType={GovType}", normalizedIncomeLevel, govType);
+                }
+
+                // Calculate frontier metrics
+                decimal sngRevenuePerCapita = countryData.SNG_total_rev_pc_usd ?? 0;
+                decimal peerBenchmarkFunding = frontier?.SNG_total_rev_pc_frontier ?? 0;
+                decimal fundingIndex = peerBenchmarkFunding > 0 ? (sngRevenuePerCapita / peerBenchmarkFunding) * 100 : 0;
+                decimal fundingHeadroom = peerBenchmarkFunding - sngRevenuePerCapita;
+
+                decimal nonGrantsShare = (countryData.Revenue_Autonomy ?? 0) * 100; // Convert to percentage
+                decimal peerBenchmarkAutonomy = (frontier?.Revenue_Autonomy_frontier ?? 0) * 100;
+                decimal autonomyIndex = peerBenchmarkAutonomy > 0 ? (nonGrantsShare / peerBenchmarkAutonomy) * 100 : 0;
+                decimal distanceFromBenchmark = Math.Abs(nonGrantsShare - peerBenchmarkAutonomy);
+
+                // Determine position relative to benchmark
+                string positionRelative = "";
+                if (nonGrantsShare > peerBenchmarkAutonomy)
+                {
+                    positionRelative = $"Above frontier by {(nonGrantsShare - peerBenchmarkAutonomy):F0}% (more autonomous)";
+                }
+                else if (nonGrantsShare < peerBenchmarkAutonomy)
+                {
+                    positionRelative = $"Below frontier by {(peerBenchmarkAutonomy - nonGrantsShare):F0}% (more grant-dependent)";
+                }
+                else
+                {
+                    positionRelative = "At the frontier (same as peer benchmark)";
+                }
+
+                return Json(new
+                {
+                    success = true,
+                    country = countryData.Country,
+                    incomeLevel = countryData.Income_Level,
+                    governmentType = countryData.Government_Type,
+                    frontier1 = new
+                    {
+                        sngRevenuePerCapita = Math.Round(sngRevenuePerCapita, 0),
+                        peerBenchmark = Math.Round(peerBenchmarkFunding, 0),
+                        fundingIndex = Math.Round(fundingIndex, 0),
+                        fundingHeadroom = Math.Round(fundingHeadroom, 0)
+                    },
+                    frontier2 = new
+                    {
+                        nonGrantsShare = Math.Round(nonGrantsShare, 0),
+                        peerBenchmark = Math.Round(peerBenchmarkAutonomy, 0),
+                        autonomyIndex = Math.Round(autonomyIndex, 0),
+                        distanceFromBenchmark = Math.Round(distanceFromBenchmark, 0),
+                        positionRelative = positionRelative
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving frontier analysis for country: {Country}", country);
+                return Json(new { success = false, message = "Error retrieving frontier analysis data" });
+            }
+        }
+
+        /// <summary>
+        /// Get list of Peer SNGs for dropdown, optionally filtered by country code
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetPeerSNGs(string countryCode = null)
+        {
+            try
+            {
+                // Try to use CountryCode column if it exists (after migration)
+                try
+                {
+                    var query = _context.Peers_SNG.AsQueryable();
+
+                    // Filter by country code if provided, otherwise return all (default Kenya for backward compatibility)
+                    if (!string.IsNullOrEmpty(countryCode))
+                    {
+                        query = query.Where(p => p.CountryCode == countryCode);
+                    }
+
+                    var peers = await query
+                        .OrderBy(p => p.SNG)
+                        .Select(p => new { name = p.SNG, countryCode = p.CountryCode })
+                        .ToListAsync();
+
+                    return Json(peers);
+                }
+                catch (Microsoft.Data.SqlClient.SqlException sqlEx) when (sqlEx.Message.Contains("Invalid column name 'CountryCode'"))
+                {
+                    // Fallback for databases that don't have CountryCode column yet
+                    // Return all peer SNGs (assumed to be Kenya data) for Kenya requests
+                    _logger.LogWarning("CountryCode column not found in Peers_SNG table. Please run database migration. Falling back to returning all peers for Kenya.");
+
+                    if (string.IsNullOrEmpty(countryCode) || countryCode == "KEN")
+                    {
+                        var peers = await _context.Peers_SNG
+                            .OrderBy(p => p.SNG)
+                            .Select(p => new { name = p.SNG, countryCode = "KEN" })
+                            .ToListAsync();
+                        return Json(peers);
+                    }
+                    else
+                    {
+                        // For non-Kenya countries, return empty list (no data available yet)
+                        return Json(new List<object>());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving peer SNGs for country: {CountryCode}", countryCode);
+                return Json(new List<object>());
+            }
+        }
+
+        /// <summary>
+        /// Upload Peer SNG data from CSV for non-Kenya countries
+        /// Format: SNG,OSR,GCP (no header row expected, but header is handled)
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> UploadPeerSNGs([FromForm] IFormFile file, [FromForm] string countryCode)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                {
+                    return Json(new { success = false, message = "No file uploaded" });
+                }
+
+                if (string.IsNullOrEmpty(countryCode) || countryCode.Length != 3)
+                {
+                    return Json(new { success = false, message = "Valid 3-letter country code is required" });
+                }
+
+                var peers = new List<PeerSNG>();
+                using (var reader = new StreamReader(file.OpenReadStream()))
+                {
+                    int lineNumber = 0;
+                    while (!reader.EndOfStream)
+                    {
+                        var line = await reader.ReadLineAsync();
+                        lineNumber++;
+
+                        if (string.IsNullOrWhiteSpace(line)) continue;
+
+                        var values = line.Split(',');
+
+                        // Skip header row if present
+                        if (lineNumber == 1 && (values[0].Trim().ToUpper() == "SNG" || values[0].Trim().ToUpper() == "NAME"))
+                        {
+                            continue;
+                        }
+
+                        if (values.Length < 3)
+                        {
+                            return Json(new { success = false, message = $"Invalid format at line {lineNumber}. Expected: SNG,OSR,GCP" });
+                        }
+
+                        if (!decimal.TryParse(values[1].Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var osr) ||
+                            !decimal.TryParse(values[2].Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var gcp))
+                        {
+                            return Json(new { success = false, message = $"Invalid numeric values at line {lineNumber}" });
+                        }
+
+                        peers.Add(new PeerSNG
+                        {
+                            CountryCode = countryCode.ToUpper(),
+                            SNG = values[0].Trim(),
+                            OSR = osr,
+                            GCP = gcp,
+                            Include = true
+                        });
+                    }
+                }
+
+                if (!peers.Any())
+                {
+                    return Json(new { success = false, message = "No valid peer data found in file" });
+                }
+
+                // Remove existing peers for this country (except Kenya default data)
+                var existingPeers = await _context.Peers_SNG
+                    .Where(p => p.CountryCode == countryCode.ToUpper())
+                    .ToListAsync();
+
+                if (existingPeers.Any())
+                {
+                    _context.Peers_SNG.RemoveRange(existingPeers);
+                }
+
+                // Add new peers
+                await _context.Peers_SNG.AddRangeAsync(peers);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = $"Successfully uploaded {peers.Count} peer SNGs for {countryCode}", count = peers.Count });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error uploading peer SNGs");
+                return Json(new { success = false, message = "Error uploading peer data: " + ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Validate peer SNG data for client-side storage (no database write)
+        /// Data will be saved with the report in RosraReport.PeerSNGData
+        /// </summary>
+        [HttpPost]
+        public IActionResult SavePeerSNGs([FromBody] SavePeerSNGsRequest request)
+        {
+            try
+            {
+                if (request == null || request.Peers == null || !request.Peers.Any())
+                {
+                    return Json(new { success = false, message = "No peer data provided" });
+                }
+
+                if (string.IsNullOrEmpty(request.CountryCode) || request.CountryCode.Length != 3)
+                {
+                    return Json(new { success = false, message = "Valid 3-letter country code is required" });
+                }
+
+                var countryCode = request.CountryCode.ToUpper();
+
+                // Validate and transform peers (no database write - data stored per-report)
+                var validatedPeers = request.Peers
+                    .Where(p => !string.IsNullOrWhiteSpace(p.SNG))
+                    .Select(p => new
+                    {
+                        sng = p.SNG.Trim(),
+                        osr = p.OSR,
+                        gcp = p.GCP,
+                        include = true,
+                        mult = p.GCP > 0 ? Math.Round(p.OSR / p.GCP, 10) : 0
+                    })
+                    .ToList();
+
+                if (!validatedPeers.Any())
+                {
+                    return Json(new { success = false, message = "No valid peer data found after validation" });
+                }
+
+                // Return validated data for client-side storage
+                return Json(new {
+                    success = true,
+                    message = $"Data validated ({validatedPeers.Count} peers). Will be saved with report.",
+                    peers = validatedPeers,
+                    countryCode = countryCode,
+                    count = validatedPeers.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error validating peer SNGs");
+                return Json(new { success = false, message = "Error validating peer data: " + ex.Message });
+            }
+        }
+
+        public class SavePeerSNGsRequest
+        {
+            public string CountryCode { get; set; }
+            public List<PeerSNGInput> Peers { get; set; }
+        }
+
+        public class PeerSNGInput
+        {
+            public string SNG { get; set; }
+            public decimal OSR { get; set; }
+            public decimal GCP { get; set; }
+        }
+
+        /// <summary>
+        /// Request model for Peer SNG Analysis with optional custom peers
+        /// </summary>
+        public class PeerAnalysisRequest
+        {
+            public string Sng { get; set; }
+            public string CountryCode { get; set; }
+            public List<CustomPeerInput> CustomPeers { get; set; }
+        }
+
+        public class CustomPeerInput
+        {
+            public string Sng { get; set; }
+            public decimal Osr { get; set; }
+            public decimal Gcp { get; set; }
+            public bool Include { get; set; } = true;
+        }
+
+        /// <summary>
+        /// Get Peer SNG Frontier Analysis (Module 2: Within-Country OSR Frontier)
+        /// Supports both GET (for reference data) and POST (for custom peers)
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetPeerSNGAnalysis(string sng, string countryCode = null)
+        {
+            return await PerformPeerSNGAnalysis(sng, countryCode, null);
+        }
+
+        /// <summary>
+        /// Get Peer SNG Frontier Analysis with custom peers (POST version)
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> GetPeerSNGAnalysisWithCustomPeers([FromBody] PeerAnalysisRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.Sng))
+            {
+                return Json(new { success = false, message = "Subnational Government is required" });
+            }
+            return await PerformPeerSNGAnalysis(request.Sng, request.CountryCode, request.CustomPeers);
+        }
+
+        /// <summary>
+        /// Internal method to perform peer SNG analysis
+        /// </summary>
+        private async Task<IActionResult> PerformPeerSNGAnalysis(string sng, string countryCode, List<CustomPeerInput> customPeers)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(sng))
+                {
+                    return Json(new { success = false, message = "Subnational Government is required" });
+                }
+
+                List<PeerSNG> allPeers;
+                bool usingCustomData = false;
+
+                // Use custom peers if provided, otherwise fetch from database
+                if (customPeers != null && customPeers.Any())
+                {
+                    usingCustomData = true;
+                    allPeers = customPeers.Select(p => new PeerSNG
+                    {
+                        CountryCode = countryCode ?? "CUSTOM",
+                        SNG = p.Sng,
+                        OSR = p.Osr,
+                        GCP = p.Gcp,
+                        Include = p.Include
+                    }).ToList();
+                    _logger.LogInformation("Using custom peer data: {Count} peers", allPeers.Count);
+                }
+                else
+                {
+                    // Get reference data from database
+                    if (!string.IsNullOrEmpty(countryCode))
+                    {
+                        allPeers = await _context.Peers_SNG
+                            .Where(p => p.CountryCode == countryCode.ToUpper())
+                            .ToListAsync();
+                    }
+                    else
+                    {
+                        allPeers = await _context.Peers_SNG.ToListAsync();
+                    }
+                    _logger.LogInformation("Using reference data: {Count} peers for country {Country}", allPeers.Count, countryCode ?? "ALL");
+                }
+
+                if (allPeers == null || !allPeers.Any())
+                {
+                    return Json(new { success = false, message = "No peer data available" });
+                }
+
+                // Get selected SNG data
+                var selectedPeer = allPeers.FirstOrDefault(p => p.SNG.ToLower() == sng.ToLower());
+
+                if (selectedPeer == null)
+                {
+                    return Json(new { success = false, message = "Subnational Government not found" });
+                }
+
+                // Get OSR and GDP for the selected SNG
+                decimal actualOSR = selectedPeer.OSR;
+                decimal subnationalGDP = selectedPeer.GCP;
+
+                // Calculate multipliers for all included peers
+                // First try with Include flag, if no results, use all peers with valid data
+                var validMultipliers = allPeers
+                    .Where(p => p.Include && p.GCP > 0 && p.OSR > 0)
+                    .Select(p => p.OSR / p.GCP)
+                    .OrderByDescending(m => m)
+                    .ToList();
+
+                // Fallback: if no peers with Include=true, use all peers with valid GCP and OSR
+                if (!validMultipliers.Any())
+                {
+                    _logger.LogWarning("No peers with Include=true found, using all peers with valid data");
+                    validMultipliers = allPeers
+                        .Where(p => p.GCP > 0 && p.OSR > 0)
+                        .Select(p => p.OSR / p.GCP)
+                        .OrderByDescending(m => m)
+                        .ToList();
+                }
+
+                if (!validMultipliers.Any())
+                {
+                    return Json(new { success = false, message = $"No valid peer data for frontier calculation. Total peers: {allPeers.Count}, With GCP>0: {allPeers.Count(p => p.GCP > 0)}, With OSR>0: {allPeers.Count(p => p.OSR > 0)}" });
+                }
+
+                // Calculate 90th percentile threshold (matches Excel PERCENTILE.INC formula)
+                // Excel formula: PERCENTILE.INC(multipliers, 0.9) then AVERAGE(FILTER(m, m >= threshold))
+                int validPeersCount = validMultipliers.Count;
+                var sortedAscForPercentile = validMultipliers.OrderBy(x => x).ToList();
+
+                // PERCENTILE.INC calculation: position = k * (n - 1)
+                double percentileIndex = 0.9 * (sortedAscForPercentile.Count - 1);
+                int lowerIdx = (int)Math.Floor(percentileIndex);
+                int upperIdx = (int)Math.Ceiling(percentileIndex);
+                decimal percentile90Threshold;
+                if (lowerIdx == upperIdx || upperIdx >= sortedAscForPercentile.Count)
+                    percentile90Threshold = sortedAscForPercentile[lowerIdx];
+                else
+                    percentile90Threshold = sortedAscForPercentile[lowerIdx] +
+                        (sortedAscForPercentile[upperIdx] - sortedAscForPercentile[lowerIdx]) *
+                        ((decimal)percentileIndex - lowerIdx);
+
+                // Peer frontier multiplier = average of all multipliers >= 90th percentile
+                var topMultipliers = validMultipliers.Where(m => m >= percentile90Threshold).ToList();
+                decimal peerFrontierMultiplier = topMultipliers.Any() ? topMultipliers.Average() : validMultipliers.First();
+                int top10Count = topMultipliers.Count; // For display purposes
+
+                // Calculate 80th percentile threshold (for display/comparison)
+                decimal percentile80Threshold = 0;
+                if (validMultipliers.Count > 0)
+                {
+                    var sortedAsc = validMultipliers.OrderBy(x => x).ToList();
+                    double index = 0.8 * (sortedAsc.Count - 1);
+                    int lower = (int)Math.Floor(index);
+                    int upper = (int)Math.Ceiling(index);
+                    if (lower == upper)
+                        percentile80Threshold = sortedAsc[lower];
+                    else
+                        percentile80Threshold = sortedAsc[lower] + (sortedAsc[upper] - sortedAsc[lower]) * ((decimal)index - lower);
+                }
+
+                // Subject multiplier (OSR/GDP for selected SNG)
+                decimal subjectMultiplier = subnationalGDP > 0 ? actualOSR / subnationalGDP : 0;
+
+                // OSR potential (frontier multiplier × GDP)
+                decimal osrPotential = peerFrontierMultiplier * subnationalGDP;
+
+                // Performance Index (actual OSR / OSR potential)
+                decimal performanceIndex = osrPotential > 0 ? actualOSR / osrPotential : 0;
+
+                // OSR Gap (potential - actual, minimum 0)
+                decimal osrGap = Math.Max(0, osrPotential - actualOSR);
+
+                // Prepare peer data for scatter chart (use same logic - fallback if no Include=true)
+                var includedPeers = allPeers.Where(p => p.Include && p.GCP > 0).ToList();
+                if (!includedPeers.Any())
+                {
+                    includedPeers = allPeers.Where(p => p.GCP > 0).ToList();
+                }
+
+                // Calculate helper values for the modal
+                var validPeersWithGCP = allPeers.Where(p => (p.Include || !allPeers.Any(x => x.Include)) && p.GCP > 0 && p.OSR > 0).ToList();
+                decimal minGDP = validPeersWithGCP.Any() ? validPeersWithGCP.Min(p => p.GCP) : 0;
+                decimal maxGDP = validPeersWithGCP.Any() ? validPeersWithGCP.Max(p => p.GCP) : 0;
+                decimal frontierYAtMinGDP = peerFrontierMultiplier * minGDP;
+                decimal frontierYAtMaxGDP = peerFrontierMultiplier * maxGDP;
+                int topPerformersUsed = top10Count; // Number of peers >= 90th percentile
+                bool isAbove80thPercentile = subjectMultiplier >= percentile80Threshold;
+
+                var peerChartData = includedPeers
+                    .Select(p => new
+                    {
+                        name = p.SNG,
+                        gdp = Math.Round(p.GCP, 0),
+                        osr = Math.Round(p.OSR, 2),
+                        isSelected = p.SNG.ToLower() == sng.ToLower()
+                    })
+                    .ToList();
+
+                return Json(new
+                {
+                    success = true,
+                    sng = selectedPeer.SNG,
+                    metrics = new
+                    {
+                        actualOSR = Math.Round(actualOSR, 2),
+                        subnationalGDP = Math.Round(subnationalGDP, 0),
+                        peerFrontierMultiplier = Math.Round(peerFrontierMultiplier, 8),
+                        subjectMultiplier = Math.Round(subjectMultiplier, 8),
+                        osrPotential = Math.Round(osrPotential, 2),
+                        performanceIndex = Math.Round(performanceIndex * 100, 1), // As percentage
+                        osrGap = Math.Round(osrGap, 0)
+                    },
+                    helpers = new
+                    {
+                        validPeersUsed = validPeersCount,
+                        top10Count = top10Count, // Peers >= 90th percentile
+                        frontierMultiplier = Math.Round(peerFrontierMultiplier, 8),
+                        percentile80Threshold = Math.Round(percentile80Threshold, 8),
+                        minGDP = Math.Round(minGDP, 0),
+                        maxGDP = Math.Round(maxGDP, 0),
+                        frontierYAtMinGDP = Math.Round(frontierYAtMinGDP, 2),
+                        frontierYAtMaxGDP = Math.Round(frontierYAtMaxGDP, 2),
+                        subjectMultiplier = Math.Round(subjectMultiplier, 8),
+                        osrPotential = Math.Round(osrPotential, 2),
+                        topPerformersUsed = topPerformersUsed,
+                        isAbove80thPercentile = isAbove80thPercentile
+                    },
+                    debug = new
+                    {
+                        usingCustomData = usingCustomData,
+                        dataSource = usingCustomData ? "custom" : "reference",
+                        totalPeersInDb = allPeers.Count,
+                        peersWithIncludeTrue = allPeers.Count(p => p.Include),
+                        peersWithValidData = allPeers.Count(p => p.Include && p.GCP > 0 && p.OSR > 0),
+                        percentile90Threshold = Math.Round(percentile90Threshold, 10),
+                        topMultipliersCount = topMultipliers.Count,
+                        topMultipliers = topMultipliers.Select(m => Math.Round(m, 10)).ToList(),
+                        calculationSteps = new
+                        {
+                            step1_validMultipliersCount = validMultipliers.Count,
+                            step2_percentileIndex = percentileIndex,
+                            step3_percentile90Threshold = Math.Round(percentile90Threshold, 10),
+                            step4_topMultipliersAvg = Math.Round(peerFrontierMultiplier, 10),
+                            step5_osrPotential = $"{Math.Round(peerFrontierMultiplier, 10)} × {subnationalGDP} = {Math.Round(osrPotential, 2)}"
+                        }
+                    },
+                    chartData = peerChartData,
+                    frontierSlope = peerFrontierMultiplier, // For drawing frontier line
+                    dataSource = usingCustomData ? "custom" : "reference"
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving peer SNG analysis for: {SNG}", sng);
+                return Json(new { success = false, message = "Error retrieving peer SNG analysis data" });
+            }
+        }
+
+        /// <summary>
+        /// Reset Peers_SNG table to correct Excel data
+        /// Call this endpoint to fix corrupted peer data: /Rosra/ResetPeerSNGData
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> ResetPeerSNGData()
+        {
+            try
+            {
+                // Delete all existing peer data
+                var existingPeers = await _context.Peers_SNG.ToListAsync();
+                _context.Peers_SNG.RemoveRange(existingPeers);
+                await _context.SaveChangesAsync();
+
+                // Insert correct data from Excel
+                var correctPeers = new List<PeerSNG>
+                {
+                    new PeerSNG { CountryCode = "KEN", SNG = "Baringo", OSR = 321.4m, GCP = 75459m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Bomet", OSR = 196.8m, GCP = 151153m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Bungoma", OSR = 670.5m, GCP = 205542m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Busia", OSR = 205.9m, GCP = 88731m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Elgeyo/Marakwet", OSR = 105.9m, GCP = 117229m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Embu", OSR = 236.7m, GCP = 149912m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Garissa", OSR = 75.4m, GCP = 58634m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Homa Bay", OSR = 166m, GCP = 120751m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Isiolo", OSR = 125.1m, GCP = 26555m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Kajiado", OSR = 544.5m, GCP = 150709m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Kakamega", OSR = 639.8m, GCP = 214365m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Kericho", OSR = 405.5m, GCP = 163543m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Kiambu", OSR = 2192.1m, GCP = 554515m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Kilifi", OSR = 685.5m, GCP = 199953m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Kirinyaga", OSR = 312.9m, GCP = 123709m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Kisii", OSR = 472.9m, GCP = 198192m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Kisumu", OSR = 728.3m, GCP = 247324m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Kitui", OSR = 244.4m, GCP = 154345m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Kwale", OSR = 349.5m, GCP = 119001m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Laikipia", OSR = 549.7m, GCP = 94639m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Lamu", OSR = 89.6m, GCP = 32747m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Machakos", OSR = 1075.9m, GCP = 309164m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Makueni", OSR = 259.5m, GCP = 110207m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Mandera", OSR = 78m, GCP = 56964m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Marsabit", OSR = 81.8m, GCP = 60486m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Meru", OSR = 551.3m, GCP = 329977m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Migori", OSR = 292.8m, GCP = 120639m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Mombasa", OSR = 3271.2m, GCP = 468749m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Murang'a", OSR = 567.8m, GCP = 200539m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Nairobi", OSR = 6733.3m, GCP = 2682701m, Include = false },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Nakuru", OSR = 1511.6m, GCP = 483938m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Nandi", OSR = 217m, GCP = 149117m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Narok", OSR = 2310.9m, GCP = 165462m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Nyamira", OSR = 133.1m, GCP = 116992m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Nyandarua", OSR = 307.5m, GCP = 149707m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Nyeri", OSR = 659.2m, GCP = 209626m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Samburu", OSR = 192.6m, GCP = 29090m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Siaya", OSR = 213.1m, GCP = 103899m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Taita/Taveta", OSR = 216m, GCP = 63592m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Tana River", OSR = 55.5m, GCP = 29460m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Tharaka-Nithi", OSR = 190.4m, GCP = 61461m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Trans Nzoia", OSR = 320.7m, GCP = 165700m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Turkana", OSR = 157.2m, GCP = 107450m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Uasin Gishu", OSR = 791.8m, GCP = 227871m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Vihiga", OSR = 132.8m, GCP = 83773m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "Wajir", OSR = 58m, GCP = 49159m, Include = true },
+                    new PeerSNG { CountryCode = "KEN", SNG = "West Pokot", OSR = 90.7m, GCP = 79417m, Include = true }
+                };
+
+                await _context.Peers_SNG.AddRangeAsync(correctPeers);
+                await _context.SaveChangesAsync();
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"Peer SNG data reset successfully. Deleted {existingPeers.Count} old records, inserted {correctPeers.Count} correct records.",
+                    deletedCount = existingPeers.Count,
+                    insertedCount = correctPeers.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resetting peer SNG data");
+                return Json(new { success = false, message = $"Error resetting peer SNG data: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Admin-only endpoint to save peer SNG data as global reference data
+        /// Requires CanUploadPeerSNGData permission
+        /// </summary>
+        [HttpPost]
+        [Authorize(Policy = "CanUploadPeerSNGData")]
+        public async Task<IActionResult> AdminSavePeerSNGs([FromBody] SavePeerSNGsRequest request)
+        {
+            try
+            {
+                if (request == null || request.Peers == null || !request.Peers.Any())
+                {
+                    return Json(new { success = false, message = "No peer data provided" });
+                }
+
+                if (string.IsNullOrEmpty(request.CountryCode) || request.CountryCode.Length != 3)
+                {
+                    return Json(new { success = false, message = "Valid 3-letter country code is required" });
+                }
+
+                var countryCode = request.CountryCode.ToUpper();
+
+                // Delete existing peers for this country
+                var existingPeers = await _context.Peers_SNG
+                    .Where(p => p.CountryCode == countryCode)
+                    .ToListAsync();
+
+                if (existingPeers.Any())
+                {
+                    _context.Peers_SNG.RemoveRange(existingPeers);
+                    _logger.LogInformation("Admin deleted {Count} existing peers for {Country}", existingPeers.Count, countryCode);
+                }
+
+                // Add new reference peers
+                var peers = request.Peers.Select(p => new PeerSNG
+                {
+                    CountryCode = countryCode,
+                    SNG = p.SNG,
+                    OSR = p.OSR,
+                    GCP = p.GCP,
+                    Include = true
+                }).ToList();
+
+                await _context.Peers_SNG.AddRangeAsync(peers);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Admin saved {Count} reference peers for {Country}", peers.Count, countryCode);
+
+                return Json(new {
+                    success = true,
+                    message = $"Reference data updated: {peers.Count} peer SNGs for {countryCode}",
+                    count = peers.Count,
+                    deletedCount = existingPeers.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in AdminSavePeerSNGs");
+                return Json(new { success = false, message = "Error saving reference data: " + ex.Message });
             }
         }
     }

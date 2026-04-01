@@ -1,0 +1,262 @@
+<!-- Delete Long Term User Charge Category Modal -->
+<div class="modal" id="deleteLongTermCategoryModal" tabindex="-1" aria-labelledby="deleteLongTermCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title d-flex align-items-center" id="deleteLongTermCategoryModalLabel">
+                    <i class="fas fa-trash me-2"></i>
+                    Delete Long Term User Charge Category
+                </h5>
+                <button type="button" class="btn-close btn-close-white" id="closeLongTermDeleteModalBtn" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="alert alert-warning">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-exclamation-triangle fs-3 text-warning"></i>
+                        </div>
+                        <div>
+                            <h6 class="alert-heading mb-1">Confirm Deletion</h6>
+                            <p class="mb-0">Are you sure you want to delete the category "<span id="deleteLongTermCategoryName" class="fw-bold"></span>"?</p>
+                            <p class="small text-danger mb-0 mt-2">This action cannot be undone.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card border-0 shadow-sm mt-3">
+                    <div class="card-body bg-light rounded">
+                        <h6 class="mb-3 text-danger">Category Details</h6>
+                        <div class="row">
+                            <div class="col-sm-6 mb-2">
+                                <span class="d-block text-muted small">Estimated Monthly Leasees</span>
+                                <span class="fw-medium" id="deleteLongTermEstimatedLeasees">-</span>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <span class="d-block text-muted small">Actual Monthly Leasees</span>
+                                <span class="fw-medium" id="deleteLongTermActualLeasees">-</span>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <span class="d-block text-muted small">Potential Rate Payable</span>
+                                <span class="fw-medium" id="deleteLongTermPotentialRate">-</span>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <span class="d-block text-muted small">Actual Rate Paid</span>
+                                <span class="fw-medium" id="deleteLongTermActualRate">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <input type="hidden" id="longTermCategoryToDeleteId" value="">
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 stable-btn" id="cancelLongTermDeleteBtn">
+                    <i class="fas fa-times me-2"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-danger rounded-pill px-4 stable-btn" id="confirmDeleteLongTermCategoryBtn">
+                    <i class="fas fa-trash me-2"></i> Delete Category
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Modal styles */
+    .bg-danger {
+        background-color: #dc3545;
+    }
+    
+    /* Stable buttons with no transitions or transforms */
+    .stable-btn {
+        position: relative;
+        transform: translateZ(0);
+        -webkit-font-smoothing: subpixel-antialiased;
+        backface-visibility: hidden;
+    }
+    
+    .stable-btn:hover {
+        background-image: none !important;
+    }
+    
+    /* Static hover state for danger button */
+    .btn-danger.stable-btn:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+    
+    /* Static hover state for outline button */
+    .btn-outline-secondary.stable-btn:hover {
+        background-color: #6c757d;
+        color: #fff;
+    }
+    
+    /* Remove outline on buttons */
+    .btn:focus, .btn:active, .btn-close:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Prevent page shift */
+    body.modal-open {
+        overflow: hidden;
+        padding-right: 0 !important;
+    }
+    
+    /* Modal backdrop */
+    .modal-backdrop {
+        opacity: 0.5 !important;
+    }
+    
+    /* Hardware acceleration to prevent flickering */
+    .modal-content {
+        transform: translateZ(0);
+        -webkit-font-smoothing: subpixel-antialiased;
+        backface-visibility: hidden;
+    }
+    
+    /* Global style for no transitions */
+    .no-transitions * {
+        transition: none !important;
+        animation: none !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get modal element
+        const deleteLongTermModal = document.getElementById('deleteLongTermCategoryModal');
+        if (!deleteLongTermModal) return;
+        
+        // Create modal instance without animation
+        const bsLongTermDeleteModal = new bootstrap.Modal(deleteLongTermModal, {
+            backdrop: true,
+            keyboard: true,
+            focus: false
+        });
+        
+        // Function to handle category deletion
+        function handleDeleteLongTermCategory(categoryCard) {
+            if (!categoryCard) return;
+            
+            // Get category data
+            const categoryName = categoryCard.querySelector('.category-title')?.textContent || 'Unknown Category';
+            const categoryId = categoryCard.getAttribute('id') || '';
+            
+            // Set data to modal
+            document.getElementById('deleteLongTermCategoryName').textContent = categoryName;
+            document.getElementById('longTermCategoryToDeleteId').value = categoryId;
+            
+            // Get additional data from inputs
+            const estimatedLeaseesInput = categoryCard.querySelector('input[name*="EstimatedMonthlyLeasees"]');
+            const actualLeaseesInput = categoryCard.querySelector('input[name*="ActualMonthlyLeasees"]');
+            const potentialRateInput = categoryCard.querySelector('input[name*="PotentialRatePayable"]');
+            const actualRateInput = categoryCard.querySelector('input[name*="ActualRatePaid"]');
+            
+            document.getElementById('deleteLongTermEstimatedLeasees').textContent = 
+                estimatedLeaseesInput ? estimatedLeaseesInput.value : '-';
+            document.getElementById('deleteLongTermActualLeasees').textContent = 
+                actualLeaseesInput ? actualLeaseesInput.value : '-';
+            document.getElementById('deleteLongTermPotentialRate').textContent = 
+                potentialRateInput ? potentialRateInput.value : '-';
+            document.getElementById('deleteLongTermActualRate').textContent = 
+                actualRateInput ? actualRateInput.value : '-';
+            
+            // Show modal without animation
+            bsLongTermDeleteModal.show();
+        }
+        
+        // Event delegation for delete buttons
+        document.addEventListener('click', function(e) {
+            const button = e.target.closest('.remove-category-btn');
+            if (!button) return;
+            
+            // Only handle Long Term delete buttons (check if we're in Long Term context)
+            const longTermModal = document.getElementById('deleteLongTermCategoryModal');
+            if (!longTermModal) return;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Find the category card
+            const categoryCard = button.closest('.category-card');
+            handleDeleteLongTermCategory(categoryCard);
+        });
+        
+        // Button handlers
+        document.getElementById('closeLongTermDeleteModalBtn').addEventListener('click', function() {
+            bsLongTermDeleteModal.hide();
+        });
+        
+        document.getElementById('cancelLongTermDeleteBtn').addEventListener('click', function() {
+            bsLongTermDeleteModal.hide();
+        });
+        
+        document.getElementById('confirmDeleteLongTermCategoryBtn').addEventListener('click', function() {
+            const categoryId = document.getElementById('longTermCategoryToDeleteId').value;
+            const card = document.getElementById(categoryId);
+            
+            if (card) {
+                // Check if it's a default category (A, B, C) - don't delete these
+                const categoryTitle = card.querySelector('.category-title')?.textContent || '';
+                if (categoryTitle === 'Category A' || categoryTitle === 'Category B' || categoryTitle === 'Category C') {
+                    alert('Cannot delete default categories (A, B, C)');
+                    return;
+                }
+                
+                // Remove the category
+                card.remove();
+                
+                // Run any necessary update functions if they exist
+                if (typeof updateLongTermDynamicCategoryIndices === 'function') {
+                    updateLongTermDynamicCategoryIndices();
+                }
+                if (typeof updateCalculations === 'function') {
+                    updateCalculations();
+                }
+            }
+            
+            // Hide modal
+            bsLongTermDeleteModal.hide();
+        });
+        
+        // Reset form when modal is hidden
+        deleteLongTermModal.addEventListener('hidden.bs.modal', function() {
+            document.getElementById('longTermCategoryToDeleteId').value = '';
+            document.getElementById('deleteLongTermCategoryName').textContent = '';
+            document.getElementById('deleteLongTermEstimatedLeasees').textContent = '-';
+            document.getElementById('deleteLongTermActualLeasees').textContent = '-';
+            document.getElementById('deleteLongTermPotentialRate').textContent = '-';
+            document.getElementById('deleteLongTermActualRate').textContent = '-';
+            
+            // Clean up any stuck backdrops
+            setTimeout(function() {
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(function(backdrop) {
+                    backdrop.remove();
+                });
+                
+                // Also clean up body classes
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            }, 150);
+        });
+        
+        // Disable all CSS transitions when hovering to prevent flickering
+        const disableTransitions = function() {
+            document.body.classList.add('no-transitions');
+        };
+        
+        const enableTransitions = function() {
+            document.body.classList.remove('no-transitions');
+        };
+        
+        // Add transition disabling on modal interaction
+        deleteLongTermModal.addEventListener('mouseenter', disableTransitions, { passive: true });
+        deleteLongTermModal.addEventListener('mouseleave', enableTransitions, { passive: true });
+        
+        // Expose the handle function for external usage if needed
+        window.handleDeleteLongTermCategory = handleDeleteLongTermCategory;
+    });
+</script> 

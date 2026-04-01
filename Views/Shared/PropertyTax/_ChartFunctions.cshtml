@@ -1,0 +1,370 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Chart variables
+        let revenueComparisonChart = null;
+        let gapDistributionChart = null;
+        let chartType = 'bar';
+        let gapChartType = 'stacked';
+        
+        // Update the revenue comparison chart
+        window.updateRevenueComparisonChart = function(actualRevenue, potentialRevenue, revenueGap) {
+            const ctx = document.getElementById('revenueComparisonChart');
+            if (!ctx) return;
+            
+            // Format the data for better display
+            const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'KES',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            
+            const formattedActual = formatter.format(actualRevenue);
+            const formattedPotential = formatter.format(potentialRevenue);
+            const formattedGap = formatter.format(revenueGap);
+            
+            // Prepare chart data
+            const chartData = {
+                labels: ['Property Tax Revenue'],
+                datasets: [
+                    {
+                        label: 'Actual Revenue',
+                        data: [actualRevenue],
+                        backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Potential Revenue',
+                        data: [potentialRevenue],
+                        backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            };
+            
+            // Destroy existing chart if it exists
+            if (revenueComparisonChart) {
+                revenueComparisonChart.destroy();
+            }
+            
+            // Create new chart
+            revenueComparisonChart = new Chart(ctx, {
+                type: chartType,
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatter.format(value).replace('KES', 'KSh');
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += formatter.format(context.raw);
+                                    return label;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom'
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: function(value) {
+                                return formatter.format(value).replace('KES', 'KSh');
+                            }
+                        }
+                    }
+                }
+            });
+        };
+        
+        // Update the gap distribution chart
+        window.updateGapDistributionChart = function(registrationGap, complianceGap, assessmentGap, combinedGaps) {
+            const ctx = document.getElementById('gapDistributionChart');
+            if (!ctx) return;
+
+            // Destroy existing chart if it exists
+            if (gapDistributionChart) {
+                gapDistributionChart.destroy();
+            }
+            
+            // Format the data for better display
+            const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'KES',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            
+            // Prepare chart data based on chart type
+            const chartData = {
+                labels: ['Gap Distribution'],
+                datasets: gapChartType === 'stacked' ? [
+                    {
+                        label: 'Registration Gap',
+                        data: [registrationGap],
+                        backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Compliance Gap',
+                        data: [complianceGap],
+                        backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Assessment Gap',
+                        data: [assessmentGap],
+                        backgroundColor: 'rgba(255, 206, 86, 0.8)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Other Gaps',
+                        data: [combinedGaps],
+                        backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }
+                ] : [
+                    {
+                        label: 'Gap Types',
+                        data: [registrationGap, complianceGap, assessmentGap, combinedGaps],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 206, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }
+                ]
+            };
+            
+            // Create new chart with appropriate type and options
+            gapDistributionChart = new Chart(ctx, {
+                type: gapChartType === 'stacked' ? 'bar' : 'pie',
+                data: {
+                    labels: gapChartType === 'stacked' ? ['Gap Distribution'] : ['Registration Gap', 'Compliance Gap', 'Assessment Gap', 'Other Gaps'],
+                    datasets: chartData.datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            left: 10,
+                            right: 10,
+                            top: 0,
+                            bottom: 0
+                        }
+                    },
+                    scales: gapChartType === 'stacked' ? {
+                        x: {
+                            stacked: true
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatter.format(value).replace('KES', 'KSh');
+                                }
+                            }
+                        }
+                    } : {},
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (gapChartType !== 'stacked') {
+                                        label = context.label || '';
+                                    }
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += formatter.format(context.raw);
+                                    return label;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom'
+                        },
+                        datalabels: gapChartType === 'stacked' ? {
+                            color: '#fff',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: function(value) {
+                                return formatter.format(value).replace('KES', 'KSh');
+                            }
+                        } : {
+                            color: '#fff',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: function(value, context) {
+                                const sum = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = (value / sum * 100).toFixed(1) + '%';
+                                return percentage;
+                            }
+                        }
+                    }
+                }
+            });
+        };
+        
+        // Add event listeners for chart type toggles
+        document.getElementById('viewBarChartBtn').addEventListener('click', function() {
+            chartType = 'bar';
+            this.classList.add('active');
+            document.getElementById('viewPieChartBtn').classList.remove('active');
+            
+            // Recalculate to update chart
+            calculatePropertyTaxRevenue();
+        });
+        
+        document.getElementById('viewPieChartBtn').addEventListener('click', function() {
+            chartType = 'pie';
+            this.classList.add('active');
+            document.getElementById('viewBarChartBtn').classList.remove('active');
+            
+            // Recalculate to update chart
+            calculatePropertyTaxRevenue();
+        });
+        
+        // Add event listeners for gap chart type toggles
+        document.getElementById('viewStackedBarBtn').addEventListener('click', function() {
+            gapChartType = 'stacked';
+            this.classList.add('active');
+            document.getElementById('viewPieGapBtn').classList.remove('active');
+            
+            // Update gap distribution chart
+            updateGapAnalysis();
+        });
+        
+        document.getElementById('viewPieGapBtn').addEventListener('click', function() {
+            gapChartType = 'pie';
+            this.classList.add('active');
+            document.getElementById('viewStackedBarBtn').classList.remove('active');
+            
+            // Update gap distribution chart
+            updateGapAnalysis();
+        });
+        
+        // Update breakdown analysis
+        window.updateBreakdownAnalysis = function() {
+            const breakdownContent = document.getElementById('breakdownContent');
+            const statusBadge = document.getElementById('breakdownStatusBadge');
+            
+            // Get the largest gap type and value
+            const registrationGap = parseFloat(document.getElementById('registrationGap').textContent.replace(/[^0-9.-]+/g, ''));
+            const complianceGap = parseFloat(document.getElementById('complianceGap').textContent.replace(/[^0-9.-]+/g, ''));
+            const assessmentGap = parseFloat(document.getElementById('assessmentValuationGap').textContent.replace(/[^0-9.-]+/g, ''));
+            
+            const gapValues = [
+                { type: 'Registration Gap', value: registrationGap },
+                { type: 'Compliance Gap', value: complianceGap },
+                { type: 'Assessment Gap', value: assessmentGap }
+            ];
+            
+            // Sort by value (descending)
+            gapValues.sort((a, b) => b.value - a.value);
+            
+            // Get the largest gap
+            const largestGap = gapValues[0];
+            
+            // Update the breakdown content
+            if (largestGap.value > 0) {
+                let statusClass = '';
+                let statusText = '';
+                
+                if (largestGap.type === 'Registration Gap') {
+                    statusClass = 'bg-danger';
+                    statusText = 'Critical';
+                    breakdownContent.innerHTML = `
+                        <p>The <strong>Registration Gap</strong> is your largest revenue loss factor. This indicates a significant number of potential taxpayers are not registered in your system.</p>
+                        <p><strong>Recommended Actions:</strong></p>
+                        <ul>
+                            <li>Conduct property mapping and enumeration exercises</li>
+                            <li>Implement a simplified registration process</li>
+                            <li>Run awareness campaigns on property tax registration</li>
+                            <li>Consider temporary amnesty programs for previously unregistered properties</li>
+                        </ul>
+                    `;
+                } else if (largestGap.type === 'Compliance Gap') {
+                    statusClass = 'bg-warning text-dark';
+                    statusText = 'Moderate';
+                    breakdownContent.innerHTML = `
+                        <p>The <strong>Compliance Gap</strong> is your largest revenue loss factor. This indicates many registered taxpayers are not paying their property taxes.</p>
+                        <p><strong>Recommended Actions:</strong></p>
+                        <ul>
+                            <li>Improve payment convenience (mobile payments, online options)</li>
+                            <li>Send timely reminders before due dates</li>
+                            <li>Implement a graduated enforcement strategy</li>
+                            <li>Consider incentives for early or on-time payments</li>
+                        </ul>
+                    `;
+                } else if (largestGap.type === 'Assessment Gap') {
+                    statusClass = 'bg-info';
+                    statusText = 'Attention Needed';
+                    breakdownContent.innerHTML = `
+                        <p>The <strong>Assessment Gap</strong> is your largest revenue loss factor. This indicates property valuations may be outdated or inaccurate.</p>
+                        <p><strong>Recommended Actions:</strong></p>
+                        <ul>
+                            <li>Conduct a comprehensive property revaluation exercise</li>
+                            <li>Train assessment staff on modern valuation techniques</li>
+                            <li>Implement a regular valuation update schedule</li>
+                            <li>Consider using technology for automated valuation models</li>
+                        </ul>
+                    `;
+                }
+                
+                // Update the status badge
+                statusBadge.className = `badge ${statusClass}`;
+                statusBadge.textContent = statusText;
+            } else {
+                // No significant gaps
+                statusBadge.className = 'badge bg-success';
+                statusBadge.textContent = 'Excellent';
+                breakdownContent.innerHTML = `
+                    <p>No significant revenue gaps detected. Your property tax system appears to be functioning well.</p>
+                    <p><strong>Recommended Actions:</strong></p>
+                    <ul>
+                        <li>Continue monitoring performance</li>
+                        <li>Consider periodic reviews to maintain efficiency</li>
+                        <li>Share best practices with other departments</li>
+                    </ul>
+                `;
+            }
+        };
+    });
+</script>

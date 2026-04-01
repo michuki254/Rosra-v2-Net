@@ -1,8 +1,682 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+}
+
+<!-- Hero Section - Full Width with City Background Image -->
+<section id="hero" class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="container">
+        <div class="row align-items-center min-vh-hero">
+            <div class="col-lg-7 hero-content">
+                <div class="hero-badge">
+                    <img src="~/images/sdg/sdg-11.svg" alt="SDG 11" class="sdg-icon" />
+                    <span>SDG 11 - Sustainable Cities</span>
+                </div>
+                <h1 class="hero-title">
+                    Rapid Own Source<br/>
+                    <span class="highlight">Revenue Analysis</span>
+                </h1>
+                <p class="hero-subtitle">An evidence-based, quantitative decision-making tool for local finance practitioners seeking to optimize own-source revenues (OSRs) in developing cities and subnational governments.</p>
+                <div class="hero-buttons">
+                    <a asp-controller="Rosra" asp-action="NewReport" class="btn-hero-primary">
+                        <i class="fas fa-rocket me-2"></i>Start Analysis
+                    </a>
+                    <a href="#what-is-rosra" class="btn-hero-secondary">
+                        <i class="fas fa-info-circle me-2"></i>Learn More
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">47</div>
+                        <div class="stat-label">Counties</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">100+</div>
+                        <div class="stat-label">Reports</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">1hr</div>
+                        <div class="stat-label">Analysis Time</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="hero-image-wrapper">
+                    <img src="~/images/pie-chart.png" alt="Revenue Analysis Chart" class="hero-chart" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hero-scroll-indicator">
+        <a href="#what-is-rosra">
+            <i class="fas fa-chevron-down"></i>
+        </a>
+    </div>
+</section>
+
+<!-- What is ROSRA Section - Full Width Light Background -->
+<section id="what-is-rosra" class="full-width-section section-light">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-badge">About</span>
+            <h2 class="section-title">What is the ROSRA?</h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="row align-items-center mt-5">
+            <div class="col-lg-6">
+                <div class="acronym-card">
+                    <div class="acronym-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="acronym-content">
+                        <h3>ROSRA stands for:</h3>
+                        <p class="acronym-expanded">
+                            <span class="letter">R</span>apid
+                            <span class="letter">O</span>wn
+                            <span class="letter">S</span>ource
+                            <span class="letter">R</span>evenue
+                            <span class="letter">A</span>nalysis
+                        </p>
+                    </div>
+                </div>
+                <div class="description-text">
+                    <p>ROSRA is a UN-Habitat diagnostic tool that helps local governments see where their own source revenue (OSR) system stands today and how much room there is to improve under current legislation.</p>
+                    <p>Using a quantitative approach, it estimates actual OSR gaps and shows how much revenue is being left untapped, helping mobilize political support for reforms.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="benefits-grid">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Strategic Decision Making</h4>
+                            <p>Clear visualization of OSR gaps for informed decisions</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Reform Prioritization</h4>
+                            <p>Prioritize interventions and allocate resources effectively</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Enhanced Creditworthiness</h4>
+                            <p>Strengthen municipal finance foundations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- What is OSR Section - Full Width Dark Background -->
+<section id="what-is-osr" class="full-width-section section-dark">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-badge badge-light">Revenue Types</span>
+            <h2 class="section-title text-white">What is Own Source Revenue (OSR)?</h2>
+            <div class="section-divider divider-light"></div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-lg-4">
+                <div class="osr-definition-cards">
+                    <div class="osr-def-card">
+                        <i class="fas fa-university"></i>
+                        <p>OSR is one of several revenues of local governments</p>
+                    </div>
+                    <div class="osr-def-card">
+                        <i class="fas fa-coins"></i>
+                        <p>OSRs are taxes, fees, licenses, etc. directly controlled by local governments</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="osr-types-grid">
+                    <div class="osr-type-card">
+                        <div class="osr-type-icon"><i class="fas fa-home"></i></div>
+                        <h4>Property Tax</h4>
+                        <p>Recurrent tax on land or property</p>
+                    </div>
+                    <div class="osr-type-card">
+                        <div class="osr-type-icon"><i class="fas fa-receipt"></i></div>
+                        <h4>Other Taxes</h4>
+                        <p>Local Sales Tax, Excise Tax, Hotel Tax, Vehicle Tax</p>
+                    </div>
+                    <div class="osr-type-card">
+                        <div class="osr-type-icon"><i class="fas fa-parking"></i></div>
+                        <h4>User Fees</h4>
+                        <p>Parking, Road Tolls, Market Fees, Transit</p>
+                    </div>
+                    <div class="osr-type-card">
+                        <div class="osr-type-icon"><i class="fas fa-file-contract"></i></div>
+                        <h4>Licenses & Permits</h4>
+                        <p>Business Permit, Liquor License, Health License</p>
+                    </div>
+                    <div class="osr-type-card">
+                        <div class="osr-type-icon"><i class="fas fa-gavel"></i></div>
+                        <h4>Fines & Penalties</h4>
+                        <p>Parking Fines, Late Payment Fees</p>
+                    </div>
+                    <div class="osr-type-card">
+                        <div class="osr-type-icon"><i class="fas fa-building"></i></div>
+                        <h4>Revenue from Assets</h4>
+                        <p>Public Land, Buildings, Investments</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Optimize OSR Section - Full Width with Image Background -->
+<section id="why-optimize" class="full-width-section section-featured">
+    <div class="featured-overlay"></div>
+    <div class="container position-relative">
+        <div class="section-header text-center">
+            <span class="section-badge badge-light">Benefits</span>
+            <h2 class="section-title text-white">Why Optimize OSR?</h2>
+            <div class="section-divider divider-light"></div>
+        </div>
+
+        <div class="optimize-grid mt-5">
+            <div class="optimize-card">
+                <div class="optimize-number">01</div>
+                <div class="optimize-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <h3>Increases Resources</h3>
+                <p>Close unfunded mandates, maintain infrastructure and invest in development.</p>
+            </div>
+            <div class="optimize-card">
+                <div class="optimize-number">02</div>
+                <div class="optimize-icon">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                <h3>Increases Autonomy</h3>
+                <p>Reduce dependence on inter-governmental transfers (IGT) to cover expenditure needs.</p>
+            </div>
+            <div class="optimize-card">
+                <div class="optimize-number">03</div>
+                <div class="optimize-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h3>Strengthens Social Contract</h3>
+                <p>When collecting taxes and fees, governments become more accountable to constituents.</p>
+            </div>
+            <div class="optimize-card">
+                <div class="optimize-number">04</div>
+                <div class="optimize-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <h3>Improves Capacity</h3>
+                <p>Improvements in accounting, procurement, technology and auditing practices.</p>
+            </div>
+            <div class="optimize-card">
+                <div class="optimize-number">05</div>
+                <div class="optimize-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Enables Leveraging</h3>
+                <p>Impact economic growth, income distribution, and correct market failures.</p>
+            </div>
+            <div class="optimize-card">
+                <div class="optimize-number">06</div>
+                <div class="optimize-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3>Increases Creditworthiness</h3>
+                <p>Creditors assess debt repayment likelihood based on local revenue generation.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- City Gallery Section - Developing Cities Showcase -->
+<section class="full-width-section section-city-showcase">
+    <div class="city-image-banner">
+        <img src="~/images/cities/african-city-skyline.jpg" alt="African City Skyline" onerror="this.style.display='none'" />
+        <div class="city-image-overlay">
+            <div class="city-image-content">
+                <h3>Supporting Developing Cities Worldwide</h3>
+                <p>Empowering local governments in Africa, Asia, and beyond to optimize their revenue systems for sustainable urban development.</p>
+            </div>
+        </div>
+    </div>
+    <div class="city-gallery">
+        <div class="city-gallery-item">
+            <img src="~/images/cities/nairobi.jpg" alt="Nairobi, Kenya" onerror="this.parentElement.style.display='none'" />
+            <div class="city-overlay">
+                <span class="city-name">Nairobi</span>
+                <span class="city-country">Kenya</span>
+            </div>
+        </div>
+        <div class="city-gallery-item">
+            <img src="~/images/cities/lagos.jpg" alt="Lagos, Nigeria" onerror="this.parentElement.style.display='none'" />
+            <div class="city-overlay">
+                <span class="city-name">Lagos</span>
+                <span class="city-country">Nigeria</span>
+            </div>
+        </div>
+        <div class="city-gallery-item">
+            <img src="~/images/cities/addis-ababa.jpg" alt="Addis Ababa, Ethiopia" onerror="this.parentElement.style.display='none'" />
+            <div class="city-overlay">
+                <span class="city-name">Addis Ababa</span>
+                <span class="city-country">Ethiopia</span>
+            </div>
+        </div>
+        <div class="city-gallery-item">
+            <img src="~/images/cities/dar-es-salaam.jpg" alt="Dar es Salaam, Tanzania" onerror="this.parentElement.style.display='none'" />
+            <div class="city-overlay">
+                <span class="city-name">Dar es Salaam</span>
+                <span class="city-country">Tanzania</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SDG Banner -->
+<section class="sdg-banner">
+    <div class="container">
+        <div class="sdg-banner-content">
+            <div class="sdg-banner-text">
+                <h3>Aligned with UN Sustainable Development Goals</h3>
+                <p>ROSRA contributes to building sustainable, inclusive, and resilient cities through improved local governance and municipal finance.</p>
+            </div>
+            <div class="sdg-banner-icons">
+                <a href="https://sdgs.un.org/goals/goal11" target="_blank" title="SDG 11: Sustainable Cities">
+                    <img src="~/images/sdg/sdg-11.svg" alt="SDG 11" />
+                </a>
+                <a href="https://sdgs.un.org/goals/goal16" target="_blank" title="SDG 16: Peace, Justice and Strong Institutions">
+                    <img src="~/images/sdg/sdg-16.svg" alt="SDG 16" />
+                </a>
+                <a href="https://sdgs.un.org/goals/goal17" target="_blank" title="SDG 17: Partnerships for the Goals">
+                    <img src="~/images/sdg/sdg-17.svg" alt="SDG 17" />
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Who is ROSRA For Section - Full Width Light -->
+<section id="who-is-rosra-for" class="full-width-section section-light">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-badge">Target Users</span>
+            <h2 class="section-title">Who is the ROSRA for?</h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="target-intro text-center mt-4">
+            <p class="lead-text">The ROSRA was designed primarily for government officials in local governments in <span class="text-highlight">low-income</span> and <span class="text-highlight">fragile state</span> contexts.</p>
+            <p class="sub-text">It can also be used by non-governmental partners with access to revenue related data of local governments.</p>
+        </div>
+
+        <div class="target-cards-row mt-5">
+            <div class="target-card">
+                <div class="target-card-icon">
+                    <i class="fas fa-city"></i>
+                </div>
+                <h4>Secondary Cities</h4>
+                <p>Better suited for secondary cities rather than very large urban metropoles</p>
+            </div>
+            <div class="target-card">
+                <div class="target-card-icon">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <h4>Senior Management</h4>
+                <p>Functions best when supported by senior management with technical staff input</p>
+            </div>
+            <div class="target-card">
+                <div class="target-card-icon">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <h4>Land-Based Finance</h4>
+                <p>Particularly helpful where land-based finance systems are present at the local level</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section - Full Width Accent Background -->
+<section id="how-it-works" class="full-width-section section-accent">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-badge badge-dark">Process</span>
+            <h2 class="section-title">How does the ROSRA work?</h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="row mt-5 align-items-stretch">
+            <div class="col-lg-8">
+                <div class="process-card">
+                    <h3 class="process-card-title">
+                        <i class="fas fa-cogs me-2"></i>Analysis Process
+                    </h3>
+                    <p class="process-intro">The ROSRA analyses user data by comparing it with accepted benchmarks and the specific characteristics of well-functioning OSR systems observed in peer local governments.</p>
+
+                    <div class="process-steps">
+                        <div class="process-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Authority & Incentives</h4>
+                                <p>The authority and incentives of local government to raise OSR</p>
+                            </div>
+                        </div>
+                        <div class="process-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Capacity Assessment</h4>
+                                <p>The capacity and incentives of the revenue administration</p>
+                            </div>
+                        </div>
+                        <div class="process-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Strategy & Management</h4>
+                                <p>The strategy, management and collection processes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="stats-sidebar">
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="far fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Completion Time</span>
+                            <span class="stat-value">~1 Hour</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Analysis Type</span>
+                            <span class="stat-value">Automated</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Output</span>
+                            <span class="stat-value">Detailed Report</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Data Requirements Section - Full Width Split Design -->
+<section id="data-requirements" class="full-width-section section-split">
+    <div class="split-left">
+        <div class="split-content">
+            <div class="split-header">
+                <i class="fas fa-database"></i>
+                <h3>Required Input Data</h3>
+            </div>
+            <div class="data-list">
+                <div class="data-item">
+                    <div class="data-icon"><i class="fas fa-chart-bar"></i></div>
+                    <div class="data-content">
+                        <h4>Socio-economic data</h4>
+                        <p>GDP, population statistics</p>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="data-icon"><i class="fas fa-coins"></i></div>
+                    <div class="data-content">
+                        <h4>Budget data</h4>
+                        <p>Revenue and OSR data from past financial year</p>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="data-icon"><i class="fas fa-tasks"></i></div>
+                    <div class="data-content">
+                        <h4>Management data</h4>
+                        <p>OSR environment, management and administration details</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="split-right">
+        <div class="split-content">
+            <div class="split-header">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Data Privacy</h3>
+            </div>
+            <div class="privacy-highlight">
+                <i class="fas fa-lock"></i>
+                <p>Only visible to the local government itself</p>
+            </div>
+            <div class="privacy-features">
+                <div class="privacy-item">
+                    <i class="fas fa-check-circle"></i>
+                    <p>UN-Habitat will only use data after gaining explicit formal permission</p>
+                </div>
+                <div class="privacy-item">
+                    <i class="fas fa-check-circle"></i>
+                    <p>All data input into the ROSRA is <strong>completely confidential</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section - Full Width Dark -->
+<section id="testimonials" class="full-width-section section-testimonials">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-badge badge-light">Testimonials</span>
+            <h2 class="section-title text-white">What People Are Saying</h2>
+            <div class="section-divider divider-light"></div>
+        </div>
+
+        <div class="testimonials-grid mt-5">
+            <div class="testimonial-card">
+                <div class="quote-icon">
+                    <i class="fas fa-quote-left"></i>
+                </div>
+                <blockquote>"The ROSRA shows us that we have essentially been doing everything wrong in regard to OSR"</blockquote>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="author-info">
+                        <strong>Mr George Okong'o</strong>
+                        <span>County Executive Committee Member for Finance and Economic Planning</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="quote-icon">
+                    <i class="fas fa-quote-left"></i>
+                </div>
+                <blockquote>"This is the most accurate analysis of our OSR system that we have received until now and it is spot on"</blockquote>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="author-info">
+                        <strong>Mr. Eric Orangi</strong>
+                        <span>Former Chief Officer Finance Kisumu County</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="quote-icon">
+                    <i class="fas fa-quote-left"></i>
+                </div>
+                <blockquote>"I am not aware that such a tool exists, and it is quite needed to support local governments in optimizing their OSR"</blockquote>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="author-info">
+                        <strong>Professor Enid Slack</strong>
+                        <span>Professor, University of Toronto</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="quote-icon">
+                    <i class="fas fa-quote-left"></i>
+                </div>
+                <blockquote>"This tool adopts an interesting and promising methodology to support local governments in the critical area of OSR"</blockquote>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="author-info">
+                        <strong>Professor William McCluskey</strong>
+                        <span>Professor, African Tax Institute</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why UN-Habitat Section - Full Width Light -->
+<section id="why-un-habitat" class="full-width-section section-light">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-badge">Partnership</span>
+            <h2 class="section-title">Why Choose UN-Habitat?</h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="unhabitat-features mt-5">
+            <div class="unhabitat-card">
+                <div class="unhabitat-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3>Data</h3>
+                <p>We bring the best of global data paired with exemplary analysis to provide the most tailored and effective recommendations.</p>
+            </div>
+            <div class="unhabitat-card">
+                <div class="unhabitat-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3>Experience & Expertise</h3>
+                <p>Global experience on municipal finance issues in many countries and contexts. Our network of experts bring extensive knowledge.</p>
+            </div>
+            <div class="unhabitat-card">
+                <div class="unhabitat-icon">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <h3>Funds Mobilization</h3>
+                <p>When supported by a UN agency, it becomes easier to mobilize funding from other sources.</p>
+            </div>
+            <div class="unhabitat-card">
+                <div class="unhabitat-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <h3>Political Weight</h3>
+                <p>The UN name provides credibility and political stature to act on recommendations.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section - Full Width Bold -->
+<section id="get-started" class="full-width-section section-cta">
+    <div class="cta-pattern"></div>
+    <div class="container position-relative">
+        <div class="cta-content text-center">
+            <h2>Ready to Optimize Your Revenue Systems?</h2>
+            <p>Start analyzing your revenue gaps and unlock your municipality's financial potential for sustainable urban development.</p>
+            <div class="cta-buttons">
+                <a asp-controller="Account" asp-action="Register" class="btn-cta-primary">
+                    <i class="fas fa-user-plus me-2"></i>Get Started Today
+                </a>
+                <a asp-controller="Rosra" asp-action="NewReport" class="btn-cta-secondary">
+                    <i class="fas fa-rocket me-2"></i>Create Report
+                </a>
+            </div>
+            <div class="cta-sdg">
+                <a href="https://sdgs.un.org/goals/goal11" target="_blank">
+                    <img src="~/images/sdg/sdg-11.svg" alt="SDG 11 - Sustainable Cities" />
+                </a>
+                <a href="https://sdgs.un.org/goals/goal16" target="_blank">
+                    <img src="~/images/sdg/sdg-16.svg" alt="SDG 16 - Peace and Justice" />
+                </a>
+                <a href="https://sdgs.un.org/goals/goal17" target="_blank">
+                    <img src="~/images/sdg/sdg-17.svg" alt="SDG 17 - Partnerships" />
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Photo Credits -->
+<section class="photo-credits">
+    <div class="container">
+        <p>
+            City photographs from <a href="https://unsplash.com" target="_blank">Unsplash</a> (free to use) |
+            SDG icons &copy; <a href="https://www.un.org/sustainabledevelopment/" target="_blank">United Nations</a> |
+            Icons by <a href="https://fontawesome.com" target="_blank">Font Awesome</a>
+        </p>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Animation on scroll
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.benefit-item, .osr-type-card, .optimize-card, .target-card, .testimonial-card, .unhabitat-card').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+}

@@ -84,5 +84,43 @@ namespace RosraApp.Controllers
             // Redirect to Rosra controller with view mode
             return RedirectToAction("View", "Rosra", new { id = report.Id });
         }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteReport(int id)
+        {
+            // Get the current user
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "User not authenticated" });
+            }
+            
+            // Get the report
+            var report = await _context.RosraReports.FindAsync(id);
+            if (report == null)
+            {
+                return Json(new { success = false, message = "Report not found" });
+            }
+            
+            // Check if the report belongs to the current user
+            if (report.UserId != user.Id && !User.IsInRole("Admin"))
+            {
+                return Json(new { success = false, message = "You don't have permission to delete this report" });
+            }
+            
+            try
+            {
+                // Delete the report
+                _context.RosraReports.Remove(report);
+                await _context.SaveChangesAsync();
+                
+                return Json(new { success = true, message = "Report deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
+            }
+        }
     }
 }

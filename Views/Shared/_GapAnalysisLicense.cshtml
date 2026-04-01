@@ -1,716 +1,1182 @@
 @model RosraApp.Models.ViewModels.RosraFormViewModel
 @{
     bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+    string currencySymbol = string.IsNullOrEmpty(Model.CurrencySymbol) ? "$" : Model.CurrencySymbol;
 }
 
-<div class="gap-analysis-tab-content">
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+<div class="business-license-gap-analysis">
     <div class="row">
-        <!-- Left Side (1/3 width) -->
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">License Information</h6>
+        <!-- Left Column - Data Input Section -->
+        <div class="col-lg-4">
+            <!-- Required Data + Derived Metrics -->
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-input-cursor-text me-2"></i>Entry of required information + Processed Metrics</h6>
                 </div>
                 <div class="card-body">
+                    <p class="small text-muted mb-3">For proper execution of the analysis, you are required to complete only the cells shaded in gray and in bold.</p>
+
+                    <!-- User Input Fields (6 inputs) -->
                     <div class="mb-3">
-                        <div class="form-group">
-                            <label for="numberOfLicenses">Total estimated No of Licensees</label>
-                            <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" id="numberOfLicenses" name="License.TotalEstimatedNoOfLicensees" value="@(Model.License.TotalEstimatedNoOfLicensees)" placeholder="Enter total estimated no of licensees" @(isViewMode ? "readonly" : "")>
+                        <label for="blRegisteredBusinesses" class="form-label fw-bold">
+                            Registered Businesses
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="How many businesses are currently on the municipal register for this revenue stream."></i>
+                        </label>
+                        <input type="text" class="form-control number-format bg-light fw-bold" id="blRegisteredBusinesses"
+                               name="License.RegisteredBusinesses" value="@(Model.License.RegisteredBusinesses?.ToString("N0") ?? "451")"
+                               placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="blEstimatedUnregisteredPercent" class="form-label fw-bold">
+                            Estimated % Unregistered Businesses
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Best estimate of how many active businesses are not on the register."></i>
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control bg-light fw-bold" id="blEstimatedUnregisteredPercent"
+                                   name="License.EstimatedUnregisteredPercent" value="@(Model.License.EstimatedUnregisteredPercent ?? 3)"
+                                   placeholder="Enter %" min="0" max="100" step="0.1" @(isViewMode ? "readonly" : "") data-input="true">
+                            <span class="input-group-text">%</span>
                         </div>
                     </div>
-                    
-                    <!-- Add Category Button -->
-                    <div class="mt-3 mb-3">
-                        <button type="button" class="btn btn-primary open-modal-only" data-target-modal="createCategoryModal" @(isViewMode ? "disabled" : "")>
-                            <i class="fas fa-plus"></i> Add New Category
-                        </button>
+
+                    <div class="mb-3">
+                        <label for="blTotalEstimatedBusinesses" class="form-label text-primary">
+                            Total Estimated Businesses
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Total estimated active businesses in the jurisdiction. Formula: Registered × (1 + Unregistered %)"></i>
+                        </label>
+                        <input type="text" class="form-control number-format" id="blTotalEstimatedBusinesses"
+                               readonly value="0" style="background-color: #e8f4fc;">
+                        <small class="text-muted">= Registered × (1 + Unregistered %)</small>
                     </div>
-                    
-                    <!-- Residential Properties Category (Collapsible) -->
-                    <div class="card mb-3 category-card" id="category-Residential">
-                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#residentialCollapse" aria-expanded="false" aria-controls="residentialCollapse" style="cursor: pointer;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <h6 class="mb-0 category-title">Residential Properties</h6>
-                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameCategoryModal" @(isViewMode ? "disabled" : "")>
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                                <div>
-                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" @(isViewMode ? "disabled" : "")>
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <i class="fas fa-chevron-down ms-2"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="residentialCollapse" class="collapse">
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>Estimated Licensees</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.EstimatedLicenseesResidentialProperties" value="@Model.License.EstimatedLicenseesResidentialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>Registered Licensees</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.RegisteredLicenseesResidentialProperties" value="@Model.License.RegisteredLicenseesResidentialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>Compliant Licensees</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.CompliantLicenseesResidentialProperties" value="@Model.License.CompliantLicenseesResidentialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>License Fee</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.LicenseFeeResidentialProperties" value="@Model.License.LicenseFeeResidentialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>License Fee Average Paid</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.LicenseFeeAveragePaidResidentialProperties" value="@Model.License.LicenseFeeAveragePaidResidentialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                            </div>
+
+                    <div class="mb-3">
+                        <label for="blBilledAmount" class="form-label fw-bold">
+                            Billed Amount (<span class="currency-label">@currencySymbol</span>)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Total value of invoices/assessments issued to registered businesses during the year."></i>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control number-format bg-light fw-bold" id="blBilledAmount"
+                                   name="License.BilledAmount" value="@(Model.License.BilledAmount?.ToString("N0") ?? "233,073,733")"
+                                   placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
-                    
-                    <!-- Commercial Properties Category (Collapsible) -->
-                    <div class="card mb-3 category-card" id="category-Commercial">
-                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#commercialCollapse" aria-expanded="false" aria-controls="commercialCollapse" style="cursor: pointer;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <h6 class="mb-0 category-title">Commercial Properties</h6>
-                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameCategoryModal" @(isViewMode ? "disabled" : "")>
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                                <div>
-                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" @(isViewMode ? "disabled" : "")>
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <i class="fas fa-chevron-down ms-2"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="commercialCollapse" class="collapse">
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>Estimated Licensees</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.EstimatedLicenseesCommercialProperties" value="@Model.License.EstimatedLicenseesCommercialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>Registered Licensees</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.RegisteredLicenseesCommercialProperties" value="@Model.License.RegisteredLicenseesCommercialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>Compliant Licensees</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.CompliantLicenseesCommercialProperties" value="@Model.License.CompliantLicenseesCommercialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>License Fee</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.LicenseFeeCommercialProperties" value="@Model.License.LicenseFeeCommercialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>License Fee Average Paid</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.LicenseFeeAveragePaidCommercialProperties" value="@Model.License.LicenseFeeAveragePaidCommercialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                            </div>
+
+                    <div class="mb-3">
+                        <label for="blOutstandingAmount" class="form-label fw-bold">
+                            Outstanding Amount (<span class="currency-label">@currencySymbol</span>)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Total billed but not yet paid (arrears on the current year bill). Also equals the pure compliance gap at current fees."></i>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control number-format bg-light fw-bold" id="blOutstandingAmount"
+                                   name="License.OutstandingAmount" value="@(Model.License.OutstandingAmount?.ToString("N0") ?? "55,623,018")"
+                                   placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
-                    
-                    <!-- Industrial Properties Category (Collapsible) -->
-                    <div class="card mb-3 category-card" id="category-Industrial">
-                        <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#industrialCollapse" aria-expanded="false" aria-controls="industrialCollapse" style="cursor: pointer;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <h6 class="mb-0 category-title">Industrial Properties</h6>
-                                    <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameCategoryModal" @(isViewMode ? "disabled" : "")>
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                                <div>
-                                    <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" @(isViewMode ? "disabled" : "")>
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <i class="fas fa-chevron-down ms-2"></i>
-                                </div>
-                            </div>
+
+                    <div class="mb-3">
+                        <label for="blRevenueToDate" class="form-label text-primary">
+                            Revenue to Date (<span class="currency-label">@currencySymbol</span>)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="What has actually been collected in cash so far in the year. Formula: Billed - Outstanding."></i>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control number-format" id="blRevenueToDate"
+                                   name="License.RevenueToDate" value="@Model.License.RevenueToDate"
+                                   readonly style="background-color: #e8f4fc;">
                         </div>
-                        <div id="industrialCollapse" class="collapse">
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>Estimated Licensees</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.EstimatedLicenseesIndustrialProperties" value="@Model.License.EstimatedLicenseesIndustrialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>Registered Licensees</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.RegisteredLicenseesIndustrialProperties" value="@Model.License.RegisteredLicenseesIndustrialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>Compliant Licensees</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.CompliantLicenseesIndustrialProperties" value="@Model.License.CompliantLicenseesIndustrialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>License Fee</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.LicenseFeeIndustrialProperties" value="@Model.License.LicenseFeeIndustrialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-group">
-                                        <label>License Fee Average Paid</label>
-                                        <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" name="License.LicenseFeeAveragePaidIndustrialProperties" value="@Model.License.LicenseFeeAveragePaidIndustrialProperties" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                            </div>
+                        <small class="text-muted">= Billed Amount - Outstanding Amount</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="blCompliantBusinesses" class="form-label text-primary">
+                            Compliant Businesses
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Estimated using proxy formula: Registered × (Revenue to Date / Billed). Accounts for partial payments across fiscal year."></i>
+                        </label>
+                        <input type="text" class="form-control number-format" id="blCompliantBusinesses"
+                               name="License.CompliantBusinesses" value="@Model.License.CompliantBusinesses"
+                               readonly style="background-color: #e8f4fc;">
+                        <small class="text-muted">= Registered × (Revenue to Date / Billed Amount)</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="blStatutoryAverageBilled" class="form-label fw-bold">
+                            Statutory Average Billed Amount (<span class="currency-label">@currencySymbol</span>)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="The average annual bill implied by the official fee schedule as written in law, without applying waivers, discounts, or exemptions. It represents the policy reference level."></i>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control number-format bg-light fw-bold" id="blStatutoryAverageBilled"
+                                   name="License.StatutoryAverageBilled" value="@(Model.License.StatutoryAverageBilled?.ToString("N0") ?? "680,500")"
+                                   placeholder="Enter value" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
-                    
-                    <!-- Container for dynamically added categories -->
-                    <div id="dynamicCategoriesContainer">
-                        @if (Model.License.DynamicCategories != null && Model.License.DynamicCategories.Count > 0)
-                        {
-                            @foreach (var category in Model.License.DynamicCategories)
-                            {
-                                <div class="card mb-3 category-card" id="category-@category.Name.Replace(" ", "-")">
-                                    <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#category@(category.Name.Replace(" ", ""))Collapse" aria-expanded="false" aria-controls="category@(category.Name.Replace(" ", ""))Collapse" style="cursor: pointer;">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="d-flex align-items-center">
-                                                <h6 class="mb-0 category-title">@category.Name</h6>
-                                                <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameCategoryModal" @(isViewMode ? "disabled" : "")>
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </div>
-                                            <div>
-                                                <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" @(isViewMode ? "disabled" : "")>
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                                <i class="fas fa-chevron-down ms-2"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="category@(category.Name.Replace(" ", ""))Collapse" class="collapse category-content">
-                                        <div class="card-body">
-                                            <div class="mb-3">
-                                                <div class="form-group">
-                                                    <label>Estimated Licensees</label>
-                                                    <input type="text" class="form-control number-format" name="License.DynamicCategories[@(Model.License.DynamicCategories.IndexOf(category))].EstimatedLicensees" value="@category.EstimatedLicensees" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <div class="form-group">
-                                                    <label>Registered Licensees</label>
-                                                    <input type="text" class="form-control number-format" name="License.DynamicCategories[@(Model.License.DynamicCategories.IndexOf(category))].RegisteredLicensees" value="@category.RegisteredLicensees" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <div class="form-group">
-                                                    <label>Compliant Licensees</label>
-                                                    <input type="text" class="form-control number-format" name="License.DynamicCategories[@(Model.License.DynamicCategories.IndexOf(category))].CompliantLicensees" value="@category.CompliantLicensees" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <div class="form-group">
-                                                    <label>License Fee</label>
-                                                    <input type="text" class="form-control number-format" name="License.DynamicCategories[@(Model.License.DynamicCategories.IndexOf(category))].LicenseFee" value="@category.LicenseFee" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <div class="form-group">
-                                                    <label>License Fee Average Paid</label>
-                                                    <input type="text" class="form-control number-format" name="License.DynamicCategories[@(Model.License.DynamicCategories.IndexOf(category))].LicenseFeeAveragePaid" value="@category.LicenseFeeAveragePaid" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                                </div>
-                                            </div>
-                                            <input type="hidden" name="License.DynamicCategories[@(Model.License.DynamicCategories.IndexOf(category))].Name" value="@category.Name">
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        }
-                    </div>
-                    
-                    <!-- Template for new category (hidden) -->
-                    <div id="categoryTemplate" style="display: none;">
-                        <div class="card mb-3 category-card">
-                            <div class="card-header bg-light" data-bs-toggle="collapse" data-bs-target="#newCategoryCollapse" aria-expanded="false" style="cursor: pointer;">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <h6 class="mb-0 category-title">New Category</h6>
-                                        <button type="button" class="btn btn-sm btn-link edit-category-btn ms-2" data-bs-toggle="modal" data-bs-target="#renameCategoryModal" @(isViewMode ? "disabled" : "")>
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                    </div>
-                                    <div>
-                                        <button type="button" class="btn btn-sm btn-purple remove-category-btn" style="background-color: #6f42c1; color: white;" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" @(isViewMode ? "disabled" : "")>
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                        <i class="fas fa-chevron-down ms-2"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="collapse category-content">
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <div class="form-group">
-                                            <label>Estimated Licensees</label>
-                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="form-group">
-                                            <label>Registered Licensees</label>
-                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="form-group">
-                                            <label>Compliant Licensees</label>
-                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="form-group">
-                                            <label>License Fee</label>
-                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="form-group">
-                                            <label>License Fee Average Paid</label>
-                                            <input type="text" class="form-control number-format" placeholder="Enter value" @(isViewMode ? "readonly" : "")>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+
+                    <div class="mb-3">
+                        <label for="blRealisticImprovementPercent" class="form-label fw-bold">
+                            Realistic Improvement %
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="The share of the gap between today's average bill and the statutory average that you believe can realistically be closed through policy or administrative reforms (not full enforcement). Input as % (0-100)."></i>
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control bg-light fw-bold" id="blRealisticImprovementPercent"
+                                   name="License.RealisticImprovementPercent" value="@(Model.License.RealisticImprovementPercent ?? 15)"
+                                   placeholder="Enter %" min="0" max="100" step="1" @(isViewMode ? "readonly" : "") data-input="true">
+                            <span class="input-group-text">%</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Right Side (2/3 width) -->
-        <div class="col-md-8">
-            <div class="card mb-3">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">License Details</h6>
+
+            <!-- Useful Average Values -->
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="bi bi-calculator me-2"></i>Useful Average Values for Analysis</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <label class="form-label small text-primary">
+                            Average Billed Amount
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="The mean annual bill actually issued to each registered business under today's billing practice. It's the anchor for the 'today' side of the matrix. Formula: Billed amount ÷ Registered businesses."></i>
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control" id="blAvgBilledAmount" readonly style="background-color: #e8f4fc;">
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small text-primary">
+                            Achievable Average Bill (Potential)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="The projected average bill after applying the realistic improvement toward the statutory level. Powers the right-hand 'liability' column of the matrix. Formula: Avg Billed + (Realistic improvement % × (Statutory Avg - Avg Billed))."></i>
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control" id="blAchievableAvgBill" readonly style="background-color: #e8f4fc;">
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small text-primary">
+                            ΔA (Delta A - Billing Improvement)
+                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="The achievable increase in billing per business. Formula: Realistic improvement % × MAX(0, Statutory average − Average billed)."></i>
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
+                            <input type="text" class="form-control" id="blDeltaA" readonly style="background-color: #e8f4fc;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Ratios -->
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-warning">
+                    <h6 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>Key Performance Indicators (KPI) Ratios</h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <div class="form-floating">
-                            <input type="text" class="form-control @(isViewMode ? "bg-light" : "")" id="licenseDescription" name="License.Description" value="@Model.License.Description" placeholder="Enter description" @(isViewMode ? "readonly" : "")>
-                            <label for="licenseDescription">Description</label>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label small mb-0">
+                                Compliance Ratio
+                                <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                   title="Provides a proxy indicator of the compliance system performance for this stream. Formula: Revenue to Date / Billed Amount. >80% Green, 60-80% Yellow, <60% Red."></i>
+                            </label>
+                            <span id="blComplianceRatioValue" class="badge bg-success">0%</span>
+                        </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar" role="progressbar" id="blComplianceRatioBar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">Revenue to Date / Billed Amount</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label small mb-0">
+                                Coverage Ratio
+                                <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                   title="Provides a proxy indicator of the coverage system performance for this stream. Formula: Registered / Total Estimated businesses. >80% Green, 60-80% Yellow, <60% Red."></i>
+                            </label>
+                            <span id="blCoverageRatioValue" class="badge bg-info">0%</span>
+                        </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar" role="progressbar" id="blCoverageRatioBar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">Registered Businesses / Total Estimated Businesses</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Results Section -->
+        <div class="col-lg-8">
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Graphical Representation of Analyzed Data</h6>
+                </div>
+                <div class="card-body">
+                    <!-- Potential Revenue Breakdown Table -->
+                    <div class="mb-4">
+                        <h6 class="text-center mb-3">Potential Revenue Breakdown (Actual Revenue + Gap breakdown)</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Revenue & Functional Gaps</th>
+                                        <th class="text-end">Amount (<span class="currency-label">@currencySymbol</span>)</th>
+                                        <th class="text-end">Share (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-success">
+                                        <td>
+                                            Revenue to date
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="This is the cash actually collected so far in the year from registered businesses. It is the 'actual revenue' slice in the chart and the bottom-left cell of the matrix."></i>
+                                        </td>
+                                        <td class="text-end" id="blTableRevenueToDate">0</td>
+                                        <td class="text-end" id="blTableRevenueToDatePct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Compliance Gap
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="The amount already billed to registered businesses that remains unpaid (arrears for the year). Captures non-payment among those on the register at today's billing level. Formula: Outstanding amount."></i>
+                                        </td>
+                                        <td class="text-end" id="blTableComplianceGap">0</td>
+                                        <td class="text-end" id="blTableComplianceGapPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Coverage Gap
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="Revenue not collected because some active businesses are not registered and therefore were not billed at all—valued at today's average bill. Formula: (Total estimated - Registered) × Average billed amount."></i>
+                                        </td>
+                                        <td class="text-end" id="blTableCoverageGap">0</td>
+                                        <td class="text-end" id="blTableCoverageGapPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Liability Gap
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="Additional revenue you could obtain from businesses that already pay if billing were improved part-way toward the statutory level (realistic improvement). Formula: Compliant businesses × ΔA."></i>
+                                        </td>
+                                        <td class="text-end" id="blTableLiabilityGap">0</td>
+                                        <td class="text-end" id="blTableLiabilityGapPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Mixed Gap (Compliance + Liability)
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="Extra revenue that would appear only if both (i) non-payers among the registered start paying AND (ii) billing is raised by the realistic improvement toward the statutory average. Formula: (Registered - Compliant) × ΔA."></i>
+                                        </td>
+                                        <td class="text-end" id="blTableMixedGapCompliance">0</td>
+                                        <td class="text-end" id="blTableMixedGapCompliancePct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Mixed Gap (Coverage + Liability)
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="Extra revenue that would appear only if both (i) unregistered businesses are brought onto the register AND (ii) billing is raised by the realistic improvement toward the statutory average. Formula: (Total estimated - Registered) × ΔA."></i>
+                                        </td>
+                                        <td class="text-end" id="blTableMixedGapCoverage">0</td>
+                                        <td class="text-end" id="blTableMixedGapCoveragePct">0%</td>
+                                    </tr>
+                                    <tr class="table-secondary fw-bold">
+                                        <td>TOTAL (Potential Revenue)</td>
+                                        <td class="text-end" id="blTableTotalPotential">0</td>
+                                        <td class="text-end">100%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <div class="form-floating">
-                            <textarea class="form-control @(isViewMode ? "bg-light" : "")" id="licenseNotes" name="License.Notes" style="height: 200px" placeholder="Enter notes" @(isViewMode ? "readonly" : "")>@Model.License.Notes</textarea>
-                            <label for="licenseNotes">Notes</label>
+
+                    <!-- Revenue and Functional Gaps Pie Chart -->
+                    <div class="mb-4">
+                        <h6 class="text-center mb-3">Potential Revenue (Actual Revenue + Gap breakdown)</h6>
+                        <div class="d-flex justify-content-center">
+                            <div style="height: 300px; width: 450px; position: relative;">
+                                <canvas id="blPotentialRevenueChart"></canvas>
+                            </div>
                         </div>
+                        <p class="small text-muted mt-2 text-center">
+                            <strong>DESCRIPTION:</strong> This pie chart illustrates the percentage distribution of the total potential revenue from the billing system. It visually shows the share corresponding to the revenue actually collected during the year, as well as the contribution of each type of gap (uncollected or lost revenue) to that total.
+                        </p>
+                    </div>
+
+                    <hr>
+
+                    <!-- Matrix Gap Analysis Dashboard -->
+                    <div class="mb-4">
+                        <h6 class="text-center mb-3">Business License Gap Analysis - Dashboard</h6>
+                        <div class="row g-3 align-items-stretch">
+                            <!-- Matrix Visualization -->
+                            <div class="col-12">
+                                <div class="matrix-container position-relative" style="height: 320px; min-height: 320px; border-radius: 8px; overflow: hidden; background: #fff;">
+                                    <!-- Y-axis Title (rotated) -->
+                                    <div class="position-absolute d-flex align-items-center justify-content-center" style="left: 0; top: 0; bottom: 30px; width: 20px; background: #f8f9fa;">
+                                        <span style="transform: rotate(-90deg); white-space: nowrap; font-size: 0.6rem; color: #666;"># of Businesses</span>
+                                    </div>
+
+                                    <!-- Y-axis Labels Container - labels positioned at row BOUNDARIES -->
+                                    <div class="matrix-y-labels position-absolute" id="blMatrixYLabelsContainer" style="left: 20px; top: 0; bottom: 30px; width: 55px; font-size: 0.6rem; background: #f8f9fa;">
+                                        <!-- Estimated label at TOP boundary (top of matrix) -->
+                                        <div class="y-label-item" id="blYLabelEstimated" style="position: absolute; right: 3px; top: 0; text-align: right; transform: translateY(-50%);">
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Estimated</small>
+                                            <span id="blMatrixEstimatedLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
+                                        </div>
+                                        <!-- Registered label at boundary between Row1 and Row2 -->
+                                        <div class="y-label-item" id="blYLabelRegistered" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%);">
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Registered</small>
+                                            <span id="blMatrixRegisteredLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
+                                        </div>
+                                        <!-- Compliant label at boundary between Row2 and Row3 -->
+                                        <div class="y-label-item" id="blYLabelCompliant" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%);">
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Compliant</small>
+                                            <span id="blMatrixCompliantLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Matrix Grid Area -->
+                                    <div class="matrix-grid position-absolute" id="blMatrixGridArea" style="left: 75px; top: 0; right: 0; bottom: 30px; display: flex; flex-direction: column;">
+                                        <!-- Row 1: Unregistered (Estimated - Registered) -->
+                                        <div class="matrix-row d-flex" id="blMatrixRowUnreg" style="flex: 1; min-height: 30px;">
+                                            <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixCoverageGap"
+                                                 style="background-color: #FF9800; color: white; flex: 1; min-width: 60px;">
+                                                <div class="text-center p-1">
+                                                    <small style="font-size: 0.7rem;">Coverage Gap</small><br>
+                                                    <span id="blMatrixCoverageGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
+                                                </div>
+                                            </div>
+                                            <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixMixedCoverage"
+                                                 style="background-color: #E91E63; color: white; flex: 1; min-width: 60px;">
+                                                <div class="text-center p-1">
+                                                    <small style="font-size: 0.7rem;">Mixed (Cov.+Liab.)</small><br>
+                                                    <span id="blMatrixMixedCoverageVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Row 2: Non-Compliant Registered (Registered - Compliant) -->
+                                        <div class="matrix-row d-flex" id="blMatrixRowNonCompliant" style="flex: 1; min-height: 30px;">
+                                            <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixComplianceGap"
+                                                 style="background-color: #F44336; color: white; flex: 1; min-width: 60px;">
+                                                <div class="text-center p-1">
+                                                    <small style="font-size: 0.7rem;">Compliance Gap</small><br>
+                                                    <span id="blMatrixComplianceGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
+                                                </div>
+                                            </div>
+                                            <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixMixedCompliance"
+                                                 style="background-color: #9C27B0; color: white; flex: 1; min-width: 60px;">
+                                                <div class="text-center p-1">
+                                                    <small style="font-size: 0.7rem;">Mixed (Comp.+Liab.)</small><br>
+                                                    <span id="blMatrixMixedComplianceVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Row 3: Compliant -->
+                                        <div class="matrix-row d-flex" id="blMatrixRowCompliant" style="flex: 1; min-height: 30px;">
+                                            <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixActualRevenue"
+                                                 style="background-color: #4CAF50; color: white; flex: 1; min-width: 60px;">
+                                                <div class="text-center p-1">
+                                                    <small style="font-size: 0.7rem;">Actual Revenue</small><br>
+                                                    <span id="blMatrixActualRevenueVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
+                                                </div>
+                                            </div>
+                                            <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixLiabilityGap"
+                                                 style="background-color: #2196F3; color: white; flex: 1; min-width: 60px;">
+                                                <div class="text-center p-1">
+                                                    <small style="font-size: 0.7rem;">Liability Gap</small><br>
+                                                    <span id="blMatrixLiabilityGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- X-axis Labels - positioned at column BOUNDARIES -->
+                                    <div class="matrix-x-axis position-absolute" id="blMatrixXAxisContainer" style="left: 75px; right: 0; bottom: 0; height: 30px; background: #f8f9fa;">
+                                        <!-- X-axis label at left edge (origin = 0) -->
+                                        <div class="x-label-item" id="blXLabelOrigin" style="position: absolute; left: 0; bottom: 2px; transform: translateX(0%); text-align: left; font-size: 0.6rem;">
+                                            <span id="blMatrixOriginLabel" class="fw-bold" style="font-size: 0.65rem;">@currencySymbol 0</span>
+                                        </div>
+                                        <!-- X-axis label at column boundary (between left and right columns) -->
+                                        <div class="x-label-item" id="blXLabelAvgBilled" style="position: absolute; bottom: 2px; transform: translateX(-50%); text-align: center; font-size: 0.6rem;">
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Avg. Billed</small>
+                                            <span id="blMatrixAvgBilledLabel" class="fw-bold" style="font-size: 0.65rem;">@currencySymbol 0</span>
+                                        </div>
+                                        <!-- X-axis label at right edge -->
+                                        <div class="x-label-item" id="blXLabelAchievable" style="position: absolute; right: 0; bottom: 2px; transform: translateX(0%); text-align: right; font-size: 0.6rem;">
+                                            <small class="text-muted d-block" style="font-size: 0.55rem;">Achievable Avg.</small>
+                                            <span id="blMatrixAchievableLabel" class="fw-bold" style="font-size: 0.65rem;">@currencySymbol 0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- end row -->
+                        <p class="small text-muted mt-3 text-center">
+                            <strong>DESCRIPTION:</strong> This matrix visualization shows the business license gap analysis across two dimensions: the number of businesses (vertical axis from Compliant to Estimated) and the billing level (horizontal axis from average billed to achievable billing). Each colored cell represents a different type of gap or revenue component.
+                        </p>
+                    </div>
+
+                    <hr>
+
+                    <!-- Gap Breakdown Table -->
+                    <div class="mb-4">
+                        <h6 class="text-center mb-3">Gap Breakdown (<span class="currency-label">@currencySymbol</span>)</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Functional Gaps</th>
+                                        <th class="text-end">Amount (<span class="currency-label">@currencySymbol</span>)</th>
+                                        <th class="text-end">Share (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Compliance Gap
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="The amount already billed to registered businesses that remains unpaid (arrears for the year). Captures non-payment among those on the register at today's billing level."></i>
+                                        </td>
+                                        <td class="text-end" id="blGapComplianceGap">0</td>
+                                        <td class="text-end" id="blGapComplianceGapPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Coverage Gap
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="Revenue not collected because some active businesses are not registered and therefore were not billed at all—valued at today's average bill."></i>
+                                        </td>
+                                        <td class="text-end" id="blGapCoverageGap">0</td>
+                                        <td class="text-end" id="blGapCoverageGapPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Liability Gap
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="Additional revenue you could obtain from businesses that already pay if billing were improved part-way toward the statutory level (realistic improvement)."></i>
+                                        </td>
+                                        <td class="text-end" id="blGapLiabilityGap">0</td>
+                                        <td class="text-end" id="blGapLiabilityGapPct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Mixed Gap (Compliance + Liability)
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="Extra revenue that would appear only if both (i) non-payers among the registered start paying AND (ii) billing is raised by the realistic improvement toward the statutory average."></i>
+                                        </td>
+                                        <td class="text-end" id="blGapMixedGapCompliance">0</td>
+                                        <td class="text-end" id="blGapMixedGapCompliancePct">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Mixed Gap (Coverage + Liability)
+                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+                                               title="Extra revenue that would appear only if both (i) unregistered businesses are brought onto the register AND (ii) billing is raised by the realistic improvement toward the statutory average."></i>
+                                        </td>
+                                        <td class="text-end" id="blGapMixedGapCoverage">0</td>
+                                        <td class="text-end" id="blGapMixedGapCoveragePct">0%</td>
+                                    </tr>
+                                    <tr class="table-secondary fw-bold">
+                                        <td>Total Functional Gap</td>
+                                        <td class="text-end" id="blTableTotalFunctionalGap">0</td>
+                                        <td class="text-end">100%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Gap Breakdown Pie Chart -->
+                    <div class="mb-4">
+                        <h6 class="text-center mb-3">Gap Breakdown</h6>
+                        <div class="d-flex justify-content-center">
+                            <div style="height: 300px; width: 450px; position: relative;">
+                                <canvas id="blGapBreakdownChart"></canvas>
+                            </div>
+                        </div>
+                        <p class="small text-muted mt-2 text-center">
+                            <strong>DESCRIPTION:</strong> This pie chart illustrates the percentage distribution of the revenue gaps. It visually shows the contribution of each type of gap to the total uncollected revenue, helping to identify which gaps are the most significant.
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .business-license-gap-analysis .card {
+        border-radius: 8px;
+    }
+
+    .business-license-gap-analysis .card-header {
+        border-radius: 8px 8px 0 0;
+    }
+
+    .business-license-gap-analysis .form-control[readonly] {
+        cursor: default;
+    }
+
+    .business-license-gap-analysis .progress {
+        border-radius: 10px;
+    }
+
+    .business-license-gap-analysis .progress-bar {
+        border-radius: 10px;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .business-license-gap-analysis .table th,
+    .business-license-gap-analysis .table td {
+        vertical-align: middle;
+        font-size: 0.875rem;
+    }
+
+    /* Ensure table header text is visible with white color on dark background */
+    .business-license-gap-analysis .table thead.table-dark th {
+        color: #ffffff !important;
+        background-color: #212529 !important;
+    }
+
+    /* KPI Ratio badges */
+    .business-license-gap-analysis .card-body > .mb-3 .badge {
+        width: auto;
+        height: auto;
+        border-radius: 0.25rem;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+    }
+
+    .business-license-gap-analysis .input-group-sm .form-control,
+    .business-license-gap-analysis .input-group-sm .input-group-text {
+        font-size: 0.8rem;
+    }
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize counter for unique IDs - start with count of existing dynamic categories
-        let categoryCounter = @(Model.License.DynamicCategories != null ? Model.License.DynamicCategories.Count : 0) + 1;
-        
-        // Variables to store current category being edited/deleted
-        let currentCategoryCard = null;
-        let categoryToDelete = null;
-        
-        // Initialize Bootstrap modals
-        const renameModal = new bootstrap.Modal(document.getElementById('renameCategoryModal'));
-        const deleteModal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
-        const createModal = new bootstrap.Modal(document.getElementById('createCategoryModal'));
-        
-        // IMPORTANT: Use a different approach for opening modals
-        document.querySelectorAll('.open-modal-only').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const modalId = this.getAttribute('data-target-modal');
-                const modal = document.getElementById(modalId);
-                
-                if (modal) {
-                    const modalInstance = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
-                    
-                    // Clear any input fields in the modal
-                    const inputField = modal.querySelector('input[type="text"]');
-                    if (inputField) {
-                        inputField.value = '';
-                    }
-                    
-                    // Show the modal
-                    modalInstance.show();
-                }
-            });
-        });
-        
-        // Ensure we remove any existing event listeners before adding new ones
-        function removeAllEventListeners(element) {
-            if (!element) return;
-            
-            // Clone the element to remove all event listeners
-            const newElement = element.cloneNode(true);
-            if (element.parentNode) {
-                element.parentNode.replaceChild(newElement, element);
+        // Chart instances
+        let potentialRevenueChart = null;
+        let gapBreakdownChart = null;
+
+        // Get currency symbol from AppContext (single source of truth)
+        function getCurrencySymbol() {
+            if (window.AppContext) {
+                return window.AppContext.get('currencySymbol') || '$';
             }
-            return newElement;
+            return '$';
         }
-        
-        // Add event listeners for modal cleanup
-        const modalElements = document.querySelectorAll('.modal');
-        modalElements.forEach(modal => {
-            modal.addEventListener('hidden.bs.modal', function() {
-                // Remove all backdrops
-                const modalBackdrops = document.querySelectorAll('.modal-backdrop');
-                modalBackdrops.forEach(backdrop => {
-                    backdrop.remove();
-                });
-                
-                // Reset body
-                document.body.classList.remove('modal-open');
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
+
+        // Update all currency displays in Business License section
+        function updateBusinessLicenseCurrencySymbols() {
+            const symbol = getCurrencySymbol();
+            console.log('Updating Business License currency symbols to:', symbol);
+
+            // Update input group prefixes
+            document.querySelectorAll('.business-license-gap-analysis .currency-prefix-display').forEach(el => {
+                el.textContent = symbol;
             });
-        });
-        
-        // Add event listeners to existing category buttons
-        document.querySelectorAll('.edit-category-btn').forEach(button => {
-            const newButton = removeAllEventListeners(button);
-            newButton.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent collapse toggle
-                currentCategoryCard = this.closest('.category-card');
-                const categoryTitle = currentCategoryCard.querySelector('.category-title').textContent.trim();
-                document.getElementById('newCategoryName').value = categoryTitle;
-            });
-        });
-        
-        document.querySelectorAll('.remove-category-btn').forEach(button => {
-            const newButton = removeAllEventListeners(button);
-            newButton.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent collapse toggle
-                categoryToDelete = this.closest('.category-card');
-            });
-        });
-        
-        // Add event listener to the save button in the rename modal
-        const saveCategoryNameBtn = document.getElementById('saveCategoryNameBtn');
-        if (saveCategoryNameBtn) {
-            const newSaveCategoryNameBtn = removeAllEventListeners(saveCategoryNameBtn);
-            newSaveCategoryNameBtn.addEventListener('click', function() {
-                const newName = document.getElementById('newCategoryName').value.trim();
-                if (newName && currentCategoryCard) {
-                    // Update the category title
-                    currentCategoryCard.querySelector('.category-title').textContent = newName;
-                    
-                    // Update the hidden input for the category name
-                    const hiddenInput = currentCategoryCard.querySelector('input[type="hidden"]');
-                    if (hiddenInput) {
-                        hiddenInput.value = newName;
-                    }
-                    
-                    // Close the modal
-                    renameModal.hide();
-                }
+
+            // Update labels with currency
+            document.querySelectorAll('.business-license-gap-analysis .currency-label').forEach(el => {
+                el.textContent = symbol;
             });
         }
-        
-        // Add event listener to the delete confirmation button
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-        if (confirmDeleteBtn) {
-            const newConfirmDeleteBtn = removeAllEventListeners(confirmDeleteBtn);
-            newConfirmDeleteBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                if (categoryToDelete) {
-                    categoryToDelete.remove();
-                    
-                    // Reindex all dynamic categories
-                    updateCategoryIndices();
-                    
-                    // Close the modal properly
-                    const deleteModalElement = document.getElementById('deleteCategoryModal');
-                    if (deleteModalElement) {
-                        const modalInstance = bootstrap.Modal.getInstance(deleteModalElement);
-                        if (modalInstance) {
-                            modalInstance.hide();
+
+        // Subscribe to AppContext currency changes
+        if (window.AppContext) {
+            window.AppContext.subscribe('currencySymbol', function(newSymbol) {
+                console.log('Business License received currency change via AppContext:', newSymbol);
+                updateBusinessLicenseCurrencySymbols();
+                calculateBusinessLicenseGaps();
+            });
+        }
+
+        // Initial currency update
+        updateBusinessLicenseCurrencySymbols();
+
+        // Delayed updates for when currency is loaded from API
+        setTimeout(function() {
+            updateBusinessLicenseCurrencySymbols();
+        }, 1000);
+
+        setTimeout(function() {
+            updateBusinessLicenseCurrencySymbols();
+        }, 2000);
+
+        // Initialize Bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Initialize charts
+        initializeCharts();
+
+        // Add event listeners to all input fields
+        const inputFields = document.querySelectorAll('.business-license-gap-analysis input[data-input="true"]');
+        inputFields.forEach(field => {
+            field.addEventListener('input', function() {
+                calculateBusinessLicenseGaps();
+            });
+            field.addEventListener('change', function() {
+                calculateBusinessLicenseGaps();
+            });
+        });
+
+        // Initial calculation
+        calculateBusinessLicenseGaps();
+
+        function initializeCharts() {
+            // Potential Revenue Pie Chart
+            const ctx1 = document.getElementById('blPotentialRevenueChart');
+            if (ctx1) {
+                potentialRevenueChart = new Chart(ctx1.getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: ['Revenue to date', 'Compliance Gap', 'Coverage Gap', 'Liability Gap', 'Mixed (Comp.+Liab.)', 'Mixed (Cov.+Liab.)'],
+                        datasets: [{
+                            data: [0, 0, 0, 0, 0, 0],
+                            backgroundColor: ['#4CAF50', '#F44336', '#FF9800', '#2196F3', '#9C27B0', '#E91E63'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    boxWidth: 12,
+                                    font: { size: 10 },
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        if (data.labels.length && data.datasets.length) {
+                                            const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                            return data.labels.map((label, i) => {
+                                                const value = data.datasets[0].data[i];
+                                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                                return {
+                                                    text: label + ' (' + percentage + '%)',
+                                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                                    hidden: false,
+                                                    index: i
+                                                };
+                                            });
+                                        }
+                                        return [];
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.raw || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return context.label + ': ' + formatCurrency(value) + ' (' + percentage + '%)';
+                                    }
+                                }
+                            }
                         }
                     }
-                    
-                    // Make sure the backdrop is removed
-                    const modalBackdrops = document.querySelectorAll('.modal-backdrop');
-                    modalBackdrops.forEach(backdrop => {
-                        backdrop.remove();
+                });
+            }
+
+            // Gap Breakdown Pie Chart
+            const ctx2 = document.getElementById('blGapBreakdownChart');
+            if (ctx2) {
+                gapBreakdownChart = new Chart(ctx2.getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: ['Compliance Gap', 'Coverage Gap', 'Liability Gap', 'Mixed (Comp.+Liab.)', 'Mixed (Cov.+Liab.)'],
+                        datasets: [{
+                            data: [0, 0, 0, 0, 0],
+                            backgroundColor: ['#F44336', '#FF9800', '#2196F3', '#9C27B0', '#E91E63'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    boxWidth: 12,
+                                    font: { size: 10 },
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        if (data.labels.length && data.datasets.length) {
+                                            const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                            return data.labels.map((label, i) => {
+                                                const value = data.datasets[0].data[i];
+                                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                                return {
+                                                    text: label + ' (' + percentage + '%)',
+                                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                                    hidden: false,
+                                                    index: i
+                                                };
+                                            });
+                                        }
+                                        return [];
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.raw || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return context.label + ': ' + formatCurrency(value) + ' (' + percentage + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function parseNumber(value) {
+            if (!value) return 0;
+            const cleaned = String(value).replace(/[^0-9.-]/g, '');
+            return parseFloat(cleaned) || 0;
+        }
+
+        function formatCurrency(value) {
+            if (isNaN(value) || value === null) return '0';
+            return new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value);
+        }
+
+        function formatPercentage(value) {
+            if (isNaN(value) || value === null) return '0.00%';
+            return value.toFixed(2) + '%';
+        }
+
+        // Default values for Business License (from spec)
+        const DEFAULTS = {
+            registeredBusinesses: 451,
+            estimatedUnregisteredPercent: 3,
+            billedAmount: 233073733,
+            outstandingAmount: 55623018,
+            statutoryAverageBilled: 680500,
+            realisticImprovementPercent: 15
+        };
+
+        function calculateBusinessLicenseGaps() {
+            // Get input values (6 user inputs) with defaults
+            let registeredBusinesses = parseNumber(document.getElementById('blRegisteredBusinesses')?.value);
+            let estimatedUnregisteredPercent = parseFloat(document.getElementById('blEstimatedUnregisteredPercent')?.value);
+            let billedAmount = parseNumber(document.getElementById('blBilledAmount')?.value);
+            let outstandingAmount = parseNumber(document.getElementById('blOutstandingAmount')?.value);
+            let statutoryAverageBilled = parseNumber(document.getElementById('blStatutoryAverageBilled')?.value);
+            let realisticImprovementPercent = parseFloat(document.getElementById('blRealisticImprovementPercent')?.value);
+
+            // Apply defaults if values are zero or NaN (first load with empty model)
+            if (!registeredBusinesses || registeredBusinesses === 0) {
+                registeredBusinesses = DEFAULTS.registeredBusinesses;
+                document.getElementById('blRegisteredBusinesses').value = registeredBusinesses.toLocaleString();
+            }
+            if (isNaN(estimatedUnregisteredPercent) || estimatedUnregisteredPercent === 0) {
+                estimatedUnregisteredPercent = DEFAULTS.estimatedUnregisteredPercent;
+                document.getElementById('blEstimatedUnregisteredPercent').value = estimatedUnregisteredPercent;
+            }
+            if (!billedAmount || billedAmount === 0) {
+                billedAmount = DEFAULTS.billedAmount;
+                document.getElementById('blBilledAmount').value = formatCurrency(billedAmount).replace('.00', '');
+            }
+            if (!outstandingAmount || outstandingAmount === 0) {
+                outstandingAmount = DEFAULTS.outstandingAmount;
+                document.getElementById('blOutstandingAmount').value = formatCurrency(outstandingAmount).replace('.00', '');
+            }
+            if (!statutoryAverageBilled || statutoryAverageBilled === 0) {
+                statutoryAverageBilled = DEFAULTS.statutoryAverageBilled;
+                document.getElementById('blStatutoryAverageBilled').value = formatCurrency(statutoryAverageBilled).replace('.00', '');
+            }
+            if (isNaN(realisticImprovementPercent) || realisticImprovementPercent === 0) {
+                realisticImprovementPercent = DEFAULTS.realisticImprovementPercent;
+                document.getElementById('blRealisticImprovementPercent').value = realisticImprovementPercent;
+            }
+
+            // Calculate Auto-Calculated Fields
+            const totalEstimatedBusinesses = registeredBusinesses * (1 + estimatedUnregisteredPercent / 100);
+            const revenueToDate = billedAmount - outstandingAmount;
+            const compliantBusinesses = billedAmount > 0 ? registeredBusinesses * (revenueToDate / billedAmount) : 0;
+            const avgBilledAmount = registeredBusinesses > 0 ? billedAmount / registeredBusinesses : 0;
+
+            // ΔA = Realistic improvement % × MAX(0, Statutory average − Average billed)
+            const deltaA = (realisticImprovementPercent / 100) * Math.max(0, statutoryAverageBilled - avgBilledAmount);
+
+            // Achievable average bill = Avg Billed + ΔA
+            const achievableAvgBill = avgBilledAmount + deltaA;
+
+            // Calculate KPI Ratios
+            const complianceRatio = billedAmount > 0 ? (revenueToDate / billedAmount) * 100 : 0;
+            const coverageRatio = totalEstimatedBusinesses > 0 ? (registeredBusinesses / totalEstimatedBusinesses) * 100 : 0;
+
+            // Calculate Gaps
+            const complianceGap = outstandingAmount;
+            const coverageGap = (totalEstimatedBusinesses - registeredBusinesses) * avgBilledAmount;
+            const liabilityGap = compliantBusinesses * deltaA;
+            const mixedGapCompliance = (registeredBusinesses - compliantBusinesses) * deltaA;
+            const mixedGapCoverage = (totalEstimatedBusinesses - registeredBusinesses) * deltaA;
+
+            // Calculate Totals
+            const totalPotentialRevenue = revenueToDate + complianceGap + coverageGap + liabilityGap + mixedGapCompliance + mixedGapCoverage;
+            const totalFunctionalGap = complianceGap + coverageGap + liabilityGap + mixedGapCompliance + mixedGapCoverage;
+
+            // Calculate percentages for potential revenue
+            const revenueToDatePct = totalPotentialRevenue > 0 ? (revenueToDate / totalPotentialRevenue) * 100 : 0;
+            const complianceGapPct = totalPotentialRevenue > 0 ? (complianceGap / totalPotentialRevenue) * 100 : 0;
+            const coverageGapPct = totalPotentialRevenue > 0 ? (coverageGap / totalPotentialRevenue) * 100 : 0;
+            const liabilityGapPct = totalPotentialRevenue > 0 ? (liabilityGap / totalPotentialRevenue) * 100 : 0;
+            const mixedGapCompliancePct = totalPotentialRevenue > 0 ? (mixedGapCompliance / totalPotentialRevenue) * 100 : 0;
+            const mixedGapCoveragePct = totalPotentialRevenue > 0 ? (mixedGapCoverage / totalPotentialRevenue) * 100 : 0;
+
+            // Calculate percentages for gap breakdown
+            const gapComplianceGapPct = totalFunctionalGap > 0 ? (complianceGap / totalFunctionalGap) * 100 : 0;
+            const gapCoverageGapPct = totalFunctionalGap > 0 ? (coverageGap / totalFunctionalGap) * 100 : 0;
+            const gapLiabilityGapPct = totalFunctionalGap > 0 ? (liabilityGap / totalFunctionalGap) * 100 : 0;
+            const gapMixedGapCompliancePct = totalFunctionalGap > 0 ? (mixedGapCompliance / totalFunctionalGap) * 100 : 0;
+            const gapMixedGapCoveragePct = totalFunctionalGap > 0 ? (mixedGapCoverage / totalFunctionalGap) * 100 : 0;
+
+            // Update auto-calculated displays
+            document.getElementById('blTotalEstimatedBusinesses').value = formatCurrency(totalEstimatedBusinesses).replace('.00', '');
+            document.getElementById('blRevenueToDate').value = formatCurrency(revenueToDate);
+            document.getElementById('blCompliantBusinesses').value = formatCurrency(compliantBusinesses).replace('.00', '');
+            document.getElementById('blAvgBilledAmount').value = formatCurrency(avgBilledAmount);
+            document.getElementById('blAchievableAvgBill').value = formatCurrency(achievableAvgBill);
+            document.getElementById('blDeltaA').value = formatCurrency(deltaA);
+
+            // Update KPI progress bars
+            updateKPIBar('blComplianceRatio', complianceRatio);
+            updateKPIBar('blCoverageRatio', coverageRatio);
+
+            // Update Potential Revenue Breakdown Table
+            document.getElementById('blTableRevenueToDate').textContent = formatCurrency(revenueToDate);
+            document.getElementById('blTableRevenueToDatePct').textContent = formatPercentage(revenueToDatePct);
+            document.getElementById('blTableComplianceGap').textContent = formatCurrency(complianceGap);
+            document.getElementById('blTableComplianceGapPct').textContent = formatPercentage(complianceGapPct);
+            document.getElementById('blTableCoverageGap').textContent = formatCurrency(coverageGap);
+            document.getElementById('blTableCoverageGapPct').textContent = formatPercentage(coverageGapPct);
+            document.getElementById('blTableLiabilityGap').textContent = formatCurrency(liabilityGap);
+            document.getElementById('blTableLiabilityGapPct').textContent = formatPercentage(liabilityGapPct);
+            document.getElementById('blTableMixedGapCompliance').textContent = formatCurrency(mixedGapCompliance);
+            document.getElementById('blTableMixedGapCompliancePct').textContent = formatPercentage(mixedGapCompliancePct);
+            document.getElementById('blTableMixedGapCoverage').textContent = formatCurrency(mixedGapCoverage);
+            document.getElementById('blTableMixedGapCoveragePct').textContent = formatPercentage(mixedGapCoveragePct);
+            document.getElementById('blTableTotalPotential').textContent = formatCurrency(totalPotentialRevenue);
+
+            // Update Gap Breakdown Table
+            document.getElementById('blGapComplianceGap').textContent = formatCurrency(complianceGap);
+            document.getElementById('blGapComplianceGapPct').textContent = formatPercentage(gapComplianceGapPct);
+            document.getElementById('blGapCoverageGap').textContent = formatCurrency(coverageGap);
+            document.getElementById('blGapCoverageGapPct').textContent = formatPercentage(gapCoverageGapPct);
+            document.getElementById('blGapLiabilityGap').textContent = formatCurrency(liabilityGap);
+            document.getElementById('blGapLiabilityGapPct').textContent = formatPercentage(gapLiabilityGapPct);
+            document.getElementById('blGapMixedGapCompliance').textContent = formatCurrency(mixedGapCompliance);
+            document.getElementById('blGapMixedGapCompliancePct').textContent = formatPercentage(gapMixedGapCompliancePct);
+            document.getElementById('blGapMixedGapCoverage').textContent = formatCurrency(mixedGapCoverage);
+            document.getElementById('blGapMixedGapCoveragePct').textContent = formatPercentage(gapMixedGapCoveragePct);
+            document.getElementById('blTableTotalFunctionalGap').textContent = formatCurrency(totalFunctionalGap);
+
+            // Update Charts
+            updateCharts(revenueToDate, complianceGap, coverageGap, liabilityGap, mixedGapCompliance, mixedGapCoverage);
+
+            // Update Matrix Dashboard
+            updateMatrixDashboard({
+                totalEstimatedBusinesses,
+                registeredBusinesses,
+                compliantBusinesses,
+                avgBilledAmount,
+                achievableAvgBill,
+                revenueToDate,
+                complianceGap,
+                coverageGap,
+                liabilityGap,
+                mixedGapCompliance,
+                mixedGapCoverage,
+                totalPotentialRevenue,
+                revenueToDatePct,
+                complianceGapPct,
+                coverageGapPct,
+                liabilityGapPct,
+                mixedGapCompliancePct,
+                mixedGapCoveragePct
+            });
+
+            // Store values in localStorage for Total tab and Prioritization tab
+            storeBusinessLicenseValues(revenueToDate, totalPotentialRevenue, totalFunctionalGap, complianceGap, coverageGap, liabilityGap, mixedGapCompliance, mixedGapCoverage, complianceRatio, coverageRatio);
+        }
+
+        function updateKPIBar(name, value) {
+            const bar = document.getElementById(name + 'Bar');
+            const valueSpan = document.getElementById(name + 'Value');
+            const cappedValue = Math.min(Math.max(value, 0), 100);
+
+            let colorClass, badgeClass;
+            if (value >= 80) {
+                colorClass = 'bg-success';
+                badgeClass = 'bg-success';
+            } else if (value >= 60) {
+                colorClass = 'bg-warning';
+                badgeClass = 'bg-warning text-dark';
+            } else {
+                colorClass = 'bg-danger';
+                badgeClass = 'bg-danger';
+            }
+
+            if (bar) {
+                bar.style.width = cappedValue + '%';
+                bar.setAttribute('aria-valuenow', cappedValue);
+                bar.classList.remove('bg-success', 'bg-warning', 'bg-danger', 'bg-info', 'bg-primary');
+                bar.classList.add(colorClass);
+            }
+            if (valueSpan) {
+                valueSpan.textContent = value.toFixed(1) + '%';
+                valueSpan.classList.remove('bg-success', 'bg-warning', 'bg-danger', 'bg-info', 'bg-primary', 'text-dark');
+                badgeClass.split(' ').forEach(cls => valueSpan.classList.add(cls));
+            }
+        }
+
+        function updateCharts(revenueToDate, complianceGap, coverageGap, liabilityGap, mixedGapCompliance, mixedGapCoverage) {
+            // Update Potential Revenue Chart
+            if (potentialRevenueChart) {
+                potentialRevenueChart.data.datasets[0].data = [
+                    Math.max(0, revenueToDate),
+                    Math.max(0, complianceGap),
+                    Math.max(0, coverageGap),
+                    Math.max(0, liabilityGap),
+                    Math.max(0, mixedGapCompliance),
+                    Math.max(0, mixedGapCoverage)
+                ];
+                potentialRevenueChart.update();
+            }
+
+            // Update Gap Breakdown Chart
+            if (gapBreakdownChart) {
+                gapBreakdownChart.data.datasets[0].data = [
+                    Math.max(0, complianceGap),
+                    Math.max(0, coverageGap),
+                    Math.max(0, liabilityGap),
+                    Math.max(0, mixedGapCompliance),
+                    Math.max(0, mixedGapCoverage)
+                ];
+                gapBreakdownChart.update();
+            }
+        }
+
+        function updateMatrixDashboard(data) {
+            const currencySymbol = getCurrencySymbol();
+
+            function formatCompact(value) {
+                if (value >= 1000000000) {
+                    return currencySymbol + ' ' + (value / 1000000000).toFixed(1) + 'B';
+                } else if (value >= 1000000) {
+                    return currencySymbol + ' ' + (value / 1000000).toFixed(1) + 'M';
+                } else if (value >= 1000) {
+                    return currencySymbol + ' ' + (value / 1000).toFixed(1) + 'K';
+                }
+                return currencySymbol + ' ' + formatCurrency(value);
+            }
+
+            function formatBusinessCount(value) {
+                if (value >= 1000000) {
+                    return (value / 1000000).toFixed(1) + 'M';
+                } else if (value >= 1000) {
+                    return (value / 1000).toFixed(1) + 'K';
+                }
+                return Math.round(value).toLocaleString();
+            }
+
+            // Update Y-axis labels (business counts)
+            const estLabel = document.getElementById('blMatrixEstimatedLabel');
+            const regLabel = document.getElementById('blMatrixRegisteredLabel');
+            const compLabel = document.getElementById('blMatrixCompliantLabel');
+
+            if (estLabel) estLabel.textContent = formatBusinessCount(data.totalEstimatedBusinesses);
+            if (regLabel) regLabel.textContent = formatBusinessCount(data.registeredBusinesses);
+            if (compLabel) compLabel.textContent = formatBusinessCount(data.compliantBusinesses);
+
+            // Update X-axis labels
+            const avgBilledLabel = document.getElementById('blMatrixAvgBilledLabel');
+            const achievableLabel = document.getElementById('blMatrixAchievableLabel');
+            const originLabel = document.getElementById('blMatrixOriginLabel');
+
+            if (avgBilledLabel) avgBilledLabel.textContent = formatCompact(data.avgBilledAmount);
+            if (achievableLabel) achievableLabel.textContent = formatCompact(data.achievableAvgBill);
+            if (originLabel) originLabel.textContent = currencySymbol + ' 0';
+
+            // Update matrix cell values
+            const matrixActualRevenue = document.getElementById('blMatrixActualRevenueVal');
+            const matrixLiabilityGap = document.getElementById('blMatrixLiabilityGapVal');
+            const matrixComplianceGap = document.getElementById('blMatrixComplianceGapVal');
+            const matrixMixedCompliance = document.getElementById('blMatrixMixedComplianceVal');
+            const matrixCoverageGap = document.getElementById('blMatrixCoverageGapVal');
+            const matrixMixedCoverage = document.getElementById('blMatrixMixedCoverageVal');
+
+            if (matrixActualRevenue) matrixActualRevenue.textContent = formatCompact(data.revenueToDate);
+            if (matrixLiabilityGap) matrixLiabilityGap.textContent = formatCompact(data.liabilityGap);
+            if (matrixComplianceGap) matrixComplianceGap.textContent = formatCompact(data.complianceGap);
+            if (matrixMixedCompliance) matrixMixedCompliance.textContent = formatCompact(data.mixedGapCompliance);
+            if (matrixCoverageGap) matrixCoverageGap.textContent = formatCompact(data.coverageGap);
+            if (matrixMixedCoverage) matrixMixedCoverage.textContent = formatCompact(data.mixedGapCoverage);
+
+            // === DYNAMIC ROW HEIGHTS (proportional to business counts) ===
+            const totalBiz = data.totalEstimatedBusinesses || 1;
+            const unregBiz = Math.max(0, data.totalEstimatedBusinesses - data.registeredBusinesses);
+            const nonCompliantBiz = Math.max(0, data.registeredBusinesses - data.compliantBusinesses);
+            const compliantBiz = Math.max(0, data.compliantBusinesses);
+
+            // Calculate flex ratios with minimum 30% to ensure text visibility
+            const minFlex = 0.3;
+            const unregRatio = unregBiz / totalBiz;
+            const nonCompliantRatio = nonCompliantBiz / totalBiz;
+            const compliantRatio = compliantBiz / totalBiz;
+
+            const unregFlex = Math.max(minFlex, unregRatio);
+            const nonCompliantFlex = Math.max(minFlex, nonCompliantRatio);
+            const compliantFlex = Math.max(minFlex, compliantRatio);
+
+            const rowUnreg = document.getElementById('blMatrixRowUnreg');
+            const rowNonCompliant = document.getElementById('blMatrixRowNonCompliant');
+            const rowCompliant = document.getElementById('blMatrixRowCompliant');
+
+            if (rowUnreg) rowUnreg.style.flex = unregFlex.toString();
+            if (rowNonCompliant) rowNonCompliant.style.flex = nonCompliantFlex.toString();
+            if (rowCompliant) rowCompliant.style.flex = compliantFlex.toString();
+
+            // === DYNAMIC COLUMN WIDTHS (proportional to billing amounts) ===
+            const totalBilling = data.achievableAvgBill || 1;
+            const avgBilled = data.avgBilledAmount || 0;
+            const liabilityDiff = Math.max(0, data.achievableAvgBill - data.avgBilledAmount);
+
+            // Calculate column width ratios (min 30% to ensure text visibility)
+            const minColWidth = 0.3;
+            const leftColRatio = avgBilled / totalBilling;
+            const rightColRatio = liabilityDiff / totalBilling;
+
+            const leftColFlex = Math.max(minColWidth, leftColRatio);
+            const rightColFlex = Math.max(minColWidth, rightColRatio);
+
+            // Apply to all row cells
+            const allRows = document.querySelectorAll('#blMatrixGridArea .matrix-row');
+            allRows.forEach(row => {
+                const cells = row.querySelectorAll('.matrix-cell');
+                if (cells.length >= 2) {
+                    cells[0].style.flex = leftColFlex.toString();
+                    cells[1].style.flex = rightColFlex.toString();
+                }
+            });
+
+            // === POSITION Y-AXIS LABELS AT ROW BOUNDARIES (percentage-based) ===
+            const totalFlex = unregFlex + nonCompliantFlex + compliantFlex;
+            const row1Pct = (unregFlex / totalFlex) * 100;
+            const row2Pct = (nonCompliantFlex / totalFlex) * 100;
+
+            const yLabelEstimated = document.getElementById('blYLabelEstimated');
+            const yLabelRegistered = document.getElementById('blYLabelRegistered');
+            const yLabelCompliant = document.getElementById('blYLabelCompliant');
+
+            // Estimated at top (0%)
+            if (yLabelEstimated) {
+                yLabelEstimated.style.top = '0%';
+            }
+            // Registered at boundary between row1 and row2
+            if (yLabelRegistered) {
+                yLabelRegistered.style.top = row1Pct + '%';
+            }
+            // Compliant at boundary between row2 and row3
+            if (yLabelCompliant) {
+                yLabelCompliant.style.top = (row1Pct + row2Pct) + '%';
+            }
+
+            // === POSITION X-AXIS LABEL AT COLUMN BOUNDARY ===
+            const xAxisContainer = document.getElementById('blMatrixXAxisContainer');
+            const xLabelAvgBilled = document.getElementById('blXLabelAvgBilled');
+
+            if (xAxisContainer && xLabelAvgBilled) {
+                const totalColFlex = leftColFlex + rightColFlex;
+                const leftColPercent = (leftColFlex / totalColFlex) * 100;
+
+                // Position the "Avg. Billed" label at the column boundary
+                xLabelAvgBilled.style.left = leftColPercent + '%';
+            }
+        }
+
+        function storeBusinessLicenseValues(revenueToDate, totalPotentialRevenue, totalFunctionalGap, complianceGap, coverageGap, liabilityGap, mixedGapCompliance, mixedGapCoverage, complianceRatio, coverageRatio) {
+            try {
+                // Use RosraStateManager if available (preferred method)
+                if (typeof RosraStateManager !== 'undefined') {
+                    RosraStateManager.updateBusinessLicense({
+                        currentRevenue: revenueToDate,
+                        potentialRevenue: totalPotentialRevenue,
+                        totalFunctionalGap: totalFunctionalGap,
+                        complianceGap: complianceGap,
+                        coverageGap: coverageGap,
+                        liabilityGap: liabilityGap,
+                        mixedGapCompliance: mixedGapCompliance,
+                        mixedGapCoverage: mixedGapCoverage,
+                        complianceRatio: complianceRatio,
+                        coverageRatio: coverageRatio
                     });
-                    
-                    // Reset body
-                    document.body.classList.remove('modal-open');
-                    document.body.style.overflow = '';
-                    document.body.style.paddingRight = '';
+                    console.log('Business License: Updated via RosraStateManager');
                 }
-            });
-        }
-        
-        // Function to update indices for remaining categories
-        function updateCategoryIndices() {
-            const dynamicCategories = document.querySelectorAll('#dynamicCategoriesContainer .category-card');
-            dynamicCategories.forEach((category, index) => {
-                const inputs = category.querySelectorAll('input');
-                inputs.forEach(input => {
-                    if (input.name && input.name.includes('DynamicCategories[')) {
-                        input.name = input.name.replace(/DynamicCategories\[\d+\]/, `DynamicCategories[${index}]`);
+
+                // Also keep localStorage for backward compatibility
+                localStorage.setItem('licenseCurrentValue', revenueToDate);
+                localStorage.setItem('licensePotentialValue', totalPotentialRevenue);
+                localStorage.setItem('licenseGapValue', totalFunctionalGap);
+                localStorage.setItem('licenseGap', totalFunctionalGap);
+                localStorage.setItem('licenseComplianceGap', complianceGap);
+                localStorage.setItem('licenseCoverageGap', coverageGap);
+                localStorage.setItem('licenseLiabilityGap', liabilityGap);
+                localStorage.setItem('licenseMixedGapCompliance', mixedGapCompliance);
+                localStorage.setItem('licenseMixedGapCoverage', mixedGapCoverage);
+                localStorage.setItem('licenseComplianceRatio', complianceRatio);
+                localStorage.setItem('licenseCoverageRatio', coverageRatio);
+
+                const licenseValuesUpdated = new CustomEvent('licenseValuesUpdated', {
+                    detail: {
+                        current: revenueToDate,
+                        potential: totalPotentialRevenue,
+                        gap: totalFunctionalGap
                     }
                 });
-            });
-        }
-        
-        // Function to create a new category
-        function createNewCategory(categoryName) {
-            // Clone the template
-            const template = document.getElementById('categoryTemplate');
-            const newCategory = template.querySelector('.category-card').cloneNode(true);
-            
-            // Generate unique IDs
-            const categoryId = 'category-' + categoryCounter;
-            const collapseId = 'collapse-' + categoryCounter;
-            
-            // Update IDs and attributes
-            newCategory.id = categoryId;
-            newCategory.querySelector('.card-header').setAttribute('data-bs-target', '#' + collapseId);
-            newCategory.querySelector('.card-header').setAttribute('aria-controls', collapseId);
-            newCategory.querySelector('.category-content').id = collapseId;
-            
-            // Set the user-provided category name
-            newCategory.querySelector('.category-title').textContent = categoryName;
-            
-            // Set name attributes for form submission
-            const inputs = newCategory.querySelectorAll('input');
-            inputs.forEach(function(input, index) {
-                if (input.classList.contains('number-format')) {
-                    const inputName = input.closest('.form-group').querySelector('label').textContent.trim();
-                    let fieldName = '';
-                    
-                    if (inputName.includes('Estimated Licensees')) {
-                        fieldName = 'EstimatedLicensees';
-                    } else if (inputName.includes('Registered Licensees')) {
-                        fieldName = 'RegisteredLicensees';
-                    } else if (inputName.includes('Compliant Licensees')) {
-                        fieldName = 'CompliantLicensees';
-                    } else if (inputName.includes('License Fee Average')) {
-                        fieldName = 'LicenseFeeAveragePaid';
-                    } else if (inputName.includes('License Fee')) {
-                        fieldName = 'LicenseFee';
-                    }
-                    
-                    input.name = `License.DynamicCategories[${categoryCounter-1}].${fieldName}`;
-                }
-            });
-            
-            // Add hidden input for category name
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = `License.DynamicCategories[${categoryCounter-1}].Name`;
-            hiddenInput.value = categoryName;
-            newCategory.querySelector('.card-body').appendChild(hiddenInput);
-            
-            // Add edit button handler - use direct function assignment to prevent duplicates
-            const editBtn = newCategory.querySelector('.edit-category-btn');
-            const newEditBtn = removeAllEventListeners(editBtn);
-            newEditBtn.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent collapse toggle
-                currentCategoryCard = newCategory;
-                const titleElement = newCategory.querySelector('.category-title');
-                const currentName = titleElement.textContent;
-                
-                // Set the current name in the modal input
-                document.getElementById('newCategoryName').value = currentName;
-            });
-            
-            // Add remove button handler - use direct function assignment to prevent duplicates
-            const removeBtn = newCategory.querySelector('.remove-category-btn');
-            const newRemoveBtn = removeAllEventListeners(removeBtn);
-            newRemoveBtn.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent collapse toggle
-                categoryToDelete = newCategory;
-            });
-            
-            // Add to container and show
-            document.getElementById('dynamicCategoriesContainer').appendChild(newCategory);
-            
-            // Initialize number formatting for the new inputs
-            initializeNumberFormatting(newCategory.querySelectorAll('.number-format'));
-            
-            // Show the collapse
-            const collapseElement = newCategory.querySelector('.category-content');
-            new bootstrap.Collapse(collapseElement).show();
-            
-            // Increment counter for next category
-            categoryCounter++;
-        }
-        
-        // Initialize number formatting
-        function initializeNumberFormatting(elements) {
-            elements.forEach(input => {
-                input.addEventListener('blur', function() {
-                    if (this.value) {
-                        // Parse the input value as a number
-                        const value = parseFloat(this.value.replace(/,/g, ''));
-                        if (!isNaN(value)) {
-                            // Format with commas
-                            this.value = value.toLocaleString('en-US');
-                        }
-                    }
-                });
-            });
-        }
-        
-        // Initialize number formatting for existing inputs
-        initializeNumberFormatting(document.querySelectorAll('.number-format'));
-        
-        // Calculate gap when current or potential value changes
-        const currentValueInput = document.getElementById('licenseCurrentValue');
-        const potentialValueInput = document.getElementById('licensePotentialValue');
-        const gapInput = document.getElementById('licenseGap');
-        
-        function calculateGap() {
-            if (currentValueInput && potentialValueInput && gapInput) {
-                const currentValue = parseFloat(currentValueInput.value.replace(/,/g, '')) || 0;
-                const potentialValue = parseFloat(potentialValueInput.value.replace(/,/g, '')) || 0;
-                const gap = potentialValue - currentValue;
-                
-                // Format with commas
-                gapInput.value = gap.toLocaleString('en-US', {maximumFractionDigits: 2});
+                document.dispatchEvent(licenseValuesUpdated);
+            } catch (e) {
+                console.error('Error storing Business License values in localStorage:', e);
             }
         }
-        
-        if (currentValueInput && potentialValueInput) {
-            currentValueInput.addEventListener('change', calculateGap);
-            potentialValueInput.addEventListener('change', calculateGap);
-        }
-        
-        // Add handler for Create Category button in the modal
-        const createCategoryBtn = document.getElementById('createCategoryBtn');
-        if (createCategoryBtn) {
-            const newCreateCategoryBtn = removeAllEventListeners(createCategoryBtn);
-            
-            // Add the only event handler we want
-            newCreateCategoryBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const categoryName = document.getElementById('newCategoryNameCreate').value.trim();
-                
-                if (!categoryName) {
-                    alert('Please enter a category name');
-                    return;
-                }
-                
-                // Check for duplicate category names
-                const existingCategories = document.querySelectorAll('.category-title');
-                for (let i = 0; i < existingCategories.length; i++) {
-                    if (existingCategories[i].textContent.trim() === categoryName) {
-                        alert('A category with this name already exists. Please use a different name.');
-                        return;
-                    }
-                }
-                
-                // Create the new category
-                createNewCategory(categoryName);
-                
-                // Close the modal
-                createModal.hide();
-            });
-        }
+
+        // Expose function globally
+        window.calculateBusinessLicenseGaps = calculateBusinessLicenseGaps;
     });
 </script>
-
-<!-- Modals -->
-<!-- Rename Category Modal -->
-<div class="modal fade" id="renameCategoryModal" tabindex="-1" aria-labelledby="renameCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="renameCategoryModalLabel">Rename Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="newCategoryName">Category Name</label>
-                    <input type="text" class="form-control" id="newCategoryName" placeholder="Enter category name">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="saveCategoryNameBtn">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Delete Category Modal -->
-<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteCategoryModalLabel">Confirm Delete</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to remove this category?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Create Category Modal -->
-<div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createCategoryModalLabel">Create New Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="newCategoryNameCreate">Category Name</label>
-                    <input type="text" class="form-control" id="newCategoryNameCreate" placeholder="Enter category name">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="createCategoryBtn">Create</button>
-            </div>
-        </div>
-    </div>
-</div>

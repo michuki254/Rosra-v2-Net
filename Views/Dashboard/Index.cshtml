@@ -4,129 +4,644 @@
     ViewData["Title"] = "Dashboard";
 }
 
+@functions {
+    public string GetCountryCode(string country)
+    {
+        if (string.IsNullOrEmpty(country)) return "";
+
+        var countryCodes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            // Africa
+            { "Kenya", "ke" },
+            { "Nigeria", "ng" },
+            { "South Africa", "za" },
+            { "Egypt", "eg" },
+            { "Ethiopia", "et" },
+            { "Ghana", "gh" },
+            { "Tanzania", "tz" },
+            { "Uganda", "ug" },
+            { "Rwanda", "rw" },
+            { "Morocco", "ma" },
+            { "Algeria", "dz" },
+            { "Senegal", "sn" },
+            { "Cameroon", "cm" },
+            { "Zambia", "zm" },
+            { "Zimbabwe", "zw" },
+            { "Botswana", "bw" },
+            { "Namibia", "na" },
+            { "Mozambique", "mz" },
+            { "Mali", "ml" },
+            { "Burkina Faso", "bf" },
+            { "Ivory Coast", "ci" },
+            { "Cote d'Ivoire", "ci" },
+            { "Malawi", "mw" },
+            { "Benin", "bj" },
+            { "Togo", "tg" },
+            { "Niger", "ne" },
+            { "Sierra Leone", "sl" },
+            { "Liberia", "lr" },
+
+            // Europe
+            { "United Kingdom", "gb" },
+            { "UK", "gb" },
+            { "Britain", "gb" },
+            { "France", "fr" },
+            { "Germany", "de" },
+            { "Italy", "it" },
+            { "Spain", "es" },
+            { "Netherlands", "nl" },
+            { "Belgium", "be" },
+            { "Switzerland", "ch" },
+            { "Sweden", "se" },
+            { "Norway", "no" },
+            { "Portugal", "pt" },
+            { "Poland", "pl" },
+            { "Denmark", "dk" },
+            { "Finland", "fi" },
+            { "Austria", "at" },
+            { "Ireland", "ie" },
+            { "Greece", "gr" },
+            { "Czech Republic", "cz" },
+            { "Romania", "ro" },
+            { "Hungary", "hu" },
+
+            // Americas
+            { "United States", "us" },
+            { "United States of America", "us" },
+            { "USA", "us" },
+            { "Canada", "ca" },
+            { "Mexico", "mx" },
+            { "Brazil", "br" },
+            { "Argentina", "ar" },
+            { "Chile", "cl" },
+            { "Colombia", "co" },
+            { "Peru", "pe" },
+            { "Venezuela", "ve" },
+            { "Ecuador", "ec" },
+            { "Bolivia", "bo" },
+            { "Paraguay", "py" },
+            { "Uruguay", "uy" },
+            { "Costa Rica", "cr" },
+            { "Panama", "pa" },
+            { "Guatemala", "gt" },
+            { "Honduras", "hn" },
+            { "El Salvador", "sv" },
+            { "Nicaragua", "ni" },
+            { "Jamaica", "jm" },
+            { "Trinidad and Tobago", "tt" },
+
+            // Asia
+            { "China", "cn" },
+            { "India", "in" },
+            { "Japan", "jp" },
+            { "Singapore", "sg" },
+            { "South Korea", "kr" },
+            { "Korea", "kr" },
+            { "Thailand", "th" },
+            { "Indonesia", "id" },
+            { "Malaysia", "my" },
+            { "Philippines", "ph" },
+            { "Vietnam", "vn" },
+            { "Pakistan", "pk" },
+            { "Bangladesh", "bd" },
+            { "Sri Lanka", "lk" },
+            { "Nepal", "np" },
+            { "Myanmar", "mm" },
+            { "Cambodia", "kh" },
+            { "Taiwan", "tw" },
+            { "Hong Kong", "hk" },
+
+            // Middle East
+            { "UAE", "ae" },
+            { "United Arab Emirates", "ae" },
+            { "Saudi Arabia", "sa" },
+            { "Israel", "il" },
+            { "Turkey", "tr" },
+            { "Iran", "ir" },
+            { "Iraq", "iq" },
+            { "Jordan", "jo" },
+            { "Lebanon", "lb" },
+            { "Kuwait", "kw" },
+            { "Qatar", "qa" },
+            { "Oman", "om" },
+            { "Bahrain", "bh" },
+
+            // Oceania
+            { "Australia", "au" },
+            { "New Zealand", "nz" },
+            { "Fiji", "fj" },
+            { "Papua New Guinea", "pg" },
+
+            // Other
+            { "Russia", "ru" },
+            { "Ukraine", "ua" },
+            { "Kazakhstan", "kz" },
+            { "Uzbekistan", "uz" }
+        };
+
+        return countryCodes.TryGetValue(country, out var code) ? code : "";
+    }
+}
+
+@section Styles {
+    <!-- Flag Icons CSS Library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .dashboard-header {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-header h1 {
+            color: #212529;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-header p {
+            color: #6c757d;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .btn-refresh {
+            background: white;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            border-radius: 6px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-refresh:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        .btn-create-report {
+            background: #4c6ef5;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            font-weight: 500;
+            padding: 0.5rem 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-create-report:hover {
+            background: #3b5bdb;
+            color: white;
+        }
+
+        .report-card .card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-card .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .last-updated {
+            color: #868e96;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .status-badge {
+            background: #d3f9d8;
+            color: #2b8a3e;
+            border-radius: 12px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .status-badge i {
+            font-size: 6px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: #868e96;
+            padding: 0.25rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            color: #495057;
+        }
+
+        .delete-btn:hover {
+            color: #dc3545;
+        }
+
+        .report-title {
+            color: #212529;
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        .report-details {
+            display: flex;
+            align-items: start;
+            margin-bottom: 0.875rem;
+        }
+
+        .flag-icon {
+            width: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .country-flag {
+            font-size: 2.5rem;
+            line-height: 1;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .country-flag.fi {
+            width: 48px;
+            height: 36px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .default-globe {
+            font-size: 2.5rem;
+            line-height: 1;
+            color: #6c757d;
+        }
+
+        .detail-row {
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            color: #5c7cfa;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #212529;
+            font-size: 0.875rem;
+        }
+
+        .btn-open {
+            background: #4c6ef5;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background 0.2s ease;
+        }
+
+        .btn-open:hover {
+            background: #3b5bdb;
+            color: white;
+        }
+
+        .no-reports-card {
+            background: white;
+            border-radius: 8px;
+            padding: 4rem 2rem;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-reports-card i {
+            font-size: 3.5rem;
+            color: #adb5bd;
+            margin-bottom: 1.5rem;
+        }
+
+        .no-reports-card h5 {
+            color: #212529;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+    </style>
+}
+
 <div class="container py-4">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card shadow border-0 rounded-lg">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="m-0">Welcome to Your Dashboard</h3>
-                </div>
-                <div class="card-body">
-                    <h4>Hello, @ViewData["UserName"]!</h4>
-                    <p class="lead">Welcome to the Rosra Application Dashboard. Here you can manage your account and access all your saved Rosra reports.</p>
-                </div>
-            </div>
+    <!-- Header section -->
+    <div class="dashboard-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1>Your Saved Reports</h1>
+            <p>View and manage your saved ROSRA potential estimates</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-refresh d-flex align-items-center" id="refreshBtn">
+                <i class="bi bi-arrow-clockwise me-2"></i> Refresh
+            </button>
+            <a asp-controller="Rosra" asp-action="NewReport" class="btn btn-create-report">
+                <i class="bi bi-plus-circle me-2"></i> Create New Report
+            </a>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow border-0 rounded-lg">
-                <div class="card-header bg-light">
-                    <h5 class="m-0">User Information</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="fw-bold">Name:</label>
-                        <p>@ViewData["UserName"]</p>
-                    </div>
-                    <div class="mb-3">
-                        <label class="fw-bold">Email:</label>
-                        <p>@ViewData["Email"]</p>
-                    </div>
-                    <div class="mb-3">
-                        <label class="fw-bold">Organization:</label>
-                        <p>@ViewData["Organization"]</p>
-                    </div>
-                    <div class="mb-3">
-                        <label class="fw-bold">Phone Number:</label>
-                        <p>@ViewData["PhoneNumber"]</p>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <a asp-area="Identity" asp-page="/Account/Manage/Index" class="btn btn-outline-primary">Manage Account</a>
-                </div>
-            </div>
-        </div>
+    <!-- Reports grid -->
+    <div class="row g-4" id="reports-container">
+        @if (Model.Reports.Any())
+        {
+            @foreach (var report in Model.Reports)
+            {
+                <div class="col-lg-4 col-md-6 report-card" data-report-id="@report.Id">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <!-- Card header row -->
+                            <div class="card-header-row">
+                                <div class="last-updated">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                    @{
+                                        var localTime = report.CreatedAt.ToLocalTime();
+                                        var timeDiff = DateTime.Now - localTime;
+                                        string timeDisplay;
 
-        <div class="col-md-8 mb-4">
-            <div class="card h-100 shadow border-0 rounded-lg">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <h5 class="m-0">Your Rosra Reports</h5>
-                    <a asp-controller="Rosra" asp-action="Index" class="btn btn-sm btn-primary">
-                        <i class="bi bi-plus-circle"></i> New Report
+                                        if (timeDiff.TotalMinutes < 1)
+                                        {
+                                            timeDisplay = "just now";
+                                        }
+                                        else if (timeDiff.TotalHours < 1)
+                                        {
+                                            var mins = (int)timeDiff.TotalMinutes;
+                                            timeDisplay = mins + " minute" + (mins > 1 ? "s" : "") + " ago";
+                                        }
+                                        else if (timeDiff.TotalHours < 24 && localTime.Date == DateTime.Now.Date)
+                                        {
+                                            // Same day - show "today at HH:mm"
+                                            timeDisplay = "today at " + localTime.ToString("HH:mm");
+                                        }
+                                        else if (timeDiff.TotalHours < 48 && localTime.Date == DateTime.Now.AddDays(-1).Date)
+                                        {
+                                            // Yesterday
+                                            timeDisplay = "yesterday at " + localTime.ToString("HH:mm");
+                                        }
+                                        else if (timeDiff.TotalDays < 7)
+                                        {
+                                            // Within a week - show day name and time
+                                            timeDisplay = localTime.ToString("dddd") + " at " + localTime.ToString("HH:mm");
+                                        }
+                                        else
+                                        {
+                                            // Older - show full date and time
+                                            timeDisplay = localTime.ToString("dd MMM yyyy") + " at " + localTime.ToString("HH:mm");
+                                        }
+                                    }
+                                    <span>Last updated @timeDisplay</span>
+                                </div>
+                                <div class="header-actions">
+                                    <span class="status-badge">
+                                        <i class="bi bi-circle-fill"></i>Submitted
+                                    </span>
+                                    <button class="icon-btn delete-btn" type="button" data-report-id="@report.Id">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <button class="icon-btn">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Report title -->
+                            <h3 class="report-title">@report.Title</h3>
+
+                            <!-- Report details with flag -->
+                            <div class="report-details">
+                                <div class="flag-icon">
+                                    @{
+                                        var countryCode = GetCountryCode(report.Country);
+                                    }
+                                    @if (!string.IsNullOrEmpty(countryCode))
+                                    {
+                                        <span class="country-flag fi fi-@countryCode"></span>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-globe default-globe"></i>
+                                    }
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="detail-row">
+                                        <span class="detail-label">State/Region: </span>
+                                        <span class="detail-value">@(report.Region ?? report.Country ?? "N/A")</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Last Financial Year Ending in @(report.FinancialYear ?? report.CreatedAt.Year.ToString())</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Currency: </span>
+                                        <span class="detail-value">@(report.Currency ?? "N/A") @(report.CurrencySymbol != null ? "(" + report.CurrencySymbol + ")" : "")</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white p-3 border-top-0">
+                            <a asp-controller="Dashboard" asp-action="ViewReport" asp-route-id="@report.Id"
+                               class="btn btn-open w-100">OPEN</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12" id="no-reports-message">
+                <div class="no-reports-card">
+                    <i class="bi bi-file-earmark-text d-block"></i>
+                    <h5>No Reports Found</h5>
+                    <p class="text-muted mb-4">You haven't created any ROSRA reports yet. Get started by creating your first report.</p>
+                    <a asp-controller="Rosra" asp-action="Index" class="btn btn-create-report">
+                        <i class="bi bi-plus-circle me-2"></i> Create Your First Report
                     </a>
                 </div>
-                <div class="card-body">
-                    @if (Model.Reports.Any())
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Title</th>
-                                        <th>Project</th>
-                                        <th>Budget</th>
-                                        <th>Created</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var report in Model.Reports)
-                                    {
-                                        <tr>
-                                            <td>@report.Title</td>
-                                            <td>@(report.ProjectName ?? "N/A")</td>
-                                            <td>@(report.EstimatedBudget.HasValue ? $"${report.EstimatedBudget:N2}" : "N/A")</td>
-                                            <td>@report.CreatedAt.ToString("MMM dd, yyyy")</td>
-                                            <td>
-                                                <div class="btn-group">
-                                                    <a asp-controller="Dashboard" asp-action="ViewReport" asp-route-id="@report.Id" class="btn btn-sm btn-outline-primary">
-                                                        <i class="bi bi-eye"></i>
-                                                    </a>
-                                                    <a asp-controller="Rosra" asp-action="Edit" asp-route-id="@report.Id" class="btn btn-sm btn-outline-warning">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </a>
-                                                    <a href="#" class="btn btn-sm btn-outline-success export-report" data-id="@report.Id">
-                                                        <i class="bi bi-download"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-5">
-                            <i class="bi bi-file-earmark-text fs-1 text-muted mb-3"></i>
-                            <h5>No Reports Found</h5>
-                            <p>You haven't created any Rosra reports yet.</p>
-                            <a asp-controller="Rosra" asp-action="Index" class="btn btn-primary mt-2">
-                                Create Your First Report
-                            </a>
-                        </div>
-                    }
-                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteReportModal" tabindex="-1" aria-labelledby="deleteReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 8px; border: 1px solid #dee2e6;">
+            <div class="modal-header" style="background: #212529; color: white; border: none;">
+                <h5 class="modal-title fw-bold" id="deleteReportModalLabel">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 2rem;">
+                <p class="mb-0" style="color: #6c757d; font-size: 1rem;">
+                    Are you sure you want to delete this report? This action cannot be undone.
+                </p>
+                <input type="hidden" id="reportToDeleteId" value="">
+            </div>
+            <div class="modal-footer" style="border: none; padding: 1rem 2rem; background: #f8f9fa;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="bi bi-trash me-2"></i>Delete Report
+                </button>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Toast notification for success/error messages -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="toast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto" id="toast-title">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toast-message"></div>
     </div>
 </div>
 
 @section Scripts {
     <script>
         $(document).ready(function() {
-            // Export report functionality
-            $('.export-report').click(function(e) {
-                e.preventDefault();
-                var reportId = $(this).data('id');
-                
-                // In a real application, this would trigger a download
-                // For now, we'll just show an alert
-                alert('Export functionality will be implemented in a future update.');
+            // Refresh button functionality
+            $('#refreshBtn').click(function() {
+                location.reload();
             });
+            
+            // Delete report button click
+            $('.delete-btn').click(function() {
+                const reportId = $(this).data('report-id');
+                $('#reportToDeleteId').val(reportId);
+
+                // Show the confirmation modal
+                const deleteModal = new bootstrap.Modal(document.getElementById('deleteReportModal'));
+                deleteModal.show();
+            });
+            
+            // Confirm delete button click
+            $('#confirmDeleteBtn').click(function() {
+                const reportId = $('#reportToDeleteId').val();
+                
+                // Send delete request using AJAX
+                $.ajax({
+                    url: '@Url.Action("DeleteReport", "Dashboard")',
+                    type: 'POST',
+                    data: { 
+                        id: reportId,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        // Hide the modal
+                        const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteReportModal'));
+                        deleteModal.hide();
+                        
+                        if (response.success) {
+                            // Show success message
+                            showToast('Success', response.message, 'success');
+                            
+                            // Remove the deleted report card from the DOM
+                            $(`.report-card[data-report-id="${reportId}"]`).fadeOut(300, function() {
+                                $(this).remove();
+                                
+                                // Check if there are any reports left
+                                if ($('.report-card').length === 0) {
+                                    // Show the "No Reports Found" message
+                                    let noReportsMessage = `
+                                        <div class="col-12" id="no-reports-message">
+                                            <div class="no-reports-card">
+                                                <i class="bi bi-file-earmark-text d-block"></i>
+                                                <h5>No Reports Found</h5>
+                                                <p class="text-muted mb-4">You haven't created any ROSRA reports yet. Get started by creating your first report.</p>
+                                                <a href="@Url.Action("Index", "Rosra")" class="btn btn-create-report">
+                                                    <i class="bi bi-plus-circle me-2"></i> Create Your First Report
+                                                </a>
+                                            </div>
+                                        </div>
+                                    `;
+                                    $('#reports-container').html(noReportsMessage);
+                                }
+                            });
+                        } else {
+                            // Show error message
+                            showToast('Error', response.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        // Hide the modal
+                        const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteReportModal'));
+                        deleteModal.hide();
+                        
+                        // Show error message
+                        showToast('Error', 'An error occurred while deleting the report. Please try again.', 'error');
+                    }
+                });
+            });
+            
+            // Toast notification helper function
+            function showToast(title, message, type) {
+                $('#toast-title').text(title);
+                $('#toast-message').text(message);
+                
+                // Set toast background color based on type
+                if (type === 'success') {
+                    $('#toast').removeClass('bg-danger').addClass('bg-success text-white');
+                } else {
+                    $('#toast').removeClass('bg-success').addClass('bg-danger text-white');
+                }
+                
+                // Show the toast
+                const toast = new bootstrap.Toast(document.getElementById('toast'));
+                toast.show();
+            }
         });
     </script>
+
+    @* Add anti-forgery token *@
+    @Html.AntiForgeryToken()
 }

@@ -1,0 +1,1988 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+
+<div class="tab-content-container prioritization-module">
+    <!-- Header Section -->
+    <div class="prioritization-header mb-4">
+        <h5 class="mb-2"><i class="fas fa-sort-amount-down me-2"></i>Stream Prioritization</h5>
+        <p class="text-muted mb-0">
+            Step 1 of the Prioritization Pipeline: Rank revenue streams by their Total Functional Gap to determine
+            which streams to tackle first. Include or exclude streams based on local priorities, capacity, or political considerations.
+        </p>
+    </div>
+
+    <!-- Instructions Card -->
+    <div class="alert alert-info mb-4" role="alert">
+        <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>How to use this module</h6>
+        <ol class="mb-0 ps-3">
+            <li>Review the <strong>Adjustable Stream Prioritization</strong> table showing all analyzed revenue streams ranked by Total Functional Gap.</li>
+            <li>Use the <strong>Include/Exclude</strong> dropdown to select which streams to include in your reform plan.</li>
+            <li>Use the <strong>Adjust Rank</strong> dropdown to override the default ranking based on local priorities.</li>
+            <li>View the <strong>Final Stream Prioritization</strong> table to see your finalized rankings and share of total gap.</li>
+        </ol>
+    </div>
+
+    <div class="row g-4">
+        <!-- Table 1: Adjustable Stream Prioritization -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <h6 class="mb-0"><i class="fas fa-sliders-h me-2"></i>Adjustable Stream Prioritization</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="adjustableStreamTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center" style="width: 100px;" data-bs-toggle="tooltip" title="Automatically assigned based on Total Functional Gap (largest = 1)">Default Rank</th>
+                                    <th data-bs-toggle="tooltip" title="The name of the revenue stream being analyzed">Stream Name</th>
+                                    <th class="text-end" data-bs-toggle="tooltip" title="Sum of all gap components for this stream">Total Functional Gap</th>
+                                    <th class="text-center" style="width: 150px;" data-bs-toggle="tooltip" title="Include this stream in the reform plan or exclude it">Include/Exclude</th>
+                                    <th class="text-center" style="width: 150px;" data-bs-toggle="tooltip" title="Override the default rank based on local priorities">Adjust Rank</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adjustableStreamBody">
+                                <!-- Populated by JavaScript -->
+                                <tr class="placeholder-row">
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Loading stream data from Gap Analysis...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table 2: Final Stream Prioritization -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-success text-white py-3">
+                    <h6 class="mb-0"><i class="fas fa-check-circle me-2"></i>Final Stream Prioritization</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="finalStreamTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center" style="width: 100px;" data-bs-toggle="tooltip" title="Final rank after adjustments (only included streams)">Final Rank</th>
+                                    <th data-bs-toggle="tooltip" title="The name of the revenue stream">Stream Name</th>
+                                    <th class="text-end" data-bs-toggle="tooltip" title="Total functional gap for this stream">Total Functional Gap</th>
+                                    <th class="text-center" data-bs-toggle="tooltip" title="This stream's gap as a percentage of the total gap across all included streams">Share of Total Gap</th>
+                                    <th class="text-center" style="width: 120px;" data-bs-toggle="tooltip" title="Stream status in the reform plan">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="finalStreamBody">
+                                <!-- Populated by JavaScript -->
+                                <tr class="placeholder-row">
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        <i class="fas fa-info-circle me-2"></i>Final rankings will appear after selecting streams above
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="table-light fw-bold" id="finalStreamFooter" style="display: none;">
+                                <tr>
+                                    <td class="text-center">-</td>
+                                    <td>Total (Included Streams)</td>
+                                    <td class="text-end" id="totalIncludedGap">-</td>
+                                    <td class="text-center">100%</td>
+                                    <td class="text-center">-</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="col-md-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light py-3">
+                    <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Total Functional Gap by Stream</h6>
+                </div>
+                <div class="card-body">
+                    <div id="barChartPlaceholder" class="chart-placeholder text-center text-muted py-5">
+                        <i class="fas fa-chart-bar fa-3x mb-3 opacity-50"></i>
+                        <p class="mb-0">Complete Gap Analysis to see chart data</p>
+                    </div>
+                    <canvas id="gapBarChart" height="300" style="display: none;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light py-3">
+                    <h6 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Share of Total Gap</h6>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div id="pieChartPlaceholder" class="chart-placeholder text-center text-muted py-5">
+                        <i class="fas fa-chart-pie fa-3x mb-3 opacity-50"></i>
+                        <p class="mb-0">Complete Gap Analysis to see chart data</p>
+                    </div>
+                    <canvas id="gapPieChart" height="280" style="display: none;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="col-12">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center">
+                        <div class="card-body py-3">
+                            <h6 class="text-muted mb-1">Total Streams Analyzed</h6>
+                            <h3 class="mb-0 text-primary" id="statTotalStreams">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center">
+                        <div class="card-body py-3">
+                            <h6 class="text-muted mb-1">Streams Included</h6>
+                            <h3 class="mb-0 text-success" id="statIncludedStreams">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center">
+                        <div class="card-body py-3">
+                            <h6 class="text-muted mb-1">Total Gap (All)</h6>
+                            <h3 class="mb-0 text-info" id="statTotalGap">-</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center">
+                        <div class="card-body py-3">
+                            <h6 class="text-muted mb-1">Total Gap (Included)</h6>
+                            <h3 class="mb-0 text-warning" id="statIncludedGap">-</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================= STEP 2: GAP PRIORITIZATION ======================= -->
+    <hr class="my-5 border-2">
+
+    <!-- Step 2 Header -->
+    <div class="prioritization-header mb-4">
+        <h5 class="mb-2"><i class="fas fa-layer-group me-2"></i>Gap Prioritization</h5>
+        <p class="text-muted mb-0">
+            Step 2 of the Prioritization Pipeline: After ordering streams, prioritize gaps (Compliance, Coverage, Valuation/Liability)
+            within each one. ROSRA suggests a default order based on compliance and coverage indicators; use the Adjust Priority columns
+            to change the sequence or select "Remove" to drop a gap from your plan.
+        </p>
+    </div>
+
+    <!-- Mode Explanation Accordion -->
+    <div class="accordion mb-4" id="modeExplanationAccordion">
+        <div class="accordion-item border-0 shadow-sm mb-2">
+            <h2 class="accordion-header" id="headingRevenuePotential">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRevenuePotential" aria-expanded="false" aria-controls="collapseRevenuePotential">
+                    <span class="mode-badge mode-revenue-potential me-2">Revenue Potential</span>
+                    <span class="text-muted small">Compliance Ratio ≥ 75%</span>
+                </button>
+            </h2>
+            <div id="collapseRevenuePotential" class="accordion-collapse collapse" aria-labelledby="headingRevenuePotential" data-bs-parent="#modeExplanationAccordion">
+                <div class="accordion-body">
+                    <p class="mb-0">
+                        <strong>When Applied:</strong> Compliance Ratio ≥ 75%<br><br>
+                        High compliance usually indicates that the basic collection and registration systems are functioning.
+                        In this case, the priority is to focus on the functions with the <strong>largest monetary gaps</strong>,
+                        as these represent the biggest revenue gains for a given reform effort.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item border-0 shadow-sm mb-2">
+            <h2 class="accordion-header" id="headingComplianceFirst">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseComplianceFirst" aria-expanded="false" aria-controls="collapseComplianceFirst">
+                    <span class="mode-badge mode-compliance-first me-2">Compliance First</span>
+                    <span class="text-muted small">Compliance &lt; 75% AND Coverage ≥ 60%</span>
+                </button>
+            </h2>
+            <div id="collapseComplianceFirst" class="accordion-collapse collapse" aria-labelledby="headingComplianceFirst" data-bs-parent="#modeExplanationAccordion">
+                <div class="accordion-body">
+                    <p class="mb-0">
+                        <strong>When Applied:</strong> Compliance Ratio &lt; 75% AND Coverage Ratio ≥ 60%<br><br>
+                        A significant share of known taxpayers is not paying, but the register is not fundamentally broken.
+                        ROSRA recommends prioritising <strong>compliance reforms</strong> (billing, payment channels, enforcement),
+                        then coverage, and only then valuation/liability.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item border-0 shadow-sm">
+            <h2 class="accordion-header" id="headingOverhaul">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOverhaul" aria-expanded="false" aria-controls="collapseOverhaul">
+                    <span class="mode-badge mode-overhaul me-2">Overhaul</span>
+                    <span class="text-muted small">Compliance &lt; 75% AND Coverage &lt; 60%</span>
+                </button>
+            </h2>
+            <div id="collapseOverhaul" class="accordion-collapse collapse" aria-labelledby="headingOverhaul" data-bs-parent="#modeExplanationAccordion">
+                <div class="accordion-body">
+                    <p class="mb-0">
+                        <strong>When Applied:</strong> Compliance Ratio &lt; 75% AND Coverage Ratio &lt; 60%<br><br>
+                        When both ratios are low, the missing tax base is usually the binding constraint.
+                        Strengthening enforcement alone has limited effect if most units are invisible to the administration.
+                        The recommended sequence is <strong>Coverage → Compliance → Valuation/Liability</strong>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gap Sequencing Table -->
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-secondary text-white py-3">
+                    <h6 class="mb-0"><i class="fas fa-sort-numeric-down me-2"></i>Gap Sequencing by Stream</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="gapSequencingTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center" style="width: 70px;" data-bs-toggle="tooltip" title="Stream's final rank from Step 1">Rank</th>
+                                    <th data-bs-toggle="tooltip" title="Revenue stream name">Stream</th>
+                                    <th class="text-center" style="width: 160px;" data-bs-toggle="tooltip" title="Prioritization mode based on KPI ratios">Mode</th>
+                                    <th class="text-center" data-bs-toggle="tooltip" title="First gap to address">Priority 1</th>
+                                    <th class="text-center" data-bs-toggle="tooltip" title="Second gap to address">Priority 2</th>
+                                    <th class="text-center" data-bs-toggle="tooltip" title="Third gap to address">Priority 3</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gapSequencingBody">
+                                <tr class="placeholder-row">
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="fas fa-info-circle me-2"></i>Include streams in Step 1 to see gap prioritization options
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gap Amounts Detail Table -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-info text-white py-3">
+                    <h6 class="mb-0"><i class="fas fa-coins me-2"></i>Gap Amounts by Priority</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="gapAmountsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center" style="width: 70px;">Rank</th>
+                                    <th>Stream</th>
+                                    <th class="text-center">Priority 1</th>
+                                    <th class="text-end">Amount 1</th>
+                                    <th class="text-center">Priority 2</th>
+                                    <th class="text-end">Amount 2</th>
+                                    <th class="text-center">Priority 3</th>
+                                    <th class="text-end">Amount 3</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gapAmountsBody">
+                                <tr class="placeholder-row">
+                                    <td colspan="8" class="text-center text-muted py-4">
+                                        <i class="fas fa-info-circle me-2"></i>Gap amounts will appear after gap prioritization
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Panel -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light py-3">
+                    <h6 class="mb-0"><i class="fas fa-list-ol me-2"></i>Reform Sequence Summary</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <div class="text-muted small">Total Streams</div>
+                            <div class="h4 mb-0" id="gapStatTotalStreams">0</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Total Gap Combinations</div>
+                            <div class="h4 mb-0" id="gapStatTotalCombinations">0</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-muted small">Removed Gaps</div>
+                            <div class="h4 mb-0 text-danger" id="gapStatRemovedGaps">0</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Active Gap Actions</div>
+                            <div class="h4 mb-0 text-success" id="gapStatActiveGaps">0</div>
+                        </div>
+                    </div>
+                    <hr>
+                    <h6 class="text-muted mb-3">First Priority Actions:</h6>
+                    <div id="firstPriorityActions" class="small">
+                        <div class="text-muted">No actions defined yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Master Priority List -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-warning text-dark py-3">
+                    <h6 class="mb-0"><i class="fas fa-trophy me-2"></i>Master Priority List</h6>
+                </div>
+                <div class="card-body p-0" style="max-height: 350px; overflow-y: auto;">
+                    <table class="table table-sm table-hover mb-0" id="masterPriorityTable">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th class="text-center" style="width: 50px;">#</th>
+                                <th>Stream</th>
+                                <th>Gap</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="masterPriorityBody">
+                            <tr class="placeholder-row">
+                                <td colspan="4" class="text-center text-muted py-3">
+                                    <small>Master list will populate from gap priorities</small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden inputs to persist prioritization data -->
+    <input type="hidden" id="prioritizationData" name="PrioritizationData" value="@Model.PrioritizationData" />
+</div>
+
+<style>
+    /* ============================================
+       UN-HABITAT PRIORITIZATION MODULE DESIGN SYSTEM
+       ============================================ */
+
+    /* CSS Variables */
+    .prioritization-module {
+        --un-blue: #00b2e3;
+        --un-dark-blue: #00689D;
+        --un-orange: #FD9D24;
+        --un-orange-dark: #E8891A;
+        --un-success: #10b981;
+        --un-warning: #f59e0b;
+        --un-danger: #ef4444;
+        --card-radius: 12px;
+        --input-radius: 8px;
+    }
+
+    /* Header Styling */
+    .prioritization-module .prioritization-header h5 {
+        color: var(--un-blue);
+        font-weight: 700;
+        font-size: 1.35rem;
+    }
+
+    .prioritization-module .prioritization-header p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* Card Styling */
+    .prioritization-module .card {
+        border: none;
+        border-radius: var(--card-radius);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.2s ease;
+        overflow: hidden;
+    }
+
+    .prioritization-module .card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Card Headers with UN-Habitat Colors */
+    .prioritization-module .card-header.bg-primary {
+        background: var(--un-blue) !important;
+        border: none;
+        padding: 1rem 1.25rem;
+    }
+
+    .prioritization-module .card-header.bg-success {
+        background: linear-gradient(135deg, var(--un-success) 0%, #059669 100%) !important;
+        border: none;
+        padding: 1rem 1.25rem;
+    }
+
+    .prioritization-module .card-header.bg-light {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+        border-bottom: 2px solid #e2e8f0;
+        padding: 1rem 1.25rem;
+    }
+
+    .prioritization-module .card-header h6 {
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+    }
+
+    /* Alert/Info Box Styling */
+    .prioritization-module .alert-info {
+        background: linear-gradient(135deg, #e0f7fa 0%, #e1f5fe 100%);
+        border: none;
+        border-left: 4px solid var(--un-blue);
+        border-radius: var(--input-radius);
+        color: #0277bd;
+    }
+
+    .prioritization-module .alert-info .alert-heading {
+        color: var(--un-blue);
+        font-weight: 600;
+    }
+
+    /* Table Styling */
+    .prioritization-module .table {
+        margin-bottom: 0;
+    }
+
+    .prioritization-module .table th {
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #475569;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-bottom: 2px solid #e2e8f0;
+        padding: 0.875rem 1rem;
+    }
+
+    .prioritization-module .table td {
+        vertical-align: middle;
+        padding: 0.875rem 1rem;
+        color: #334155;
+        border-color: #f1f5f9;
+    }
+
+    .prioritization-module .table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    /* Stream Badges */
+    .prioritization-module .stream-badge {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        margin-right: 10px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .prioritization-module .stream-badge.property-tax {
+        background: var(--un-blue);
+    }
+
+    .prioritization-module .stream-badge.business-license {
+        background: var(--un-orange);
+    }
+
+    .prioritization-module .stream-badge.generic-stream {
+        background: var(--un-blue);
+    }
+
+    /* Rank Badges */
+    .prioritization-module .rank-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 0.95rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    .prioritization-module .rank-badge.rank-1 {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        color: #1f2937;
+    }
+
+    .prioritization-module .rank-badge.rank-2 {
+        background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+        color: #1f2937;
+    }
+
+    .prioritization-module .rank-badge.rank-3 {
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+        color: #fff;
+    }
+
+    .prioritization-module .rank-badge.rank-default {
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        color: #64748b;
+    }
+
+    /* Status Badges */
+    .prioritization-module .status-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .prioritization-module .status-badge.included {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        color: #065f46;
+    }
+
+    .prioritization-module .status-badge.excluded {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #991b1b;
+    }
+
+    /* Share Bar */
+    .prioritization-module .share-bar {
+        height: 10px;
+        background-color: #e2e8f0;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top: 6px;
+    }
+
+    .prioritization-module .share-bar-fill {
+        height: 100%;
+        border-radius: 5px;
+        transition: width 0.4s ease;
+        background: var(--un-blue);
+    }
+
+    /* Dropdown Styling */
+    .prioritization-module .dropdown-include-exclude,
+    .prioritization-module .dropdown-adjust-rank {
+        border-radius: var(--input-radius);
+        border: 2px solid #e2e8f0;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+    }
+
+    .prioritization-module .dropdown-include-exclude:focus,
+    .prioritization-module .dropdown-adjust-rank:focus {
+        border-color: var(--un-blue);
+        box-shadow: 0 0 0 3px rgba(0, 178, 227, 0.15);
+    }
+
+    .prioritization-module .dropdown-include-exclude {
+        min-width: 130px;
+    }
+
+    .prioritization-module .dropdown-adjust-rank {
+        min-width: 110px;
+    }
+
+    /* Alert List Styling */
+    .prioritization-module .alert ol li {
+        margin-bottom: 6px;
+        line-height: 1.5;
+    }
+
+    /* Excluded Row */
+    .prioritization-module .table tbody tr.excluded-row {
+        opacity: 0.5;
+        background-color: #fafafa;
+    }
+
+    /* Summary Statistics Cards */
+    .prioritization-module .col-md-3 .card {
+        border-radius: var(--card-radius);
+    }
+
+    .prioritization-module .col-md-3 .card h6 {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+    }
+
+    .prioritization-module .col-md-3 .card h3 {
+        font-size: 1.75rem;
+        font-weight: 700;
+    }
+
+    .prioritization-module .col-md-3 .card .text-primary {
+        color: var(--un-blue) !important;
+    }
+
+    .prioritization-module .col-md-3 .card .text-success {
+        color: var(--un-success) !important;
+    }
+
+    .prioritization-module .col-md-3 .card .text-info {
+        color: var(--un-blue) !important;
+    }
+
+    .prioritization-module .col-md-3 .card .text-warning {
+        color: var(--un-orange) !important;
+    }
+
+    /* Chart Placeholders */
+    .prioritization-module .chart-placeholder {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: var(--input-radius);
+        padding: 2rem;
+    }
+
+    .prioritization-module .chart-placeholder i {
+        color: #cbd5e1;
+    }
+
+    /* Gap Prioritization Styles - Step 2 */
+    .prioritization-module .mode-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .prioritization-module .mode-badge.mode-revenue-potential {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        color: #065f46;
+    }
+
+    .prioritization-module .mode-badge.mode-compliance-first {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        color: #92400e;
+    }
+
+    .prioritization-module .mode-badge.mode-overhaul {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #991b1b;
+    }
+
+    /* Gap Badges */
+    .prioritization-module .gap-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .prioritization-module .gap-badge.gap-compliance {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #991b1b;
+        border: none;
+    }
+
+    .prioritization-module .gap-badge.gap-coverage {
+        background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+        color: #c2410c;
+        border: none;
+    }
+
+    .prioritization-module .gap-badge.gap-valuation,
+    .prioritization-module .gap-badge.gap-liability {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        color: #1e40af;
+        border: none;
+    }
+
+    .prioritization-module .gap-badge.gap-removed {
+        background: #f1f5f9;
+        color: #94a3b8;
+        border: none;
+        text-decoration: line-through;
+    }
+
+    /* Priority Cells */
+    .prioritization-module .priority-cell {
+        min-width: 180px;
+    }
+
+    .prioritization-module .priority-cell .gap-display {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .prioritization-module .priority-cell select {
+        max-width: 140px;
+    }
+
+    /* Priority Numbers */
+    .prioritization-module .priority-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #64748b;
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .prioritization-module .priority-number.priority-1 {
+        background: linear-gradient(135deg, var(--un-success) 0%, #059669 100%);
+    }
+
+    .prioritization-module .priority-number.priority-2 {
+        background: linear-gradient(135deg, var(--un-orange) 0%, var(--un-orange-dark) 100%);
+        color: #fff;
+    }
+
+    .prioritization-module .priority-number.priority-3 {
+        background: linear-gradient(135deg, var(--un-danger) 0%, #dc2626 100%);
+    }
+
+    /* Overridden Indicator */
+    .prioritization-module .overridden-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--un-blue);
+        margin-left: 6px;
+        box-shadow: 0 0 0 2px rgba(0, 178, 227, 0.3);
+    }
+
+    /* Accordion Styling */
+    .prioritization-module .accordion-item {
+        border-radius: var(--input-radius) !important;
+        overflow: hidden;
+    }
+
+    .prioritization-module .accordion-button {
+        font-weight: 500;
+        padding: 1rem 1.25rem;
+    }
+
+    .prioritization-module .accordion-button:not(.collapsed) {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        color: var(--un-blue);
+    }
+
+    .prioritization-module .accordion-button:focus {
+        box-shadow: none;
+        border-color: transparent;
+    }
+
+    .prioritization-module .accordion-body {
+        background: #fff;
+        padding: 1.25rem;
+        line-height: 1.7;
+    }
+
+    /* First Priority Items */
+    .prioritization-module .first-priority-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .prioritization-module .first-priority-item:last-child {
+        border-bottom: none;
+    }
+
+    .prioritization-module .first-priority-item .fp-rank {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--un-blue);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-right: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .prioritization-module .first-priority-item .fp-stream {
+        flex: 1;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .prioritization-module .first-priority-item .fp-gap {
+        margin-left: auto;
+    }
+
+    .prioritization-module .first-priority-item .fp-amount {
+        margin-left: 12px;
+        font-weight: 700;
+        color: var(--un-success);
+    }
+
+    /* Master Priority Row */
+    .prioritization-module .master-priority-row td {
+        padding: 10px 14px;
+    }
+
+    .prioritization-module .master-priority-row.stream-break {
+        border-top: 2px solid var(--un-blue);
+    }
+
+    /* HR Divider */
+    .prioritization-module hr.border-2 {
+        border-color: #e2e8f0 !important;
+        opacity: 1;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Stream color scheme
+    const streamColors = {
+        'Property Tax': '#4e79a7',
+        'Business License': '#f28e2b',
+        'default': '#76b7b2'
+    };
+
+    // Generic stream colors (rotating palette)
+    const genericStreamPalette = ['#76b7b2', '#59a14f', '#edc948', '#b07aa1', '#ff9da7', '#9c755f', '#bab0ac'];
+
+    // Currency symbol from AppContext (single source of truth)
+    let currencySymbol = '$';
+
+    // Get initial currency from AppContext
+    function getCurrencyFromContext() {
+        if (typeof AppContext !== 'undefined') {
+            return AppContext.get('currencySymbol') || '$';
+        }
+        // Fallback to localStorage if AppContext not available
+        return localStorage.getItem('selectedCurrencySymbol') || '$';
+    }
+
+    currencySymbol = getCurrencyFromContext();
+
+    // Subscribe to currency changes from AppContext for reactive updates
+    if (typeof AppContext !== 'undefined') {
+        AppContext.subscribe('currencySymbol', function(newSymbol) {
+            console.log('Prioritization: Currency changed to', newSymbol);
+            currencySymbol = newSymbol || '$';
+            // Re-render tables and charts with new currency
+            renderAdjustableTable();
+            renderFinalTable();
+            updateCharts();
+            updateStatistics();
+            renderGapAmountsTable();
+            renderGapSummary();
+            renderMasterPriorityList();
+        });
+        console.log('Prioritization: Subscribed to AppContext currencySymbol changes');
+    }
+
+    // Stream data array
+    let streams = [];
+    let barChart = null;
+    let pieChart = null;
+
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Load stream data from RosraStateManager (preferred) or localStorage (fallback)
+    function loadStreamData() {
+        streams = [];
+        let genericColorIndex = 0;
+
+        // Try to use RosraStateManager first
+        if (typeof RosraStateManager !== 'undefined') {
+            const stateStreams = RosraStateManager.getStreams();
+            if (stateStreams.length > 0) {
+                stateStreams.forEach((s, idx) => {
+                    // Assign colors based on type
+                    let color = streamColors[s.name] || streamColors['default'];
+                    if (s.type === 'generic-stream') {
+                        color = genericStreamPalette[genericColorIndex % genericStreamPalette.length];
+                        genericColorIndex++;
+                    }
+
+                    streams.push({
+                        ...s,
+                        color: color
+                    });
+                });
+
+                console.log('Prioritization: Loaded', streams.length, 'streams from RosraStateManager');
+
+                // Sort and assign default ranks
+                streams.sort((a, b) => b.totalFunctionalGap - a.totalFunctionalGap);
+                streams.forEach((stream, index) => {
+                    stream.defaultRank = index + 1;
+                });
+                return;
+            }
+        }
+
+        // Fallback to localStorage if RosraStateManager is empty
+        console.log('Prioritization: Falling back to localStorage');
+
+        // Load Property Tax data
+        const propertyTaxGap = parseFloat(localStorage.getItem('propertyTaxGapValue')) || 0;
+        if (propertyTaxGap > 0) {
+            streams.push({
+                id: 'property-tax',
+                name: 'Property Tax',
+                type: 'property-tax',
+                totalFunctionalGap: propertyTaxGap,
+                currentRevenue: parseFloat(localStorage.getItem('propertyTaxCurrentValue')) || 0,
+                potentialRevenue: parseFloat(localStorage.getItem('propertyTaxPotentialValue')) || 0,
+                complianceGap: parseFloat(localStorage.getItem('propertyTaxComplianceGap')) || 0,
+                coverageGap: parseFloat(localStorage.getItem('propertyTaxCoverageGap')) || 0,
+                valuationGap: parseFloat(localStorage.getItem('propertyTaxValuationGap')) || 0,
+                complianceRatio: parseFloat(localStorage.getItem('propertyTaxComplianceRatio')) || 0,
+                coverageRatio: parseFloat(localStorage.getItem('propertyTaxCoverageRatio')) || 0,
+                included: true,
+                adjustedRank: null,
+                color: streamColors['Property Tax']
+            });
+        }
+
+        // Load Business License data
+        const licenseGap = parseFloat(localStorage.getItem('licenseGapValue')) || 0;
+        if (licenseGap > 0) {
+            streams.push({
+                id: 'business-license',
+                name: 'Business License',
+                type: 'business-license',
+                totalFunctionalGap: licenseGap,
+                currentRevenue: parseFloat(localStorage.getItem('licenseCurrentValue')) || 0,
+                potentialRevenue: parseFloat(localStorage.getItem('licensePotentialValue')) || 0,
+                complianceGap: parseFloat(localStorage.getItem('licenseComplianceGap')) || 0,
+                coverageGap: parseFloat(localStorage.getItem('licenseCoverageGap')) || 0,
+                liabilityGap: parseFloat(localStorage.getItem('licenseLiabilityGap')) || 0,
+                complianceRatio: parseFloat(localStorage.getItem('licenseComplianceRatio')) || 0,
+                coverageRatio: parseFloat(localStorage.getItem('licenseCoverageRatio')) || 0,
+                included: true,
+                adjustedRank: null,
+                color: streamColors['Business License']
+            });
+        }
+
+        // Load Generic Streams data
+        const genericStreamsJson = localStorage.getItem('genericStreamsData');
+        if (genericStreamsJson) {
+            try {
+                const genericStreams = JSON.parse(genericStreamsJson);
+                if (Array.isArray(genericStreams)) {
+                    genericStreams.forEach((gs, index) => {
+                        const streamId = gs.streamId || `generic-stream-${index}`;
+                        const gap = parseFloat(localStorage.getItem(streamId + 'GapValue')) || 0;
+                        if (gap > 0) {
+                            streams.push({
+                                id: streamId,
+                                name: gs.streamName || `Stream ${index + 1}`,
+                                type: 'generic-stream',
+                                totalFunctionalGap: gap,
+                                currentRevenue: parseFloat(localStorage.getItem(streamId + 'CurrentValue')) || 0,
+                                potentialRevenue: parseFloat(localStorage.getItem(streamId + 'PotentialValue')) || 0,
+                                complianceGap: parseFloat(localStorage.getItem(streamId + 'ComplianceGap')) || 0,
+                                coverageGap: parseFloat(localStorage.getItem(streamId + 'CoverageGap')) || 0,
+                                liabilityGap: parseFloat(localStorage.getItem(streamId + 'LiabilityGap')) || 0,
+                                included: true,
+                                adjustedRank: null,
+                                color: genericStreamPalette[genericColorIndex % genericStreamPalette.length]
+                            });
+                            genericColorIndex++;
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Error parsing generic streams data:', e);
+            }
+        }
+
+        // Also check for individual generic stream keys
+        for (let i = 0; i < 10; i++) {
+            const streamId = `generic-stream-${i}`;
+            const gap = parseFloat(localStorage.getItem(streamId + 'GapValue')) || 0;
+            const streamName = localStorage.getItem(streamId + 'Name');
+
+            // Check if we already added this stream
+            const alreadyExists = streams.some(s => s.id === streamId);
+
+            if (gap > 0 && !alreadyExists) {
+                streams.push({
+                    id: streamId,
+                    name: streamName || `Generic Stream ${i + 1}`,
+                    type: 'generic-stream',
+                    totalFunctionalGap: gap,
+                    currentRevenue: parseFloat(localStorage.getItem(streamId + 'CurrentValue')) || 0,
+                    potentialRevenue: parseFloat(localStorage.getItem(streamId + 'PotentialValue')) || 0,
+                    complianceGap: parseFloat(localStorage.getItem(streamId + 'ComplianceGap')) || 0,
+                    coverageGap: parseFloat(localStorage.getItem(streamId + 'CoverageGap')) || 0,
+                    liabilityGap: parseFloat(localStorage.getItem(streamId + 'LiabilityGap')) || 0,
+                    included: true,
+                    adjustedRank: null,
+                    color: genericStreamPalette[genericColorIndex % genericStreamPalette.length]
+                });
+                genericColorIndex++;
+            }
+        }
+
+        // Sort by Total Functional Gap (descending) for default ranking
+        streams.sort((a, b) => b.totalFunctionalGap - a.totalFunctionalGap);
+
+        // Assign default ranks
+        streams.forEach((stream, index) => {
+            stream.defaultRank = index + 1;
+        });
+
+        return streams;
+    }
+
+    // Format currency
+    function formatCurrency(value) {
+        if (value === null || value === undefined || isNaN(value)) return '-';
+        return currencySymbol + value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
+
+    // Format percentage
+    function formatPercent(value) {
+        if (value === null || value === undefined || isNaN(value)) return '-';
+        return value.toFixed(1) + '%';
+    }
+
+    // Get rank badge class
+    function getRankBadgeClass(rank) {
+        if (rank === 1) return 'rank-1';
+        if (rank === 2) return 'rank-2';
+        if (rank === 3) return 'rank-3';
+        return 'rank-default';
+    }
+
+    // Render Adjustable Stream Table
+    function renderAdjustableTable() {
+        const tbody = document.getElementById('adjustableStreamBody');
+
+        if (streams.length === 0) {
+            tbody.innerHTML = `
+                <tr class="placeholder-row">
+                    <td colspan="5" class="text-center text-muted py-4">
+                        <i class="fas fa-exclamation-circle me-2"></i>No stream data found. Please complete the Gap Analysis tabs first.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let html = '';
+        streams.forEach((stream, index) => {
+            const rowClass = stream.included ? '' : 'excluded-row';
+            html += `
+                <tr class="${rowClass}" data-stream-id="${stream.id}">
+                    <td class="text-center">
+                        <span class="rank-badge ${getRankBadgeClass(stream.defaultRank)}">${stream.defaultRank}</span>
+                    </td>
+                    <td>
+                        <span class="stream-badge ${stream.type}"></span>
+                        ${stream.name}
+                    </td>
+                    <td class="text-end fw-semibold">${formatCurrency(stream.totalFunctionalGap)}</td>
+                    <td class="text-center">
+                        <select class="form-select form-select-sm dropdown-include-exclude"
+                                data-stream-id="${stream.id}"
+                                onchange="window.handleIncludeExcludeChange(this)">
+                            <option value="include" ${stream.included ? 'selected' : ''}>Include</option>
+                            <option value="exclude" ${!stream.included ? 'selected' : ''}>Exclude</option>
+                        </select>
+                    </td>
+                    <td class="text-center">
+                        <select class="form-select form-select-sm dropdown-adjust-rank"
+                                data-stream-id="${stream.id}"
+                                onchange="window.handleAdjustRankChange(this)"
+                                ${!stream.included ? 'disabled' : ''}>
+                            <option value="">Auto</option>
+                            ${generateRankOptions(streams.length, stream.adjustedRank)}
+                        </select>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    // Generate rank options
+    function generateRankOptions(totalStreams, selectedRank) {
+        let options = '';
+        for (let i = 1; i <= totalStreams; i++) {
+            const selected = selectedRank === i ? 'selected' : '';
+            options += `<option value="${i}" ${selected}>${i}</option>`;
+        }
+        return options;
+    }
+
+    // Handle Include/Exclude change
+    window.handleIncludeExcludeChange = function(selectElement) {
+        const streamId = selectElement.dataset.streamId;
+        const included = selectElement.value === 'include';
+
+        // Update stream data
+        const stream = streams.find(s => s.id === streamId);
+        if (stream) {
+            stream.included = included;
+            if (!included) {
+                stream.adjustedRank = null;
+            }
+        }
+
+        // Update row styling
+        const row = selectElement.closest('tr');
+        if (included) {
+            row.classList.remove('excluded-row');
+            row.querySelector('.dropdown-adjust-rank').disabled = false;
+        } else {
+            row.classList.add('excluded-row');
+            row.querySelector('.dropdown-adjust-rank').disabled = true;
+            row.querySelector('.dropdown-adjust-rank').value = '';
+        }
+
+        // Recalculate and render
+        renderFinalTable();
+        updateCharts();
+        updateStatistics();
+
+        // Save state
+        savePrioritizationState();
+    };
+
+    // Handle Adjust Rank change
+    window.handleAdjustRankChange = function(selectElement) {
+        const streamId = selectElement.dataset.streamId;
+        const newRank = selectElement.value ? parseInt(selectElement.value) : null;
+
+        // Update stream data
+        const stream = streams.find(s => s.id === streamId);
+        if (stream) {
+            stream.adjustedRank = newRank;
+        }
+
+        // Recalculate and render
+        renderFinalTable();
+        updateCharts();
+
+        // Save state
+        savePrioritizationState();
+    };
+
+    // Calculate final rankings
+    function calculateFinalRankings() {
+        const includedStreams = streams.filter(s => s.included);
+
+        // Separate streams with and without adjusted ranks
+        const adjustedStreams = includedStreams.filter(s => s.adjustedRank !== null);
+        const autoStreams = includedStreams.filter(s => s.adjustedRank === null);
+
+        // Sort auto streams by gap (descending)
+        autoStreams.sort((a, b) => b.totalFunctionalGap - a.totalFunctionalGap);
+
+        // Create final ranking array
+        const finalRanking = [];
+        const usedRanks = new Set(adjustedStreams.map(s => s.adjustedRank));
+
+        // Place adjusted streams first
+        adjustedStreams.forEach(stream => {
+            finalRanking.push({
+                ...stream,
+                finalRank: stream.adjustedRank
+            });
+        });
+
+        // Fill in auto streams with remaining ranks
+        let autoRank = 1;
+        autoStreams.forEach(stream => {
+            while (usedRanks.has(autoRank)) {
+                autoRank++;
+            }
+            finalRanking.push({
+                ...stream,
+                finalRank: autoRank
+            });
+            usedRanks.add(autoRank);
+            autoRank++;
+        });
+
+        // Sort by final rank
+        finalRanking.sort((a, b) => a.finalRank - b.finalRank);
+
+        // Calculate share of total gap
+        const totalGap = finalRanking.reduce((sum, s) => sum + s.totalFunctionalGap, 0);
+        finalRanking.forEach(stream => {
+            stream.shareOfTotalGap = totalGap > 0 ? (stream.totalFunctionalGap / totalGap) * 100 : 0;
+        });
+
+        return { finalRanking, totalGap };
+    }
+
+    // Render Final Stream Table
+    function renderFinalTable() {
+        const tbody = document.getElementById('finalStreamBody');
+        const footer = document.getElementById('finalStreamFooter');
+        const { finalRanking, totalGap } = calculateFinalRankings();
+
+        if (finalRanking.length === 0) {
+            tbody.innerHTML = `
+                <tr class="placeholder-row">
+                    <td colspan="5" class="text-center text-muted py-4">
+                        <i class="fas fa-info-circle me-2"></i>No streams included. Please include at least one stream in the table above.
+                    </td>
+                </tr>
+            `;
+            footer.style.display = 'none';
+            return;
+        }
+
+        let html = '';
+        finalRanking.forEach((stream) => {
+            html += `
+                <tr data-stream-id="${stream.id}">
+                    <td class="text-center">
+                        <span class="rank-badge ${getRankBadgeClass(stream.finalRank)}">${stream.finalRank}</span>
+                    </td>
+                    <td>
+                        <span class="stream-badge ${stream.type}"></span>
+                        ${stream.name}
+                    </td>
+                    <td class="text-end fw-semibold">${formatCurrency(stream.totalFunctionalGap)}</td>
+                    <td class="text-center">
+                        <div>
+                            <span class="fw-semibold">${formatPercent(stream.shareOfTotalGap)}</span>
+                            <div class="share-bar">
+                                <div class="share-bar-fill" style="width: ${stream.shareOfTotalGap}%; background-color: ${stream.color};"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <span class="status-badge included">Included</span>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+
+        // Show footer with total
+        footer.style.display = '';
+        document.getElementById('totalIncludedGap').textContent = formatCurrency(totalGap);
+    }
+
+    // Update Charts
+    function updateCharts() {
+        const { finalRanking, totalGap } = calculateFinalRankings();
+
+        // Get placeholder and canvas elements
+        const barPlaceholder = document.getElementById('barChartPlaceholder');
+        const piePlaceholder = document.getElementById('pieChartPlaceholder');
+        const barCanvas = document.getElementById('gapBarChart');
+        const pieCanvas = document.getElementById('gapPieChart');
+
+        // Destroy existing charts
+        if (barChart) barChart.destroy();
+        if (pieChart) pieChart.destroy();
+
+        if (finalRanking.length === 0) {
+            // Show placeholders, hide canvases
+            if (barPlaceholder) barPlaceholder.style.display = 'block';
+            if (piePlaceholder) piePlaceholder.style.display = 'block';
+            if (barCanvas) barCanvas.style.display = 'none';
+            if (pieCanvas) pieCanvas.style.display = 'none';
+            return;
+        }
+
+        // Hide placeholders, show canvases
+        if (barPlaceholder) barPlaceholder.style.display = 'none';
+        if (piePlaceholder) piePlaceholder.style.display = 'none';
+        if (barCanvas) barCanvas.style.display = 'block';
+        if (pieCanvas) pieCanvas.style.display = 'block';
+
+        const labels = finalRanking.map(s => s.name);
+        const gapData = finalRanking.map(s => s.totalFunctionalGap);
+        const shareData = finalRanking.map(s => s.shareOfTotalGap);
+        const colors = finalRanking.map(s => s.color);
+
+        // Bar Chart (horizontal)
+        const barCtx = document.getElementById('gapBarChart').getContext('2d');
+        barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Functional Gap',
+                    data: gapData,
+                    backgroundColor: colors,
+                    borderColor: colors.map(c => c),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return formatCurrency(context.raw);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return currencySymbol + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Pie Chart
+        const pieCtx = document.getElementById('gapPieChart').getContext('2d');
+        pieChart = new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: shareData,
+                    backgroundColor: colors,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + formatPercent(context.raw);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Update Statistics
+    function updateStatistics() {
+        const includedStreams = streams.filter(s => s.included);
+        const totalGapAll = streams.reduce((sum, s) => sum + s.totalFunctionalGap, 0);
+        const totalGapIncluded = includedStreams.reduce((sum, s) => sum + s.totalFunctionalGap, 0);
+
+        document.getElementById('statTotalStreams').textContent = streams.length;
+        document.getElementById('statIncludedStreams').textContent = includedStreams.length;
+        document.getElementById('statTotalGap').textContent = formatCurrency(totalGapAll);
+        document.getElementById('statIncludedGap').textContent = formatCurrency(totalGapIncluded);
+    }
+
+    // ======================= STATE PERSISTENCE =======================
+
+    // Save prioritization state to FormStateManager (and localStorage backup)
+    function savePrioritizationState() {
+        try {
+            // Build state object with stream customizations and gap priorities
+            const state = {
+                streamCustomizations: streams.map(s => ({
+                    id: s.id,
+                    included: s.included,
+                    adjustedRank: s.adjustedRank
+                })),
+                gapPrioritization: gapPrioritizationData.map(g => ({
+                    streamId: g.streamId,
+                    currentSequence: g.currentSequence.map(seq => ({
+                        type: seq.type,
+                        removed: seq.removed,
+                        isOverridden: seq.isOverridden
+                    }))
+                }))
+            };
+
+            // Use FormStateManager if available (preferred)
+            if (typeof FormStateManager !== 'undefined') {
+                FormStateManager.setData('prioritizationState', state);
+                console.log('Prioritization: State saved via FormStateManager');
+            } else {
+                // Fallback to localStorage only
+                localStorage.setItem('prioritizationState', JSON.stringify(state));
+                console.log('Prioritization: State saved to localStorage');
+            }
+        } catch (e) {
+            console.error('Prioritization: Error saving state', e);
+        }
+    }
+
+    // Load prioritization state from FormStateManager (or localStorage fallback)
+    function loadPrioritizationState() {
+        try {
+            let state = null;
+
+            // Use FormStateManager if available (preferred)
+            if (typeof FormStateManager !== 'undefined') {
+                state = FormStateManager.getData('prioritizationState');
+                if (state) {
+                    console.log('Prioritization: State loaded via FormStateManager');
+                }
+            }
+
+            // Fallback to localStorage
+            if (!state) {
+                const localData = localStorage.getItem('prioritizationState');
+                if (localData) {
+                    state = JSON.parse(localData);
+                    console.log('Prioritization: State loaded from localStorage');
+                }
+            }
+
+            return state;
+        } catch (e) {
+            console.error('Prioritization: Error loading state', e);
+            return null;
+        }
+    }
+
+    // Apply saved state to streams
+    function applySavedState() {
+        const state = loadPrioritizationState();
+        if (!state) return false;
+
+        let stateApplied = false;
+
+        // Apply stream customizations (include/exclude, adjusted ranks)
+        if (state.streamCustomizations && streams.length > 0) {
+            state.streamCustomizations.forEach(saved => {
+                const stream = streams.find(s => s.id === saved.id);
+                if (stream) {
+                    stream.included = saved.included;
+                    stream.adjustedRank = saved.adjustedRank;
+                    stateApplied = true;
+                }
+            });
+        }
+
+        return stateApplied;
+    }
+
+    // Apply saved gap prioritization state
+    function applySavedGapPrioritization() {
+        const state = loadPrioritizationState();
+        if (!state || !state.gapPrioritization) return;
+
+        state.gapPrioritization.forEach(saved => {
+            const gapData = gapPrioritizationData.find(g => g.streamId === saved.streamId);
+            if (gapData && saved.currentSequence) {
+                saved.currentSequence.forEach((seq, idx) => {
+                    if (gapData.currentSequence[idx]) {
+                        // Only apply if it has been overridden
+                        if (seq.isOverridden) {
+                            gapData.currentSequence[idx].type = seq.type;
+                            gapData.currentSequence[idx].removed = seq.removed;
+                            gapData.currentSequence[idx].isOverridden = seq.isOverridden;
+                            // Update the amount based on the type
+                            if (!seq.removed && seq.type !== 'Remove') {
+                                gapData.currentSequence[idx].amount = gapData.gaps[seq.type] || 0;
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        console.log('Prioritization: Gap prioritization state applied');
+    }
+
+    // Initialize module
+    function initializePrioritization() {
+        loadStreamData();
+        // Apply saved stream customizations (include/exclude, ranks) after loading streams
+        applySavedState();
+        renderAdjustableTable();
+        renderFinalTable();
+        updateCharts();
+        updateStatistics();
+    }
+
+    // Initialize on load
+    initializePrioritization();
+
+    // Subscribe to RosraStateManager for reactive updates (preferred method)
+    if (typeof RosraStateManager !== 'undefined') {
+        RosraStateManager.subscribe('streams', function(updatedStreams) {
+            console.log('Prioritization: Received stream update from RosraStateManager');
+            loadStreamData();
+            renderAdjustableTable();
+            renderFinalTable();
+            updateCharts();
+            updateStatistics();
+            initializeGapPrioritization();
+        });
+        console.log('Prioritization: Subscribed to RosraStateManager');
+    }
+
+    // Listen for storage changes (fallback for backward compatibility)
+    window.addEventListener('storage', function(e) {
+        if (e.key && (e.key.includes('Gap') || e.key.includes('Value') || e.key.includes('generic'))) {
+            loadStreamData();
+            renderAdjustableTable();
+            renderFinalTable();
+            updateCharts();
+            updateStatistics();
+        }
+    });
+
+    // Also listen for custom events from gap analysis tabs
+    window.addEventListener('gapAnalysisUpdated', function() {
+        loadStreamData();
+        renderAdjustableTable();
+        renderFinalTable();
+        updateCharts();
+        updateStatistics();
+        initializeGapPrioritization();
+    });
+
+    // ======================= GAP PRIORITIZATION (STEP 2) =======================
+
+    // Gap prioritization data structure
+    let gapPrioritizationData = [];
+
+    // Determine mode based on compliance and coverage ratios
+    function determineMode(stream) {
+        // Calculate compliance ratio: Revenue / Billed
+        const billedAmount = stream.complianceGap + stream.currentRevenue;
+        const complianceRatio = billedAmount > 0 ? (stream.currentRevenue / billedAmount) : 0;
+
+        // Calculate coverage ratio: Registered / Estimated Total
+        // For simplicity, use 1 - (coverageGap / totalPotential) as proxy
+        const totalPotential = stream.potentialRevenue || (stream.totalFunctionalGap + stream.currentRevenue);
+        const coverageRatio = totalPotential > 0 ? 1 - (stream.coverageGap / totalPotential) : 0;
+
+        // Store ratios for display
+        stream.complianceRatio = complianceRatio;
+        stream.coverageRatio = coverageRatio;
+
+        // Get the third gap label based on stream type
+        const isPropertyBased = stream.type === 'property-tax';
+        const thirdGapLabel = isPropertyBased ? 'Valuation' : 'Liability';
+        const thirdGapValue = isPropertyBased ? (stream.valuationGap || 0) : (stream.liabilityGap || 0);
+
+        // Build gaps array
+        const gaps = [
+            { type: 'Compliance', amount: stream.complianceGap || 0 },
+            { type: 'Coverage', amount: stream.coverageGap || 0 },
+            { type: thirdGapLabel, amount: thirdGapValue }
+        ];
+
+        let mode, sequence;
+
+        if (complianceRatio >= 0.75) {
+            // Revenue potential mode - sort by amount descending
+            mode = 'Revenue Potential';
+            sequence = [...gaps].sort((a, b) => b.amount - a.amount);
+        } else if (coverageRatio >= 0.60) {
+            // Compliance first mode
+            mode = 'Compliance First';
+            sequence = [
+                gaps.find(g => g.type === 'Compliance'),
+                gaps.find(g => g.type === 'Coverage'),
+                gaps.find(g => g.type === thirdGapLabel)
+            ];
+        } else {
+            // Overhaul mode - coverage first
+            mode = 'Overhaul';
+            sequence = [
+                gaps.find(g => g.type === 'Coverage'),
+                gaps.find(g => g.type === 'Compliance'),
+                gaps.find(g => g.type === thirdGapLabel)
+            ];
+        }
+
+        return {
+            mode,
+            sequence,
+            thirdGapLabel,
+            complianceRatio,
+            coverageRatio
+        };
+    }
+
+    // Get mode badge class
+    function getModeBadgeClass(mode) {
+        switch (mode) {
+            case 'Revenue Potential': return 'mode-revenue-potential';
+            case 'Compliance First': return 'mode-compliance-first';
+            case 'Overhaul': return 'mode-overhaul';
+            default: return '';
+        }
+    }
+
+    // Get gap badge class
+    function getGapBadgeClass(gapType) {
+        if (!gapType || gapType === 'Remove') return 'gap-removed';
+        switch (gapType) {
+            case 'Compliance': return 'gap-compliance';
+            case 'Coverage': return 'gap-coverage';
+            case 'Valuation': return 'gap-valuation';
+            case 'Liability': return 'gap-liability';
+            default: return '';
+        }
+    }
+
+    // Initialize gap prioritization data from included streams
+    function initializeGapPrioritization() {
+        const { finalRanking } = calculateFinalRankings();
+        gapPrioritizationData = [];
+
+        finalRanking.forEach((stream, index) => {
+            const modeInfo = determineMode(stream);
+
+            gapPrioritizationData.push({
+                streamId: stream.id,
+                streamName: stream.name,
+                streamType: stream.type,
+                finalRank: stream.finalRank,
+                mode: modeInfo.mode,
+                thirdGapLabel: modeInfo.thirdGapLabel,
+                complianceRatio: modeInfo.complianceRatio,
+                coverageRatio: modeInfo.coverageRatio,
+                defaultSequence: modeInfo.sequence.map(g => g.type),
+                currentSequence: modeInfo.sequence.map(g => ({ ...g, isOverridden: false, removed: false })),
+                gaps: {
+                    Compliance: stream.complianceGap || 0,
+                    Coverage: stream.coverageGap || 0,
+                    [modeInfo.thirdGapLabel]: modeInfo.thirdGapLabel === 'Valuation' ? (stream.valuationGap || 0) : (stream.liabilityGap || 0)
+                }
+            });
+        });
+
+        // Apply saved gap prioritization state (overrides)
+        applySavedGapPrioritization();
+
+        renderGapSequencingTable();
+        renderGapAmountsTable();
+        renderGapSummary();
+        renderMasterPriorityList();
+    }
+
+    // Generate gap dropdown options
+    function generateGapOptions(streamData, currentGap, priorityIndex) {
+        const options = ['Compliance', 'Coverage', streamData.thirdGapLabel];
+        let html = '';
+
+        // Get already used gaps (excluding current position)
+        const usedGaps = streamData.currentSequence
+            .filter((g, i) => i !== priorityIndex && !g.removed && g.type !== 'Remove')
+            .map(g => g.type);
+
+        options.forEach(opt => {
+            const disabled = usedGaps.includes(opt) ? 'disabled' : '';
+            const selected = currentGap === opt ? 'selected' : '';
+            html += `<option value="${opt}" ${selected} ${disabled}>${opt}</option>`;
+        });
+
+        // Add Remove option
+        const removeSelected = currentGap === 'Remove' || !currentGap ? 'selected' : '';
+        html += `<option value="Remove" ${removeSelected}>(Remove)</option>`;
+
+        return html;
+    }
+
+    // Render Gap Sequencing Table
+    function renderGapSequencingTable() {
+        const tbody = document.getElementById('gapSequencingBody');
+
+        if (gapPrioritizationData.length === 0) {
+            tbody.innerHTML = `
+                <tr class="placeholder-row">
+                    <td colspan="6" class="text-center text-muted py-4">
+                        <i class="fas fa-info-circle me-2"></i>Include streams in Step 1 to see gap prioritization options
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let html = '';
+        gapPrioritizationData.forEach((stream) => {
+            html += `
+                <tr data-stream-id="${stream.streamId}">
+                    <td class="text-center">
+                        <span class="rank-badge ${getRankBadgeClass(stream.finalRank)}">${stream.finalRank}</span>
+                    </td>
+                    <td>
+                        <span class="stream-badge ${stream.streamType}"></span>
+                        ${stream.streamName}
+                    </td>
+                    <td class="text-center">
+                        <span class="mode-badge ${getModeBadgeClass(stream.mode)}">${stream.mode}</span>
+                    </td>
+                    ${renderPriorityCell(stream, 0)}
+                    ${renderPriorityCell(stream, 1)}
+                    ${renderPriorityCell(stream, 2)}
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    // Render individual priority cell
+    function renderPriorityCell(stream, priorityIndex) {
+        const gapData = stream.currentSequence[priorityIndex];
+        const gapType = gapData ? gapData.type : null;
+        const isRemoved = gapData ? gapData.removed : true;
+        const isOverridden = gapData ? gapData.isOverridden : false;
+
+        const displayGap = isRemoved ? 'Remove' : gapType;
+        const badgeClass = getGapBadgeClass(displayGap);
+        const overriddenDot = isOverridden ? '<span class="overridden-indicator" title="Overridden from default"></span>' : '';
+
+        return `
+            <td class="text-center priority-cell">
+                <div class="gap-display">
+                    <span class="priority-number priority-${priorityIndex + 1}">${priorityIndex + 1}</span>
+                    <select class="form-select form-select-sm"
+                            data-stream-id="${stream.streamId}"
+                            data-priority-index="${priorityIndex}"
+                            onchange="window.handleGapPriorityChange(this)">
+                        ${generateGapOptions(stream, displayGap, priorityIndex)}
+                    </select>
+                    ${overriddenDot}
+                </div>
+            </td>
+        `;
+    }
+
+    // Handle gap priority change
+    window.handleGapPriorityChange = function(selectElement) {
+        const streamId = selectElement.dataset.streamId;
+        const priorityIndex = parseInt(selectElement.dataset.priorityIndex);
+        const newGapType = selectElement.value;
+
+        const streamData = gapPrioritizationData.find(s => s.streamId === streamId);
+        if (!streamData) return;
+
+        if (newGapType === 'Remove') {
+            streamData.currentSequence[priorityIndex] = { type: 'Remove', amount: 0, removed: true, isOverridden: true };
+        } else {
+            const gapAmount = streamData.gaps[newGapType] || 0;
+            const wasDefault = streamData.defaultSequence[priorityIndex] === newGapType;
+            streamData.currentSequence[priorityIndex] = {
+                type: newGapType,
+                amount: gapAmount,
+                removed: false,
+                isOverridden: !wasDefault
+            };
+        }
+
+        // Re-render all tables
+        renderGapSequencingTable();
+        renderGapAmountsTable();
+        renderGapSummary();
+        renderMasterPriorityList();
+
+        // Save state
+        savePrioritizationState();
+    };
+
+    // Render Gap Amounts Table
+    function renderGapAmountsTable() {
+        const tbody = document.getElementById('gapAmountsBody');
+
+        if (gapPrioritizationData.length === 0) {
+            tbody.innerHTML = `
+                <tr class="placeholder-row">
+                    <td colspan="8" class="text-center text-muted py-4">
+                        <i class="fas fa-info-circle me-2"></i>Gap amounts will appear after gap prioritization
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let html = '';
+        gapPrioritizationData.forEach((stream) => {
+            const seq = stream.currentSequence;
+            html += `
+                <tr>
+                    <td class="text-center">
+                        <span class="rank-badge ${getRankBadgeClass(stream.finalRank)}">${stream.finalRank}</span>
+                    </td>
+                    <td>${stream.streamName}</td>
+                    <td class="text-center">
+                        <span class="gap-badge ${getGapBadgeClass(seq[0]?.type)}">${seq[0]?.removed ? '-' : seq[0]?.type}</span>
+                    </td>
+                    <td class="text-end fw-semibold">${seq[0]?.removed ? '-' : formatCurrency(stream.gaps[seq[0]?.type])}</td>
+                    <td class="text-center">
+                        <span class="gap-badge ${getGapBadgeClass(seq[1]?.type)}">${seq[1]?.removed ? '-' : seq[1]?.type}</span>
+                    </td>
+                    <td class="text-end fw-semibold">${seq[1]?.removed ? '-' : formatCurrency(stream.gaps[seq[1]?.type])}</td>
+                    <td class="text-center">
+                        <span class="gap-badge ${getGapBadgeClass(seq[2]?.type)}">${seq[2]?.removed ? '-' : seq[2]?.type}</span>
+                    </td>
+                    <td class="text-end fw-semibold">${seq[2]?.removed ? '-' : formatCurrency(stream.gaps[seq[2]?.type])}</td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    // Render Gap Summary
+    function renderGapSummary() {
+        const totalStreams = gapPrioritizationData.length;
+        const totalCombinations = totalStreams * 3;
+        let removedGaps = 0;
+        let activeGaps = 0;
+
+        gapPrioritizationData.forEach(stream => {
+            stream.currentSequence.forEach(gap => {
+                if (gap.removed) removedGaps++;
+                else activeGaps++;
+            });
+        });
+
+        document.getElementById('gapStatTotalStreams').textContent = totalStreams;
+        document.getElementById('gapStatTotalCombinations').textContent = totalCombinations;
+        document.getElementById('gapStatRemovedGaps').textContent = removedGaps;
+        document.getElementById('gapStatActiveGaps').textContent = activeGaps;
+
+        // Render first priority actions
+        const firstPriorityDiv = document.getElementById('firstPriorityActions');
+        if (gapPrioritizationData.length === 0) {
+            firstPriorityDiv.innerHTML = '<div class="text-muted">No actions defined yet</div>';
+            return;
+        }
+
+        let fpHtml = '';
+        gapPrioritizationData.forEach(stream => {
+            const firstGap = stream.currentSequence.find(g => !g.removed);
+            if (firstGap) {
+                fpHtml += `
+                    <div class="first-priority-item">
+                        <span class="fp-rank">${stream.finalRank}</span>
+                        <span class="fp-stream">${stream.streamName}</span>
+                        <span class="gap-badge ${getGapBadgeClass(firstGap.type)} fp-gap">${firstGap.type}</span>
+                        <span class="fp-amount">${formatCurrency(stream.gaps[firstGap.type])}</span>
+                    </div>
+                `;
+            }
+        });
+
+        firstPriorityDiv.innerHTML = fpHtml || '<div class="text-muted">No active gap actions</div>';
+    }
+
+    // Render Master Priority List
+    function renderMasterPriorityList() {
+        const tbody = document.getElementById('masterPriorityBody');
+
+        if (gapPrioritizationData.length === 0) {
+            tbody.innerHTML = `
+                <tr class="placeholder-row">
+                    <td colspan="4" class="text-center text-muted py-3">
+                        <small>Master list will populate from gap priorities</small>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        // Build master list: iterate through priorities, then streams
+        const masterList = [];
+        let masterPriority = 1;
+
+        // For each stream, add their gaps in sequence order
+        gapPrioritizationData.forEach(stream => {
+            stream.currentSequence.forEach((gap, gapIndex) => {
+                if (!gap.removed) {
+                    masterList.push({
+                        masterPriority: null, // Will be assigned after sorting
+                        streamRank: stream.finalRank,
+                        streamName: stream.streamName,
+                        gapType: gap.type,
+                        gapAmount: stream.gaps[gap.type] || 0,
+                        gapPriority: gapIndex + 1,
+                        isFirstInStream: gapIndex === stream.currentSequence.findIndex(g => !g.removed)
+                    });
+                }
+            });
+        });
+
+        // Sort: by stream rank first, then by gap priority within stream
+        masterList.sort((a, b) => {
+            if (a.streamRank !== b.streamRank) return a.streamRank - b.streamRank;
+            return a.gapPriority - b.gapPriority;
+        });
+
+        // Assign master priorities
+        masterList.forEach((item, index) => {
+            item.masterPriority = index + 1;
+        });
+
+        let html = '';
+        masterList.forEach((item, index) => {
+            const streamBreakClass = item.isFirstInStream && index > 0 ? 'stream-break' : '';
+            html += `
+                <tr class="master-priority-row ${streamBreakClass}">
+                    <td class="text-center">
+                        <span class="priority-number priority-${item.gapPriority}">${item.masterPriority}</span>
+                    </td>
+                    <td>${item.streamName}</td>
+                    <td><span class="gap-badge ${getGapBadgeClass(item.gapType)}">${item.gapType}</span></td>
+                    <td class="text-end fw-semibold">${formatCurrency(item.gapAmount)}</td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    // Initialize Gap Prioritization on load
+    initializeGapPrioritization();
+});
+</script>

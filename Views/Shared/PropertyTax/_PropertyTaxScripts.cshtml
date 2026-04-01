@@ -1,0 +1,16 @@
+<!-- Property Tax Scripts -->
+<script>
+    // Initialize variables
+    let propertyTaxCategoryCounter = 1;
+    let currentPropertyTaxCategory = null;
+    let revenueComparisonChart = null;
+    let gapDistributionChart = null;
+    let chartType = 'bar';
+    let gapChartType = 'stacked';
+</script>
+
+<!-- Include all script components -->
+@await Html.PartialAsync("~/Views/Shared/PropertyTax/_PropertyTaxCalculations.cshtml")
+@await Html.PartialAsync("~/Views/Shared/PropertyTax/_RevenueCalculations.cshtml")
+@await Html.PartialAsync("~/Views/Shared/PropertyTax/_UIUpdates.cshtml")
+@await Html.PartialAsync("~/Views/Shared/PropertyTax/_ChartFunctions.cshtml")

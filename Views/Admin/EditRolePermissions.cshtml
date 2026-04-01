@@ -1,0 +1,363 @@
+@model RosraApp.Models.ViewModels.EditRolePermissionsViewModel
+
+@{
+    ViewData["Title"] = $"Edit Permissions - {Model.RoleName}";
+}
+
+@section Styles {
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-header h1 {
+            color: #212529;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #6c757d;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .permissions-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .permissions-container {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .permission-category {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .permission-category:last-child {
+            border-bottom: none;
+        }
+
+        .category-header {
+            background: #f8f9fa;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .category-header:hover {
+            background: #e9ecef;
+        }
+
+        .category-icon {
+            color: #4c6ef5;
+            font-size: 1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .category-header.collapsed .category-icon {
+            transform: rotate(-90deg);
+        }
+
+        .category-name {
+            font-weight: 600;
+            color: #212529;
+            font-size: 0.9375rem;
+            flex: 1;
+        }
+
+        .category-count {
+            color: #868e96;
+            font-size: 0.8125rem;
+        }
+
+        .category-selected {
+            color: #4c6ef5;
+            font-size: 0.8125rem;
+            font-weight: 600;
+        }
+
+        .category-permissions {
+            padding: 0.75rem 1.25rem 0.75rem 3rem;
+            background: white;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .category-permissions.collapsed {
+            display: none;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .permission-item:hover {
+            background: #f8f9fa;
+            border-color: #4c6ef5;
+        }
+
+        .permission-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .permission-checkbox:checked {
+            background: #4c6ef5;
+            border-color: #4c6ef5;
+        }
+
+        .permission-label {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            cursor: pointer;
+            margin: 0;
+            flex: 1;
+        }
+
+        .permission-name {
+            font-weight: 600;
+            color: #212529;
+            font-size: 0.875rem;
+        }
+
+        .permission-description {
+            color: #6c757d;
+            font-size: 0.8125rem;
+            line-height: 1.4;
+        }
+
+        .save-btn {
+            background: #4c6ef5;
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .save-btn:hover {
+            background: #3b5bdb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 110, 245, 0.3);
+        }
+    </style>
+}
+
+<div class="container py-4">
+    <!-- Header -->
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1>Edit Permissions</h1>
+            <p>Manage permissions for the <strong>@Model.RoleName</strong> role</p>
+        </div>
+        <a asp-action="CreateRole" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i> Back to Roles
+        </a>
+    </div>
+
+    <!-- Permissions Form -->
+    <div class="permissions-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="mb-0">Select Permissions</h5>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAllPermissions()">
+                    <i class="bi bi-check-all me-1"></i> Select All
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAllPermissions()">
+                    <i class="bi bi-x-lg me-1"></i> Clear All
+                </button>
+            </div>
+        </div>
+
+        <form id="permissionsForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="roleId" value="@Model.RoleId" />
+
+            @if (Model.PermissionCategories != null && Model.PermissionCategories.Any())
+            {
+                <div class="permissions-container">
+                    @foreach (var category in Model.PermissionCategories)
+                    {
+                        var selectedCount = category.Permissions.Count(p => p.IsSelected);
+                        <div class="permission-category">
+                            <div class="category-header" onclick="toggleCategory(this)">
+                                <i class="bi bi-chevron-down category-icon"></i>
+                                <span class="category-name">@category.Category</span>
+                                <span class="category-selected">@selectedCount/@category.Permissions.Count selected</span>
+                            </div>
+                            <div class="category-permissions">
+                                @foreach (var permission in category.Permissions)
+                                {
+                                    <div class="permission-item">
+                                        <input type="checkbox"
+                                               class="permission-checkbox"
+                                               name="selectedPermissionIds"
+                                               value="@permission.Id"
+                                               id="perm_@permission.Id"
+                                               @(permission.IsSelected ? "checked" : "")
+                                               onchange="updateCategoryCount(this)" />
+                                        <label for="perm_@permission.Id" class="permission-label">
+                                            <span class="permission-name">@permission.Name</span>
+                                            <span class="permission-description">@permission.Description</span>
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="button" class="save-btn" onclick="savePermissions()">
+                    <i class="bi bi-save me-2"></i> Save Permissions
+                </button>
+                <a asp-action="CreateRole" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
+    <div id="toast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto" id="toast-title">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toast-message"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleCategory(header) {
+            const permissions = header.nextElementSibling;
+            permissions.classList.toggle('collapsed');
+            header.classList.toggle('collapsed');
+        }
+
+        function selectAllPermissions() {
+            document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+            updateAllCategoryCounts();
+        }
+
+        function deselectAllPermissions() {
+            document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateAllCategoryCounts();
+        }
+
+        function updateCategoryCount(checkbox) {
+            const category = checkbox.closest('.permission-category');
+            const header = category.querySelector('.category-header');
+            const allCheckboxes = category.querySelectorAll('.permission-checkbox');
+            const checkedCount = Array.from(allCheckboxes).filter(cb => cb.checked).length;
+            const totalCount = allCheckboxes.length;
+
+            const selectedSpan = header.querySelector('.category-selected');
+            selectedSpan.textContent = `${checkedCount}/${totalCount} selected`;
+        }
+
+        function updateAllCategoryCounts() {
+            document.querySelectorAll('.permission-category').forEach(category => {
+                const header = category.querySelector('.category-header');
+                const allCheckboxes = category.querySelectorAll('.permission-checkbox');
+                const checkedCount = Array.from(allCheckboxes).filter(cb => cb.checked).length;
+                const totalCount = allCheckboxes.length;
+
+                const selectedSpan = header.querySelector('.category-selected');
+                selectedSpan.textContent = `${checkedCount}/${totalCount} selected`;
+            });
+        }
+
+        function savePermissions() {
+            const form = document.getElementById('permissionsForm');
+            const formData = new FormData(form);
+
+            // Convert FormData to URL-encoded format
+            const selectedIds = [];
+            formData.getAll('selectedPermissionIds').forEach(id => {
+                selectedIds.push(id);
+            });
+
+            $.ajax({
+                url: '@Url.Action("UpdateRolePermissions", "Admin")',
+                type: 'POST',
+                data: {
+                    roleId: '@Model.RoleId',
+                    selectedPermissionIds: selectedIds,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                traditional: true,
+                success: function(response) {
+                    if (response.success) {
+                        showToast('Success', response.message, 'success');
+                        setTimeout(function() {
+                            window.location.href = '@Url.Action("CreateRole", "Admin")';
+                        }, 1500);
+                    } else {
+                        showToast('Error', response.message, 'error');
+                    }
+                },
+                error: function() {
+                    showToast('Error', 'An error occurred while saving permissions', 'error');
+                }
+            });
+        }
+
+        function showToast(title, message, type) {
+            $('#toast-title').text(title);
+            $('#toast-message').text(message);
+
+            if (type === 'success') {
+                $('#toast .toast-header').removeClass('bg-danger').addClass('bg-success text-white');
+                $('.btn-close', '#toast').addClass('btn-close-white');
+            } else {
+                $('#toast .toast-header').removeClass('bg-success').addClass('bg-danger text-white');
+                $('.btn-close', '#toast').addClass('btn-close-white');
+            }
+
+            const toast = new bootstrap.Toast(document.getElementById('toast'));
+            toast.show();
+        }
+    </script>
+}

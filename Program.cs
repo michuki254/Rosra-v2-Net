@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using RosraApp.Authorization;
 using RosraApp.Data;
 using RosraApp.Models;
 
@@ -16,6 +18,36 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
+
+// Configure anti-forgery to support header-based tokens for AJAX requests
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "RequestVerificationToken";
+});
+
+// Add Authorization with Permission-based policies
+builder.Services.AddAuthorization(options =>
+{
+    // Define all permission names
+    var permissions = new[]
+    {
+        "ViewReports", "CreateReports", "EditReports", "EditAllReports", "DeleteReports", "DeleteAllReports", "ExportReports",
+        "ViewUsers", "CreateUsers", "EditUsers", "DeleteUsers", "ManageUserRoles", "ActivateDeactivateUsers",
+        "UploadPeerSNGData", "UploadCountryData", "ViewDataLibrary", "DeleteUploadedData",
+        "ViewRoles", "CreateRoles", "EditRoles", "DeleteRoles", "ManagePermissions",
+        "ViewDashboard", "ViewAdminDashboard", "ViewAnalytics"
+    };
+
+    // Create a policy for each permission
+    foreach (var permission in permissions)
+    {
+        options.AddPolicy(permission, policy =>
+            policy.Requirements.Add(new PermissionRequirement(permission)));
+    }
+});
+
+// Register the permission authorization handler
+builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
 // Add session services
 builder.Services.AddDistributedMemoryCache();

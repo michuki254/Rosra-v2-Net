@@ -15,6 +15,8 @@ namespace RosraApp.Models.ViewModels
         public string? Currency { get; set; }
         public string? CurrencySymbol { get; set; }
         public string? FinancialYear { get; set; }
+        public string? GovernmentType { get; set; }
+        public string? IncomeLevel { get; set; }
         
         // Financial Data
         public decimal? ActualOsr { get; set; }
@@ -33,10 +35,17 @@ namespace RosraApp.Models.ViewModels
         // Gap Analysis Sub-Tabs
         public GapAnalysisPropertyTaxViewModel PropertyTax { get; set; } = new GapAnalysisPropertyTaxViewModel();
         public GapAnalysisLicenseViewModel License { get; set; } = new GapAnalysisLicenseViewModel();
+
+        // Custom Display Names for Fixed Streams (allows renaming)
+        public string PropertyTaxDisplayName { get; set; } = "Property Tax";
+        public string BusinessLicenseDisplayName { get; set; } = "Business License";
         public GapAnalysisShortTermViewModel ShortTermUserCharge { get; set; } = new GapAnalysisShortTermViewModel();
         public GapAnalysisLongTermViewModel LongTermUserCharge { get; set; } = new GapAnalysisLongTermViewModel();
         public GapAnalysisMixedViewModel MixedUserCharge { get; set; } = new GapAnalysisMixedViewModel();
         public GapAnalysisTotalViewModel TotalEstimate { get; set; } = new GapAnalysisTotalViewModel();
+
+        // Dynamic Generic Streams (for additional non-property revenue streams)
+        public List<GenericStreamViewModel> GenericStreams { get; set; } = new List<GenericStreamViewModel>();
         
         // Causes Analysis Tab
         public string? ProblemStatement { get; set; }
@@ -48,6 +57,22 @@ namespace RosraApp.Models.ViewModels
         
         // Report metadata
         public string Title { get; set; } = "Rosra Analysis Report";
+        
+        // Top OSR Configuration
+        public List<TopOsrViewModel> TopOsrConfig { get; set; } = new List<TopOsrViewModel>();
+        public decimal? OtherRevenue { get; set; }
+
+        // Prioritization Tab Data (stored as JSON)
+        public string? PrioritizationData { get; set; }
+
+        // Overview Selection Tab Data (stored as JSON)
+        public string? SelectedSolutionsData { get; set; }
+
+        // Implementation Progress Data (stored as JSON)
+        public string? ImplementationProgressData { get; set; }
+
+        // Peer SNG Data for Within-Country OSR Frontier analysis (stored as JSON)
+        public string? PeerSNGData { get; set; }
     }
     
     public class ActionItemViewModel
@@ -66,43 +91,41 @@ namespace RosraApp.Models.ViewModels
         public decimal? Gap { get; set; }
     }
     
-    // Property Tax tab
+    // Property Tax tab - ROSRA Gap Analysis Framework
     public class GapAnalysisPropertyTaxViewModel : GapAnalysisBaseViewModel
     {
-        // Basic property tax payers fields
+        // User Input Fields (Required - 8 fields)
+        public int? RegisteredProperties { get; set; }
+        public int? NonRegisteredProperties { get; set; }
+        public int? CompliantProperties { get; set; }
+        public decimal? TotalFiscalBase { get; set; }
+        public decimal? TotalMarketValue { get; set; }
+        public decimal? BilledAmount { get; set; }
+        public decimal? OutstandingAmount { get; set; }
+        public decimal? RevenueToDate { get; set; }
+
+        // Legacy fields (kept for backward compatibility with existing data)
         public int? TotalPropertyTaxPayers { get; set; }
         public int? RegisteredPropertyTaxPayers { get; set; }
-        
-        // Registered taxpayers by category
         public int? RegisteredTaxpayersCategoryA { get; set; }
         public int? RegisteredTaxpayersCategoryB { get; set; }
         public int? RegisteredTaxpayersCategoryC { get; set; }
-        
-        // Compliant taxpayers by category
         public int? CompliantTaxpayersCategoryA { get; set; }
         public int? CompliantTaxpayersCategoryB { get; set; }
         public int? CompliantTaxpayersCategoryC { get; set; }
-        
-        // Average property values by category
         public decimal? AveragePropertyValueCategoryA { get; set; }
         public decimal? AveragePropertyValueCategoryB { get; set; }
         public decimal? AveragePropertyValueCategoryC { get; set; }
-        
-        // Estimated average property values by category
         public decimal? EstimatedAveragePropertyValueCategoryA { get; set; }
         public decimal? EstimatedAveragePropertyValueCategoryB { get; set; }
         public decimal? EstimatedAveragePropertyValueCategoryC { get; set; }
-        
-        // Tax rates by category
         public decimal? TaxRateCategoryA { get; set; }
         public decimal? TaxRateCategoryB { get; set; }
         public decimal? TaxRateCategoryC { get; set; }
-        
-        // Dynamic categories
         public List<PropertyTaxCategory> DynamicCategories { get; set; } = new List<PropertyTaxCategory>();
     }
-    
-    // Class to represent a dynamic property tax category
+
+    // Class to represent a dynamic property tax category (kept for backward compatibility)
     public class PropertyTaxCategory
     {
         public string? Name { get; set; } = "New Category";
@@ -113,32 +136,49 @@ namespace RosraApp.Models.ViewModels
         public decimal? TaxRate { get; set; }
     }
     
-    // License tab
+    // Business License tab - ROSRA Gap Analysis Framework
     public class GapAnalysisLicenseViewModel : GapAnalysisBaseViewModel
     {
+        // NEW: Business License User Input Fields (6 inputs per spec)
+        public int? RegisteredBusinesses { get; set; }
+        public decimal? EstimatedUnregisteredPercent { get; set; }
+        public decimal? BilledAmount { get; set; }
+        public decimal? OutstandingAmount { get; set; }
+        public decimal? StatutoryAverageBilled { get; set; }
+        public decimal? RealisticImprovementPercent { get; set; }
+
+        // NEW: Auto-calculated fields (read-only in UI)
+        public decimal? TotalEstimatedBusinesses { get; set; }
+        public decimal? RevenueToDate { get; set; }
+        public decimal? CompliantBusinesses { get; set; }
+        public decimal? AvgBilledAmount { get; set; }
+        public decimal? AchievableAvgBill { get; set; }
+        public decimal? DeltaA { get; set; }
+
+        // Legacy fields (kept for backward compatibility with existing data)
         public int? TotalEstimatedNoOfLicensees { get; set; }
-        
-        // Residential Properties
+
+        // Residential Properties (legacy)
         public int? EstimatedLicenseesResidentialProperties { get; set; }
         public int? RegisteredLicenseesResidentialProperties { get; set; }
         public int? CompliantLicenseesResidentialProperties { get; set; }
         public decimal? LicenseFeeResidentialProperties { get; set; }
         public decimal? LicenseFeeAveragePaidResidentialProperties { get; set; }
-        
-        // Commercial Properties
+
+        // Commercial Properties (legacy)
         public int? EstimatedLicenseesCommercialProperties { get; set; }
         public int? RegisteredLicenseesCommercialProperties { get; set; }
         public int? CompliantLicenseesCommercialProperties { get; set; }
         public decimal? LicenseFeeCommercialProperties { get; set; }
         public decimal? LicenseFeeAveragePaidCommercialProperties { get; set; }
-        
-        // Industrial Properties
+
+        // Industrial Properties (legacy)
         public int? EstimatedLicenseesIndustrialProperties { get; set; }
         public int? RegisteredLicenseesIndustrialProperties { get; set; }
         public int? CompliantLicenseesIndustrialProperties { get; set; }
         public decimal? LicenseFeeIndustrialProperties { get; set; }
         public decimal? LicenseFeeAveragePaidIndustrialProperties { get; set; }
-        
+
         // Dynamic categories (for future expansion)
         public List<LicenseCategory> DynamicCategories { get; set; } = new List<LicenseCategory>();
     }
@@ -258,5 +298,53 @@ namespace RosraApp.Models.ViewModels
         public decimal? TotalCurrentRevenue { get; set; }
         public decimal? TotalPotentialRevenue { get; set; }
         public decimal? TotalRevenueGap { get; set; }
+    }
+    
+    public class TopOsrViewModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public decimal Revenue { get; set; }
+    }
+
+    // Generic Non-Property Stream ViewModel (for dynamically added revenue streams)
+    public class GenericStreamViewModel : GapAnalysisBaseViewModel
+    {
+        // Stream Configuration
+        public int StreamIndex { get; set; }
+        public string StreamId { get; set; } = string.Empty;
+        public string StreamName { get; set; } = "New Stream";
+        public string AnalysisYear { get; set; } = DateTime.Now.Year.ToString();
+
+        // User Input Fields (6 inputs per spec)
+        public int? RegisteredUnits { get; set; }
+        public decimal? EstimatedUnregisteredPercent { get; set; }
+        public decimal? BilledAmount { get; set; }
+        public decimal? OutstandingAmount { get; set; }
+        public decimal? StatutoryAverageBilled { get; set; }
+        public decimal? RealisticImprovementPercent { get; set; }
+
+        // Auto-calculated fields (read-only in UI)
+        public decimal? TotalEstimatedUnits { get; set; }
+        public decimal? RevenueToDate { get; set; }
+        public decimal? CompliantUnits { get; set; }
+        public decimal? NonCompliantUnits { get; set; }
+        public decimal? UnregisteredUnits { get; set; }
+        public decimal? AvgBilledAmount { get; set; }
+        public decimal? AchievableAvgBill { get; set; }
+        public decimal? DeltaA { get; set; }
+
+        // Gap calculations
+        public decimal? ComplianceGap { get; set; }
+        public decimal? CoverageGap { get; set; }
+        public decimal? LiabilityGap { get; set; }
+        public decimal? MixedGapCompliance { get; set; }
+        public decimal? MixedGapCoverage { get; set; }
+        public decimal? TotalPotentialRevenue { get; set; }
+        public decimal? TotalFunctionalGap { get; set; }
+
+        // KPI Ratios
+        public decimal? ComplianceRatio { get; set; }
+        public decimal? CoverageRatio { get; set; }
     }
 }

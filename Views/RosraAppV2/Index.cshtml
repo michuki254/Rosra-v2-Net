@@ -1,125 +1,324 @@
 @{
-    ViewData["Title"] = "RosraApp V2";
+    ViewData["Title"] = "ROSRA V2 - Coming Soon";
 }
 
-<div class="container py-4">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card shadow border-0 rounded-lg">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="m-0">Welcome to RosraApp V2</h3>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <h4>Next Generation User Management System</h4>
-                            <p class="lead">RosraApp V2 provides enhanced user management capabilities with a modern interface and improved security features.</p>
-                            <p>Our application helps organizations manage their users efficiently with role-based access control, detailed user profiles, and comprehensive administrative tools.</p>
-                            
-                            <div class="mt-4">
-                                <h5>Key Features:</h5>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item bg-transparent">
-                                        <i class="bi bi-shield-check text-primary me-2"></i>
-                                        Enhanced security with ASP.NET Core Identity
-                                    </li>
-                                    <li class="list-group-item bg-transparent">
-                                        <i class="bi bi-people text-primary me-2"></i>
-                                        Comprehensive user management
-                                    </li>
-                                    <li class="list-group-item bg-transparent">
-                                        <i class="bi bi-person-badge text-primary me-2"></i>
-                                        Role-based access control
-                                    </li>
-                                    <li class="list-group-item bg-transparent">
-                                        <i class="bi bi-database-check text-primary me-2"></i>
-                                        SQL Server integration for reliable data storage
-                                    </li>
-                                    <li class="list-group-item bg-transparent">
-                                        <i class="bi bi-layout-text-window text-primary me-2"></i>
-                                        Modern, responsive user interface
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="mt-4">
-                                <a asp-controller="Account" asp-action="Register" class="btn btn-primary me-2">Register Now</a>
-                                <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary">Login</a>
-                            </div>
-                        </div>
-                        <div class="col-md-4 d-flex align-items-center justify-content-center">
-                            <div class="text-center">
-                                <i class="bi bi-people-fill text-primary" style="font-size: 8rem;"></i>
-                                <h5 class="mt-3">User Management Simplified</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<style>
+    /* UN-Habitat Brand Colors */
+    :root {
+        --un-blue: #00b2e3;
+        --un-dark-blue: #00689D;
+        --un-orange: #FD9D24;
+        --un-orange-dark: #E8891A;
+        --un-light-bg: #E6F9FC;
+    }
 
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow border-0 rounded-lg">
-                <div class="card-header bg-light">
-                    <h5 class="m-0">User Management</h5>
-                </div>
-                <div class="card-body">
-                    <div class="text-center mb-3">
-                        <i class="bi bi-person-plus text-primary" style="font-size: 3rem;"></i>
-                    </div>
-                    <p>Create and manage user accounts with detailed profiles including organization information and contact details.</p>
-                    <p>Assign roles to control access to different parts of the application.</p>
-                </div>
-                <div class="card-footer text-center">
-                    <a href="#" class="btn btn-sm btn-outline-primary">Learn More</a>
-                </div>
-            </div>
+    .coming-soon-container {
+        min-height: calc(100vh - 300px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: var(--un-light-bg);
+    }
+
+    .coming-soon-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 3rem;
+        box-shadow: 0 4px 30px rgba(0, 178, 227, 0.15);
+        border: 1px solid rgba(0, 178, 227, 0.1);
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .coming-soon-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: var(--un-blue);
+    }
+
+    .icon-container {
+        width: 100px;
+        height: 100px;
+        background: var(--un-blue);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        animation: pulse-icon 2s ease-in-out infinite;
+    }
+
+    .icon-container i {
+        font-size: 3rem;
+        color: #ffffff;
+    }
+
+    @@keyframes pulse-icon {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(0, 178, 227, 0.4);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 20px rgba(0, 178, 227, 0);
+        }
+    }
+
+    .coming-soon-title {
+        font-family: 'Roboto', Calibri, sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #1f2937;
+        margin-bottom: 1rem;
+        letter-spacing: -0.5px;
+    }
+
+    .coming-soon-subtitle {
+        font-family: 'Roboto', Calibri, sans-serif;
+        font-size: 1.25rem;
+        color: var(--un-dark-blue);
+        margin-bottom: 2rem;
+        font-weight: 600;
+    }
+
+    .coming-soon-description {
+        color: #4b5563;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        font-size: 1rem;
+    }
+
+    .feature-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+
+    .feature-pill {
+        background: var(--un-light-bg);
+        color: #4b5563;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(0, 178, 227, 0.2);
+    }
+
+    .feature-pill:hover {
+        background: rgba(0, 178, 227, 0.15);
+        transform: translateY(-2px);
+        border-color: var(--un-blue);
+    }
+
+    .feature-pill i {
+        color: var(--un-blue);
+    }
+
+    .btn-back-home {
+        background: var(--un-orange);
+        color: #ffffff;
+        padding: 0.875rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        border: none;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-back-home:hover {
+        background: var(--un-orange-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(253, 157, 36, 0.35);
+        color: #ffffff;
+    }
+
+    .progress-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(0, 178, 227, 0.2);
+    }
+
+    .progress-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.75rem;
+        font-weight: 500;
+    }
+
+    .progress-bar-container {
+        background: rgba(0, 178, 227, 0.15);
+        border-radius: 50px;
+        height: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        background: var(--un-blue);
+        height: 100%;
+        border-radius: 50px;
+        width: 65%;
+        animation: progress-animation 2s ease-out;
+    }
+
+    @@keyframes progress-animation {
+        from {
+            width: 0%;
+        }
+        to {
+            width: 65%;
+        }
+    }
+
+    .decorative-circles {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(0, 178, 227, 0.08);
+    }
+
+    .circle-1 {
+        width: 200px;
+        height: 200px;
+        top: -100px;
+        right: -100px;
+    }
+
+    .circle-2 {
+        width: 160px;
+        height: 160px;
+        bottom: -80px;
+        left: -80px;
+    }
+
+    .circle-3 {
+        width: 80px;
+        height: 80px;
+        top: 50%;
+        left: -40px;
+        opacity: 0.5;
+    }
+
+    .sdg-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0;
+        background: var(--un-orange);
+        color: #ffffff;
+        padding: 0;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        letter-spacing: 0.5px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(253, 157, 36, 0.3);
+    }
+
+    .sdg-badge img {
+        width: 40px;
+        height: 40px;
+        display: block;
+    }
+
+    .sdg-badge span {
+        padding: 10px 14px 10px 10px;
+        text-transform: uppercase;
+    }
+
+    @@media (max-width: 576px) {
+        .coming-soon-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .coming-soon-title {
+            font-size: 1.75rem;
+        }
+
+        .coming-soon-subtitle {
+            font-size: 1rem;
+        }
+
+        .icon-container {
+            width: 80px;
+            height: 80px;
+        }
+
+        .icon-container i {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<div class="coming-soon-container">
+    <div class="coming-soon-card">
+        <div class="decorative-circles circle-1"></div>
+        <div class="decorative-circles circle-2"></div>
+        <div class="decorative-circles circle-3"></div>
+
+        <div class="sdg-badge">
+            <img src="~/images/sdg/sdg-11.svg" alt="SDG 11" />
+            <span>SDG 11 - Sustainable Cities</span>
         </div>
 
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow border-0 rounded-lg">
-                <div class="card-header bg-light">
-                    <h5 class="m-0">Admin Dashboard</h5>
-                </div>
-                <div class="card-body">
-                    <div class="text-center mb-3">
-                        <i class="bi bi-speedometer2 text-primary" style="font-size: 3rem;"></i>
-                    </div>
-                    <p>Powerful admin dashboard for managing users, roles, and permissions.</p>
-                    <p>Monitor user activity and generate reports on system usage.</p>
-                </div>
-                <div class="card-footer text-center">
-                    <a href="#" class="btn btn-sm btn-outline-primary">Learn More</a>
-                </div>
-            </div>
+        <div class="icon-container">
+            <i class="fas fa-rocket"></i>
         </div>
 
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow border-0 rounded-lg">
-                <div class="card-header bg-light">
-                    <h5 class="m-0">Security Features</h5>
-                </div>
-                <div class="card-body">
-                    <div class="text-center mb-3">
-                        <i class="bi bi-shield-lock text-primary" style="font-size: 3rem;"></i>
-                    </div>
-                    <p>Built on ASP.NET Core Identity for secure authentication and authorization.</p>
-                    <p>Password hashing, account lockout, and two-factor authentication support.</p>
-                </div>
-                <div class="card-footer text-center">
-                    <a href="#" class="btn btn-sm btn-outline-primary">Learn More</a>
-                </div>
+        <h1 class="coming-soon-title">Coming Soon</h1>
+        <p class="coming-soon-subtitle">ROSRA V2 is Under Development</p>
+
+        <p class="coming-soon-description">
+            We're working hard to bring you an enhanced version of ROSRA with new features,
+            improved performance, and a better user experience. Stay tuned for updates!
+        </p>
+
+        <div class="feature-pills">
+            <span class="feature-pill">
+                <i class="fas fa-bolt"></i>
+                Enhanced Performance
+            </span>
+            <span class="feature-pill">
+                <i class="fas fa-shield-alt"></i>
+                Improved Security
+            </span>
+            <span class="feature-pill">
+                <i class="fas fa-chart-line"></i>
+                Advanced Analytics
+            </span>
+            <span class="feature-pill">
+                <i class="fas fa-mobile-alt"></i>
+                Mobile Friendly
+            </span>
+        </div>
+
+        <a asp-controller="Home" asp-action="Index" class="btn-back-home">
+            <i class="fas fa-arrow-left"></i>
+            Back to Home
+        </a>
+
+        <div class="progress-section">
+            <p class="progress-label">Development Progress</p>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill"></div>
             </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        $(document).ready(function() {
-            console.log("RosraApp V2 page loaded");
-        });
-    </script>
-}

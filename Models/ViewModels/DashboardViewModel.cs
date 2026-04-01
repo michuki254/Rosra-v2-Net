@@ -22,7 +22,15 @@ namespace RosraApp.Models.ViewModels
         public string? RecommendationSummary { get; set; }
         public List<ActionItemViewModel> ActionItems { get; set; } = new List<ActionItemViewModel>();
         public string? UserName { get; set; }
-        
+        public string? Currency { get; set; }
+        public string? CurrencySymbol { get; set; }
+        public string? Region { get; set; }
+        public string? Country { get; set; }
+        public string? FinancialYear { get; set; }
+
+        // Peer SNG Data for Within-Country OSR Frontier analysis
+        public string? PeerSNGData { get; set; }
+
         // Helper method to convert from RosraReport to RosraReportViewModel
         public static RosraReportViewModel FromRosraReport(RosraReport report)
         {
@@ -41,7 +49,13 @@ namespace RosraApp.Models.ViewModels
                 ActionItems = string.IsNullOrEmpty(report.ActionItems) 
                     ? new List<ActionItemViewModel>() 
                     : JsonSerializer.Deserialize<List<ActionItemViewModel>>(report.ActionItems) ?? new List<ActionItemViewModel>(),
-                UserName = report.User?.UserName
+                UserName = report.User?.UserName,
+                Currency = report.Currency,
+                CurrencySymbol = report.CurrencySymbol,
+                Region = report.Region,
+                Country = report.Country,
+                FinancialYear = report.FinancialYear,
+                PeerSNGData = report.PeerSNGData
             };
         }
     }

@@ -1,0 +1,247 @@
+<!-- Delete Short Term Category Modal -->
+<div class="modal" id="deleteShortTermCategoryModal" tabindex="-1" aria-labelledby="deleteShortTermCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title d-flex align-items-center" id="deleteShortTermCategoryModalLabel">
+                    <i class="bi bi-trash-fill me-2"></i>
+                    Delete Short Term Category
+                </h5>
+                <button type="button" class="btn-close btn-close-white stable-btn" id="closeShortTermModalBtn" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="alert alert-warning">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="bi bi-exclamation-triangle-fill fs-3 text-warning"></i>
+                        </div>
+                        <div>
+                            <h6 class="alert-heading mb-1">Confirm Deletion</h6>
+                            <p class="mb-0">Are you sure you want to delete the category "<span id="deleteShortTermCategoryName" class="fw-bold"></span>"?</p>
+                            <p class="small text-danger mb-0 mt-2">This action cannot be undone.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card border-0 shadow-sm mt-3">
+                    <div class="card-body bg-light rounded">
+                        <h6 class="mb-3 text-danger">Category Details</h6>
+                        <div class="row">
+                            <div class="col-sm-6 mb-2">
+                                <span class="d-block text-muted small">Estimated Daily Fees</span>
+                                <span class="fw-medium" id="categoryEstimatedFees">-</span>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <span class="d-block text-muted small">Actual Daily Fees</span>
+                                <span class="fw-medium" id="categoryActualFees">-</span>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <span class="d-block text-muted small">Potential Rate Payable</span>
+                                <span class="fw-medium" id="categoryPotentialRate">-</span>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <span class="d-block text-muted small">Actual Rate Paid</span>
+                                <span class="fw-medium" id="categoryActualRate">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <input type="hidden" id="shortTermCategoryToDeleteId" value="">
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 stable-btn" id="cancelDeleteShortTermBtn">
+                    <i class="bi bi-x-circle me-2"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-danger rounded-pill px-4 stable-btn" id="confirmDeleteShortTermCategoryBtn">
+                    <i class="bi bi-trash me-2"></i> Delete Category
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Modal styles */
+    .bg-danger {
+        background-color: #dc3545;
+    }
+    
+    /* Stable buttons with no transitions or transforms */
+    .stable-btn {
+        position: relative;
+        transform: translateZ(0);
+        -webkit-font-smoothing: subpixel-antialiased;
+        backface-visibility: hidden;
+    }
+    
+    .stable-btn:hover {
+        background-image: none !important;
+    }
+    
+    /* Static hover state for danger button */
+    .btn-danger.stable-btn:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+    
+    /* Static hover state for outline button */
+    .btn-outline-secondary.stable-btn:hover {
+        background-color: #6c757d;
+        color: #fff;
+    }
+    
+    /* Remove outline on buttons */
+    .btn:focus, .btn:active, .btn-close:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Prevent page shift */
+    body.modal-open {
+        overflow: hidden;
+        padding-right: 0 !important;
+    }
+    
+    /* Modal backdrop */
+    .modal-backdrop {
+        opacity: 0.5 !important;
+    }
+    
+    /* Hardware acceleration to prevent flickering */
+    .modal-content {
+        transform: translateZ(0);
+        -webkit-font-smoothing: subpixel-antialiased;
+        backface-visibility: hidden;
+    }
+    
+    /* Global style for no transitions */
+    .no-transitions * {
+        transition: none !important;
+        animation: none !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get modal element
+        const deleteModal = document.getElementById('deleteShortTermCategoryModal');
+        if (!deleteModal) return;
+        
+        // Create modal instance without animation
+        const bsModal = new bootstrap.Modal(deleteModal, {
+            backdrop: true,
+            keyboard: true,
+            focus: true
+        });
+        
+        // Function to handle category deletion
+        function handleDeleteCategory(categoryCard) {
+            if (!categoryCard) return;
+            
+            // Get category data
+            const categoryName = categoryCard.querySelector('.category-title')?.textContent || 'Unknown Category';
+            const categoryId = categoryCard.getAttribute('id') || '';
+            
+            // Set data to modal
+            document.getElementById('deleteShortTermCategoryName').textContent = categoryName;
+            document.getElementById('shortTermCategoryToDeleteId').value = categoryId;
+            
+            // Get additional data
+            const estimatedFeesInput = categoryCard.querySelector('input[name*="EstimatedDailyFees"]');
+            const actualFeesInput = categoryCard.querySelector('input[name*="ActualDailyFees"]');
+            const potentialRateInput = categoryCard.querySelector('input[name*="PotentialRatePayable"]');
+            const actualRateInput = categoryCard.querySelector('input[name*="ActualRatePaid"]');
+            
+            document.getElementById('categoryEstimatedFees').textContent = 
+                estimatedFeesInput ? estimatedFeesInput.value : '-';
+            document.getElementById('categoryActualFees').textContent = 
+                actualFeesInput ? actualFeesInput.value : '-';
+            document.getElementById('categoryPotentialRate').textContent = 
+                potentialRateInput ? potentialRateInput.value : '-';
+            document.getElementById('categoryActualRate').textContent = 
+                actualRateInput ? actualRateInput.value : '-';
+            
+            // Show modal without animation
+            bsModal.show();
+        }
+        
+        // Event delegation for delete buttons
+        document.addEventListener('click', function(e) {
+            const button = e.target.closest('.remove-category-btn');
+            if (!button) return;
+            
+            // Check if this is a short term category delete button
+            const shortTermContainer = button.closest('.gap-analysis-tab-content');
+            if (!shortTermContainer || !shortTermContainer.querySelector('#addShortTermCategoryModal')) return;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Find the category card
+            const categoryCard = button.closest('.category-card');
+            handleDeleteCategory(categoryCard);
+        });
+        
+        // Button handlers
+        document.getElementById('closeShortTermModalBtn').addEventListener('click', function() {
+            bsModal.hide();
+        });
+        
+        document.getElementById('cancelDeleteShortTermBtn').addEventListener('click', function() {
+            bsModal.hide();
+        });
+        
+        document.getElementById('confirmDeleteShortTermCategoryBtn').addEventListener('click', function() {
+            const categoryId = document.getElementById('shortTermCategoryToDeleteId').value;
+            const card = document.getElementById(categoryId);
+            
+            if (card) {
+                // Remove the category
+                card.remove();
+                
+                // Run any necessary update functions if they exist
+                if (typeof updateShortTermDynamicCategoryIndices === 'function') {
+                    updateShortTermDynamicCategoryIndices();
+                }
+                
+                // Trigger recalculation if needed
+                if (typeof updateCalculations === 'function') {
+                    updateCalculations();
+                }
+                
+                // Close modal
+                bsModal.hide();
+            } else {
+                console.error('Category card not found for ID:', categoryId);
+                alert('Category not found. Please try again.');
+            }
+        });
+        
+        // Clear form on modal hide
+        deleteModal.addEventListener('hidden.bs.modal', function() {
+            document.getElementById('deleteShortTermCategoryName').textContent = '';
+            document.getElementById('shortTermCategoryToDeleteId').value = '';
+            document.getElementById('categoryEstimatedFees').textContent = '-';
+            document.getElementById('categoryActualFees').textContent = '-';
+            document.getElementById('categoryPotentialRate').textContent = '-';
+            document.getElementById('categoryActualRate').textContent = '-';
+        });
+        
+        // Disable all CSS transitions when hovering to prevent flickering
+        const disableTransitions = function() {
+            document.body.classList.add('no-transitions');
+        };
+        
+        const enableTransitions = function() {
+            document.body.classList.remove('no-transitions');
+        };
+        
+        // Add transition disabling on modal interaction
+        deleteModal.addEventListener('mouseenter', disableTransitions, { passive: true });
+        deleteModal.addEventListener('mouseleave', enableTransitions, { passive: true });
+        
+        // Expose the handle function for external usage if needed
+        window.handleDeleteShortTermCategory = handleDeleteCategory;
+    });
+</script> 

@@ -4,44 +4,537 @@
     ViewData["Title"] = "Log in";
 }
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-5">
-            <div class="card shadow border-0 rounded-lg">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="text-center my-2">Login</h3>
+@section Styles {
+    <style>
+        /* UN Habitat & SDG11 Color Palette */
+        :root {
+            --un-cyan: #00A9E0;
+            --un-navy: #1B3A5C;
+            --un-green: #7CB342;
+            --sdg-yellow: #FD9D24;
+            --un-light-gray: #F5F5F5;
+            --un-medium-gray: #757575;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            margin-bottom: 0 !important;
+        }
+
+        .footer {
+            position: relative !important;
+        }
+
+        /* Navigation adjustments for login page */
+        .top-navbar {
+            position: relative;
+            z-index: 1000;
+        }
+
+        .main-navbar {
+            position: relative;
+            z-index: 1000;
+        }
+
+        .split-container {
+            display: flex;
+            min-height: calc(100vh - 300px);
+            height: auto;
+            margin: -1.5rem -12px 0 -12px;
+            width: calc(100% + 24px);
+        }
+
+        /* Left Side - Login Form */
+        .login-side {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            padding: 3rem 2rem;
+            overflow-y: auto;
+        }
+
+        .login-content {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .logo-section {
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--sdg-yellow);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(253, 157, 36, 0.3);
+        }
+
+        .logo-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        .login-content h1 {
+            color: var(--un-navy);
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-content p {
+            color: var(--un-medium-gray);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--un-navy);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            border: 1.5px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9375rem;
+            transition: all 0.2s ease;
+            background: #FAFAFA;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--sdg-yellow);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(253, 157, 36, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: #B0B0B0;
+        }
+
+        .form-check-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-check-input {
+            width: 18px;
+            height: 18px;
+            margin-right: 0.5rem;
+            border: 1.5px solid #D0D0D0;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--sdg-yellow);
+            border-color: var(--sdg-yellow);
+        }
+
+        .form-check-label {
+            color: var(--un-navy);
+            font-size: 0.875rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .forgot-link {
+            color: var(--sdg-yellow);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .forgot-link:hover {
+            color: #e88b1a;
+        }
+
+        .btn-login {
+            width: 100%;
+            background: var(--sdg-yellow);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(253, 157, 36, 0.2);
+        }
+
+        .btn-login:hover {
+            background: #e88b1a;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(253, 157, 36, 0.4);
+        }
+
+        .signup-row {
+            text-align: center;
+            color: var(--un-medium-gray);
+            font-size: 0.875rem;
+        }
+
+        .signup-link {
+            color: var(--sdg-yellow);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        .signup-link:hover {
+            color: var(--un-navy);
+        }
+
+        /* Right Side - Visual Content */
+        .visual-side {
+            flex: 1;
+            background: #FAFAFA;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            border-left: 1px solid #E0E0E0;
+        }
+
+        .visual-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .visual-content h2 {
+            color: var(--un-navy);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .visual-content h2 span {
+            color: var(--sdg-yellow);
+        }
+
+        .visual-content p {
+            color: var(--un-medium-gray);
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+        }
+
+        .image-showcase {
+            position: relative;
+            margin-bottom: 2rem;
+            perspective: 1000px;
+        }
+
+        .showcase-image {
+            width: 100%;
+            max-width: 550px;
+            border-radius: 20px;
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.15),
+                0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            display: block;
+            animation: floatIn 1s ease-out;
+            border: 1px solid #E0E0E0;
+            transition: transform 0.6s ease;
+        }
+
+        .showcase-image:hover {
+            transform: scale(1.02);
+            box-shadow:
+                0 15px 50px rgba(0, 0, 0, 0.2),
+                0 7px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2.5rem;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #D0D0D0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .indicator:hover {
+            background: #A0A0A0;
+        }
+
+        .indicator.active {
+            background: var(--sdg-yellow);
+            width: 36px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(253, 157, 36, 0.4);
+        }
+
+        /* Decorative Elements */
+        .decorative-circle {
+            display: none;
+        }
+
+        /* Floating cards */
+        .floating-card {
+            position: absolute;
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            animation: floatCard 4s ease-in-out infinite;
+            z-index: 3;
+        }
+
+        .card-1 {
+            top: 15%;
+            right: 5%;
+            animation-delay: 0s;
+        }
+
+        .card-2 {
+            bottom: 20%;
+            left: 5%;
+            animation-delay: 2s;
+        }
+
+        .floating-card .icon {
+            width: 40px;
+            height: 40px;
+            background: var(--sdg-yellow);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 2px 8px rgba(253, 157, 36, 0.3);
+        }
+
+        .floating-card .icon svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        .floating-card .label {
+            color: var(--un-medium-gray);
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .floating-card .value {
+            color: var(--un-navy);
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .text-danger {
+            color: #D32F2F;
+            font-size: 0.8125rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .validation-summary-errors {
+            background: #FFEBEE;
+            border-left: 3px solid #D32F2F;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .validation-summary-errors ul {
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+
+        .validation-summary-errors li {
+            color: #C62828;
+            font-size: 0.875rem;
+        }
+
+        @@keyframes floatIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-20px) scale(1.05);
+            }
+        }
+
+        @@keyframes floatCard {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @@media (max-width: 992px) {
+            .split-container {
+                flex-direction: column;
+                min-height: auto;
+                height: auto;
+            }
+
+            .visual-side {
+                display: none;
+            }
+
+            .login-side {
+                flex: 1;
+                min-height: calc(100vh - 120px);
+            }
+
+            .floating-card {
+                display: none;
+            }
+        }
+    </style>
+}
+
+<div class="split-container">
+        <!-- Left Side - Login Form -->
+        <div class="login-side">
+            <div class="login-content">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13 3L4 14h7l-2 7 9-11h-7l2-7z"/>
+                        </svg>
+                    </div>
+                    <h1>Login</h1>
+                    <p>Access your revenue analysis dashboard</p>
                 </div>
-                <div class="card-body p-4">
-                    <form asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
-                        <div asp-validation-summary="All" class="text-danger"></div>
-                        
-                        <div class="form-floating mb-3">
-                            <input asp-for="Email" class="form-control" placeholder="name@example.com" />
-                            <label asp-for="Email" class="form-label">Email Address</label>
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="form-floating mb-3">
-                            <input asp-for="Password" class="form-control" placeholder="Password" />
-                            <label asp-for="Password" class="form-label">Password</label>
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="form-check mb-3">
-                            <input asp-for="RememberMe" class="form-check-input" />
+
+                <form asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+                    @if (ViewData.ModelState.ErrorCount > 0)
+                    {
+                        <div asp-validation-summary="All" class="text-danger validation-summary-errors"></div>
+                    }
+
+                    <div class="form-group">
+                        <label asp-for="Email" class="form-label">Email*</label>
+                        <input asp-for="Email" class="form-control" type="email" placeholder="mail@website.com" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Password" class="form-label">Password*</label>
+                        <input asp-for="Password" class="form-control" type="password" placeholder="Min. 8 characters" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check-row">
+                        <div class="form-check">
+                            <input asp-for="RememberMe" class="form-check-input" type="checkbox" />
                             <label asp-for="RememberMe" class="form-check-label">Remember me</label>
                         </div>
-                        
-                        <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                            <a class="small" asp-area="Identity" asp-page="/Account/ForgotPassword">Forgot Password?</a>
-                            <button type="submit" class="btn btn-primary">Login</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="card-footer text-center py-3">
-                    <div class="small">
-                        <a asp-action="Register">Need an account? Sign up!</a>
+                        <a class="forgot-link" asp-area="Identity" asp-page="/Account/ForgotPassword">Forget password?</a>
                     </div>
+
+                    <button type="submit" class="btn btn-login">Login</button>
+
+                    <div class="signup-row">
+                        Not registered yet? <a class="signup-link" asp-action="Register">Create an Account</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Side - Visual Content -->
+        <div class="visual-side">
+            <div class="decorative-circle circle-1"></div>
+            <div class="decorative-circle circle-2"></div>
+            <div class="decorative-circle circle-3"></div>
+
+            <!-- Floating Cards -->
+            <div class="floating-card card-1">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="label">Revenue Gap</div>
+                <div class="value">KSh 7.2B</div>
+            </div>
+
+            <div class="floating-card card-2">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                    </svg>
+                </div>
+                <div class="label">Counties</div>
+                <div class="value">47</div>
+            </div>
+
+            <div class="visual-content">
+                <h2>Empower <span>Revenue Growth</span></h2>
+                <p>Analyze your OSR gaps and unlock sustainable revenue potential</p>
+
+                <div class="image-showcase">
+                    <img src="~/images/Login 1.png" alt="ROSRA Dashboard" class="showcase-image" id="showcaseImage" />
+                </div>
+
+                <div class="carousel-indicators">
+                    <div class="indicator active" onclick="changeImage(0)"></div>
+                    <div class="indicator" onclick="changeImage(1)"></div>
                 </div>
             </div>
         </div>
@@ -49,5 +542,34 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        const images = [
+            '/images/Login 1.png',
+            '/images/Login 2.png'
+        ];
+        let currentIndex = 0;
+
+        function changeImage(index) {
+            currentIndex = index;
+            document.getElementById('showcaseImage').src = images[index];
+
+            const indicators = document.querySelectorAll('.indicator');
+            indicators.forEach((ind, i) => {
+                if (i === index) {
+                    ind.classList.add('active');
+                } else {
+                    ind.classList.remove('active');
+                }
+            });
+        }
+
+        // Auto-rotate images
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % images.length;
+            changeImage(currentIndex);
+        }, 5000);
+    </script>
 }

@@ -1,0 +1,197 @@
+<!-- Add Property Tax Category Modal -->
+<div class="modal" id="addPropertyTaxCategoryModal" tabindex="-1" aria-labelledby="addPropertyTaxCategoryModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" style="transition: none !important;">
+        <div class="modal-content border-0 shadow" style="transition: none !important;">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title d-flex align-items-center" id="addPropertyTaxCategoryModalLabel">
+                    <i class="bi bi-plus-circle-fill me-2"></i>
+                    Add Property Tax Category
+                </h5>
+                <button type="button" class="btn-close btn-close-white" id="closePropertyTaxAddModalBtn" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="form-group mb-3">
+                    <label for="newPropertyTaxCategoryNameInput" class="form-label">Category Name</label>
+                    <input type="text" class="form-control" id="newPropertyTaxCategoryNameInput" placeholder="Enter category name">
+                    <div class="invalid-feedback">
+                        Please enter a category name.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 stable-btn" id="cancelPropertyTaxAddBtn">
+                    <i class="bi bi-x-circle me-2"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-success rounded-pill px-4 stable-btn" id="confirmAddPropertyTaxCategoryBtn">
+                    <i class="bi bi-plus-circle me-2"></i> Create Category
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Completely disable modal animations to prevent flickering */
+    #addPropertyTaxCategoryModal,
+    #addPropertyTaxCategoryModal .modal-dialog,
+    #addPropertyTaxCategoryModal .modal-content,
+    #addPropertyTaxCategoryModal * {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+    }
+
+    #addPropertyTaxCategoryModal.modal.show {
+        opacity: 1 !important;
+    }
+
+    #addPropertyTaxCategoryModal .modal-dialog {
+        transform: none !important;
+        margin: 1.75rem auto;
+    }
+
+    /* Stable buttons with no transitions */
+    #addPropertyTaxCategoryModal .stable-btn {
+        transition: none !important;
+    }
+
+    /* Static hover state for success button */
+    #addPropertyTaxCategoryModal .btn-success.stable-btn:hover {
+        background-color: #157347;
+        border-color: #146c43;
+    }
+
+    /* Static hover state for outline button */
+    #addPropertyTaxCategoryModal .btn-outline-secondary.stable-btn:hover {
+        background-color: #6c757d;
+        color: #fff;
+    }
+
+    /* Remove outline on buttons */
+    #addPropertyTaxCategoryModal .btn:focus,
+    #addPropertyTaxCategoryModal .btn:active,
+    #addPropertyTaxCategoryModal .btn-close:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Prevent page shift */
+    body.modal-open {
+        overflow: hidden;
+        padding-right: 0 !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get modal element
+        const addPropertyTaxModal = document.getElementById('addPropertyTaxCategoryModal');
+        if (!addPropertyTaxModal) return;
+
+        // Remove fade class to prevent animation
+        addPropertyTaxModal.classList.remove('fade');
+
+        // Create modal instance with static backdrop
+        const bsPropertyTaxAddModal = new bootstrap.Modal(addPropertyTaxModal, {
+            backdrop: 'static',
+            keyboard: false,
+            focus: true
+        });
+
+        // Function to cleanup modal backdrop and body classes
+        function cleanupModal() {
+            setTimeout(function() {
+                // Remove all backdrops
+                document.querySelectorAll('.modal-backdrop').forEach(function(backdrop) {
+                    backdrop.remove();
+                });
+                // Remove body classes and styles
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                // Hide modal element
+                addPropertyTaxModal.style.display = 'none';
+                addPropertyTaxModal.classList.remove('show');
+                addPropertyTaxModal.setAttribute('aria-hidden', 'true');
+            }, 100);
+        }
+
+        // Button handlers
+        document.getElementById('closePropertyTaxAddModalBtn').addEventListener('click', function() {
+            bsPropertyTaxAddModal.hide();
+            cleanupModal();
+        });
+
+        document.getElementById('cancelPropertyTaxAddBtn').addEventListener('click', function() {
+            bsPropertyTaxAddModal.hide();
+            cleanupModal();
+        });
+        
+        document.getElementById('confirmAddPropertyTaxCategoryBtn').addEventListener('click', function() {
+            const categoryName = document.getElementById('newPropertyTaxCategoryNameInput').value.trim();
+            
+            console.log('Property Tax Add Category attempt:', { categoryName }); // Debug log
+            
+            if (!categoryName) {
+                document.getElementById('newPropertyTaxCategoryNameInput').classList.add('is-invalid');
+                return;
+            }
+            
+            // Check for duplicates
+            const existingCategories = [];
+            
+            // Check default categories
+            existingCategories.push('Residential Properties', 'Commercial Properties', 'Industrial Properties');
+            
+            // Check dynamic categories
+            const dynamicCategoryElements = document.querySelectorAll('#dynamicCategoriesContainer .category-card .category-title');
+            dynamicCategoryElements.forEach(element => {
+                const name = element.textContent.trim();
+                if (name && name !== 'New Category') {
+                    existingCategories.push(name);
+                }
+            });
+            
+            // Check for duplicates
+            const isDuplicate = existingCategories.some(name => name.toLowerCase() === categoryName.toLowerCase());
+            
+            if (isDuplicate) {
+                document.getElementById('newPropertyTaxCategoryNameInput').classList.add('is-invalid');
+                alert('A category with this name already exists. Please choose a different name.');
+                return;
+            }
+            
+            document.getElementById('newPropertyTaxCategoryNameInput').classList.remove('is-invalid');
+            
+            // Create the new category if the function exists
+            if (typeof createNewPropertyTaxCategory === 'function') {
+                createNewPropertyTaxCategory(categoryName);
+                console.log('Property Tax category created successfully'); // Debug log
+            } else {
+                console.error('createNewPropertyTaxCategory function not found');
+                alert('Error: Unable to create category. Function not found.');
+            }
+            
+            // Hide modal and cleanup
+            bsPropertyTaxAddModal.hide();
+            cleanupModal();
+        });
+
+        // Reset form when modal is hidden
+        addPropertyTaxModal.addEventListener('hidden.bs.modal', function() {
+            document.getElementById('newPropertyTaxCategoryNameInput').value = '';
+            document.getElementById('newPropertyTaxCategoryNameInput').classList.remove('is-invalid');
+            cleanupModal();
+        });
+
+        // Reset form when modal is shown
+        addPropertyTaxModal.addEventListener('shown.bs.modal', function() {
+            document.getElementById('newPropertyTaxCategoryNameInput').value = '';
+            document.getElementById('newPropertyTaxCategoryNameInput').classList.remove('is-invalid');
+            document.getElementById('newPropertyTaxCategoryNameInput').focus();
+        });
+
+        // Expose modal instance for external usage if needed
+        window.propertyTaxAddModalInstance = bsPropertyTaxAddModal;
+    });
+</script> 

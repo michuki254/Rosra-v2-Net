@@ -1,0 +1,379 @@
+<!-- Add Long Term User Charge Category Modal -->
+<div class="modal static-modal" id="addLongTermCategoryModal" tabindex="-1" aria-labelledby="addLongTermCategoryModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered static-dialog">
+        <div class="modal-content border-0 shadow static-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title d-flex align-items-center" id="addLongTermCategoryModalLabel">
+                    <i class="fas fa-plus me-2"></i>
+                    Add Long Term User Charge Category
+                </h5>
+                <button type="button" class="btn-close btn-close-white" id="closeLongTermAddModalBtn" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="form-group mb-3">
+                    <label for="newLongTermCategoryNameInput" class="form-label">Category Name</label>
+                    <input type="text" class="form-control" id="newLongTermCategoryNameInput" placeholder="Enter category name" autocomplete="off" maxlength="100">
+                    <div class="invalid-feedback">
+                        Please enter a category name.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 stable-btn" id="cancelLongTermAddBtn">
+                    <i class="fas fa-times me-2"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-success rounded-pill px-4 stable-btn" id="confirmAddLongTermCategoryBtn">
+                    <i class="fas fa-plus me-2"></i> Create Category
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Modal styles */
+    .bg-success {
+        background-color: #198754;
+    }
+    
+    /* Stable buttons with no transitions or transforms */
+    .stable-btn {
+        position: relative;
+        transform: translateZ(0) !important;
+        -webkit-font-smoothing: subpixel-antialiased;
+        backface-visibility: hidden;
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    .stable-btn:hover {
+        background-image: none !important;
+        transition: none !important;
+    }
+    
+    /* Static hover state for success button */
+    .btn-success.stable-btn:hover {
+        background-color: #157347;
+        border-color: #146c43;
+        transition: none !important;
+    }
+    
+    /* Static hover state for outline button */
+    .btn-outline-secondary.stable-btn:hover {
+        background-color: #6c757d;
+        color: #fff;
+        transition: none !important;
+    }
+    
+    /* Remove outline on buttons */
+    .btn:focus, .btn:active, .btn-close:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Prevent page shift */
+    body.modal-open {
+        overflow: hidden;
+        padding-right: 0 !important;
+    }
+    
+    /* Modal backdrop - completely static */
+    .modal-backdrop {
+        opacity: 0.5 !important;
+        transition: none !important;
+        animation: none !important;
+        transform: translateZ(0) !important;
+        -webkit-font-smoothing: subpixel-antialiased !important;
+        backface-visibility: hidden !important;
+        will-change: auto !important;
+    }
+    
+    /* Hardware acceleration to prevent flickering */
+    .modal-content {
+        transform: translateZ(0) !important;
+        -webkit-font-smoothing: subpixel-antialiased !important;
+        backface-visibility: hidden !important;
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    /* Complete anti-flickering solution */
+    .static-modal {
+        transform: translateZ(0) !important;
+        -webkit-font-smoothing: subpixel-antialiased !important;
+        backface-visibility: hidden !important;
+        will-change: auto !important;
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    .static-modal.show {
+        display: block !important;
+        transform: translateZ(0) !important;
+    }
+    
+    .static-dialog {
+        transform: translateZ(0) !important;
+        -webkit-font-smoothing: subpixel-antialiased !important;
+        backface-visibility: hidden !important;
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    .static-content {
+        transform: translateZ(0) !important;
+        -webkit-font-smoothing: subpixel-antialiased !important;
+        backface-visibility: hidden !important;
+        transition: none !important;
+        animation: none !important;
+        will-change: auto !important;
+    }
+    
+    /* Force disable all animations and transitions */
+    .static-modal,
+    .static-modal *,
+    .static-dialog,
+    .static-dialog *,
+    .static-content,
+    .static-content * {
+        transition: none !important;
+        animation: none !important;
+        transform: translateZ(0) !important;
+        -webkit-transform: translateZ(0) !important;
+        -webkit-font-smoothing: subpixel-antialiased !important;
+        backface-visibility: hidden !important;
+        -webkit-backface-visibility: hidden !important;
+        will-change: auto !important;
+    }
+    
+    /* Prevent transitions during critical operations */
+    .no-transitions,
+    .no-transitions * {
+        transition: none !important;
+        animation: none !important;
+        transform: translateZ(0) !important;
+        -webkit-transform: translateZ(0) !important;
+    }
+    
+    /* Ensure input field is interactive */
+    #newLongTermCategoryNameInput {
+        pointer-events: auto !important;
+        cursor: text !important;
+        user-select: text !important;
+        -webkit-user-select: text !important;
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    #newLongTermCategoryNameInput:focus {
+        outline: none !important;
+        border-color: #86b7fe !important;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+        transition: none !important;
+    }
+</style>
+
+<script>
+    // Apply anti-flickering immediately when script loads
+    document.body.classList.add('no-transitions');
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get modal element
+        const addLongTermModal = document.getElementById('addLongTermCategoryModal');
+        if (!addLongTermModal) return;
+        
+        // Force remove any animation classes
+        addLongTermModal.classList.remove('fade', 'show');
+        addLongTermModal.classList.add('static-modal');
+        
+        // Apply static classes to prevent any animations
+        const modalDialog = addLongTermModal.querySelector('.modal-dialog');
+        const modalContent = addLongTermModal.querySelector('.modal-content');
+        if (modalDialog) modalDialog.classList.add('static-dialog');
+        if (modalContent) modalContent.classList.add('static-content');
+        
+        // Create modal instance with all animations disabled
+        const bsLongTermAddModal = new bootstrap.Modal(addLongTermModal, {
+            backdrop: 'static', // Prevent backdrop clicks from causing flicker
+            keyboard: true,
+            focus: false
+        });
+        
+        // Override Bootstrap's show/hide methods to prevent animations
+        const originalShow = bsLongTermAddModal.show;
+        const originalHide = bsLongTermAddModal.hide;
+        
+        bsLongTermAddModal.show = function() {
+            document.body.classList.add('no-transitions');
+            addLongTermModal.style.display = 'block';
+            addLongTermModal.classList.add('show');
+            document.body.classList.add('modal-open');
+            
+            // Create static backdrop
+            if (!document.querySelector('.modal-backdrop')) {
+                const backdrop = document.createElement('div');
+                backdrop.className = 'modal-backdrop show';
+                backdrop.style.transition = 'none';
+                backdrop.style.animation = 'none';
+                backdrop.style.transform = 'translateZ(0)';
+                backdrop.style.backfaceVisibility = 'hidden';
+                document.body.appendChild(backdrop);
+            }
+            
+            // Trigger shown event
+            setTimeout(() => {
+                addLongTermModal.dispatchEvent(new Event('shown.bs.modal'));
+            }, 10);
+        };
+        
+        bsLongTermAddModal.hide = function() {
+            document.body.classList.add('no-transitions');
+            addLongTermModal.classList.remove('show');
+            addLongTermModal.style.display = 'none';
+            
+            // Remove backdrop
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) backdrop.remove();
+            
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            // Trigger hidden event
+            setTimeout(() => {
+                addLongTermModal.dispatchEvent(new Event('hidden.bs.modal'));
+                document.body.classList.remove('no-transitions');
+            }, 10);
+        };
+        
+        // Button handlers with anti-flickering
+        document.getElementById('closeLongTermAddModalBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.body.classList.add('no-transitions');
+            bsLongTermAddModal.hide();
+        });
+        
+        document.getElementById('cancelLongTermAddBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.body.classList.add('no-transitions');
+            bsLongTermAddModal.hide();
+        });
+        
+        document.getElementById('confirmAddLongTermCategoryBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Disable transitions during operation
+            document.body.classList.add('no-transitions');
+            
+            const categoryName = document.getElementById('newLongTermCategoryNameInput').value.trim();
+            
+            console.log('Long Term Add Category attempt:', { categoryName }); // Debug log
+            
+            if (!categoryName) {
+                document.getElementById('newLongTermCategoryNameInput').classList.add('is-invalid');
+                document.body.classList.remove('no-transitions');
+                return;
+            }
+            
+            // Check for duplicates
+            const existingCategories = [];
+            
+            // Check default categories
+            existingCategories.push('Category A', 'Category B', 'Category C');
+            
+            // Check dynamic categories
+            const dynamicCategoryElements = document.querySelectorAll('#dynamicCategoriesContainer .category-card .category-title');
+            dynamicCategoryElements.forEach(element => {
+                const name = element.textContent.trim();
+                if (name && name !== 'New Category') {
+                    existingCategories.push(name);
+                }
+            });
+            
+            // Check for duplicates
+            const isDuplicate = existingCategories.some(name => name.toLowerCase() === categoryName.toLowerCase());
+            
+            if (isDuplicate) {
+                document.getElementById('newLongTermCategoryNameInput').classList.add('is-invalid');
+                alert('A category with this name already exists. Please choose a different name.');
+                document.body.classList.remove('no-transitions');
+                return;
+            }
+            
+            document.getElementById('newLongTermCategoryNameInput').classList.remove('is-invalid');
+            
+            // Create the new category - function should be immediately available now
+            if (typeof window.createNewLongTermCategory === 'function') {
+                try {
+                    window.createNewLongTermCategory(categoryName);
+                    console.log('Long Term category created successfully:', categoryName);
+                } catch (error) {
+                    console.error('Error creating category:', error);
+                    alert('Error creating category: ' + error.message);
+                    document.body.classList.remove('no-transitions');
+                    return;
+                }
+            } else {
+                console.error('createNewLongTermCategory function not found');
+                alert('Error: Function not available. Please refresh the page and try again.');
+                document.body.classList.remove('no-transitions');
+                return;
+            }
+            
+            // Hide modal
+            bsLongTermAddModal.hide();
+        });
+        
+        // Reset form when modal is shown
+        addLongTermModal.addEventListener('shown.bs.modal', function() {
+            const inputField = document.getElementById('newLongTermCategoryNameInput');
+            inputField.value = '';
+            inputField.classList.remove('is-invalid');
+            
+            // Focus the input field
+            setTimeout(() => {
+                inputField.focus();
+                inputField.select();
+            }, 50);
+        });
+        
+        // Reset form when modal is hidden
+        addLongTermModal.addEventListener('hidden.bs.modal', function() {
+            const inputField = document.getElementById('newLongTermCategoryNameInput');
+            inputField.value = '';
+            inputField.classList.remove('is-invalid');
+        });
+        
+        // Ensure input field is always interactive
+        const inputField = document.getElementById('newLongTermCategoryNameInput');
+        if (inputField) {
+            // Force enable input interaction
+            inputField.removeAttribute('readonly');
+            inputField.removeAttribute('disabled');
+            
+            // Add click handler to ensure focus
+            inputField.addEventListener('click', function() {
+                this.focus();
+            });
+            
+            // Add input event to remove invalid class when typing
+            inputField.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+            });
+            
+            // Add Enter key handler
+            inputField.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('confirmAddLongTermCategoryBtn').click();
+                }
+            });
+        }
+        
+        // Expose modal instance for external usage if needed
+        window.longTermAddModalInstance = bsLongTermAddModal;
+    });
+</script> 

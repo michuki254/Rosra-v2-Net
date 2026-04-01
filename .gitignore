@@ -79,4 +79,15 @@ FakesAssemblies/
 
 # Environment settings
 appsettings.Development.json
-*.env 
+*.env
+
+# Publish output
+publish/
+publish-linux/
+
+# Claude Code
+.claude/
+
+# Backup files
+*.bak2
+*.backup

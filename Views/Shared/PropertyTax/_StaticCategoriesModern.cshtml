@@ -1,0 +1,187 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+@{
+    bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+}
+
+<!-- Category A -->
+<div class="category-item" id="category-A">
+    <div class="category-header" data-bs-toggle="collapse" data-bs-target="#categoryACollapse" aria-expanded="true" aria-controls="categoryACollapse" style="cursor: pointer;">
+        <h6 class="category-title">
+            <span class="badge bg-primary me-2">A</span>
+            Category A - Premium Properties
+        </h6>
+        <button class="btn btn-sm btn-link text-muted collapse-toggle p-0" type="button">
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+    <div id="categoryACollapse" class="collapse show mt-3">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="registeredTaxpayersCategoryA">Registered Taxpayers</label>
+                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" 
+                           id="registeredTaxpayersCategoryA" 
+                           name="PropertyTax.RegisteredTaxpayersCategoryA" 
+                           value="@Model.PropertyTax.RegisteredTaxpayersCategoryA" 
+                           placeholder="0" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="compliantTaxpayersCategoryA">Compliant Taxpayers</label>
+                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" 
+                           id="compliantTaxpayersCategoryA" 
+                           name="PropertyTax.CompliantTaxpayersCategoryA" 
+                           value="@Model.PropertyTax.CompliantTaxpayersCategoryA" 
+                           placeholder="0" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="avgValueLandPropertyCategoryA">Average Property Value</label>
+                    <input type="text" class="form-control currency-format @(isViewMode ? "bg-light" : "")" 
+                           id="avgValueLandPropertyCategoryA" 
+                           name="PropertyTax.AveragePropertyValueCategoryA" 
+                           value="@Model.PropertyTax.AveragePropertyValueCategoryA" 
+                           placeholder="0.00" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="taxRateCategoryA">Tax Rate (%)</label>
+                    <input type="text" class="form-control percentage-format @(isViewMode ? "bg-light" : "")" 
+                           id="taxRateCategoryA" 
+                           name="PropertyTax.TaxRateCategoryA" 
+                           value="@Model.PropertyTax.TaxRateCategoryA" 
+                           placeholder="0%" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category B -->
+<div class="category-item" id="category-B">
+    <div class="category-header" data-bs-toggle="collapse" data-bs-target="#categoryBCollapse" aria-expanded="false" aria-controls="categoryBCollapse" style="cursor: pointer;">
+        <h6 class="category-title">
+            <span class="badge bg-success me-2">B</span>
+            Category B - Standard Properties
+        </h6>
+        <button class="btn btn-sm btn-link text-muted collapse-toggle p-0" type="button">
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+    <div id="categoryBCollapse" class="collapse mt-3">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="registeredTaxpayersCategoryB">Registered Taxpayers</label>
+                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" 
+                           id="registeredTaxpayersCategoryB" 
+                           name="PropertyTax.RegisteredTaxpayersCategoryB" 
+                           value="@Model.PropertyTax.RegisteredTaxpayersCategoryB" 
+                           placeholder="0" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="compliantTaxpayersCategoryB">Compliant Taxpayers</label>
+                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" 
+                           id="compliantTaxpayersCategoryB" 
+                           name="PropertyTax.CompliantTaxpayersCategoryB" 
+                           value="@Model.PropertyTax.CompliantTaxpayersCategoryB" 
+                           placeholder="0" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="avgValueLandPropertyCategoryB">Average Property Value</label>
+                    <input type="text" class="form-control currency-format @(isViewMode ? "bg-light" : "")" 
+                           id="avgValueLandPropertyCategoryB" 
+                           name="PropertyTax.AveragePropertyValueCategoryB" 
+                           value="@Model.PropertyTax.AveragePropertyValueCategoryB" 
+                           placeholder="0.00" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="taxRateCategoryB">Tax Rate (%)</label>
+                    <input type="text" class="form-control percentage-format @(isViewMode ? "bg-light" : "")" 
+                           id="taxRateCategoryB" 
+                           name="PropertyTax.TaxRateCategoryB" 
+                           value="@Model.PropertyTax.TaxRateCategoryB" 
+                           placeholder="0%" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category C -->
+<div class="category-item" id="category-C">
+    <div class="category-header" data-bs-toggle="collapse" data-bs-target="#categoryCCollapse" aria-expanded="false" aria-controls="categoryCCollapse" style="cursor: pointer;">
+        <h6 class="category-title">
+            <span class="badge bg-info me-2">C</span>
+            Category C - Basic Properties
+        </h6>
+        <button class="btn btn-sm btn-link text-muted collapse-toggle p-0" type="button">
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+    <div id="categoryCCollapse" class="collapse mt-3">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="registeredTaxpayersCategoryC">Registered Taxpayers</label>
+                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" 
+                           id="registeredTaxpayersCategoryC" 
+                           name="PropertyTax.RegisteredTaxpayersCategoryC" 
+                           value="@Model.PropertyTax.RegisteredTaxpayersCategoryC" 
+                           placeholder="0" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="compliantTaxpayersCategoryC">Compliant Taxpayers</label>
+                    <input type="text" class="form-control number-format @(isViewMode ? "bg-light" : "")" 
+                           id="compliantTaxpayersCategoryC" 
+                           name="PropertyTax.CompliantTaxpayersCategoryC" 
+                           value="@Model.PropertyTax.CompliantTaxpayersCategoryC" 
+                           placeholder="0" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="avgValueLandPropertyCategoryC">Average Property Value</label>
+                    <input type="text" class="form-control currency-format @(isViewMode ? "bg-light" : "")" 
+                           id="avgValueLandPropertyCategoryC" 
+                           name="PropertyTax.AveragePropertyValueCategoryC" 
+                           value="@Model.PropertyTax.AveragePropertyValueCategoryC" 
+                           placeholder="0.00" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="taxRateCategoryC">Tax Rate (%)</label>
+                    <input type="text" class="form-control percentage-format @(isViewMode ? "bg-light" : "")" 
+                           id="taxRateCategoryC" 
+                           name="PropertyTax.TaxRateCategoryC" 
+                           value="@Model.PropertyTax.TaxRateCategoryC" 
+                           placeholder="0%" 
+                           @(isViewMode ? "readonly" : "")>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

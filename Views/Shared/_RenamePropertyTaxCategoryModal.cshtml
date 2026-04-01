@@ -1,0 +1,250 @@
+<!-- Rename Category Modal -->
+<div class="modal" id="renamePropertyTaxCategoryModal" tabindex="-1" aria-labelledby="renamePropertyTaxCategoryModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" style="transition: none !important;">
+        <div class="modal-content border-0 shadow" style="transition: none !important;">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title d-flex align-items-center" id="renamePropertyTaxCategoryModalLabel">
+                    <i class="bi bi-pencil-fill me-2"></i>
+                    Rename Category
+                </h5>
+                <button type="button" class="btn-close btn-close-white" id="closeRenameModalBtn" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="form-group mb-3">
+                    <label for="newPropertyTaxCategoryName" class="form-label">New Category Name</label>
+                    <input type="text" class="form-control" id="newPropertyTaxCategoryName" placeholder="Enter new category name">
+                </div>
+                <input type="hidden" id="categoryToRenameId" value="">
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 stable-btn" id="cancelRenameBtn">
+                    <i class="bi bi-x-circle me-2"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-primary rounded-pill px-4 stable-btn" id="savePropertyTaxCategoryNameBtn">
+                    <i class="bi bi-check-circle me-2"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Completely disable modal animations to prevent flickering */
+    #renamePropertyTaxCategoryModal,
+    #renamePropertyTaxCategoryModal .modal-dialog,
+    #renamePropertyTaxCategoryModal .modal-content,
+    #renamePropertyTaxCategoryModal * {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+    }
+
+    #renamePropertyTaxCategoryModal.modal.show {
+        opacity: 1 !important;
+    }
+
+    #renamePropertyTaxCategoryModal .modal-dialog {
+        transform: none !important;
+        margin: 1.75rem auto;
+    }
+
+    /* Stable buttons with no transitions */
+    #renamePropertyTaxCategoryModal .stable-btn {
+        transition: none !important;
+    }
+
+    /* Static hover state for primary button */
+    #renamePropertyTaxCategoryModal .btn-primary.stable-btn:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+    }
+
+    /* Static hover state for outline button */
+    #renamePropertyTaxCategoryModal .btn-outline-secondary.stable-btn:hover {
+        background-color: #6c757d;
+        color: #fff;
+    }
+
+    /* Remove outline on buttons */
+    #renamePropertyTaxCategoryModal .btn:focus,
+    #renamePropertyTaxCategoryModal .btn:active,
+    #renamePropertyTaxCategoryModal .btn-close:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Prevent page shift */
+    body.modal-open {
+        overflow: hidden;
+        padding-right: 0 !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get modal element
+        const renameModal = document.getElementById('renamePropertyTaxCategoryModal');
+        if (!renameModal) return;
+
+        // Remove fade class to prevent animation
+        renameModal.classList.remove('fade');
+
+        // Create modal instance with static backdrop
+        const bsModal = new bootstrap.Modal(renameModal, {
+            backdrop: 'static',
+            keyboard: false,
+            focus: true
+        });
+
+        // Function to cleanup modal backdrop and body classes
+        function cleanupModal() {
+            setTimeout(function() {
+                // Remove all backdrops
+                document.querySelectorAll('.modal-backdrop').forEach(function(backdrop) {
+                    backdrop.remove();
+                });
+                // Remove body classes and styles
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                // Hide modal element
+                renameModal.style.display = 'none';
+                renameModal.classList.remove('show');
+                renameModal.setAttribute('aria-hidden', 'true');
+            }, 100);
+        }
+
+        // Function to handle category renaming
+        function handleRenameCategory(categoryCard) {
+            if (!categoryCard) return;
+
+            // Get category name and ID
+            const categoryName = categoryCard.querySelector('.category-title')?.textContent || '';
+            const categoryId = categoryCard.getAttribute('id') || '';
+
+            // Set data to modal
+            document.getElementById('newPropertyTaxCategoryName').value = categoryName;
+            document.getElementById('categoryToRenameId').value = categoryId;
+
+            // Show modal
+            bsModal.show();
+        }
+
+        // Event delegation for edit buttons
+        document.addEventListener('click', function(e) {
+            const button = e.target.closest('.edit-category-btn');
+            if (!button) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Find the category card
+            const categoryCard = button.closest('.category-card');
+            handleRenameCategory(categoryCard);
+        });
+
+        // Button handlers
+        document.getElementById('closeRenameModalBtn').addEventListener('click', function() {
+            bsModal.hide();
+            cleanupModal();
+        });
+
+        document.getElementById('cancelRenameBtn').addEventListener('click', function() {
+            bsModal.hide();
+            cleanupModal();
+        });
+        
+        document.getElementById('savePropertyTaxCategoryNameBtn').addEventListener('click', function() {
+            const newName = document.getElementById('newPropertyTaxCategoryName').value.trim();
+            const categoryId = document.getElementById('categoryToRenameId').value;
+            
+            console.log('Property Tax Rename attempt:', { newName, categoryId }); // Debug log
+            
+            if (!newName) {
+                alert('Please enter a category name.');
+                return;
+            }
+            
+            if (!categoryId) {
+                alert('No category selected for renaming.');
+                return;
+            }
+            
+            // Check for duplicates
+            const existingCategories = [];
+            
+            // Check default categories
+            existingCategories.push('Residential Properties', 'Commercial Properties', 'Industrial Properties');
+            
+            // Check other dynamic categories (excluding the current one being renamed)
+            const dynamicCategoryElements = document.querySelectorAll('#dynamicCategoriesContainer .category-card .category-title');
+            dynamicCategoryElements.forEach(element => {
+                const categoryCard = element.closest('.category-card');
+                if (categoryCard && categoryCard.id !== categoryId) {
+                    const name = element.textContent.trim();
+                    if (name && name !== 'New Category') {
+                        existingCategories.push(name);
+                    }
+                }
+            });
+            
+            // Check for duplicates
+            const isDuplicate = existingCategories.some(name => name.toLowerCase() === newName.toLowerCase());
+            
+            if (isDuplicate) {
+                alert('A category with this name already exists. Please choose a different name.');
+                return;
+            }
+            
+            const card = document.getElementById(categoryId);
+            if (card) {
+                console.log('Found card for renaming:', card); // Debug log
+                
+                // Update the category title
+                const titleElement = card.querySelector('.category-title');
+                if (titleElement) {
+                    console.log('Updating title from:', titleElement.textContent, 'to:', newName); // Debug log
+                    titleElement.textContent = newName;
+                }
+                
+                // Update the hidden input value if it exists
+                const hiddenInput = card.querySelector('input[type="hidden"][name*="Name"]');
+                if (hiddenInput) {
+                    console.log('Updating hidden input from:', hiddenInput.value, 'to:', newName); // Debug log
+                    hiddenInput.value = newName;
+                }
+                
+                // Update the card ID to match the new name
+                const newId = 'category-' + newName.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+                card.id = newId;
+                
+                // Run any necessary update functions if they exist
+                if (typeof updatePropertyTaxDynamicCategoryIndices === 'function') {
+                    updatePropertyTaxDynamicCategoryIndices();
+                }
+                if (typeof calculatePropertyTaxRevenue === 'function') {
+                    calculatePropertyTaxRevenue();
+                }
+                
+                console.log('Property Tax category renamed successfully'); // Debug log
+            } else {
+                console.error('Card not found for ID:', categoryId); // Debug log
+                alert('Error: Category not found for renaming.');
+            }
+            
+            // Hide modal and cleanup
+            bsModal.hide();
+            cleanupModal();
+        });
+
+        // Reset form when modal is hidden
+        renameModal.addEventListener('hidden.bs.modal', function() {
+            document.getElementById('newPropertyTaxCategoryName').value = '';
+            document.getElementById('categoryToRenameId').value = '';
+            cleanupModal();
+        });
+
+        // Expose the handle function for external usage if needed
+        window.handleRenamePropertyTaxCategory = handleRenameCategory;
+    });
+</script> 

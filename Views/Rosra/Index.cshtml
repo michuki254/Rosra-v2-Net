@@ -5,67 +5,723 @@
     bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
 }
 
-<div class="container py-4">
-    <div class="row">
-        <div class="col-md-12">
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+@section Styles {
+    <style>
+        /* UN-Habitat Official Brand Colors */
+        :root {
+            --un-blue: #00b2e3;
+            --un-dark-blue: #00689D;
+            --un-orange: #FD9D24;
+            --un-orange-dark: #E8891A;
+            --un-light-bg: #E6F9FC;
+            --un-light-gray: #F5F5F5;
+            --font-primary: 'Roboto', Calibri, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Ensure Roboto font is used throughout the Rosra page */
+        .rosra-full-page,
+        .rosra-full-page * {
+            font-family: var(--font-primary);
+        }
+
+        .rosra-full-page h1,
+        .rosra-full-page h2,
+        .rosra-full-page h3,
+        .rosra-full-page h4,
+        .rosra-full-page h5,
+        .rosra-full-page h6 {
+            font-family: var(--font-primary);
+            font-weight: 700;
+        }
+
+        .alert-success {
+            background: var(--un-light-bg);
+            border-left: 4px solid var(--un-blue);
+            border-radius: 12px;
+            color: var(--un-dark-blue);
+            margin: 1rem;
+        }
+
+        #rosraForm {
+            background: white;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+            width: 100%;
+            margin: 0;
+        }
+
+        /* Full-page layout for Rosra - override leaked CSS from JS template literals */
+        body {
+            max-width: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            margin-bottom: 230px !important;
+        }
+
+        /* When modal is open, prevent double scrollbar but keep layout stable */
+        body.modal-open {
+            overflow: hidden !important;
+            padding-right: 0 !important;
+        }
+
+        /* Footer Separator */
+        .footer-separator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+            background: #ffffff;
+            margin-top: 0;
+        }
+
+        .footer-separator .separator-line {
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+            max-width: 200px;
+        }
+
+        .footer-separator .separator-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border-radius: 50px;
+            border: none;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            margin: 0 1.5rem;
+        }
+
+        .footer-separator .separator-content i {
+            color: var(--un-orange);
+            font-size: 1.25rem;
+        }
+
+        .footer-separator .separator-content span {
+            color: var(--un-dark-blue);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Full-page layout container */
+        .rosra-full-page {
+            min-height: calc(100vh - 80px);
+            width: 100%;
+            padding: 0 24px;
+            padding-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+        }
+
+        /* Main content wrapper - flexbox row layout */
+        .rosra-content-wrapper {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+        }
+
+        /* Left Sidebar Styles */
+        .rosra-sidebar {
+            width: 280px;
+            min-width: 220px;
+            flex-shrink: 0;
+            background: #ffffff;
+            border-right: 1px solid #e8e8e8;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 80px;
+            height: fit-content;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .sidebar-section-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--un-dark-blue);
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--un-light-bg);
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-section-header i {
+            margin-right: 0.5rem;
+        }
+
+        /* Sidebar Action Buttons */
+        .sidebar-btn {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .sidebar-btn i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-btn-primary {
+            background: var(--un-blue);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 178, 227, 0.25);
+        }
+
+        .sidebar-btn-primary:hover {
+            background: #0099c7;
+            box-shadow: 0 6px 16px rgba(0, 178, 227, 0.3);
+            color: white;
+        }
+
+        .sidebar-btn-secondary {
+            background: var(--un-orange);
+            color: white;
+            box-shadow: 0 4px 12px rgba(253, 157, 36, 0.25);
+        }
+
+        .sidebar-btn-secondary:hover {
+            background: var(--un-orange-dark);
+            box-shadow: 0 6px 16px rgba(253, 157, 36, 0.3);
+            color: white;
+        }
+
+        .sidebar-btn-outline {
+            background: #F7F7F7;
+            color: var(--un-dark-blue);
+        }
+
+        .sidebar-btn-outline:hover {
+            background: #E6F9FC;
+            color: var(--un-blue);
+        }
+
+        /* Export Dropdown in Sidebar */
+        .sidebar-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .sidebar-dropdown .dropdown-toggle {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .sidebar-dropdown .dropdown-toggle::after {
+            margin-left: auto;
+        }
+
+        .sidebar-dropdown .dropdown-menu {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.15);
+            border: none;
+            padding: 0.5rem;
+        }
+
+        .sidebar-dropdown .dropdown-item {
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-dropdown .dropdown-item:hover {
+            background: var(--un-light-bg);
+        }
+
+        /* Sidebar Analysis Type Navigation */
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            background: #F7F7F7;
+            color: var(--un-dark-blue);
+            text-align: left;
+        }
+
+        .sidebar-nav-item i {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-nav-item:hover {
+            background: #E6F9FC;
+            color: var(--un-blue);
+        }
+
+        .sidebar-nav-item.active {
+            background: var(--un-blue);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 178, 227, 0.25);
+        }
+
+        .sidebar-nav-item.active i {
+            color: white;
+        }
+
+        /* Sidebar Divider */
+        .sidebar-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 0.5rem 0;
+        }
+
+        /* Main Content Area */
+        .rosra-main-content {
+            flex: 1;
+            padding: 1.5rem 2rem;
+            background: #ffffff;
+            min-width: 0;
+        }
+
+        /* Cards - BizFlow pop-out style */
+        .rosra-main-content .input-card,
+        .rosra-main-content .frontier-card,
+        .rosra-main-content .compact-card {
+            background: #fff;
+            border: none;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 2px 20px -4px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .rosra-main-content .input-card:hover,
+        .rosra-main-content .frontier-card:hover,
+        .rosra-main-content .compact-card:hover {
+            box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Card headers - BizFlow style */
+        .rosra-main-content .input-card-header,
+        .rosra-main-content .compact-header {
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            border-left: none;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .rosra-main-content .compact-header {
+            background: white !important;
+        }
+
+        .rosra-main-content .compact-header .header-icon,
+        .rosra-main-content .input-card-header .header-icon {
+            background: var(--un-blue);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 178, 227, 0.25);
+        }
+
+        .rosra-main-content .compact-header .card-title,
+        .rosra-main-content .input-card-header .card-title {
+            color: var(--un-dark-blue);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .rosra-main-content .compact-header .card-subtitle,
+        .rosra-main-content .input-card-header .card-subtitle {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .rosra-main-content .compact-header .collapse-icon {
+            color: var(--un-dark-blue);
+        }
+
+        /* Frontier card header */
+        .rosra-main-content .frontier-header {
+            background: var(--un-blue) !important;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .rosra-main-content .frontier-header-icon {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 44px;
+            height: 44px;
+        }
+
+        .rosra-main-content .frontier-title {
+            color: white;
+        }
+
+        .rosra-main-content .frontier-subtitle {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        /* Card body padding */
+        .rosra-main-content .input-card-body,
+        .rosra-main-content .compact-body {
+            padding: 1.5rem 2rem;
+        }
+
+        .rosra-main-content .frontier-content {
+            padding: 1.5rem 2rem;
+        }
+
+        /* Nested sections inside cards */
+        .rosra-main-content .frontier-section,
+        .rosra-main-content .module2-section {
+            background: #F7F7F7;
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border: none;
+        }
+
+        /* Intro boxes */
+        .rosra-main-content .intro-text-box,
+        .rosra-main-content .top-down-intro-section .intro-text-box,
+        .rosra-main-content .bottom-up-intro-section .intro-text-box {
+            background: #F7F7F7;
+            border-left: 4px solid var(--un-blue);
+            border-radius: 0 10px 10px 0;
+        }
+
+        /* Tab system - no side margins */
+        .tab-system {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Umbrella tab content - transparent container */
+        .umbrella-tab-content {
+            padding: 0 !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+        }
+
+        /* Stepper container */
+        .stepper-container {
+            margin: 0 0 1.5rem 0 !important;
+            border-radius: 12px !important;
+            background: #fff !important;
+            border: none !important;
+            box-shadow: 0 2px 20px -4px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        /* Stepper content - transparent, cards inside will pop */
+        .stepper-content,
+        .single-tab-content {
+            padding: 0 !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* Force all tab content to full width */
+        .rosra-full-page .tab-system,
+        .rosra-full-page .sub-tab-content,
+        .rosra-full-page .tab-pane,
+        .rosra-full-page .sub-tab-pane {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        /* Tab Navigation Styles */
+        .nav-tabs {
+            border-bottom: 2px solid #E0E0E0;
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--un-dark-blue);
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--un-orange);
+            border-bottom-color: rgba(253, 157, 36, 0.3);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--un-orange);
+            background: transparent;
+            border-bottom-color: var(--un-orange);
+        }
+
+        /* Form Styling */
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #DDDDDD;
+            background: #F7F7F7;
+            padding: 0.625rem 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--un-blue);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(0, 178, 227, 0.1);
+        }
+
+        .form-label {
+            color: var(--un-dark-blue);
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 992px) {
+            .rosra-content-wrapper {
+                flex-direction: column;
             }
-            
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0">
-                    @if (isViewMode)
-                    {
-                        <span>View Report: @Model.TabContentModel.Title</span>
-                    }
-                    else if (Model.TabContentModel.Id > 0)
-                    {
-                        <span>Edit Report: @Model.TabContentModel.Title</span>
-                    }
-                    else
-                    {
-                        <span>Rosra Analysis</span>
-                    }
-                </h2>
-                <div class="action-buttons">
-                    @if (!isViewMode)
-                    {
-                        <a asp-controller="Rosra" asp-action="NewReport" class="btn btn-primary me-2">
-                            <i class="bi bi-plus-circle"></i> New Report
-                        </a>
-                        <button type="button" id="saveReportBtn" class="btn btn-success me-2">
-                            <i class="bi bi-save"></i> @(Model.TabContentModel.Id > 0 ? "Update Report" : "Save Report")
-                        </button>
-                        <button type="button" id="exportAnalysisBtn" class="btn btn-primary">
-                            <i class="bi bi-download"></i> Export Analysis
-                        </button>
-                    }
-                    else
-                    {
-                        <a asp-controller="Rosra" asp-action="Edit" asp-route-id="@Model.TabContentModel.Id" class="btn btn-warning me-2">
-                            <i class="bi bi-pencil"></i> Edit Report
-                        </a>
-                        <a href="#" class="btn btn-primary export-report me-2" data-id="@Model.TabContentModel.Id">
-                            <i class="bi bi-download"></i> Export Analysis
-                        </a>
-                        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-left"></i> Back to Dashboard
-                        </a>
-                    }
+
+            .rosra-sidebar {
+                width: 100%;
+                max-width: 100%;
+                min-width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 1rem;
+                padding: 1rem;
+                position: relative;
+                height: auto;
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                background: #f8f9fa;
+            }
+
+            .sidebar-section {
+                flex: 1;
+                min-width: 200px;
+            }
+
+            .sidebar-nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .sidebar-nav-item {
+                flex: 1;
+                min-width: 150px;
+                justify-content: center;
+            }
+        }
+
+        @@media (max-width: 991px) {
+            .rosra-full-page {
+                padding: 16px;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .rosra-full-page {
+                padding: 10px 16px;
+            }
+
+            .rosra-sidebar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .sidebar-section {
+                min-width: 100%;
+            }
+
+            .sidebar-nav {
+                flex-direction: column;
+            }
+
+            .sidebar-nav-item {
+                justify-content: flex-start;
+            }
+
+            .sidebar-btn {
+                padding: 0.6rem 0.875rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+}
+
+@{
+    var hasUmbrellaTabs = Model.UmbrellaTabs != null && Model.UmbrellaTabs.Any();
+    var activeUmbrellaTab = hasUmbrellaTabs ? Model.UmbrellaTabs.FirstOrDefault(u => u.IsActive) : null;
+}
+
+<script>
+    // Immediate scroll fix - runs before content renders
+    if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+    // Removed window.scrollTo(0, 0) to prevent snapping issue
+</script>
+<div class="rosra-full-page">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="rosra-content-wrapper">
+        <!-- Left Sidebar -->
+        <aside class="rosra-sidebar">
+            <!-- Analysis Type Section -->
+            @if (hasUmbrellaTabs)
+            {
+                <div class="sidebar-section">
+                    <div class="sidebar-section-header">
+                        <i class="bi bi-diagram-3"></i>Analysis Type
+                    </div>
+                    <nav class="sidebar-nav">
+                        @foreach (var umbrellaTab in Model.UmbrellaTabs)
+                        {
+                            <button type="button"
+                                    class="sidebar-nav-item @(umbrellaTab.IsActive ? "active" : "")"
+                                    data-umbrella-id="@umbrellaTab.Id"
+                                    id="sidebar-@umbrellaTab.Id-btn">
+                                <i class="@umbrellaTab.Icon"></i>
+                                <span>@umbrellaTab.Title</span>
+                            </button>
+                        }
+                    </nav>
                 </div>
+
+                <div class="sidebar-divider"></div>
+            }
+
+            <!-- Report Info (if editing existing report) -->
+            @if (Model.TabContentModel.Id > 0)
+            {
+                <div class="sidebar-section">
+                    <div class="sidebar-section-header">
+                        <i class="bi bi-info-circle"></i>Report Info
+                    </div>
+                    <div style="font-size: 0.85rem; color: #666;">
+                        <div><strong>Title:</strong> @Model.TabContentModel.Title</div>
+                        @if (!string.IsNullOrEmpty(Model.TabContentModel.Country))
+                        {
+                            <div><strong>Country:</strong> @Model.TabContentModel.Country</div>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.TabContentModel.Region))
+                        {
+                            <div><strong>Region:</strong> @Model.TabContentModel.Region</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="sidebar-divider"></div>
+            }
+
+            <!-- Report Actions Section -->
+            <div class="sidebar-section">
+                <div class="sidebar-section-header">
+                    <i class="bi bi-lightning-charge"></i>Report Actions
+                </div>
+                @if (!isViewMode)
+                {
+                    <a asp-controller="Rosra" asp-action="NewReport" class="sidebar-btn sidebar-btn-primary">
+                        <span>+ New Report</span>
+                    </a>
+                    <button type="button" id="saveReportBtn" class="sidebar-btn sidebar-btn-secondary">
+                        <span>@(Model.TabContentModel.Id > 0 ? "+ Update Report" : "+ Save Report")</span>
+                    </button>
+                    <div class="sidebar-dropdown dropdown">
+                        <button type="button" class="sidebar-btn sidebar-btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>+ Export</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><button type="button" class="dropdown-item" id="exportPdfBtn"><i class="bi bi-file-pdf text-danger me-2"></i>Export as PDF</button></li>
+                            <li><button type="button" class="dropdown-item" id="exportExcelBtn"><i class="bi bi-file-earmark-excel text-success me-2"></i>Export as Excel</button></li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <a asp-controller="Rosra" asp-action="Edit" asp-route-id="@Model.TabContentModel.Id" class="sidebar-btn sidebar-btn-primary">
+                        <span>+ Edit Report</span>
+                    </a>
+                    <div class="sidebar-dropdown dropdown">
+                        <button type="button" class="sidebar-btn sidebar-btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>+ Export</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="@Url.Action("ExportPdf", "Rosra")" class="dropdown-item"><i class="bi bi-file-pdf text-danger me-2"></i>Export as PDF</a></li>
+                            <li><a href="@Url.Action("ExportExcel", "Rosra")" class="dropdown-item"><i class="bi bi-file-earmark-excel text-success me-2"></i>Export as Excel</a></li>
+                        </ul>
+                    </div>
+                    <a asp-controller="Dashboard" asp-action="Index" class="sidebar-btn sidebar-btn-outline">
+                        <span>+ Back to Dashboard</span>
+                    </a>
+                }
             </div>
-            
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="rosra-main-content">
             <form id="rosraForm" method="post">
+                @Html.AntiForgeryToken()
                 <!-- Hidden field for report ID -->
                 <input type="hidden" id="reportId" name="Id" value="@Model.TabContentModel.Id" />
-                
+
                 <!-- Hidden field for report title -->
                 <input type="hidden" id="reportTitle" name="Title" value="@Model.TabContentModel.Title" />
-                
+
+                <!-- Hidden fields for tab data (populated from localStorage before save) -->
+                <input type="hidden" id="prioritizationData" name="PrioritizationData" value="@Model.TabContentModel.PrioritizationData" />
+                <input type="hidden" id="selectedSolutionsData" name="SelectedSolutionsData" value="@Model.TabContentModel.SelectedSolutionsData" />
+                <input type="hidden" id="implementationProgressData" name="ImplementationProgressData" value="@Model.TabContentModel.ImplementationProgressData" />
+                <input type="hidden" id="peerSNGData" name="PeerSNGData" value="@Model.TabContentModel.PeerSNGData" />
+
                 <!-- Hidden field for view mode state - only include if in view mode -->
                 @if (isViewMode)
                 {
@@ -80,15 +736,363 @@
                 {
                     <input type="submit" id="saveReportSubmit" name="action" value="SaveReport" formaction="@Url.Action("SaveReport", "Rosra")" style="display: none;" />
                     <input type="submit" id="exportAnalysisSubmit" name="action" value="ExportAnalysis" formaction="@Url.Action("ExportAnalysis", "Rosra")" style="display: none;" />
+                    <input type="submit" id="exportPdfSubmit" name="action" value="ExportPdf" formaction="@Url.Action("ExportPdf", "Rosra")" style="display: none;" />
+                    <input type="submit" id="exportExcelSubmit" name="action" value="ExportExcel" formaction="@Url.Action("ExportExcel", "Rosra")" style="display: none;" />
                 }
             </form>
         </div>
     </div>
+
+    @* Include Authentication Modal for unauthenticated users *@
+    @if (!(User.Identity?.IsAuthenticated ?? false))
+    {
+        await Html.RenderPartialAsync("_AuthenticationModal");
+    }
+
+    <!-- Footer Separator -->
+    <div class="footer-separator">
+        <div class="separator-line"></div>
+        <div class="separator-content">
+            <i class="bi bi-building"></i>
+            <span>End of Analysis</span>
+        </div>
+        <div class="separator-line"></div>
+    </div>
 </div>
 
 @section Scripts {
+    <!-- Prevent browser scroll restoration and fix modal layout issues -->
+    <script>
+        // Disable browser's automatic scroll restoration
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        // Force scroll to top on page load
+        window.scrollTo(0, 0);
+
+        // Clean up any Bootstrap modal artifacts on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Remove any leftover modal-open class from body
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+
+            // Remove any leftover modal backdrops
+            document.querySelectorAll('.modal-backdrop').forEach(function(backdrop) {
+                backdrop.remove();
+            });
+
+            // Listen for modal hidden events to ensure cleanup
+            document.addEventListener('hidden.bs.modal', function() {
+                // Small delay to ensure Bootstrap has finished
+                setTimeout(function() {
+                    if (!document.querySelector('.modal.show')) {
+                        document.body.classList.remove('modal-open');
+                        document.body.style.overflow = '';
+                        document.body.style.paddingRight = '';
+                    }
+                }, 100);
+            });
+        });
+    </script>
+
+    <!-- Form State Manager - Primary data storage using form fields -->
+    <script>
+        // FormStateManager - Pure form field binding (Best Practice)
+        // Form fields are the single source of truth, localStorage is just a backup for crash recovery
+        window.FormStateManager = (function() {
+            'use strict';
+
+            // Field mappings: localStorage key -> { fieldId, subKey (optional) }
+            // When subKey is specified, the data is stored under that property in the form field
+            const fieldMappings = {
+                // Overview Selection tab - both stored in same field under different properties
+                'rosraOverviewSelections': { fieldId: 'selectedSolutionsData', subKey: 'selections' },
+                'rosraSelectedSolutions': { fieldId: 'selectedSolutionsData', subKey: 'selectedSolutions' },
+                // Implementation Progress tab
+                'rosraImplementationProgress': { fieldId: 'implementationProgressData' },
+                // Prioritization tab (read-only, populated from Gap Analysis)
+                'prioritizationState': { fieldId: 'prioritizationData' }
+            };
+
+            // Get data from form field (primary source) with localStorage fallback
+            function getData(key) {
+                const mapping = fieldMappings[key];
+                if (!mapping) {
+                    console.warn('FormStateManager: No mapping for key', key);
+                    return null;
+                }
+
+                // Try form field first
+                const formField = document.getElementById(mapping.fieldId);
+                if (formField && formField.value && formField.value.trim() !== '') {
+                    try {
+                        const formData = JSON.parse(formField.value);
+                        // If subKey is specified, return that property
+                        if (mapping.subKey) {
+                            if (formData[mapping.subKey] !== undefined) {
+                                console.log('FormStateManager: Loaded', key, 'from form field (subKey:', mapping.subKey + ')');
+                                return formData[mapping.subKey];
+                            }
+                        } else {
+                            console.log('FormStateManager: Loaded', key, 'from form field');
+                            return formData;
+                        }
+                    } catch (e) {
+                        console.warn('FormStateManager: Could not parse form field data for', key, e);
+                    }
+                }
+
+                // Fallback to localStorage (for backward compatibility and draft recovery)
+                const localData = localStorage.getItem(key);
+                if (localData) {
+                    try {
+                        const parsed = JSON.parse(localData);
+                        console.log('FormStateManager: Loaded', key, 'from localStorage (fallback)');
+                        return parsed;
+                    } catch (e) {
+                        console.warn('FormStateManager: Could not parse localStorage data for', key, e);
+                    }
+                }
+
+                return null;
+            }
+
+            // Set data to form field (primary) AND localStorage (backup)
+            function setData(key, data) {
+                const mapping = fieldMappings[key];
+                if (!mapping) {
+                    console.warn('FormStateManager: No mapping for key', key);
+                    return;
+                }
+
+                // Update form field (primary storage)
+                const formField = document.getElementById(mapping.fieldId);
+                if (formField) {
+                    if (mapping.subKey) {
+                        // Merge with existing data in the field
+                        let existingData = {};
+                        try {
+                            if (formField.value && formField.value.trim() !== '') {
+                                existingData = JSON.parse(formField.value);
+                            }
+                        } catch (e) {
+                            existingData = {};
+                        }
+                        existingData[mapping.subKey] = data;
+                        formField.value = JSON.stringify(existingData);
+                        console.log('FormStateManager: Saved', key, 'to form field (subKey:', mapping.subKey + ')');
+                    } else {
+                        formField.value = JSON.stringify(data);
+                        console.log('FormStateManager: Saved', key, 'to form field');
+                    }
+                }
+
+                // Also update localStorage as backup
+                try {
+                    localStorage.setItem(key, JSON.stringify(data));
+                    console.log('FormStateManager: Saved', key, 'to localStorage (backup)');
+                } catch (e) {
+                    console.warn('FormStateManager: Could not save to localStorage', key, e);
+                }
+            }
+
+            // Get form field element by localStorage key
+            function getFormField(key) {
+                const mapping = fieldMappings[key];
+                if (mapping) {
+                    return document.getElementById(mapping.fieldId);
+                }
+                // Try direct field lookup
+                return document.getElementById(key);
+            }
+
+            // Get all form state as an object (for debugging)
+            function getAllFormState() {
+                const state = {};
+                Object.keys(fieldMappings).forEach(key => {
+                    state[key] = getData(key);
+                });
+                return state;
+            }
+
+            // Clear localStorage backup only (form fields remain)
+            function clearLocalStorageBackup() {
+                Object.keys(fieldMappings).forEach(key => {
+                    localStorage.removeItem(key);
+                });
+                console.log('FormStateManager: Cleared localStorage backups');
+            }
+
+            // Public API
+            return {
+                getData: getData,
+                setData: setData,
+                getFormField: getFormField,
+                getAllFormState: getAllFormState,
+                clearLocalStorageBackup: clearLocalStorageBackup
+            };
+        })();
+
+        console.log('FormStateManager initialized');
+    </script>
+
+    <!-- Global App Context - Similar to React Context for state management across tabs -->
+    <script>
+        // AppContext - Global state management (similar to React Context)
+        window.AppContext = (function() {
+            // Private state
+            const state = {
+                currencySymbol: localStorage.getItem('selectedCurrencySymbol') || '@Model.TabContentModel.CurrencySymbol' || '$',
+                country: '@Model.TabContentModel.Country' || 'Kenya',
+                region: '@Model.TabContentModel.Region' || 'Kiambu'
+            };
+
+            // Subscribers for state changes
+            const subscribers = {
+                currencySymbol: [],
+                country: [],
+                region: []
+            };
+
+            // Notify all subscribers of a state change
+            function notify(key, value) {
+                if (subscribers[key]) {
+                    subscribers[key].forEach(callback => callback(value));
+                }
+            }
+
+            return {
+                // Get current state value
+                get: function(key) {
+                    return state[key];
+                },
+
+                // Set state value and notify subscribers
+                set: function(key, value) {
+                    if (state[key] !== value) {
+                        state[key] = value;
+                        // Persist to localStorage
+                        if (key === 'currencySymbol') {
+                            localStorage.setItem('selectedCurrencySymbol', value);
+                        }
+                        console.log(`AppContext: ${key} changed to:`, value);
+                        notify(key, value);
+                    }
+                },
+
+                // Subscribe to state changes (similar to useContext)
+                subscribe: function(key, callback) {
+                    if (!subscribers[key]) {
+                        subscribers[key] = [];
+                    }
+                    subscribers[key].push(callback);
+                    // Return unsubscribe function
+                    return function() {
+                        subscribers[key] = subscribers[key].filter(cb => cb !== callback);
+                    };
+                },
+
+                // Get all state (for debugging)
+                getState: function() {
+                    return { ...state };
+                }
+            };
+        })();
+
+        console.log('AppContext initialized:', AppContext.getState());
+    </script>
+
     <script>
         $(document).ready(function() {
+            // Restore saved tab data to localStorage if loading an existing report
+            restoreTabDataToLocalStorage();
+
+            // Function to restore tab data from the database to localStorage
+            function restoreTabDataToLocalStorage() {
+                var prioritizationDataJson = $("#prioritizationData").val();
+                var selectedSolutionsDataJson = $("#selectedSolutionsData").val();
+                var implementationProgressDataJson = $("#implementationProgressData").val();
+
+                // Restore Prioritization data
+                if (prioritizationDataJson && prioritizationDataJson.trim() !== '') {
+                    try {
+                        var prioritizationData = JSON.parse(prioritizationDataJson);
+                        console.log('Restoring prioritization data to localStorage:', prioritizationData);
+
+                        if (prioritizationData.propertyTax) {
+                            localStorage.setItem('propertyTaxGapValue', prioritizationData.propertyTax.gap || 0);
+                            localStorage.setItem('propertyTaxCurrentValue', prioritizationData.propertyTax.currentRevenue || 0);
+                            localStorage.setItem('propertyTaxPotentialValue', prioritizationData.propertyTax.potentialRevenue || 0);
+                            localStorage.setItem('propertyTaxComplianceGap', prioritizationData.propertyTax.complianceGap || 0);
+                            localStorage.setItem('propertyTaxCoverageGap', prioritizationData.propertyTax.coverageGap || 0);
+                            localStorage.setItem('propertyTaxValuationGap', prioritizationData.propertyTax.valuationGap || 0);
+                        }
+                        if (prioritizationData.license) {
+                            localStorage.setItem('licenseGapValue', prioritizationData.license.gap || 0);
+                            localStorage.setItem('licenseCurrentValue', prioritizationData.license.currentRevenue || 0);
+                            localStorage.setItem('licensePotentialValue', prioritizationData.license.potentialRevenue || 0);
+                            localStorage.setItem('licenseComplianceGap', prioritizationData.license.complianceGap || 0);
+                            localStorage.setItem('licenseCoverageGap', prioritizationData.license.coverageGap || 0);
+                            localStorage.setItem('licenseLiabilityGap', prioritizationData.license.liabilityGap || 0);
+                        }
+                        if (prioritizationData.totals) {
+                            localStorage.setItem('totalCurrentRevenue', prioritizationData.totals.currentTotal || 0);
+                            localStorage.setItem('totalPotentialRevenue', prioritizationData.totals.potentialTotal || 0);
+                            localStorage.setItem('totalRevenueGap', prioritizationData.totals.gapTotal || 0);
+                            localStorage.setItem('largestGapSource', prioritizationData.totals.largestGapSource || '');
+                            localStorage.setItem('largestGapValue', prioritizationData.totals.largestGapValue || 0);
+                        }
+                    } catch (e) {
+                        console.warn('Could not parse prioritization data:', e);
+                    }
+                }
+
+                // Restore Overview Selection data
+                if (selectedSolutionsDataJson && selectedSolutionsDataJson.trim() !== '') {
+                    try {
+                        var selectedSolutionsData = JSON.parse(selectedSolutionsDataJson);
+                        console.log('Restoring selected solutions data to localStorage:', selectedSolutionsData);
+
+                        if (selectedSolutionsData.selections) {
+                            localStorage.setItem('rosraOverviewSelections', JSON.stringify(selectedSolutionsData.selections));
+                        }
+                        if (selectedSolutionsData.selectedSolutions) {
+                            localStorage.setItem('rosraSelectedSolutions', JSON.stringify(selectedSolutionsData.selectedSolutions));
+                        }
+                    } catch (e) {
+                        console.warn('Could not parse selected solutions data:', e);
+                    }
+                }
+
+                // Restore Implementation Progress data
+                if (implementationProgressDataJson && implementationProgressDataJson.trim() !== '') {
+                    try {
+                        var implementationProgressData = JSON.parse(implementationProgressDataJson);
+                        console.log('Restoring implementation progress data to localStorage:', implementationProgressData);
+
+                        if (implementationProgressData.progress) {
+                            localStorage.setItem('rosraImplementationProgress', JSON.stringify(implementationProgressData.progress));
+                        }
+                    } catch (e) {
+                        console.warn('Could not parse implementation progress data:', e);
+                    }
+                }
+
+                // Load Peer SNG data for report isolation
+                var savedPeerSNGData = '@Html.Raw(Model.TabContentModel.PeerSNGData?.Replace("'", "\\'") ?? "")';
+                if (savedPeerSNGData && savedPeerSNGData.trim() !== '') {
+                    console.log('Found saved peer SNG data, will load after page initialization');
+                    // Wait for _PotentialEstimates.cshtml to initialize, then load the data
+                    setTimeout(function() {
+                        if (typeof window.loadReportPeerData === 'function') {
+                            window.loadReportPeerData(savedPeerSNGData);
+                        } else {
+                            console.warn('loadReportPeerData function not available yet');
+                        }
+                    }, 1000); // Give time for peer module to initialize
+                }
+            }
             // Initialize Bootstrap tabs
             var triggerTabList = [].slice.call(document.querySelectorAll('#@Model.ContainerId button'))
             triggerTabList.forEach(function (triggerEl) {
@@ -102,23 +1106,188 @@
             // Check if we're in view mode
             var isViewMode = @Json.Serialize(isViewMode);
             
+            // Check if user is authenticated (for save functionality)
+            var isAuthenticated = @Json.Serialize(User.Identity?.IsAuthenticated ?? false);
+
             if (!isViewMode) {
                 // Save Report button click handler
                 $("#saveReportBtn").click(function() {
-                    // Set a custom title if needed
-                    var title = prompt("Enter a title for this report:", "@Model.TabContentModel.Title");
-                    if (title) {
+                    // Function to perform the actual save
+                    function performSave() {
+                        // Auto-generate title from Country and Region (no popup)
+                        var country = $("#country option:selected").text().trim();
+                        var region = $("#region option:selected").text().trim();
+
+                        // Build title: "ROSRA Report - Country - Region" or just "ROSRA Report - Country" if no region
+                        var title = "ROSRA Report";
+                        if (country && country !== "Select Country" && country !== "") {
+                            title += " - " + country;
+                            if (region && region !== "Select Region/State" && region !== "") {
+                                title += " - " + region;
+                            }
+                        }
                         $("#reportTitle").val(title);
+
+                        // Collect tab data from localStorage before saving
+                        collectTabDataFromLocalStorage();
+
+                        // Submit the form to save the report
+                        $("#saveReportSubmit").click();
                     }
-                    
-                    // Submit the form to save the report
-                    $("#saveReportSubmit").click();
+
+                    // Check if user is authenticated
+                    if (isAuthenticated) {
+                        // User is logged in, save directly
+                        performSave();
+                    } else {
+                        // User is not logged in, show authentication modal
+                        if (typeof AuthModal !== 'undefined') {
+                            AuthModal.showForSave(performSave);
+                        } else {
+                            // Fallback: redirect to login
+                            alert('Please log in to save your report.');
+                            window.location.href = '/Account/Login?returnUrl=' + encodeURIComponent(window.location.pathname);
+                        }
+                    }
                 });
+
+                // Function to collect all tab data from localStorage
+                function collectTabDataFromLocalStorage() {
+                    console.log('Collecting tab data from localStorage...');
+
+                    // 1. Collect Prioritization data (stream rankings, adjustments)
+                    var prioritizationData = {
+                        propertyTax: {
+                            gap: parseFloat(localStorage.getItem('propertyTaxGapValue')) || 0,
+                            currentRevenue: parseFloat(localStorage.getItem('propertyTaxCurrentValue')) || 0,
+                            potentialRevenue: parseFloat(localStorage.getItem('propertyTaxPotentialValue')) || 0,
+                            complianceGap: parseFloat(localStorage.getItem('propertyTaxComplianceGap')) || 0,
+                            coverageGap: parseFloat(localStorage.getItem('propertyTaxCoverageGap')) || 0,
+                            valuationGap: parseFloat(localStorage.getItem('propertyTaxValuationGap')) || 0
+                        },
+                        license: {
+                            gap: parseFloat(localStorage.getItem('licenseGapValue')) || 0,
+                            currentRevenue: parseFloat(localStorage.getItem('licenseCurrentValue')) || 0,
+                            potentialRevenue: parseFloat(localStorage.getItem('licensePotentialValue')) || 0,
+                            complianceGap: parseFloat(localStorage.getItem('licenseComplianceGap')) || 0,
+                            coverageGap: parseFloat(localStorage.getItem('licenseCoverageGap')) || 0,
+                            liabilityGap: parseFloat(localStorage.getItem('licenseLiabilityGap')) || 0
+                        },
+                        totals: {
+                            currentTotal: parseFloat(localStorage.getItem('totalCurrentRevenue')) || 0,
+                            potentialTotal: parseFloat(localStorage.getItem('totalPotentialRevenue')) || 0,
+                            gapTotal: parseFloat(localStorage.getItem('totalRevenueGap')) || 0,
+                            largestGapSource: localStorage.getItem('largestGapSource') || '',
+                            largestGapValue: parseFloat(localStorage.getItem('largestGapValue')) || 0
+                        },
+                        timestamp: new Date().toISOString()
+                    };
+                    $("#prioritizationData").val(JSON.stringify(prioritizationData));
+                    console.log('Prioritization data collected:', prioritizationData);
+
+                    // 2. Collect Overview Selection data (selected solutions, skipped solutions)
+                    var overviewSelections = localStorage.getItem('rosraOverviewSelections');
+                    var selectedSolutionsList = localStorage.getItem('rosraSelectedSolutions');
+                    var selectedSolutionsData = {
+                        selections: overviewSelections ? JSON.parse(overviewSelections) : {},
+                        selectedSolutions: selectedSolutionsList ? JSON.parse(selectedSolutionsList) : [],
+                        timestamp: new Date().toISOString()
+                    };
+                    $("#selectedSolutionsData").val(JSON.stringify(selectedSolutionsData));
+                    console.log('Selected solutions data collected:', selectedSolutionsData);
+
+                    // 3. Collect Implementation Progress data (milestone completions)
+                    var implementationProgress = localStorage.getItem('rosraImplementationProgress');
+                    var implementationProgressData = {
+                        progress: implementationProgress ? JSON.parse(implementationProgress) : {},
+                        timestamp: new Date().toISOString()
+                    };
+                    $("#implementationProgressData").val(JSON.stringify(implementationProgressData));
+                    console.log('Implementation progress data collected:', implementationProgressData);
+
+                    // 4. Collect Peer SNG data (Within-Country OSR Frontier analysis)
+                    // Uses new data isolation schema: custom data stored per-report, not globally
+                    var peerSNGData = {
+                        dataSource: 'reference', // Default to reference data
+                        countryCode: null,
+                        customPeers: null,
+                        selectedSNG: null,
+                        analysisResults: {},
+                        timestamp: new Date().toISOString()
+                    };
+
+                    // Get country code
+                    var countrySelect = document.getElementById('country');
+                    if (countrySelect && countrySelect.selectedIndex > 0) {
+                        var selectedOption = countrySelect.options[countrySelect.selectedIndex];
+                        peerSNGData.countryCode = selectedOption.dataset?.code || null;
+                    }
+
+                    // Check for custom peer data (from _PotentialEstimates.cshtml)
+                    if (typeof window.getCustomPeerData === 'function') {
+                        var customData = window.getCustomPeerData();
+                        if (customData && customData.customPeers && customData.customPeers.length > 0) {
+                            peerSNGData.dataSource = 'custom';
+                            peerSNGData.customPeers = customData.customPeers;
+                            peerSNGData.countryCode = customData.countryCode || peerSNGData.countryCode;
+                            console.log('Custom peer data found:', customData.customPeers.length, 'peers');
+                        }
+                    }
+
+                    // Try to get peer SNG selection from the page (peerSngSelectTop is the actual ID)
+                    var peerSngSelect = $('#peerSngSelectTop');
+                    if (peerSngSelect.length > 0 && peerSngSelect.val()) {
+                        peerSNGData.selectedSNG = peerSngSelect.val();
+                    }
+
+                    // Try to get frontier analysis results from localStorage
+                    var frontierData = localStorage.getItem('rosraPeerFrontierData');
+                    if (frontierData) {
+                        try {
+                            peerSNGData.analysisResults = JSON.parse(frontierData);
+                        } catch (e) {
+                            console.warn('Could not parse frontier data:', e);
+                        }
+                    }
+
+                    // Also try to collect from visible UI elements if they exist
+                    var frontierMultiplierEl = $('#m2FrontierMultiplierTop');
+                    var osrPotentialEl = $('#m2OSRPotentialTop');
+                    if (frontierMultiplierEl.length > 0 || osrPotentialEl.length > 0) {
+                        peerSNGData.analysisResults = {
+                            ...peerSNGData.analysisResults,
+                            frontierMultiplier: parseFloat(frontierMultiplierEl.text()) || null,
+                            osrPotential: parseFloat(osrPotentialEl.text()?.replace(/,/g, '')) || null
+                        };
+                    }
+
+                    // Store chart data if available
+                    if (window.peerFrontierChartData) {
+                        peerSNGData.chartData = window.peerFrontierChartData;
+                    }
+
+                    $("#peerSNGData").val(JSON.stringify(peerSNGData));
+                    console.log('Peer SNG data collected:', peerSNGData);
+                }
                 
-                // Export Analysis button click handler
-                $("#exportAnalysisBtn").click(function() {
-                    // Submit the form to export the analysis
-                    $("#exportAnalysisSubmit").click();
+                // Export PDF button click handler
+                $("#exportPdfBtn").click(function() {
+                    // Collect data from tabs before export
+                    collectPrioritizationData();
+                    collectSelectedSolutionsData();
+                    collectImplementationProgressData();
+                    // Submit the form to export as PDF
+                    $("#exportPdfSubmit").click();
+                });
+
+                // Export Excel button click handler
+                $("#exportExcelBtn").click(function() {
+                    // Collect data from tabs before export
+                    collectPrioritizationData();
+                    collectSelectedSolutionsData();
+                    collectImplementationProgressData();
+                    // Submit the form to export as Excel
+                    $("#exportExcelSubmit").click();
                 });
             } else {
                 // Make all form fields read-only in view mode
@@ -127,10 +1296,40 @@
                 $(".input-group-append, .input-group button").hide();
             }
             
-            // Export report functionality for view mode
-            $('.export-report').click(function(e) {
-                e.preventDefault();
-                alert('Export functionality will be implemented in a future update.');
+            // Export report functionality for view mode is now handled by dropdown links
+        });
+    </script>
+
+    @* Include authentication modal script for unauthenticated users *@
+    @if (!(User.Identity?.IsAuthenticated ?? false))
+    {
+        <script src="~/js/authModal.js" asp-append-version="true"></script>
+    }
+
+    <!-- Sidebar Navigation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar umbrella tab navigation
+            document.querySelectorAll('.sidebar-nav-item').forEach(function(navItem) {
+                navItem.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    var umbrellaId = this.getAttribute('data-umbrella-id');
+                    document.getElementById('umbrellaTabIdInput').value = umbrellaId;
+
+                    // Get the first sub-tab of the clicked umbrella tab
+                    var umbrellaContent = document.getElementById(umbrellaId + '-umbrella-content');
+                    if (umbrellaContent) {
+                        var firstSubTab = umbrellaContent.querySelector('[data-tab-id]');
+                        if (firstSubTab) {
+                            document.getElementById('tabIdInput').value = firstSubTab.getAttribute('data-tab-id');
+                        }
+                    }
+
+                    // Submit form to switch tabs
+                    document.getElementById('rosraForm').action = '@Url.Action("SwitchTab", "Rosra")';
+                    document.getElementById('rosraForm').submit();
+                });
             });
         });
     </script>

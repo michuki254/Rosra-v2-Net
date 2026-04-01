@@ -1,0 +1,185 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update UI elements with calculated values
+        window.updateCalculatedValues = function(actualRevenue, potentialRevenue, revenueGap, registrationGap, complianceGap, assessmentGap, combinedGaps) {
+            // Format values for display
+            const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'KES',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            
+            // Update revenue values
+            document.getElementById('actualRevenue').textContent = formatter.format(actualRevenue);
+            document.getElementById('potentialRevenue').textContent = formatter.format(potentialRevenue);
+            document.getElementById('revenueGap').textContent = formatter.format(revenueGap);
+            
+            // Update gap values
+            document.getElementById('registrationGap').textContent = formatter.format(registrationGap);
+            document.getElementById('complianceGap').textContent = formatter.format(complianceGap);
+            document.getElementById('assessmentValuationGap').textContent = formatter.format(assessmentGap);
+            document.getElementById('combinedGaps').textContent = formatter.format(combinedGaps);
+            
+            // Update percentages
+            const percentFormatter = new Intl.NumberFormat('en-US', {
+                style: 'percent',
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1
+            });
+            
+            const gapPercentage = potentialRevenue > 0 ? revenueGap / potentialRevenue : 0;
+            document.getElementById('revenueGapPercentage').textContent = percentFormatter.format(gapPercentage);
+            
+            // Update gap distribution percentages
+            const totalGap = registrationGap + complianceGap + assessmentGap + combinedGaps;
+            
+            if (totalGap > 0) {
+                document.getElementById('registrationGapPercentage').textContent = percentFormatter.format(registrationGap / totalGap);
+                document.getElementById('complianceGapPercentage').textContent = percentFormatter.format(complianceGap / totalGap);
+                document.getElementById('assessmentGapPercentage').textContent = percentFormatter.format(assessmentGap / totalGap);
+                document.getElementById('combinedGapsPercentage').textContent = percentFormatter.format(combinedGaps / totalGap);
+            } else {
+                document.getElementById('registrationGapPercentage').textContent = '0%';
+                document.getElementById('complianceGapPercentage').textContent = '0%';
+                document.getElementById('assessmentGapPercentage').textContent = '0%';
+                document.getElementById('combinedGapsPercentage').textContent = '0%';
+            }
+        };
+        
+        // Store property tax values for other components to use
+        window.storePropertyTaxValues = function(actualRevenue, potentialRevenue, revenueGap, registrationGap, complianceGap, assessmentGap, combinedGaps) {
+            const propertyTaxData = {
+                actualRevenue: actualRevenue,
+                potentialRevenue: potentialRevenue,
+                revenueGap: revenueGap,
+                registrationGap: registrationGap,
+                complianceGap: complianceGap,
+                assessmentGap: assessmentGap,
+                combinedGaps: combinedGaps
+            };
+            
+            // Store in sessionStorage for persistence across page refreshes
+            sessionStorage.setItem('propertyTaxData', JSON.stringify(propertyTaxData));
+            
+            // Dispatch a custom event for other components to listen to
+            const propertyTaxValuesUpdated = new CustomEvent('propertyTaxValuesUpdated', {
+                detail: {
+                    current: actualRevenue,
+                    potential: potentialRevenue,
+                    gap: revenueGap,
+                    registrationGap: registrationGap,
+                    complianceGap: complianceGap,
+                    assessmentGap: assessmentGap,
+                    combinedGaps: combinedGaps
+                }
+            });
+            
+            document.dispatchEvent(propertyTaxValuesUpdated);
+        };
+        
+        // Update hidden input fields for form submission
+        window.updateHiddenInputs = function(actualRevenue, potentialRevenue, revenueGap) {
+            // Find or create hidden inputs for form submission
+            let actualRevenueInput = document.getElementById('PropertyTax_ActualRevenue');
+            if (!actualRevenueInput) {
+                actualRevenueInput = document.createElement('input');
+                actualRevenueInput.type = 'hidden';
+                actualRevenueInput.id = 'PropertyTax_ActualRevenue';
+                actualRevenueInput.name = 'PropertyTax.ActualRevenue';
+                document.querySelector('form').appendChild(actualRevenueInput);
+            }
+            actualRevenueInput.value = actualRevenue;
+            
+            let potentialRevenueInput = document.getElementById('PropertyTax_PotentialRevenue');
+            if (!potentialRevenueInput) {
+                potentialRevenueInput = document.createElement('input');
+                potentialRevenueInput.type = 'hidden';
+                potentialRevenueInput.id = 'PropertyTax_PotentialRevenue';
+                potentialRevenueInput.name = 'PropertyTax.PotentialRevenue';
+                document.querySelector('form').appendChild(potentialRevenueInput);
+            }
+            potentialRevenueInput.value = potentialRevenue;
+            
+            let revenueGapInput = document.getElementById('PropertyTax_RevenueGap');
+            if (!revenueGapInput) {
+                revenueGapInput = document.createElement('input');
+                revenueGapInput.type = 'hidden';
+                revenueGapInput.id = 'PropertyTax_RevenueGap';
+                revenueGapInput.name = 'PropertyTax.RevenueGap';
+                document.querySelector('form').appendChild(revenueGapInput);
+            }
+            revenueGapInput.value = revenueGap;
+        };
+        
+        // Update the gap analysis section
+        window.updateGapAnalysis = function() {
+            // Calculate all gaps first
+            const registrationGap = calculateRegistrationGap();
+            const complianceGap = calculateComplianceGap();
+            const assessmentGap = calculateAssessmentValuationGap();
+            const revenueGap = registrationGap + complianceGap + assessmentGap;
+            const combinedGaps = calculateCombinedGaps(revenueGap, registrationGap, complianceGap, assessmentGap);
+            
+            // Format values for display
+            const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'KES',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            
+            // Update the gap cards
+            document.getElementById('registrationGap').textContent = formatter.format(registrationGap);
+            document.getElementById('complianceGap').textContent = formatter.format(complianceGap);
+            document.getElementById('assessmentValuationGap').textContent = formatter.format(assessmentGap);
+            document.getElementById('combinedGaps').textContent = formatter.format(combinedGaps);
+            
+            // Calculate gap percentages
+            const totalGap = registrationGap + complianceGap + assessmentGap + combinedGaps;
+            
+            // Update the gap percentages in the table
+            if (totalGap > 0) {
+                const percentFormatter = new Intl.NumberFormat('en-US', {
+                    style: 'percent',
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1
+                });
+                
+                document.getElementById('registrationGapPercentage').textContent = percentFormatter.format(registrationGap / totalGap);
+                document.getElementById('complianceGapPercentage').textContent = percentFormatter.format(complianceGap / totalGap);
+                document.getElementById('assessmentGapPercentage').textContent = percentFormatter.format(assessmentGap / totalGap);
+                document.getElementById('combinedGapsPercentage').textContent = percentFormatter.format(combinedGaps / totalGap);
+            }
+            
+            // Update the gap distribution chart
+            updateGapDistributionChart(registrationGap, complianceGap, assessmentGap, combinedGaps);
+            
+            // Calculate and update gap details
+            calculatePropertyTaxGapDetails(registrationGap, complianceGap, assessmentGap, combinedGaps);
+        };
+        
+        // Calculate and display detailed gap analysis
+        window.calculatePropertyTaxGapDetails = function(registrationGap, complianceGap, assessmentGap, combinedGaps) {
+            console.log("Recalculating gap details:", {registrationGap, complianceGap, assessmentGap, combinedGaps});
+            
+            // Calculate totals
+            const totalGap = registrationGap + complianceGap + assessmentGap + combinedGaps;
+            
+            // Format values for display
+            const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'KES',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            
+            // Update the gap amounts in the detailed analysis section
+            document.getElementById('registrationGapAmount').textContent = formatter.format(registrationGap);
+            document.getElementById('complianceGapAmount').textContent = formatter.format(complianceGap);
+            document.getElementById('assessmentGapAmount').textContent = formatter.format(assessmentGap);
+            document.getElementById('combinedGapsAmount').textContent = formatter.format(combinedGaps);
+            document.getElementById('totalGapAmount').textContent = formatter.format(totalGap);
+        };
+    });
+</script>

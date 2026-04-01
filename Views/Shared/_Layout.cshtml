@@ -3,70 +3,279 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - RosraApp</title>
+    <title>@ViewData["Title"] - ROSRA | UN-Habitat</title>
+    <link rel="icon" type="image/png" href="~/images/LogoFavicon.png" />
+    <link rel="apple-touch-icon" href="~/images/LogoFavicon.png" />
+    <!-- Google Fonts - Roboto (UN-Habitat Primary Typeface) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/footer.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/RosraApp.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
+    @inject UserManager<ApplicationUser> UserManager
+    @inject RoleManager<IdentityRole> RoleManager
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">RosraApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <!-- Main Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-light main-navbar" id="mainNavbar">
+            <div class="container-fluid px-lg-4 px-xl-5">
+                <!-- Left Logo (UN-Habitat) -->
+                <div class="logo-container">
+                    <a asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/images/Light-theme-logo.png" alt="ROSRA UN-Habitat Logo" />
+                    </a>
+                </div>
+
+                <!-- Mobile Toggle -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                        aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <!-- Navigation Content -->
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <ul class="navbar-nav main-nav-links mx-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")"
+                               asp-area="" asp-controller="Home" asp-action="Index">
+                                Home
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="RosraAppV2" asp-action="Index">RosraApp V2</a>
+
+                        <!-- About ROSRA Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                About
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-about" aria-labelledby="aboutDropdown">
+                                <li><a class="dropdown-item" href="/#what-is-rosra">
+                                    <i class="fas fa-info-circle me-2"></i> What is ROSRA?
+                                </a></li>
+                                <li><a class="dropdown-item" href="/#what-is-osr">
+                                    <i class="fas fa-coins me-2"></i> What is OSR?
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/#why-un-habitat">
+                                    <i class="fas fa-globe me-2"></i> Why UN-Habitat?
+                                </a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Rosra" asp-action="Index">Rosra Analysis</a>
+
+                        <!-- Why Optimize Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="whyDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                Why Optimize OSR
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-why" aria-labelledby="whyDropdown">
+                                <li><a class="dropdown-item" href="/#why-optimize">
+                                    <i class="fas fa-coins me-2"></i> Increases Resources
+                                </a></li>
+                                <li><a class="dropdown-item" href="/#why-optimize">
+                                    <i class="fas fa-balance-scale me-2"></i> Increases Autonomy
+                                </a></li>
+                                <li><a class="dropdown-item" href="/#why-optimize">
+                                    <i class="fas fa-handshake me-2"></i> Strengthens Social Contract
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/#why-optimize">
+                                    <i class="fas fa-building me-2"></i> Improves Capacity
+                                </a></li>
+                                <li><a class="dropdown-item" href="/#why-optimize">
+                                    <i class="fas fa-chart-line me-2"></i> Enables Leveraging
+                                </a></li>
+                                <li><a class="dropdown-item" href="/#why-optimize">
+                                    <i class="fas fa-star me-2"></i> Increases Creditworthiness
+                                </a></li>
+                            </ul>
                         </li>
-                        @inject UserManager<ApplicationUser> UserManager
-                        @inject RoleManager<IdentityRole> RoleManager
+
+                        <!-- How It Works Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="howDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                How It Works
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-how" aria-labelledby="howDropdown">
+                                <li><a class="dropdown-item" href="/#who-is-rosra-for">
+                                    <i class="fas fa-users me-2"></i> Who is ROSRA For?
+                                </a></li>
+                                <li><a class="dropdown-item" href="/#how-it-works">
+                                    <i class="fas fa-cogs me-2"></i> Analysis Process
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/#data-requirements">
+                                    <i class="fas fa-database me-2"></i> Data Requirements
+                                </a></li>
+                                <li><a class="dropdown-item" href="/#data-requirements">
+                                    <i class="fas fa-shield-alt me-2"></i> Data Privacy
+                                </a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Resources Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                Resources
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-resources" aria-labelledby="resourcesDropdown">
+                                <li><a class="dropdown-item" asp-controller="RosraAppV2" asp-action="Index">
+                                    <i class="fas fa-file-alt me-2"></i> Sample Report
+                                </a></li>
+                                <li><a class="dropdown-item" href="/#testimonials">
+                                    <i class="fas fa-quote-left me-2"></i> Testimonials
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="https://unhabitat.org" target="_blank">
+                                    <i class="fas fa-external-link-alt me-2"></i> UN-Habitat Website
+                                </a></li>
+                                <li><a class="dropdown-item" href="https://sdgs.un.org/goals/goal11" target="_blank">
+                                    <i class="fas fa-city me-2"></i> SDG 11
+                                </a></li>
+                            </ul>
+                        </li>
+
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
-                            </li>
-                            
                             var user = await UserManager.GetUserAsync(User);
                             if (user != null && await UserManager.IsInRoleAsync(user, "Admin"))
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
+                                <!-- Admin Dropdown -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" ? "active" : "")"
+                                       href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Admin
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">
+                                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Users">
+                                            <i class="fas fa-users-cog me-2"></i> Manage Users
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="DataUpload">
+                                            <i class="fas fa-cloud-upload-alt me-2"></i> Data Upload
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="CreateRole">
+                                            <i class="fas fa-user-shield me-2"></i> Create Role
+                                        </a></li>
+                                    </ul>
                                 </li>
                             }
                         }
                     </ul>
-                    <partial name="_LoginPartial" />
+
+                    <!-- Right Side: Auth & CTA -->
+                    <div class="nav-right-section">
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <div class="user-menu dropdown">
+                                <a class="user-dropdown-toggle" href="#" id="userDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span class="user-name">@User.Identity?.Name</span>
+                                    <i class="fas fa-chevron-down ms-1"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="Index">
+                                        <i class="fas fa-tachometer-alt me-2"></i> My Dashboard
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a class="btn-auth-login" asp-controller="Account" asp-action="Login">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </a>
+                        }
+
+                        <!-- Primary CTA Button -->
+                        <a class="btn-create-report" asp-controller="Rosra" asp-action="NewReport">
+                            <i class="fas fa-plus-circle me-1"></i> Create Report
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Logo (Norad) -->
+                <div class="logo-container logo-right d-none d-lg-block">
+                    <a asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/images/Light-theme-norad.png" alt="Norad Logo" />
+                    </a>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
         <div class="container">
-            &copy; 2025 - RosraApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="footer-content">
+                <div class="footer-top">
+                    <div class="footer-logo">
+                        <img src="~/images/Light-theme-logo.png" alt="RosraApp Logo" />
+                    </div>
+                    <div class="sdg-goals">
+                        <a href="https://sdgs.un.org/goals/goal11" target="_blank" title="SDG 11: Sustainable Cities and Communities">
+                            <img src="~/images/sdg/sdg-11.svg" alt="SDG 11" />
+                        </a>
+                        <a href="https://sdgs.un.org/goals/goal16" target="_blank" title="SDG 16: Peace, Justice and Strong Institutions">
+                            <img src="~/images/sdg/sdg-16.svg" alt="SDG 16" />
+                        </a>
+                        <a href="https://sdgs.un.org/goals/goal17" target="_blank" title="SDG 17: Partnerships for the Goals">
+                            <img src="~/images/sdg/sdg-17.svg" alt="SDG 17" />
+                        </a>
+                        <a href="https://sdgs.un.org/goals" target="_blank" title="All Sustainable Development Goals">
+                            <img src="~/images/sdg/sdg-logo.svg" alt="SDG Logo" />
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <div class="footer-info">
+                        &copy; 2025 - RosraApp - Empowering local governments through data-driven OSR optimization
+                    </div>
+                    <div class="footer-links">
+                        <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <a asp-area="" asp-controller="Home" asp-action="Index">Contact Us</a>
+                        <a href="https://www.un.org/sustainabledevelopment/sustainable-development-goals/" target="_blank">SDG Goals</a>
+                    </div>
+                    <div class="footer-social">
+                        <a href="#" target="_blank" aria-label="UN Habitat Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" target="_blank" aria-label="UN Habitat Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" target="_blank" aria-label="UN Habitat LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" target="_blank" aria-label="UN Habitat YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/rosraStateManager.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/propertyTaxCategoryModal.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

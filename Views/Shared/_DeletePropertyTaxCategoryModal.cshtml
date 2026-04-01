@@ -1,0 +1,251 @@
+<!-- Delete Property Tax Category Modal -->
+<div class="modal" id="deletePropertyTaxCategoryModal" tabindex="-1" aria-labelledby="deletePropertyTaxCategoryModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" style="transition: none !important;">
+        <div class="modal-content border-0 shadow" style="transition: none !important;">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title d-flex align-items-center" id="deletePropertyTaxCategoryModalLabel">
+                    <i class="bi bi-trash-fill me-2"></i>
+                    Delete Property Tax Category
+                </h5>
+                <button type="button" class="btn-close btn-close-white" id="closeModalBtn" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="alert alert-warning">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="bi bi-exclamation-triangle-fill fs-3 text-warning"></i>
+                        </div>
+                        <div>
+                            <h6 class="alert-heading mb-1">Confirm Deletion</h6>
+                            <p class="mb-0">Are you sure you want to delete the category "<span id="deleteCategoryName" class="fw-bold"></span>"?</p>
+                            <p class="small text-danger mb-0 mt-2">This action cannot be undone.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card border-0 shadow-sm mt-3">
+                    <div class="card-body bg-light rounded">
+                        <h6 class="mb-3 text-danger">Category Details</h6>
+                        <div class="row">
+                            <div class="col-sm-6 mb-2">
+                                <span class="d-block text-muted small">Registered Taxpayers</span>
+                                <span class="fw-medium" id="categoryTaxpayersCount">-</span>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <span class="d-block text-muted small">Compliant Taxpayers</span>
+                                <span class="fw-medium" id="categoryCompliantCount">-</span>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <span class="d-block text-muted small">Average Property Value</span>
+                                <span class="fw-medium" id="categoryAvgValue">-</span>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <span class="d-block text-muted small">Tax Rate</span>
+                                <span class="fw-medium" id="categoryTaxRate">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <input type="hidden" id="categoryToDeleteId" value="">
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 stable-btn" id="cancelDeleteBtn">
+                    <i class="bi bi-x-circle me-2"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-danger rounded-pill px-4 stable-btn" id="confirmDeleteCategoryBtn">
+                    <i class="bi bi-trash me-2"></i> Delete Category
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Completely disable modal animations to prevent flickering */
+    #deletePropertyTaxCategoryModal,
+    #deletePropertyTaxCategoryModal .modal-dialog,
+    #deletePropertyTaxCategoryModal .modal-content,
+    #deletePropertyTaxCategoryModal * {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+    }
+
+    #deletePropertyTaxCategoryModal.modal.show {
+        opacity: 1 !important;
+    }
+
+    #deletePropertyTaxCategoryModal .modal-dialog {
+        transform: none !important;
+        margin: 1.75rem auto;
+    }
+
+    /* Modal backdrop - static */
+    .modal-backdrop.show {
+        opacity: 0.5;
+        transition: none !important;
+    }
+
+    /* Stable buttons with no transitions */
+    #deletePropertyTaxCategoryModal .stable-btn {
+        transition: none !important;
+    }
+
+    #deletePropertyTaxCategoryModal .stable-btn:hover {
+        transition: none !important;
+    }
+
+    /* Static hover state for danger button */
+    #deletePropertyTaxCategoryModal .btn-danger.stable-btn:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+
+    /* Static hover state for outline button */
+    #deletePropertyTaxCategoryModal .btn-outline-secondary.stable-btn:hover {
+        background-color: #6c757d;
+        color: #fff;
+    }
+
+    /* Remove outline on buttons */
+    #deletePropertyTaxCategoryModal .btn:focus,
+    #deletePropertyTaxCategoryModal .btn:active,
+    #deletePropertyTaxCategoryModal .btn-close:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Prevent page shift */
+    body.modal-open {
+        overflow: hidden;
+        padding-right: 0 !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get modal element
+        const deleteModal = document.getElementById('deletePropertyTaxCategoryModal');
+        if (!deleteModal) return;
+
+        // Remove fade class if present to prevent animation
+        deleteModal.classList.remove('fade');
+
+        // Create modal instance with static backdrop
+        const bsModal = new bootstrap.Modal(deleteModal, {
+            backdrop: 'static',
+            keyboard: false,
+            focus: true
+        });
+        
+        // Function to handle category deletion
+        function handleDeleteCategory(categoryCard) {
+            if (!categoryCard) return;
+            
+            // Get category data
+            const categoryName = categoryCard.querySelector('.category-title')?.textContent || 'Unknown Category';
+            const categoryId = categoryCard.getAttribute('id') || '';
+            
+            // Set data to modal
+            document.getElementById('deleteCategoryName').textContent = categoryName;
+            document.getElementById('categoryToDeleteId').value = categoryId;
+            
+            // Get additional data
+            const registeredInput = categoryCard.querySelector('input[id*="registeredTaxpayers"], input[name*="RegisteredTaxpayers"]');
+            const compliantInput = categoryCard.querySelector('input[id*="compliantTaxpayers"], input[name*="CompliantTaxpayers"]');
+            const avgValueInput = categoryCard.querySelector('input[id*="avgValueLandProperty"], input[name*="AveragePropertyValue"]');
+            const taxRateInput = categoryCard.querySelector('input[id*="taxRate"], input[name*="TaxRate"]');
+            
+            document.getElementById('categoryTaxpayersCount').textContent = 
+                registeredInput ? registeredInput.value : '-';
+            document.getElementById('categoryCompliantCount').textContent = 
+                compliantInput ? compliantInput.value : '-';
+            document.getElementById('categoryAvgValue').textContent = 
+                avgValueInput ? avgValueInput.value : '-';
+            document.getElementById('categoryTaxRate').textContent = 
+                taxRateInput ? taxRateInput.value + '%' : '-';
+            
+            // Show modal without animation
+            bsModal.show();
+        }
+        
+        // Event delegation for delete buttons
+        document.addEventListener('click', function(e) {
+            const button = e.target.closest('.remove-category-btn');
+            if (!button) return;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Find the category card
+            const categoryCard = button.closest('.category-card');
+            handleDeleteCategory(categoryCard);
+        });
+        
+        // Function to cleanup modal backdrop and body classes
+        function cleanupModal() {
+            setTimeout(function() {
+                // Remove all backdrops
+                document.querySelectorAll('.modal-backdrop').forEach(function(backdrop) {
+                    backdrop.remove();
+                });
+                // Remove body classes and styles
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                // Hide modal element
+                deleteModal.style.display = 'none';
+                deleteModal.classList.remove('show');
+                deleteModal.setAttribute('aria-hidden', 'true');
+            }, 100);
+        }
+
+        // Button handlers
+        document.getElementById('closeModalBtn').addEventListener('click', function() {
+            bsModal.hide();
+            cleanupModal();
+        });
+
+        document.getElementById('cancelDeleteBtn').addEventListener('click', function() {
+            bsModal.hide();
+            cleanupModal();
+        });
+        
+        document.getElementById('confirmDeleteCategoryBtn').addEventListener('click', function() {
+            const categoryId = document.getElementById('categoryToDeleteId').value;
+            const card = document.getElementById(categoryId);
+
+            if (card) {
+                // Remove the category
+                card.remove();
+
+                // Run any necessary update functions if they exist
+                if (typeof updatePropertyTaxDynamicCategoryIndices === 'function') {
+                    updatePropertyTaxDynamicCategoryIndices();
+                }
+                if (typeof calculatePropertyTaxRevenue === 'function') {
+                    calculatePropertyTaxRevenue();
+                }
+            }
+
+            // Hide modal and cleanup
+            bsModal.hide();
+            cleanupModal();
+        });
+
+        // Reset form when modal is hidden
+        deleteModal.addEventListener('hidden.bs.modal', function() {
+            document.getElementById('categoryToDeleteId').value = '';
+            document.getElementById('deleteCategoryName').textContent = '';
+            document.getElementById('categoryTaxpayersCount').textContent = '-';
+            document.getElementById('categoryCompliantCount').textContent = '-';
+            document.getElementById('categoryAvgValue').textContent = '-';
+            document.getElementById('categoryTaxRate').textContent = '-';
+            cleanupModal();
+        });
+
+        // Expose the handle function for external usage if needed
+        window.handleDeletePropertyTaxCategory = handleDeleteCategory;
+    });
+</script> 

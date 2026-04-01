@@ -1,3 +1,9 @@
+/* ============================================
+   UN-Habitat Typography
+   Primary: Roboto (Google Font)
+   Fallback: Calibri (System Font)
+   ============================================ */
+
 html {
   font-size: 14px;
 }
@@ -18,5 +24,84 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  margin-bottom: 230px;
+  font-family: 'Roboto', Calibri, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background-color: #ffffff;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* Typography weight classes following UN-Habitat guidelines */
+.font-light { font-weight: 300; }
+.font-regular { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-extrabold { font-weight: 800; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto', Calibri, sans-serif;
+  font-weight: 700;
+}
+
+/* General Styling */
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.footer {
+  background-color: #ffffff;
+  border-top: 1px solid #e5e5e5;
+  padding: 1.5rem 0;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+/* Card Styling */
+.card {
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: #cccccc;
+}
+
+.card-header {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  font-weight: 500;
+}
+
+/* Table Styling */
+.table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+/* Custom Utility Classes */
+.shadow-sm {
+  border: 1px solid #e5e5e5 !important;
+}
+
+.shadow-md {
+  border: 1px solid #cccccc !important;
+}
+
+.rounded-custom {
+  border-radius: 8px !important;
 }
