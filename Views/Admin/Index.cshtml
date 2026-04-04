@@ -101,7 +101,7 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.25rem;
             margin-bottom: 2rem;
         }
@@ -130,7 +130,6 @@
         .stat-card:nth-child(2) { --card-color: #10b981; }
         .stat-card:nth-child(3) { --card-color: #6b7280; }
         .stat-card:nth-child(4) { --card-color: #f59e0b; }
-        .stat-card:nth-child(5) { --card-color: #8b5cf6; }
 
         .stat-card:hover {
             transform: translateY(-4px);
@@ -158,7 +157,6 @@
         .stat-card:nth-child(2) .stat-icon { background: #10b981; }
         .stat-card:nth-child(3) .stat-icon { background: #6b7280; }
         .stat-card:nth-child(4) .stat-icon { background: #f59e0b; }
-        .stat-card:nth-child(5) .stat-icon { background: #8b5cf6; }
 
         .stat-details {
             text-align: right;
@@ -202,29 +200,6 @@
             font-size: 1.125rem;
         }
 
-        .filter-controls {
-            display: flex;
-            gap: 0.75rem;
-            flex: 1;
-            max-width: 600px;
-        }
-
-        .filter-controls input,
-        .filter-controls select {
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
-        }
-
-        .filter-controls input {
-            flex: 2;
-        }
-
-        .filter-controls select {
-            flex: 1;
-        }
-
         .reports-table {
             margin-bottom: 0;
         }
@@ -250,7 +225,7 @@
             background: #f8f9fa;
         }
 
-        .report-title {
+        .report-title-cell {
             font-weight: 600;
             color: #212529;
             font-size: 0.9375rem;
@@ -309,9 +284,47 @@
         .btn-view:hover {
             background: #3b5bdb;
             color: white;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(76, 110, 245, 0.3);
         }
+
+        .admin-links {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-link-card {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            color: #495057;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .admin-link-card:hover {
+            border-color: #4c6ef5;
+            color: #4c6ef5;
+            box-shadow: 0 2px 8px rgba(76, 110, 245, 0.15);
+        }
+
+        .select-all-col { width: 40px; }
+        .bulk-bar {
+            display: none;
+            background: #212529;
+            color: white;
+            border-radius: 8px;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .bulk-bar.active { display: flex; }
     </style>
 }
 
@@ -375,25 +388,73 @@
         </div>
     </div>
 
+    <!-- Quick Admin Links -->
+    <div class="admin-links mb-3">
+        <a asp-controller="Submission" asp-action="Queue" class="admin-link-card" style="border-color: #4c6ef5; color: #4c6ef5;">
+            <i class="bi bi-clipboard-check"></i> Review Queue
+        </a>
+        <a asp-controller="Submission" asp-action="Validated" class="admin-link-card" style="border-color: #10b981; color: #10b981;">
+            <i class="bi bi-patch-check"></i> Validated Assessments
+        </a>
+        <a asp-action="AllReports" class="admin-link-card">
+            <i class="bi bi-grid"></i> All Reports (Cards)
+        </a>
+        <a asp-action="DeletedReports" class="admin-link-card">
+            <i class="bi bi-trash"></i> Deleted Reports (Trash)
+        </a>
+        <a asp-action="AuditLog" class="admin-link-card">
+            <i class="bi bi-clock-history"></i> Audit Log
+        </a>
+        <a asp-action="CreateRole" class="admin-link-card">
+            <i class="bi bi-shield-lock"></i> Manage Roles
+        </a>
+        <a asp-action="DataUpload" class="admin-link-card">
+            <i class="bi bi-cloud-upload"></i> Data Upload
+        </a>
+    </div>
+
     <!-- Reports Data Table -->
     <div class="reports-section">
         <div class="reports-header">
-            <h5><i class="bi bi-file-text me-2"></i>@Localizer["UserReports"]</h5>
-            <div class="filter-controls">
-                <input type="text" id="searchInput" class="form-control" placeholder="@Localizer["SearchPlaceholder"].Value">
-                <select id="userFilter" class="form-select">
-                    <option value="">@Localizer["AllUsers"]</option>
-                    @foreach (var report in Model.AllReports.GroupBy(r => r.UserEmail).Select(g => g.First()))
-                    {
-                        <option value="@report.UserEmail">@report.UserName</option>
-                    }
-                </select>
+            <h5><i class="bi bi-file-text me-2"></i>@Localizer["UserReports"]
+                <small class="text-muted fw-normal ms-2">(@Model.TotalCount total)</small>
+            </h5>
+            <form asp-action="Index" method="get" class="d-flex gap-2" style="max-width: 400px;">
+                <input type="text" name="search" class="form-control form-control-sm"
+                       placeholder="@Localizer["SearchPlaceholder"].Value"
+                       value="@Model.SearchTerm" />
+                <button type="submit" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-search"></i>
+                </button>
+                @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                {
+                    <a asp-action="Index" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-x"></i>
+                    </a>
+                }
+            </form>
+        </div>
+
+        <!-- Bulk Action Bar -->
+        <div class="bulk-bar" id="bulkBar">
+            <span><strong id="selectedCount">0</strong> report(s) selected</span>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-light" id="bulkArchiveBtn">
+                    <i class="bi bi-archive me-1"></i> Archive Selected
+                </button>
+                <button class="btn btn-sm btn-danger" id="bulkDeleteBtn">
+                    <i class="bi bi-trash me-1"></i> Delete Selected
+                </button>
             </div>
         </div>
+
         <div class="table-responsive">
             <table class="table reports-table" id="reportsTable">
                 <thead>
                     <tr>
+                        <th class="select-all-col">
+                            <input type="checkbox" id="selectAll" class="form-check-input" />
+                        </th>
                         <th>@Localizer["Title"]</th>
                         <th>@Localizer["User"]</th>
                         <th>@Localizer["Location"]</th>
@@ -406,9 +467,12 @@
                     {
                         @foreach (var report in Model.AllReports)
                         {
-                            <tr>
+                            <tr id="report-row-@report.Id">
                                 <td>
-                                    <div class="report-title">@report.Title</div>
+                                    <input type="checkbox" class="form-check-input report-checkbox" value="@report.Id" />
+                                </td>
+                                <td>
+                                    <div class="report-title-cell">@report.Title</div>
                                 </td>
                                 <td>
                                     <div class="user-info-cell">
@@ -429,17 +493,29 @@
                                     }
                                     else
                                     {
-                                        <span class="text-muted">—</span>
+                                        <span class="text-muted">-</span>
                                     }
                                 </td>
                                 <td>
-                                    <span class="date-cell">@report.CreatedAt.ToString("MMM dd, yyyy")</span>
-                                    <span class="time-cell">@report.CreatedAt.ToString("hh:mm tt")</span>
+                                    @{
+                                        var displayDate = report.UpdatedAt ?? report.CreatedAt;
+                                    }
+                                    <span class="date-cell">@displayDate.ToLocalTime().ToString("MMM dd, yyyy")</span>
+                                    <span class="time-cell">@displayDate.ToLocalTime().ToString("hh:mm tt")</span>
                                 </td>
                                 <td>
-                                    <a asp-controller="Dashboard" asp-action="ViewReport" asp-route-id="@report.Id" class="btn btn-sm btn-view">
-                                        <i class="bi bi-eye me-1"></i> @Localizer["View"]
-                                    </a>
+                                    <div class="d-flex gap-1">
+                                        <a asp-controller="Dashboard" asp-action="ViewReport" asp-route-id="@report.PublicId"
+                                           class="btn btn-sm btn-view" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <button class="btn btn-sm btn-outline-secondary archive-btn" data-id="@report.Id" title="Archive">
+                                            <i class="bi bi-archive"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-id="@report.Id" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -447,7 +523,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
+                            <td colspan="6" class="text-center text-muted py-4">
                                 <i class="bi bi-inbox display-4"></i>
                                 <p class="mt-2">@Localizer["NoReportsFound"]</p>
                             </td>
@@ -456,71 +532,189 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav aria-label="Admin report pagination" class="mt-3">
+                <ul class="pagination justify-content-center mb-2">
+                    <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber - 1)"
+                           asp-route-search="@Model.SearchTerm">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@i"
+                               asp-route-search="@Model.SearchTerm">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.PageNumber >= Model.TotalPages ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber + 1)"
+                           asp-route-search="@Model.SearchTerm">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+                <p class="text-center text-muted small mb-0">
+                    Page @Model.PageNumber of @Model.TotalPages (@Model.TotalCount reports)
+                </p>
+            </nav>
+        }
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 8px;">
+            <div class="modal-header" style="background: #212529; color: white; border: none;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Confirm Deletion</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding: 2rem;">
+                <p class="mb-0" style="color: #6c757d;">
+                    This report will be moved to trash. You can restore it from the Deleted Reports page.
+                </p>
+                <input type="hidden" id="deleteReportId" />
+            </div>
+            <div class="modal-footer" style="border: none; background: #f8f9fa;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="bi bi-trash me-1"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="toast" class="toast hide" role="alert">
+        <div class="toast-header">
+            <strong class="me-auto" id="toast-title">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toast-message"></div>
     </div>
 </div>
 
 @section Scripts {
+    @Html.AntiForgeryToken()
     <script>
         $(document).ready(function() {
-            const searchInput = $('#searchInput');
-            const userFilter = $('#userFilter');
-            const table = $('#reportsTable tbody');
-            const rows = table.find('tr');
+            var token = $('input[name="__RequestVerificationToken"]').val();
 
-            function filterTable() {
-                const searchTerm = searchInput.val().toLowerCase();
-                const selectedUser = userFilter.val();
-
-                rows.each(function() {
-                    const row = $(this);
-                    const title = row.find('.report-title').text().toLowerCase();
-                    const userName = row.find('.user-name-cell').text().toLowerCase();
-                    const userEmail = row.find('.user-email-cell').text().toLowerCase();
-                    const location = row.find('td:eq(2)').text().toLowerCase();
-
-                    // Check if row matches search term
-                    const matchesSearch = !searchTerm ||
-                        title.includes(searchTerm) ||
-                        userName.includes(searchTerm) ||
-                        userEmail.includes(searchTerm) ||
-                        location.includes(searchTerm);
-
-                    // Check if row matches user filter
-                    const matchesUser = !selectedUser || userEmail === selectedUser.toLowerCase();
-
-                    // Show/hide row based on filters
-                    if (matchesSearch && matchesUser) {
-                        row.show();
-                    } else {
-                        row.hide();
-                    }
-                });
-
-                // Update empty state
-                updateEmptyState();
+            function showToast(title, message, type) {
+                $('#toast-title').text(title);
+                $('#toast-message').text(message);
+                $('#toast').removeClass('bg-danger bg-success').addClass(type === 'success' ? 'bg-success text-white' : 'bg-danger text-white');
+                new bootstrap.Toast(document.getElementById('toast')).show();
             }
 
-            function updateEmptyState() {
-                const visibleRows = rows.filter(':visible').length;
-                const emptyRow = table.find('tr td[colspan]').parent();
+            // --- Single Delete ---
+            $('.delete-btn').click(function() {
+                $('#deleteReportId').val($(this).data('id'));
+                new bootstrap.Modal(document.getElementById('deleteModal')).show();
+            });
 
-                if (visibleRows === 0 && emptyRow.length === 0) {
-                    table.append(`
-                        <tr class="empty-state">
-                            <td colspan="5" class="text-center text-muted py-4">
-                                <i class="bi bi-search display-4"></i>
-                                <p class="mt-2">No reports match your filters</p>
-                            </td>
-                        </tr>
-                    `);
-                } else if (visibleRows > 0) {
-                    table.find('.empty-state').remove();
+            $('#confirmDeleteBtn').click(function() {
+                var id = $('#deleteReportId').val();
+                $.ajax({
+                    url: '@Url.Action("DeleteReport", "Dashboard")',
+                    type: 'POST',
+                    data: { id: id, __RequestVerificationToken: token },
+                    success: function(r) {
+                        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+                        if (r.success) {
+                            $('#report-row-' + id).fadeOut(300);
+                            showToast('Success', r.message, 'success');
+                        } else {
+                            showToast('Error', r.message, 'error');
+                        }
+                    }
+                });
+            });
+
+            // --- Single Archive ---
+            $('.archive-btn').click(function() {
+                var id = $(this).data('id');
+                $.ajax({
+                    url: '@Url.Action("ArchiveReport", "Dashboard")',
+                    type: 'POST',
+                    data: { id: id, __RequestVerificationToken: token },
+                    success: function(r) {
+                        if (r.success) {
+                            $('#report-row-' + id).fadeOut(300);
+                            showToast('Success', r.message, 'success');
+                        } else {
+                            showToast('Error', r.message, 'error');
+                        }
+                    }
+                });
+            });
+
+            // --- Bulk Select ---
+            function updateBulkBar() {
+                var count = $('.report-checkbox:checked').length;
+                $('#selectedCount').text(count);
+                if (count > 0) {
+                    $('#bulkBar').addClass('active');
+                } else {
+                    $('#bulkBar').removeClass('active');
                 }
             }
 
-            // Event listeners
-            searchInput.on('keyup', filterTable);
-            userFilter.on('change', filterTable);
+            $('#selectAll').change(function() {
+                $('.report-checkbox').prop('checked', this.checked);
+                updateBulkBar();
+            });
+
+            $(document).on('change', '.report-checkbox', updateBulkBar);
+
+            // --- Bulk Delete ---
+            $('#bulkDeleteBtn').click(function() {
+                var ids = $('.report-checkbox:checked').map(function() { return parseInt(this.value); }).get();
+                if (!ids.length || !confirm('Delete ' + ids.length + ' report(s)? They will be moved to trash.')) return;
+                $.ajax({
+                    url: '@Url.Action("BulkDelete", "Dashboard")',
+                    type: 'POST',
+                    data: { ids: ids, __RequestVerificationToken: token },
+                    traditional: true,
+                    success: function(r) {
+                        if (r.success) {
+                            ids.forEach(function(id) { $('#report-row-' + id).fadeOut(300); });
+                            showToast('Success', r.message, 'success');
+                            updateBulkBar();
+                        } else {
+                            showToast('Error', r.message, 'error');
+                        }
+                    }
+                });
+            });
+
+            // --- Bulk Archive ---
+            $('#bulkArchiveBtn').click(function() {
+                var ids = $('.report-checkbox:checked').map(function() { return parseInt(this.value); }).get();
+                if (!ids.length || !confirm('Archive ' + ids.length + ' report(s)?')) return;
+                $.ajax({
+                    url: '@Url.Action("BulkArchive", "Dashboard")',
+                    type: 'POST',
+                    data: { ids: ids, __RequestVerificationToken: token },
+                    traditional: true,
+                    success: function(r) {
+                        if (r.success) {
+                            ids.forEach(function(id) { $('#report-row-' + id).fadeOut(300); });
+                            showToast('Success', r.message, 'success');
+                            updateBulkBar();
+                        } else {
+                            showToast('Error', r.message, 'error');
+                        }
+                    }
+                });
+            });
         });
     </script>
 }

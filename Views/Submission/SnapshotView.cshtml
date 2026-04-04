@@ -1,0 +1,74 @@
+@model RosraApp.Models.ViewModels.RosraFormViewModel
+
+@{
+    ViewData["Title"] = "Snapshot: " + (ViewData["SnapshotLabel"] ?? "Assessment Snapshot");
+}
+
+@section Styles {
+    <style>
+        body { background: #f8f9fa; }
+        .snapshot-banner { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+        .snapshot-banner i { font-size: 1.25rem; color: #856404; }
+        .snapshot-card { background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .snapshot-card h5 { font-weight: 700; margin-bottom: 1rem; }
+        .data-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #f1f3f5; }
+        .data-label { color: #6c757d; font-size: 0.875rem; }
+        .data-value { color: #212529; font-weight: 500; font-size: 0.875rem; }
+    </style>
+}
+
+<div class="container py-4">
+    <div class="snapshot-banner">
+        <i class="bi bi-clock-history"></i>
+        <div>
+            <strong>Historical Snapshot</strong> — @(ViewData["SnapshotLabel"]) (captured @(ViewData["SnapshotDate"]))
+            <br /><small class="text-muted">This is a read-only view of the assessment at a specific point in time.</small>
+        </div>
+    </div>
+
+    <div class="snapshot-card">
+        <h5><i class="bi bi-geo-alt me-1"></i> Location & Metadata</h5>
+        <div class="data-row"><span class="data-label">Title</span><span class="data-value">@Model.Title</span></div>
+        <div class="data-row"><span class="data-label">Country</span><span class="data-value">@(Model.Country ?? "N/A")</span></div>
+        <div class="data-row"><span class="data-label">Region</span><span class="data-value">@(Model.Region ?? "N/A")</span></div>
+        <div class="data-row"><span class="data-label">City</span><span class="data-value">@(Model.City ?? "N/A")</span></div>
+        <div class="data-row"><span class="data-label">Financial Year</span><span class="data-value">@(Model.FinancialYear ?? "N/A")</span></div>
+        <div class="data-row"><span class="data-label">Currency</span><span class="data-value">@(Model.Currency ?? "N/A") @(Model.CurrencySymbol != null ? "(" + Model.CurrencySymbol + ")" : "")</span></div>
+    </div>
+
+    <div class="snapshot-card">
+        <h5><i class="bi bi-cash-stack me-1"></i> Financial Data</h5>
+        <div class="data-row"><span class="data-label">Actual OSR</span><span class="data-value">@(Model.CurrencySymbol ?? "$") @(Model.ActualOsr?.ToString("N2") ?? "N/A")</span></div>
+        <div class="data-row"><span class="data-label">Budgeted OSR</span><span class="data-value">@(Model.CurrencySymbol ?? "$") @(Model.BudgetedOsr?.ToString("N2") ?? "N/A")</span></div>
+        <div class="data-row"><span class="data-label">Population</span><span class="data-value">@(Model.Population?.ToString("N0") ?? "N/A")</span></div>
+        <div class="data-row"><span class="data-label">GDP per Capita</span><span class="data-value">@(Model.CurrencySymbol ?? "$") @(Model.GdpPerCapita?.ToString("N2") ?? "N/A")</span></div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ProblemStatement))
+    {
+        <div class="snapshot-card">
+            <h5><i class="bi bi-exclamation-triangle me-1"></i> Causes Analysis</h5>
+            <p>@Model.ProblemStatement</p>
+            @if (Model.RootCauses.Any())
+            {
+                <strong>Root Causes:</strong>
+                <ul>
+                    @foreach (var cause in Model.RootCauses)
+                    {
+                        <li>@cause</li>
+                    }
+                </ul>
+            }
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.RecommendationSummary))
+    {
+        <div class="snapshot-card">
+            <h5><i class="bi bi-lightbulb me-1"></i> Recommendations</h5>
+            <p>@Model.RecommendationSummary</p>
+        </div>
+    }
+
+    <a href="javascript:history.back()" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Back</a>
+</div>

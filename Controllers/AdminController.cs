@@ -27,24 +27,46 @@ namespace RosraApp.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 25, string? search = null)
         {
             // Get statistics
             var totalUsers = await _userManager.Users.CountAsync();
             var activeUsers = await _userManager.Users.Where(u => !u.LockoutEnabled || u.LockoutEnd == null || u.LockoutEnd < DateTimeOffset.Now).CountAsync();
             var totalReports = await _context.RosraReports.CountAsync();
 
-            // Get all reports with user information
-            var allReports = await _context.RosraReports
-                .Include(r => r.User)
-                .OrderByDescending(r => r.CreatedAt)
+            // Build query with optional search
+            IQueryable<RosraReport> query = _context.RosraReports.Include(r => r.User);
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.ToLower();
+                query = query.Where(r =>
+                    (r.Title != null && r.Title.ToLower().Contains(term)) ||
+                    (r.Country != null && r.Country.ToLower().Contains(term)) ||
+                    (r.City != null && r.City.ToLower().Contains(term)) ||
+                    (r.User != null && r.User.Email != null && r.User.Email.ToLower().Contains(term)) ||
+                    (r.ProjectName != null && r.ProjectName.ToLower().Contains(term)));
+            }
+
+            // Get total count for pagination
+            var filteredCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(filteredCount / (double)pageSize);
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPages)));
+
+            // Apply pagination
+            var allReports = await query
+                .OrderByDescending(r => r.UpdatedAt ?? r.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(r => new ReportListItemViewModel
                 {
                     Id = r.Id,
+                    PublicId = r.PublicId,
                     Title = r.Title,
                     UserName = r.User != null ? $"{r.User.FirstName} {r.User.LastName}" : "Unknown",
                     UserEmail = r.User != null ? r.User.Email ?? "" : "",
                     CreatedAt = r.CreatedAt,
+                    UpdatedAt = r.UpdatedAt,
                     City = r.City,
                     Country = r.Country
                 })
@@ -56,10 +78,186 @@ namespace RosraApp.Controllers
                 ActiveUsers = activeUsers,
                 InactiveUsers = totalUsers - activeUsers,
                 TotalReports = totalReports,
-                AllReports = allReports
+                AllReports = allReports,
+                PageNumber = page,
+                TotalPages = totalPages,
+                TotalCount = filteredCount,
+                SearchTerm = search
             };
 
             return View(model);
+        }
+
+        // Card-based view of all reports (same layout as user Dashboard)
+        public async Task<IActionResult> AllReports(int page = 1, int pageSize = 12, string? search = null, string? tab = null)
+        {
+            var isArchiveTab = tab == "archived";
+
+            IQueryable<RosraReport> query = _context.RosraReports;
+
+            // Filter by archive status
+            if (isArchiveTab)
+            {
+                query = query.Where(r => r.IsArchived);
+            }
+            else
+            {
+                query = query.Where(r => !r.IsArchived);
+            }
+
+            // Apply search filter
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.ToLower();
+                query = query.Where(r =>
+                    (r.Title != null && r.Title.ToLower().Contains(term)) ||
+                    (r.Country != null && r.Country.ToLower().Contains(term)) ||
+                    (r.Region != null && r.Region.ToLower().Contains(term)) ||
+                    (r.City != null && r.City.ToLower().Contains(term)) ||
+                    (r.ProjectName != null && r.ProjectName.ToLower().Contains(term)) ||
+                    (r.FinancialYear != null && r.FinancialYear.ToLower().Contains(term)) ||
+                    (r.User != null && r.User.Email != null && r.User.Email.ToLower().Contains(term)));
+            }
+
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPages)));
+
+            var reports = await query
+                .Include(r => r.User)
+                .OrderByDescending(r => r.UpdatedAt ?? r.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var viewModel = new DashboardViewModel
+            {
+                Reports = reports.Select(RosraReportViewModel.FromRosraReport).ToList(),
+                PageNumber = page,
+                TotalPages = totalPages,
+                TotalCount = totalCount,
+                SearchTerm = search,
+                CurrentTab = tab ?? "active"
+            };
+
+            return View(viewModel);
+        }
+
+        // Admin view of deleted reports (trash)
+        public async Task<IActionResult> DeletedReports(int page = 1, int pageSize = 25)
+        {
+            var query = _context.RosraReports
+                .IgnoreQueryFilters()
+                .Where(r => r.IsDeleted)
+                .Include(r => r.User);
+
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPages)));
+
+            var deletedReports = await query
+                .OrderByDescending(r => r.DeletedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(r => new ReportListItemViewModel
+                {
+                    Id = r.Id,
+                    PublicId = r.PublicId,
+                    Title = r.Title,
+                    UserName = r.User != null ? $"{r.User.FirstName} {r.User.LastName}" : "Unknown",
+                    UserEmail = r.User != null ? r.User.Email ?? "" : "",
+                    CreatedAt = r.CreatedAt,
+                    UpdatedAt = r.DeletedAt,
+                    City = r.City,
+                    Country = r.Country
+                })
+                .ToListAsync();
+
+            var model = new AdminDashboardViewModel
+            {
+                TotalReports = totalCount,
+                AllReports = deletedReports,
+                PageNumber = page,
+                TotalPages = totalPages,
+                TotalCount = totalCount
+            };
+
+            return View(model);
+        }
+
+        // Permanently delete a report (admin only)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PermanentlyDeleteReport(int id)
+        {
+            var report = await _context.RosraReports
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(r => r.Id == id && r.IsDeleted);
+
+            if (report == null)
+            {
+                return Json(new { success = false, message = "Report not found in trash" });
+            }
+
+            _context.RosraReports.Remove(report);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Report permanently deleted" });
+        }
+
+        // Restore a deleted report (admin)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RestoreReport(int id)
+        {
+            var report = await _context.RosraReports
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(r => r.Id == id && r.IsDeleted);
+
+            if (report == null)
+            {
+                return Json(new { success = false, message = "Report not found in trash" });
+            }
+
+            report.IsDeleted = false;
+            report.DeletedAt = null;
+            report.DeletedByUserId = null;
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Report restored successfully" });
+        }
+
+        // Audit Log view
+        public async Task<IActionResult> AuditLog(int page = 1, int pageSize = 50, string? action = null, string? entityType = null)
+        {
+            IQueryable<Models.AuditLog> query = _context.AuditLogs;
+
+            if (!string.IsNullOrWhiteSpace(action))
+            {
+                query = query.Where(a => a.Action == action);
+            }
+            if (!string.IsNullOrWhiteSpace(entityType))
+            {
+                query = query.Where(a => a.EntityType == entityType);
+            }
+
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPages)));
+
+            var logs = await query
+                .OrderByDescending(a => a.Timestamp)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["PageNumber"] = page;
+            ViewData["TotalPages"] = totalPages;
+            ViewData["TotalCount"] = totalCount;
+            ViewData["ActionFilter"] = action;
+            ViewData["EntityTypeFilter"] = entityType;
+
+            return View(logs);
         }
 
         public async Task<IActionResult> UserDetails(string id)

@@ -17,7 +17,7 @@ namespace RosraApp.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Rosra");
         }
 
         [Authorize]

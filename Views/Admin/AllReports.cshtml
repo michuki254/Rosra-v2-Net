@@ -1,0 +1,622 @@
+@model RosraApp.Models.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "All Reports";
+}
+
+@functions {
+    public string GetCountryCode(string country)
+    {
+        if (string.IsNullOrEmpty(country)) return "";
+
+        var countryCodes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            // Africa
+            { "Kenya", "ke" }, { "Nigeria", "ng" }, { "South Africa", "za" },
+            { "Egypt", "eg" }, { "Ethiopia", "et" }, { "Ghana", "gh" },
+            { "Tanzania", "tz" }, { "Uganda", "ug" }, { "Rwanda", "rw" },
+            { "Morocco", "ma" }, { "Algeria", "dz" }, { "Senegal", "sn" },
+            { "Cameroon", "cm" }, { "Zambia", "zm" }, { "Zimbabwe", "zw" },
+            { "Botswana", "bw" }, { "Namibia", "na" }, { "Mozambique", "mz" },
+            { "Mali", "ml" }, { "Burkina Faso", "bf" }, { "Ivory Coast", "ci" },
+            { "Cote d'Ivoire", "ci" }, { "Malawi", "mw" }, { "Benin", "bj" },
+            { "Togo", "tg" }, { "Niger", "ne" }, { "Sierra Leone", "sl" },
+            { "Liberia", "lr" },
+            // Europe
+            { "United Kingdom", "gb" }, { "UK", "gb" }, { "Britain", "gb" },
+            { "France", "fr" }, { "Germany", "de" }, { "Italy", "it" },
+            { "Spain", "es" }, { "Netherlands", "nl" }, { "Belgium", "be" },
+            { "Switzerland", "ch" }, { "Sweden", "se" }, { "Norway", "no" },
+            { "Portugal", "pt" }, { "Poland", "pl" }, { "Denmark", "dk" },
+            { "Finland", "fi" }, { "Austria", "at" }, { "Ireland", "ie" },
+            { "Greece", "gr" }, { "Czech Republic", "cz" }, { "Romania", "ro" },
+            { "Hungary", "hu" },
+            // Americas
+            { "United States", "us" }, { "United States of America", "us" },
+            { "USA", "us" }, { "Canada", "ca" }, { "Mexico", "mx" },
+            { "Brazil", "br" }, { "Argentina", "ar" }, { "Chile", "cl" },
+            { "Colombia", "co" }, { "Peru", "pe" }, { "Venezuela", "ve" },
+            { "Ecuador", "ec" }, { "Bolivia", "bo" }, { "Paraguay", "py" },
+            { "Uruguay", "uy" }, { "Costa Rica", "cr" }, { "Panama", "pa" },
+            { "Guatemala", "gt" }, { "Honduras", "hn" }, { "El Salvador", "sv" },
+            { "Nicaragua", "ni" }, { "Jamaica", "jm" }, { "Trinidad and Tobago", "tt" },
+            // Asia
+            { "China", "cn" }, { "India", "in" }, { "Japan", "jp" },
+            { "Singapore", "sg" }, { "South Korea", "kr" }, { "Korea", "kr" },
+            { "Thailand", "th" }, { "Indonesia", "id" }, { "Malaysia", "my" },
+            { "Philippines", "ph" }, { "Vietnam", "vn" }, { "Pakistan", "pk" },
+            { "Bangladesh", "bd" }, { "Sri Lanka", "lk" }, { "Nepal", "np" },
+            { "Myanmar", "mm" }, { "Cambodia", "kh" }, { "Taiwan", "tw" },
+            { "Hong Kong", "hk" },
+            // Middle East
+            { "UAE", "ae" }, { "United Arab Emirates", "ae" },
+            { "Saudi Arabia", "sa" }, { "Israel", "il" }, { "Turkey", "tr" },
+            { "Iran", "ir" }, { "Iraq", "iq" }, { "Jordan", "jo" },
+            { "Lebanon", "lb" }, { "Kuwait", "kw" }, { "Qatar", "qa" },
+            { "Oman", "om" }, { "Bahrain", "bh" },
+            // Oceania
+            { "Australia", "au" }, { "New Zealand", "nz" }, { "Fiji", "fj" },
+            { "Papua New Guinea", "pg" },
+            // Other
+            { "Russia", "ru" }, { "Ukraine", "ua" }, { "Kazakhstan", "kz" },
+            { "Uzbekistan", "uz" }
+        };
+
+        return countryCodes.TryGetValue(country, out var code) ? code : "";
+    }
+}
+
+@section Styles {
+    <!-- Flag Icons CSS Library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .dashboard-header {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-header h1 {
+            color: #212529;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-header p {
+            color: #6c757d;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .btn-refresh {
+            background: white;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            border-radius: 6px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-refresh:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        .report-card .card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-card .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .last-updated {
+            color: #868e96;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .status-badge {
+            background: #d3f9d8;
+            color: #2b8a3e;
+            border-radius: 12px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .status-badge i { font-size: 6px; }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: #868e96;
+            padding: 0.25rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .icon-btn:hover { color: #495057; }
+        .delete-btn:hover { color: #dc3545; }
+
+        .report-title {
+            color: #212529;
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        .report-details {
+            display: flex;
+            align-items: start;
+            margin-bottom: 0.875rem;
+        }
+
+        .flag-icon {
+            width: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .country-flag {
+            font-size: 2.5rem;
+            line-height: 1;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .country-flag.fi {
+            width: 48px;
+            height: 36px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .default-globe {
+            font-size: 2.5rem;
+            line-height: 1;
+            color: #6c757d;
+        }
+
+        .detail-row { margin-bottom: 0.5rem; }
+        .detail-row:last-child { margin-bottom: 0; }
+
+        .detail-label {
+            color: #5c7cfa;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #212529;
+            font-size: 0.875rem;
+        }
+
+        .author-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            background: #e8edff;
+            color: #4c6ef5;
+            border-radius: 12px;
+            padding: 0.2rem 0.625rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+
+        .btn-open {
+            background: #4c6ef5;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background 0.2s ease;
+        }
+
+        .btn-open:hover {
+            background: #3b5bdb;
+            color: white;
+        }
+
+        .no-reports-card {
+            background: white;
+            border-radius: 8px;
+            padding: 4rem 2rem;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-reports-card i {
+            font-size: 3.5rem;
+            color: #adb5bd;
+            margin-bottom: 1.5rem;
+        }
+
+        .no-reports-card h5 {
+            color: #212529;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+    </style>
+}
+
+<div class="container py-4">
+    <!-- Header section -->
+    <div class="dashboard-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="bi bi-grid me-2"></i>All Reports</h1>
+            <p>View and manage all user reports across the system</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn btn-refresh d-flex align-items-center">
+                <i class="bi bi-arrow-left me-2"></i> Back to Admin
+            </a>
+            <button class="btn btn-refresh d-flex align-items-center" id="refreshBtn">
+                <i class="bi bi-arrow-clockwise me-2"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Search and Tabs -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <ul class="nav nav-pills" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link @(Model.CurrentTab == "active" ? "active" : "")"
+                       asp-action="AllReports" asp-route-tab="active" asp-route-search="@Model.SearchTerm">
+                        <i class="bi bi-file-earmark-text me-1"></i> Active
+                        <span class="badge bg-light text-dark ms-1">@(Model.CurrentTab == "active" ? Model.TotalCount : "")</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(Model.CurrentTab == "archived" ? "active" : "")"
+                       asp-action="AllReports" asp-route-tab="archived" asp-route-search="@Model.SearchTerm">
+                        <i class="bi bi-archive me-1"></i> Archived
+                        <span class="badge bg-light text-dark ms-1">@(Model.CurrentTab == "archived" ? Model.TotalCount : "")</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <form asp-action="AllReports" method="get" class="d-flex gap-2" style="max-width: 400px;">
+            <input type="hidden" name="tab" value="@Model.CurrentTab" />
+            <input type="text" name="search" class="form-control form-control-sm"
+                   placeholder="Search by title, country, user email..."
+                   value="@Model.SearchTerm" />
+            <button type="submit" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-search"></i>
+            </button>
+            @if (!string.IsNullOrEmpty(Model.SearchTerm))
+            {
+                <a asp-action="AllReports" asp-route-tab="@Model.CurrentTab" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-x"></i>
+                </a>
+            }
+        </form>
+    </div>
+
+    <!-- Reports grid -->
+    <div class="row g-4" id="reports-container">
+        @if (Model.Reports.Any())
+        {
+            @foreach (var report in Model.Reports)
+            {
+                <div class="col-lg-4 col-md-6 report-card" data-report-id="@report.Id">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <!-- Card header row -->
+                            <div class="card-header-row">
+                                <div class="last-updated">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                    @{
+                                        var localTime = (report.UpdatedAt ?? report.CreatedAt).ToLocalTime();
+                                        var timeDiff = DateTime.Now - localTime;
+                                        string timeDisplay;
+
+                                        if (timeDiff.TotalMinutes < 1)
+                                        {
+                                            timeDisplay = "just now";
+                                        }
+                                        else if (timeDiff.TotalHours < 1)
+                                        {
+                                            var mins = (int)timeDiff.TotalMinutes;
+                                            timeDisplay = mins + " minute" + (mins > 1 ? "s" : "") + " ago";
+                                        }
+                                        else if (timeDiff.TotalHours < 24 && localTime.Date == DateTime.Now.Date)
+                                        {
+                                            timeDisplay = "today at " + localTime.ToString("HH:mm");
+                                        }
+                                        else if (timeDiff.TotalHours < 48 && localTime.Date == DateTime.Now.AddDays(-1).Date)
+                                        {
+                                            timeDisplay = "yesterday at " + localTime.ToString("HH:mm");
+                                        }
+                                        else if (timeDiff.TotalDays < 7)
+                                        {
+                                            timeDisplay = localTime.ToString("dddd") + " at " + localTime.ToString("HH:mm");
+                                        }
+                                        else
+                                        {
+                                            timeDisplay = localTime.ToString("dd MMM yyyy") + " at " + localTime.ToString("HH:mm");
+                                        }
+                                    }
+                                    <span>@timeDisplay</span>
+                                </div>
+                                <div class="header-actions">
+                                    <span class="status-badge">
+                                        <i class="bi bi-circle-fill"></i>Submitted
+                                    </span>
+                                    <button class="icon-btn archive-btn" type="button" data-report-id="@report.Id"
+                                            title="@(report.IsArchived ? "Unarchive" : "Archive")">
+                                        <i class="bi bi-archive"></i>
+                                    </button>
+                                    <button class="icon-btn delete-btn" type="button" data-report-id="@report.Id" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Author badge -->
+                            <div class="author-badge">
+                                <i class="bi bi-person-fill"></i>
+                                @(report.UserFullName ?? report.UserEmail ?? "Unknown")
+                            </div>
+
+                            <!-- Report title -->
+                            <h3 class="report-title">@report.Title</h3>
+
+                            <!-- Report details with flag -->
+                            <div class="report-details">
+                                <div class="flag-icon">
+                                    @{
+                                        var countryCode = GetCountryCode(report.Country);
+                                    }
+                                    @if (!string.IsNullOrEmpty(countryCode))
+                                    {
+                                        <span class="country-flag fi fi-@countryCode"></span>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-globe default-globe"></i>
+                                    }
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Location </span>
+                                        <span class="detail-value">@{
+                                            var locParts = new List<string>();
+                                            if (!string.IsNullOrEmpty(report.Country)) locParts.Add(report.Country);
+                                            if (!string.IsNullOrEmpty(report.Region)) locParts.Add(report.Region);
+                                            if (!string.IsNullOrEmpty(report.City) && (report.FinalUnitLevel ?? 0) >= 2) locParts.Add(report.City);
+                                            if (!string.IsNullOrEmpty(report.GovUnitLevel3) && (report.FinalUnitLevel ?? 0) >= 3) locParts.Add(report.GovUnitLevel3);
+                                        }@(locParts.Count > 0 ? string.Join(" > ", locParts) : "N/A")</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Last Financial Year Ending in @(report.FinancialYear ?? report.CreatedAt.Year.ToString())</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Currency </span>
+                                        <span class="detail-value">@(report.Currency ?? "N/A") @(report.CurrencySymbol != null ? "(" + report.CurrencySymbol + ")" : "")</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white p-3 border-top-0">
+                            <a asp-controller="Dashboard" asp-action="ViewReport" asp-route-id="@report.PublicId"
+                               class="btn btn-open w-100">Open</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12" id="no-reports-message">
+                <div class="no-reports-card">
+                    <i class="bi bi-file-earmark-text d-block"></i>
+                    <h5>No Reports Found</h5>
+                    <p class="text-muted mb-4">
+                        @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                        {
+                            <span>No reports match your search "<strong>@Model.SearchTerm</strong>". Try a different search term.</span>
+                        }
+                        else if (Model.CurrentTab == "archived")
+                        {
+                            <span>No archived reports.</span>
+                        }
+                        else
+                        {
+                            <span>No reports have been created yet.</span>
+                        }
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Report pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="AllReports" asp-route-page="@(Model.PageNumber - 1)"
+                       asp-route-search="@Model.SearchTerm" asp-route-tab="@Model.CurrentTab">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" asp-action="AllReports" asp-route-page="@i"
+                           asp-route-search="@Model.SearchTerm" asp-route-tab="@Model.CurrentTab">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.PageNumber >= Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="AllReports" asp-route-page="@(Model.PageNumber + 1)"
+                       asp-route-search="@Model.SearchTerm" asp-route-tab="@Model.CurrentTab">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+            <p class="text-center text-muted small">
+                Showing @((Model.PageNumber - 1) * 12 + 1)-@Math.Min(Model.PageNumber * 12, Model.TotalCount) of @Model.TotalCount reports
+            </p>
+        </nav>
+    }
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteReportModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 8px; border: 1px solid #dee2e6;">
+            <div class="modal-header" style="background: #212529; color: white; border: none;">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding: 2rem;">
+                <p class="mb-0" style="color: #6c757d; font-size: 1rem;">
+                    Are you sure you want to delete this report? It will be moved to trash and can be restored from the Deleted Reports page.
+                </p>
+                <input type="hidden" id="reportToDeleteId" value="">
+            </div>
+            <div class="modal-footer" style="border: none; padding: 1rem 2rem; background: #f8f9fa;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="bi bi-trash me-2"></i>Delete Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="toast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto" id="toast-title">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toast-message"></div>
+    </div>
+</div>
+
+@section Scripts {
+    @Html.AntiForgeryToken()
+    <script>
+        $(document).ready(function() {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            // Refresh
+            $('#refreshBtn').click(function() { location.reload(); });
+
+            // Delete
+            $('.delete-btn').click(function() {
+                $('#reportToDeleteId').val($(this).data('report-id'));
+                new bootstrap.Modal(document.getElementById('deleteReportModal')).show();
+            });
+
+            $('#confirmDeleteBtn').click(function() {
+                var reportId = $('#reportToDeleteId').val();
+                $.ajax({
+                    url: '@Url.Action("DeleteReport", "Dashboard")',
+                    type: 'POST',
+                    data: { id: reportId, __RequestVerificationToken: token },
+                    success: function(response) {
+                        bootstrap.Modal.getInstance(document.getElementById('deleteReportModal')).hide();
+                        if (response.success) {
+                            showToast('Success', response.message, 'success');
+                            $(`.report-card[data-report-id="${reportId}"]`).fadeOut(300, function() {
+                                $(this).remove();
+                                if ($('.report-card').length === 0) {
+                                    $('#reports-container').html(`
+                                        <div class="col-12"><div class="no-reports-card">
+                                            <i class="bi bi-file-earmark-text d-block"></i>
+                                            <h5>No Reports Found</h5>
+                                            <p class="text-muted mb-4">No reports match your current filters.</p>
+                                        </div></div>
+                                    `);
+                                }
+                            });
+                        } else {
+                            showToast('Error', response.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        bootstrap.Modal.getInstance(document.getElementById('deleteReportModal')).hide();
+                        showToast('Error', 'An error occurred. Please try again.', 'error');
+                    }
+                });
+            });
+
+            // Archive
+            $('.archive-btn').click(function() {
+                var reportId = $(this).data('report-id');
+                $.ajax({
+                    url: '@Url.Action("ArchiveReport", "Dashboard")',
+                    type: 'POST',
+                    data: { id: reportId, __RequestVerificationToken: token },
+                    success: function(response) {
+                        if (response.success) {
+                            showToast('Success', response.message, 'success');
+                            setTimeout(function() { location.reload(); }, 1000);
+                        } else {
+                            showToast('Error', response.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        showToast('Error', 'An error occurred. Please try again.', 'error');
+                    }
+                });
+            });
+
+            // Toast helper
+            function showToast(title, message, type) {
+                $('#toast-title').text(title);
+                $('#toast-message').text(message);
+                $('#toast').removeClass('bg-danger bg-success')
+                    .addClass(type === 'success' ? 'bg-success text-white' : 'bg-danger text-white');
+                new bootstrap.Toast(document.getElementById('toast')).show();
+            }
+        });
+    </script>
+}

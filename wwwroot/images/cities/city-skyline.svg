@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1d32"/>
+      <stop offset="50%" stop-color="#163a5c"/>
+      <stop offset="85%" stop-color="#e8873a"/>
+      <stop offset="100%" stop-color="#f5c842"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="72%" r="30%">
+      <stop offset="0%" stop-color="#f5c842" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#e8873a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="800" height="800" fill="url(#sky)"/>
+  <!-- Sunset glow -->
+  <ellipse cx="400" cy="580" rx="350" ry="120" fill="url(#glow)"/>
+
+  <!-- Stars -->
+  <circle cx="130" cy="60" r="1.5" fill="#fff" opacity=".5"/>
+  <circle cx="300" cy="90" r="1" fill="#fff" opacity=".4"/>
+  <circle cx="520" cy="45" r="1.5" fill="#fff" opacity=".6"/>
+  <circle cx="680" cy="110" r="1" fill="#fff" opacity=".3"/>
+  <circle cx="200" cy="150" r="1" fill="#fff" opacity=".4"/>
+  <circle cx="600" cy="170" r="1.2" fill="#fff" opacity=".3"/>
+
+  <!-- City silhouette — single path for clean look -->
+  <path d="
+    M0,600
+    L0,520 30,520 30,480 50,480 50,520 70,520 70,460 90,460 90,520
+    L110,520 110,440 125,440 125,400 140,400 140,440 155,440 155,520
+    L170,520 170,380 185,380 185,340 195,340 195,310 205,310 205,340 215,340 215,380 230,380 230,520
+    L240,520 240,450 260,450 260,420 275,420 275,450 290,450 290,520
+    L300,520 300,360 310,360 310,280 318,280 318,240 322,200 326,240 330,240 330,280 340,280 340,360 350,360 350,520
+    L358,520 358,390 375,390 375,350 395,350 395,320 405,320 405,290 410,250 415,290 415,320 425,320 425,350 445,350 445,390 462,390 462,520
+    L472,520 472,400 490,400 490,360 505,360 505,330 510,310 515,330 515,360 530,360 530,400 548,400 548,520
+    L560,520 560,440 575,440 575,390 590,390 590,440 605,440 605,520
+    L615,520 615,460 630,460 630,420 650,420 650,460 665,460 665,520
+    L680,520 680,480 695,480 695,450 710,450 710,480 730,480 730,520
+    L750,520 750,500 770,500 770,520 800,520
+    L800,600 Z
+  " fill="#0d1f33"/>
+
+  <!-- Window dots — warm lights scattered across buildings -->
+  <g fill="#f5c842" opacity=".7">
+    <!-- Far left buildings -->
+    <rect x="35" y="490" width="4" height="5" rx="1"/>
+    <rect x="75" y="470" width="4" height="5" rx="1"/>
+    <rect x="75" y="482" width="4" height="5" rx="1"/>
+    <!-- Tall left building -->
+    <rect x="118" y="410" width="4" height="5" rx="1"/>
+    <rect x="130" y="420" width="4" height="5" rx="1"/>
+    <rect x="118" y="450" width="4" height="5" rx="1"/>
+    <rect x="135" y="445" width="4" height="5" rx="1"/>
+    <!-- Tower left -->
+    <rect x="180" y="350" width="4" height="5" rx="1"/>
+    <rect x="195" y="345" width="4" height="5" rx="1"/>
+    <rect x="210" y="355" width="4" height="5" rx="1"/>
+    <rect x="185" y="390" width="4" height="5" rx="1"/>
+    <rect x="200" y="400" width="4" height="5" rx="1"/>
+    <rect x="215" y="385" width="4" height="5" rx="1"/>
+    <rect x="190" y="430" width="4" height="5" rx="1"/>
+    <rect x="205" y="440" width="4" height="5" rx="1"/>
+    <!-- Medium block -->
+    <rect x="250" y="460" width="4" height="5" rx="1"/>
+    <rect x="265" y="430" width="4" height="5" rx="1"/>
+    <rect x="275" y="460" width="4" height="5" rx="1"/>
+    <!-- Tallest tower left -->
+    <rect x="315" y="260" width="4" height="5" rx="1"/>
+    <rect x="315" y="295" width="4" height="5" rx="1"/>
+    <rect x="325" y="280" width="4" height="5" rx="1"/>
+    <rect x="310" y="330" width="4" height="5" rx="1"/>
+    <rect x="325" y="340" width="4" height="5" rx="1"/>
+    <rect x="335" y="320" width="4" height="5" rx="1"/>
+    <rect x="310" y="370" width="4" height="5" rx="1"/>
+    <rect x="330" y="380" width="4" height="5" rx="1"/>
+    <rect x="315" y="410" width="4" height="5" rx="1"/>
+    <rect x="335" y="400" width="4" height="5" rx="1"/>
+    <!-- Center tallest -->
+    <rect x="400" y="300" width="4" height="5" rx="1"/>
+    <rect x="385" y="360" width="4" height="5" rx="1"/>
+    <rect x="400" y="340" width="4" height="5" rx="1"/>
+    <rect x="415" y="355" width="4" height="5" rx="1"/>
+    <rect x="390" y="395" width="4" height="5" rx="1"/>
+    <rect x="410" y="380" width="4" height="5" rx="1"/>
+    <rect x="430" y="370" width="4" height="5" rx="1"/>
+    <rect x="440" y="400" width="4" height="5" rx="1"/>
+    <rect x="395" y="440" width="4" height="5" rx="1"/>
+    <rect x="420" y="430" width="4" height="5" rx="1"/>
+    <rect x="445" y="445" width="4" height="5" rx="1"/>
+    <!-- Right tower -->
+    <rect x="495" y="370" width="4" height="5" rx="1"/>
+    <rect x="510" y="345" width="4" height="5" rx="1"/>
+    <rect x="520" y="375" width="4" height="5" rx="1"/>
+    <rect x="500" y="410" width="4" height="5" rx="1"/>
+    <rect x="520" y="400" width="4" height="5" rx="1"/>
+    <rect x="485" y="440" width="4" height="5" rx="1"/>
+    <rect x="530" y="430" width="4" height="5" rx="1"/>
+    <!-- Right buildings -->
+    <rect x="580" y="400" width="4" height="5" rx="1"/>
+    <rect x="580" y="445" width="4" height="5" rx="1"/>
+    <rect x="595" y="420" width="4" height="5" rx="1"/>
+    <rect x="625" y="430" width="4" height="5" rx="1"/>
+    <rect x="640" y="465" width="4" height="5" rx="1"/>
+    <rect x="655" y="440" width="4" height="5" rx="1"/>
+    <rect x="690" y="460" width="4" height="5" rx="1"/>
+    <rect x="705" y="485" width="4" height="5" rx="1"/>
+    <rect x="760" y="505" width="4" height="5" rx="1"/>
+  </g>
+
+  <!-- Cyan accent windows -->
+  <g fill="#56c3e8" opacity=".5">
+    <rect x="190" y="365" width="4" height="5" rx="1"/>
+    <rect x="320" y="310" width="4" height="5" rx="1"/>
+    <rect x="405" y="320" width="4" height="5" rx="1"/>
+    <rect x="505" y="360" width="4" height="5" rx="1"/>
+    <rect x="635" y="440" width="4" height="5" rx="1"/>
+    <rect x="250" y="440" width="4" height="5" rx="1"/>
+    <rect x="380" y="410" width="4" height="5" rx="1"/>
+    <rect x="540" y="420" width="4" height="5" rx="1"/>
+  </g>
+
+  <!-- Ground reflection -->
+  <rect x="0" y="580" width="800" height="220" fill="#0b1520" opacity=".6"/>
+  <line x1="0" y1="580" x2="800" y2="580" stroke="#e8873a" stroke-width="1" opacity=".3"/>
+</svg>

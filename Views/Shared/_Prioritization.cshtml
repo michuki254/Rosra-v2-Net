@@ -105,7 +105,7 @@
                         <i class="fas fa-chart-bar fa-3x mb-3 opacity-50"></i>
                         <p class="mb-0">@Localizer["Chart_Placeholder"]</p>
                     </div>
-                    <canvas id="gapBarChart" height="300" style="display: none;"></canvas>
+                    <canvas id="gapBarChart" height="180" style="display: none;"></canvas>
                 </div>
             </div>
         </div>
@@ -1052,9 +1052,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return streams;
     }
 
-    // Format currency
+    // Format currency with abbreviation for large values
     function formatCurrency(value) {
         if (value === null || value === undefined || isNaN(value)) return '-';
+        var abs = Math.abs(value);
+        if (abs >= 1e9) return currencySymbol + (value / 1e9).toFixed(1) + 'B';
+        if (abs >= 1e6) return currencySymbol + (value / 1e6).toFixed(1) + 'M';
+        if (abs >= 1e3) return currencySymbol + (value / 1e3).toFixed(1) + 'K';
         return currencySymbol + value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     }
 
@@ -1357,7 +1361,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return currencySymbol + value.toLocaleString();
+                                var abs = Math.abs(value);
+                                if (abs >= 1e9) return currencySymbol + (value / 1e9).toFixed(1) + 'B';
+                                if (abs >= 1e6) return currencySymbol + (value / 1e6).toFixed(1) + 'M';
+                                if (abs >= 1e3) return currencySymbol + (value / 1e3).toFixed(0) + 'K';
+                                return currencySymbol + value;
                             }
                         }
                     }
@@ -1567,6 +1575,13 @@ document.addEventListener('DOMContentLoaded', function() {
             updateCharts();
             updateStatistics();
         }
+    });
+
+    // Listen for gapDataReady event (fired by print pages after gap calculations complete)
+    window.addEventListener('gapDataReady', function() {
+        console.log('Prioritization: gapDataReady event received, re-initializing');
+        initializePrioritization();
+        initializeGapPrioritization();
     });
 
     // Also listen for custom events from gap analysis tabs

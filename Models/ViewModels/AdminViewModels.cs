@@ -10,15 +10,25 @@ namespace RosraApp.Models.ViewModels
         public int InactiveUsers { get; set; }
         public int TotalReports { get; set; }
         public List<ReportListItemViewModel> AllReports { get; set; } = new();
+
+        // Pagination
+        public int PageNumber { get; set; } = 1;
+        public int TotalPages { get; set; } = 1;
+        public int TotalCount { get; set; }
+
+        // Search
+        public string? SearchTerm { get; set; }
     }
 
     public class ReportListItemViewModel
     {
         public int Id { get; set; }
+        public Guid PublicId { get; set; }
         public string Title { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
         public string UserEmail { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public string? City { get; set; }
         public string? Country { get; set; }
     }

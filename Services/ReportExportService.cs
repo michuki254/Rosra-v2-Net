@@ -702,6 +702,273 @@ namespace RosraApp.Services
             });
         }
 
+        /// <summary>
+        /// Generates a standalone PDF for the Top-Down Analysis section only,
+        /// designed to match the frontend card/metric layout.
+        /// </summary>
+        public byte[] GenerateTopDownPdf(RosraFormViewModel model)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+            _currencySymbol = model.CurrencySymbol ?? "$";
+            _chartImages = ParseChartImages(model.ChartImagesData);
+
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(30);
+                    page.DefaultTextStyle(x => x.FontSize(10));
+
+                    // Header
+                    page.Header().Column(col =>
+                    {
+                        col.Item().Row(row =>
+                        {
+                            row.RelativeItem().Column(hdr =>
+                            {
+                                hdr.Item().Text("Top-Down Analysis Report").FontSize(22).Bold().FontColor("#00689D");
+                                var location = string.Join(" > ", new[] { model.Country, model.Region, model.City }
+                                    .Where(s => !string.IsNullOrEmpty(s)));
+                                if (!string.IsNullOrEmpty(location))
+                                    hdr.Item().Text(location).FontSize(11).FontColor(Colors.Grey.Darken1);
+                                hdr.Item().Text($"Financial Year: {model.FinancialYear ?? "N/A"}  |  Currency: {model.Currency ?? "N/A"} ({_currencySymbol})")
+                                    .FontSize(9).FontColor(Colors.Grey.Medium);
+                            });
+                        });
+                        col.Item().PaddingTop(8).LineHorizontal(2).LineColor("#00b2e3");
+                    });
+
+                    // Content
+                    page.Content().PaddingTop(15).Column(content =>
+                    {
+                        ComposeTopDownCards(content, model);
+                    });
+
+                    page.Footer().Element(ComposeFooter);
+                });
+            });
+
+            return document.GeneratePdf();
+        }
+
+        private void ComposeTopDownCards(ColumnDescriptor column, RosraFormViewModel model)
+        {
+            // === Data Input Summary Card ===
+            column.Item().Background("#F8FAFC").Border(1).BorderColor("#E2E8F0").PaddingBottom(2).Column(card =>
+            {
+                card.Item().Background("#00689D").Padding(10).Text("Data Input Summary")
+                    .FontSize(12).Bold().FontColor(Colors.White);
+
+                card.Item().Padding(12).Table(table =>
+                {
+                    table.ColumnsDefinition(cols =>
+                    {
+                        cols.RelativeColumn(1); cols.RelativeColumn(1);
+                        cols.RelativeColumn(1); cols.RelativeColumn(1);
+                    });
+
+                    void AddField(string label, string value)
+                    {
+                        table.Cell().PaddingBottom(8).Column(c =>
+                        {
+                            c.Item().Text(label).FontSize(7).Bold().FontColor(Colors.Grey.Darken1).LetterSpacing(0.5f);
+                            c.Item().PaddingTop(2).Text(value).FontSize(10);
+                        });
+                    }
+
+                    AddField("COUNTRY", model.Country ?? "-");
+                    AddField("FINANCIAL YEAR", model.FinancialYear ?? "-");
+                    AddField("CURRENCY", $"{model.Currency ?? "-"} ({_currencySymbol})");
+                    AddField("INCOME LEVEL", model.IncomeLevel ?? "-");
+                    AddField("REGION/STATE", model.Region ?? "-");
+                    AddField("CITY/MUNICIPALITY", model.City ?? "-");
+                    AddField("GOVERNMENT TYPE", model.GovernmentType ?? "-");
+                    AddField("GOV. UNIT", model.GovUnitLevel3 ?? "-");
+                });
+            });
+
+            // Parse PeerSNGData
+            if (string.IsNullOrEmpty(model.PeerSNGData))
+            {
+                column.Item().PaddingTop(15).Background(Colors.Grey.Lighten4).Padding(20).AlignCenter()
+                    .Text("No frontier analysis data available.").FontColor(Colors.Grey.Medium).Italic();
+                return;
+            }
+
+            try
+            {
+                var peerData = JsonSerializer.Deserialize<JsonElement>(model.PeerSNGData);
+
+                // === Primary: Within-Country OSR Frontier ===
+                column.Item().PaddingTop(15).Column(section =>
+                {
+                    // Section header
+                    section.Item().Background("#00b2e3").Padding(10).Row(hdr =>
+                    {
+                        hdr.RelativeItem().Column(h =>
+                        {
+                            h.Item().Text("Within-Country OSR Frontier (Peer SNGs)")
+                                .FontSize(13).Bold().FontColor(Colors.White);
+                            h.Item().Text("Primary Analysis  |  Compare against domestic peer subnational governments")
+                                .FontSize(8).FontColor("rgba(255,255,255,0.85)");
+                        });
+                    });
+
+                    // Metrics cards
+                    if (peerData.TryGetProperty("analysisResults", out var results))
+                    {
+                        section.Item().Border(1).BorderColor("#E2E8F0").Column(metrics =>
+                        {
+                            void MetricRow(string label, string prop, string bg, bool isBold = false, bool isHighlight = false)
+                            {
+                                var val = GetJsonString(results, prop);
+                                metrics.Item().Background(bg).PaddingVertical(6).PaddingHorizontal(12).Row(row =>
+                                {
+                                    if (isBold)
+                                        row.RelativeItem(3).AlignMiddle().Text(label).FontSize(9).Bold();
+                                    else
+                                        row.RelativeItem(3).AlignMiddle().Text(label).FontSize(9);
+
+                                    var valDesc = row.RelativeItem(2).AlignRight().AlignMiddle().Text(val).FontSize(10);
+                                    if (isBold) valDesc.Bold();
+                                    if (isHighlight) valDesc.FontColor("#E65100");
+                                });
+                            }
+
+                            MetricRow("Own Source Revenues (OSRs) per capita", "actualOSR", Colors.White);
+                            MetricRow("Subnational GDP per capita", "subnationalGDP", "#F8FAFC");
+                            MetricRow("Peer frontier multiplier (Top-20% avg OSR/GDP per capita)", "frontierMultiplier", "#EBF5FB", isBold: true);
+                            MetricRow("Subject multiplier", "subjectMultiplier", Colors.White);
+                            MetricRow("Frontier benchmark per capita", "osrPotential", "#DBEAFE", isBold: true);
+                            MetricRow("Gap to frontier benchmark", "osrGap", "#FFF3E0", isBold: true, isHighlight: true);
+                            MetricRow("Performance Index", "performanceIndex", "#E0F2F1", isBold: true);
+                        });
+                    }
+
+                    // Charts side by side
+                    section.Item().PaddingTop(10).Row(row =>
+                    {
+                        row.RelativeItem().Column(c =>
+                        {
+                            c.Item().Text("OSR/GDP Multiplier Comparison").FontSize(9).Bold().FontColor("#333");
+                            c.Item().PaddingTop(3).Element(ct => EmbedChart(ct, "peerSngChartTop",
+                                "Visit Top-Down tab to generate chart"));
+                        });
+                        row.ConstantItem(10);
+                        row.RelativeItem().Column(c =>
+                        {
+                            c.Item().Text("Current OSR vs Frontier Benchmark").FontSize(9).Bold().FontColor("#333");
+                            c.Item().PaddingTop(3).Element(ct => EmbedChart(ct, "actualVsPotentialChart",
+                                "Visit Top-Down tab to generate chart"));
+                        });
+                    });
+
+                    // Result text
+                    if (peerData.TryGetProperty("resultText", out var resultText) && !string.IsNullOrEmpty(resultText.GetString()))
+                    {
+                        section.Item().PaddingTop(10).Background("#FFF8E1").Border(1).BorderColor("#FFE082")
+                            .Padding(10).Column(rc =>
+                        {
+                            rc.Item().Text("Analysis Result").Bold().FontSize(9).FontColor("#E65100");
+                            rc.Item().PaddingTop(4).Text(resultText.GetString() ?? "").FontSize(8).LineHeight(1.4f);
+                        });
+                    }
+                });
+
+                // === Optional: Cross-Country Fiscal Analysis ===
+                if (peerData.TryGetProperty("crossCountry", out var cc) && HasAnyValue(cc))
+                {
+                    column.Item().PaddingTop(20).Column(ccSection =>
+                    {
+                        ccSection.Item().Text("Cross-Country Fiscal Analysis").FontSize(14).Bold().FontColor("#00689D");
+                        ccSection.Item().PaddingTop(2).Text("Compare your country's position in the global fiscal decentralisation space")
+                            .FontSize(8).FontColor(Colors.Grey.Darken1);
+
+                        // A. Funding Decentralization
+                        ccSection.Item().PaddingTop(12).Background("#00b2e3").Padding(8).Row(hdr =>
+                        {
+                            hdr.ConstantItem(22).AlignCenter().PaddingTop(2).Text("A").FontSize(10).Bold().FontColor(Colors.White);
+                            hdr.RelativeItem().Text("Funding Decentralization Frontier").FontSize(11).Bold().FontColor(Colors.White);
+                        });
+
+                        ccSection.Item().Border(1).BorderColor("#E2E8F0").Column(fm =>
+                        {
+                            void FRow(string label, string prop, string bg, bool bold = false)
+                            {
+                                var val = GetJsonString(cc, prop);
+                                fm.Item().Background(bg).PaddingVertical(5).PaddingHorizontal(10).Row(row =>
+                                {
+                                    var l = row.RelativeItem(3).Text(label).FontSize(9);
+                                    if (bold) l.Bold();
+                                    var v = row.RelativeItem(2).AlignRight().Text(val).FontSize(9);
+                                    if (bold) v.Bold();
+                                });
+                            }
+
+                            FRow("SNG revenue per capita", "sngRevenuePerCapita", Colors.White);
+                            FRow("Peer benchmark (top-20% avg)", "peerBenchmarkFunding", "#EBF5FB", bold: true);
+                            FRow("Funding index", "fundingIndex", "#E0F2F1", bold: true);
+                            FRow("Funding headroom (USD per capita)", "fundingHeadroom", "#DBEAFE", bold: true);
+                        });
+
+                        // B. Revenue Autonomy
+                        ccSection.Item().PaddingTop(12).Background("#00b2e3").Padding(8).Row(hdr =>
+                        {
+                            hdr.ConstantItem(22).AlignCenter().PaddingTop(2).Text("B").FontSize(10).Bold().FontColor(Colors.White);
+                            hdr.RelativeItem().Text("Subnational Revenue Autonomy").FontSize(11).Bold().FontColor(Colors.White);
+                        });
+
+                        ccSection.Item().Border(1).BorderColor("#E2E8F0").Column(am =>
+                        {
+                            void ARow(string label, string prop, string bg, bool bold = false, bool highlight = false)
+                            {
+                                var val = GetJsonString(cc, prop);
+                                am.Item().Background(bg).PaddingVertical(5).PaddingHorizontal(10).Row(row =>
+                                {
+                                    var l = row.RelativeItem(3).Text(label).FontSize(9);
+                                    if (bold) l.Bold();
+                                    var v = row.RelativeItem(2).AlignRight().Text(val).FontSize(9);
+                                    if (bold) v.Bold();
+                                    if (highlight) v.FontColor("#E65100");
+                                });
+                            }
+
+                            ARow("Non-grants share of SNG revenue (%)", "nonGrantsShare", Colors.White);
+                            ARow("Peer benchmark (top-20% avg)", "peerBenchmarkAutonomy", "#EBF5FB", bold: true);
+                            ARow("Autonomy index", "autonomyIndex", "#E0F2F1", bold: true);
+                            ARow("Distance from peer benchmark (% pts)", "distanceFromBenchmark", Colors.White);
+                            ARow("Position relative to peer benchmark", "positionRelative", "#FFF3E0", bold: true, highlight: true);
+                        });
+
+                        // Fiscal chart
+                        ccSection.Item().PaddingTop(10).Column(c =>
+                        {
+                            c.Item().Text("Position in Fiscal Decentralisation Space").FontSize(9).Bold().FontColor("#333");
+                            c.Item().PaddingTop(3).Element(ct => EmbedChart(ct, "fiscalDecentralisationChart",
+                                "Visit Top-Down tab to generate chart"));
+                        });
+
+                        // Cross-country result text
+                        if (peerData.TryGetProperty("crossCountryResultText", out var ccResult) && !string.IsNullOrEmpty(ccResult.GetString()))
+                        {
+                            ccSection.Item().PaddingTop(10).Background("#FFF8E1").Border(1).BorderColor("#FFE082")
+                                .Padding(10).Column(rc =>
+                            {
+                                rc.Item().Text("Cross-Country Analysis Result").Bold().FontSize(9).FontColor("#E65100");
+                                rc.Item().PaddingTop(4).Text(ccResult.GetString() ?? "").FontSize(8).LineHeight(1.4f);
+                            });
+                        }
+                    });
+                }
+            }
+            catch
+            {
+                column.Item().PaddingTop(10).Text("Could not parse frontier analysis data.")
+                    .FontColor(Colors.Grey.Medium).Italic();
+            }
+        }
+
         private void ComposeFooter(IContainer container)
         {
             container.Row(row =>

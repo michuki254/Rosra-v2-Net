@@ -673,9 +673,21 @@
                     <a asp-controller="Rosra" asp-action="NewReport" class="sidebar-btn sidebar-btn-primary">
                         <span>@RosraLocalizer["Sidebar_NewReport"]</span>
                     </a>
+                    <a asp-controller="Rosra" asp-action="LoadSampleData" class="sidebar-btn" style="background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; border-radius: 6px; padding: 0.5rem 1rem; font-weight: 500; cursor: pointer; width: 100%; text-align: center; text-decoration: none; display: block; margin-top: 0.25rem;">
+                        <i class="bi bi-database me-1"></i>
+                        <span>Load Sample Data</span>
+                    </a>
                     <button type="button" id="saveReportBtn" class="sidebar-btn sidebar-btn-secondary">
-                        <span>@(Model.TabContentModel.Id > 0 ? RosraLocalizer["Sidebar_UpdateReport"].Value : RosraLocalizer["Sidebar_SaveReport"].Value)</span>
+                        <i class="bi bi-save me-1"></i>
+                        <span>@(Model.TabContentModel.Id > 0 ? "Update Report" : "Save as Draft")</span>
                     </button>
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <button type="button" id="submitForReviewBtn" class="sidebar-btn" style="background: #10b981; color: white; border: none; border-radius: 6px; padding: 0.5rem 1rem; font-weight: 500; cursor: pointer; width: 100%; text-align: center; margin-top: 0.25rem;">
+                            <i class="bi bi-send me-1"></i>
+                            <span>Submit for Review</span>
+                        </button>
+                    }
                     <div class="sidebar-dropdown dropdown">
                         <button type="button" class="sidebar-btn sidebar-btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             <span>@RosraLocalizer["Sidebar_Export"]</span>
@@ -683,12 +695,17 @@
                         <ul class="dropdown-menu">
                             <li><button type="button" class="dropdown-item" id="exportPdfBtn"><i class="bi bi-file-pdf text-danger me-2"></i>@RosraLocalizer["Sidebar_ExportPdf"]</button></li>
                             <li><button type="button" class="dropdown-item" id="exportExcelBtn"><i class="bi bi-file-earmark-excel text-success me-2"></i>@RosraLocalizer["Sidebar_ExportExcel"]</button></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button type="button" class="dropdown-item" id="printTopDownBtn"><i class="bi bi-bar-chart text-primary me-2"></i>Top-Down Analysis (Print)</button></li>
+                            <li><button type="button" class="dropdown-item" id="printBottomUpBtn"><i class="bi bi-layers text-success me-2"></i>Bottom-Up Analysis (Print)</button></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button type="button" class="dropdown-item" id="printFullReportBtn"><i class="bi bi-file-earmark-text text-info me-2"></i>Full Report (Print)</button></li>
                         </ul>
                     </div>
                 }
                 else
                 {
-                    <a asp-controller="Rosra" asp-action="Edit" asp-route-id="@Model.TabContentModel.Id" class="sidebar-btn sidebar-btn-primary">
+                    <a asp-controller="Rosra" asp-action="Edit" asp-route-id="@Model.TabContentModel.PublicId" class="sidebar-btn sidebar-btn-primary">
                         <span>@RosraLocalizer["Sidebar_EditReport"]</span>
                     </a>
                     <div class="sidebar-dropdown dropdown">
@@ -713,6 +730,8 @@
                 @Html.AntiForgeryToken()
                 <!-- Hidden field for report ID -->
                 <input type="hidden" id="reportId" name="Id" value="@Model.TabContentModel.Id" />
+                <input type="hidden" id="reportPublicId" name="PublicId" value="@Model.TabContentModel.PublicId" />
+                <input type="hidden" name="RowVersion" value="@Model.TabContentModel.RowVersion" />
 
                 <!-- Hidden field for report title -->
                 <input type="hidden" id="reportTitle" name="Title" value="@Model.TabContentModel.Title" />
@@ -744,6 +763,36 @@
             </form>
         </div>
     </div>
+
+    @* Submit for Review Confirmation Modal *@
+    @if (User.Identity?.IsAuthenticated ?? false)
+    {
+        <div class="modal fade" id="submitForReviewModal" tabindex="-1" aria-labelledby="submitForReviewModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border-radius: 8px; border: 1px solid #dee2e6;">
+                    <div class="modal-header" style="background: #10b981; color: white; border: none;">
+                        <h5 class="modal-title fw-bold" id="submitForReviewModalLabel">
+                            <i class="bi bi-send me-2"></i>Submit for Review
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="padding: 2rem;">
+                        <p class="mb-0" style="color: #6c757d; font-size: 1rem;">
+                            Are you sure you want to submit this report for review? You won't be able to edit it until a reviewer returns it.
+                        </p>
+                    </div>
+                    <div class="modal-footer" style="border: none; padding: 1rem 2rem; background: #f8f9fa;">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn" id="confirmSubmitBtn" style="background: #10b981; color: white; border: none;">
+                            <i class="bi bi-send me-2"></i>Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 
     @* Include Authentication Modal for unauthenticated users *@
     @if (!(User.Identity?.IsAuthenticated ?? false))
@@ -937,6 +986,26 @@
         })();
 
         console.log('FormStateManager initialized');
+
+        // Clear localStorage when starting a new report
+        @if (TempData["ClearLocalStorage"] != null)
+        {
+            <text>
+            window.FormStateManager.clearLocalStorageBackup();
+            // Also clear any other ROSRA-related localStorage keys
+            Object.keys(localStorage).forEach(function(key) {
+                if (key.indexOf('propertyTax') === 0 || key.indexOf('license') === 0 ||
+                    key.indexOf('total') === 0 || key.indexOf('largest') === 0 ||
+                    key.indexOf('selectedCurrency') === 0 || key.indexOf('shortTerm') === 0 ||
+                    key.indexOf('longTerm') === 0 || key.indexOf('mixed') === 0 ||
+                    key.indexOf('generic') === 0 || key.indexOf('peer') === 0 ||
+                    key.indexOf('rosra') === 0) {
+                    localStorage.removeItem(key);
+                }
+            });
+            console.log('New Report: Cleared all localStorage data');
+            </text>
+        }
     </script>
 
     <!-- Global App Context - Similar to React Context for state management across tabs -->
@@ -946,8 +1015,8 @@
             // Private state
             const state = {
                 currencySymbol: localStorage.getItem('selectedCurrencySymbol') || '@Model.TabContentModel.CurrencySymbol' || '$',
-                country: '@Model.TabContentModel.Country' || 'Kenya',
-                region: '@Model.TabContentModel.Region' || 'Kiambu'
+                country: '@Model.TabContentModel.Country' || '',
+                region: '@Model.TabContentModel.Region' || ''
             };
 
             // Subscribers for state changes
@@ -1111,16 +1180,31 @@
             // Check if user is authenticated (for save functionality)
             var isAuthenticated = @Json.Serialize(User.Identity?.IsAuthenticated ?? false);
 
+            // Keep URL in sync with the loaded report
+            (function() {
+                var publicId = $("#reportPublicId").val();
+                var reportId = parseInt($("#reportId").val());
+                if (reportId > 0 && publicId && publicId !== '00000000-0000-0000-0000-000000000000') {
+                    var editUrl = '@Url.Action("Edit", "Rosra")/' + publicId;
+                    if (window.location.pathname !== editUrl) {
+                        history.replaceState(null, '', editUrl + window.location.search);
+                    }
+                }
+            })();
+
             if (!isViewMode) {
                 // Save Report button click handler
                 $("#saveReportBtn").click(function() {
                     // Function to perform the actual save
                     function performSave() {
+                        var btn = $("#saveReportBtn");
+                        var originalHtml = btn.html();
+                        btn.prop('disabled', true).html('<i class="bi bi-hourglass-split me-1"></i><span>Saving...</span>');
+
                         // Auto-generate title from Country and Region (no popup)
                         var country = $("#country option:selected").text().trim();
                         var region = $("#region option:selected").text().trim();
 
-                        // Build title: "ROSRA Report - Country - Region" or just "ROSRA Report - Country" if no region
                         var title = "ROSRA Report";
                         if (country && country !== "Select Country" && country !== "") {
                             title += " - " + country;
@@ -1133,20 +1217,55 @@
                         // Collect tab data from localStorage before saving
                         collectTabDataFromLocalStorage();
 
-                        // Submit the form to save the report
-                        $("#saveReportSubmit").click();
+                        // Save via AJAX
+                        $.ajax({
+                            url: '@Url.Action("AutoSaveReport", "Rosra")',
+                            type: 'POST',
+                            data: $("#rosraForm").serialize(),
+                            success: function(r) {
+                                if (r.success) {
+                                    // Update hidden fields with new report ID and row version
+                                    if (r.reportId && parseInt($("#reportId").val()) === 0) {
+                                        $("#reportId").val(r.reportId);
+                                    }
+                                    if (r.rowVersion) {
+                                        $('input[name="RowVersion"]').val(r.rowVersion);
+                                    }
+
+                                    // Update URL to point to this report
+                                    // Update PublicId hidden field
+                                    if (r.publicId) {
+                                        $("#reportPublicId").val(r.publicId);
+                                    }
+                                    var editUrl = '@Url.Action("Edit", "Rosra")/' + r.publicId;
+                                    history.replaceState(null, '', editUrl);
+
+                                    // Change button text to "Update Report"
+                                    btn.prop('disabled', false).html('<i class="bi bi-save me-1"></i><span>Update Report</span>');
+
+                                    // Show brief success feedback
+                                    var badge = $('<span class="badge bg-success ms-2" style="font-size: 0.75rem;">Saved</span>');
+                                    btn.after(badge);
+                                    setTimeout(function() { badge.fadeOut(400, function() { $(this).remove(); }); }, 2000);
+                                } else {
+                                    alert("Error saving report: " + r.message);
+                                    btn.prop('disabled', false).html(originalHtml);
+                                }
+                            },
+                            error: function() {
+                                alert("An error occurred while saving. Please try again.");
+                                btn.prop('disabled', false).html(originalHtml);
+                            }
+                        });
                     }
 
                     // Check if user is authenticated
                     if (isAuthenticated) {
-                        // User is logged in, save directly
                         performSave();
                     } else {
-                        // User is not logged in, show authentication modal
                         if (typeof AuthModal !== 'undefined') {
                             AuthModal.showForSave(performSave);
                         } else {
-                            // Fallback: redirect to login
                             alert('Please log in to save your report.');
                             window.location.href = '/Account/Login?returnUrl=' + encodeURIComponent(window.location.pathname);
                         }
@@ -1349,7 +1468,128 @@
                 document.getElementById('rosraForm').action = '@Url.Action("ExportExcel", "Rosra")';
                 document.getElementById('rosraForm').submit();
             });
+            // Helper: save session, then open print page with auto-print
+            function openPrintPage(printUrl) {
+                if (typeof collectTabDataFromLocalStorage === 'function') collectTabDataFromLocalStorage();
+                $.ajax({
+                    url: '@Url.Action("AutoSaveReport", "Rosra")',
+                    type: 'POST',
+                    data: $("#rosraForm").serialize(),
+                    success: function(r) {
+                        if (r.success && r.reportId && parseInt($("#reportId").val()) === 0) {
+                            $("#reportId").val(r.reportId);
+                        }
+                        window.open(printUrl + '?autoPrint=true', '_blank');
+                    },
+                    error: function() {
+                        window.open(printUrl + '?autoPrint=true', '_blank');
+                    }
+                });
+            }
+
+            // Print Top-Down
+            $("#printTopDownBtn").click(function() {
+                openPrintPage('@Url.Action("PrintTopDown", "Rosra")');
+            });
+
+            // Print Bottom-Up
+            $("#printBottomUpBtn").click(function() {
+                openPrintPage('@Url.Action("PrintBottomUp", "Rosra")');
+            });
+
+            // Print Full Report
+            $("#printFullReportBtn").click(function() {
+                openPrintPage('@Url.Action("PrintFullReport", "Rosra")');
+            });
         });
+
+        // --- Submit for Review ---
+        @if (!isViewMode && (User.Identity?.IsAuthenticated ?? false))
+        {
+            <text>
+            $("#submitForReviewBtn").click(function() {
+                var submitModal = new bootstrap.Modal(document.getElementById('submitForReviewModal'));
+                submitModal.show();
+            });
+
+            $("#confirmSubmitBtn").click(function() {
+                // Close the modal
+                bootstrap.Modal.getInstance(document.getElementById('submitForReviewModal')).hide();
+
+                var btn = $("#submitForReviewBtn");
+                btn.prop('disabled', true).html('<i class="bi bi-hourglass-split me-1"></i><span>Submitting...</span>');
+
+                // Collect latest data from localStorage before saving
+                if (typeof collectTabDataFromLocalStorage === 'function') {
+                    collectTabDataFromLocalStorage();
+                }
+
+                // Auto-generate title if missing
+                var title = $("#reportTitle").val();
+                if (!title) {
+                    var country = $("#country option:selected").text().trim();
+                    var region = $("#region option:selected").text().trim();
+                    title = "ROSRA Report";
+                    if (country && country !== "Select Country" && country !== "") {
+                        title += " - " + country;
+                        if (region && region !== "Select Region/State" && region !== "") {
+                            title += " - " + region;
+                        }
+                    }
+                    $("#reportTitle").val(title);
+                }
+
+                // Step 1: Auto-save the report first to ensure all data is persisted
+                $.ajax({
+                    url: '@Url.Action("AutoSaveReport", "Rosra")',
+                    type: 'POST',
+                    data: $("#rosraForm").serialize(),
+                    success: function(saveResult) {
+                        if (!saveResult.success) {
+                            alert("Error saving report: " + saveResult.message);
+                            btn.prop('disabled', false).html('<i class="bi bi-send me-1"></i><span>Submit for Review</span>');
+                            return;
+                        }
+
+                        var reportId = saveResult.reportId;
+                        // Update the hidden fields
+                        if (reportId && parseInt($("#reportId").val()) === 0) {
+                            $("#reportId").val(reportId);
+                        }
+                        if (saveResult.publicId) {
+                            $("#reportPublicId").val(saveResult.publicId);
+                        }
+                        if (saveResult.rowVersion) {
+                            $('input[name="RowVersion"]').val(saveResult.rowVersion);
+                        }
+
+                        // Step 2: Submit the saved report for review (uses int id internally)
+                        $.ajax({
+                            url: '@Url.Action("Submit", "Submission")/' + reportId,
+                            type: 'POST',
+                            data: { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+                            success: function(r) {
+                                if (r.success) {
+                                    window.location.href = '@Url.Action("Index", "Dashboard")';
+                                } else {
+                                    alert("Error: " + r.message);
+                                    btn.prop('disabled', false).html('<i class="bi bi-send me-1"></i><span>Submit for Review</span>');
+                                }
+                            },
+                            error: function() {
+                                alert("An error occurred while submitting. Please try again.");
+                                btn.prop('disabled', false).html('<i class="bi bi-send me-1"></i><span>Submit for Review</span>');
+                            }
+                        });
+                    },
+                    error: function() {
+                        alert("An error occurred while saving the report. Please try again.");
+                        btn.prop('disabled', false).html('<i class="bi bi-send me-1"></i><span>Submit for Review</span>');
+                    }
+                });
+            });
+            </text>
+        }
     </script>
 
     @* Include authentication modal script for unauthenticated users *@

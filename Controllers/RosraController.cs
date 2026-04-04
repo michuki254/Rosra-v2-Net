@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.IO;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using RosraApp.Services;
 
@@ -28,6 +29,7 @@ namespace RosraApp.Controllers
         private readonly IStringLocalizer<RosraApp.RosraResources> _localizer;
         private readonly ReportExportService _pdfExportService;
         private readonly ExcelExportService _excelExportService;
+        private readonly IMemoryCache _cache;
 
         // JSON serialization options to ensure consistent property naming
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
@@ -43,7 +45,8 @@ namespace RosraApp.Controllers
             ILogger<RosraController> logger,
             IStringLocalizer<RosraApp.RosraResources> localizer,
             ReportExportService pdfExportService,
-            ExcelExportService excelExportService)
+            ExcelExportService excelExportService,
+            IMemoryCache cache)
         {
             _context = context;
             _userManager = userManager;
@@ -51,6 +54,7 @@ namespace RosraApp.Controllers
             _localizer = localizer;
             _pdfExportService = pdfExportService;
             _excelExportService = excelExportService;
+            _cache = cache;
         }
 
         public IActionResult Index(string activeTab = null, string umbrellaTab = null, bool viewMode = false)
@@ -60,6 +64,7 @@ namespace RosraApp.Controllers
 
             // Get form data from session or initialize new
             var formData = GetFormDataFromSession() ?? new RosraFormViewModel { Id = 0 };
+
 
             // Ensure Id is 0 for new reports
             if (formData.Id < 0)
@@ -225,14 +230,174 @@ namespace RosraApp.Controllers
             // Clear the session data
             HttpContext.Session.Remove(RosraFormDataKey);
             HttpContext.Session.Remove(VisitedTabsKey);
-            
+
+            // Signal the client to clear localStorage as well
+            TempData["ClearLocalStorage"] = true;
+
             // Redirect to the Index action to create a new report
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> LoadSampleData()
+        {
+            // Clear existing session data
+            HttpContext.Session.Remove(RosraFormDataKey);
+            HttpContext.Session.Remove(VisitedTabsKey);
+
+            // Build sample form data
+            var sampleData = new RosraFormViewModel
+            {
+                Title = "ROSRA Report - Kenya - Nakuru (Sample)",
+                Country = "Kenya",
+                Region = "Kiambu",
+                City = "Nakuru",
+                Currency = "KES",
+                CurrencySymbol = "KSh",
+                FinancialYear = "2022",
+                GovernmentType = "County Government",
+                IncomeLevel = "Lower-middle income",
+                ActualOsr = 1_850_000_000,
+                BudgetedOsr = 2_400_000_000,
+                Population = 2_162_202,
+                GdpPerCapita = 1_850,
+                ProjectName = "Nakuru County OSR Enhancement Programme",
+                ProjectDescription = "A comprehensive programme to improve own-source revenue mobilization across property tax, business licensing, and user charges in Nakuru County.",
+                KeyObjectives = "1. Expand the property tax base through improved registration\n2. Improve business license compliance rates\n3. Modernize revenue collection systems\n4. Reduce revenue leakage in user charges",
+                PropertyTax = new GapAnalysisPropertyTaxViewModel
+                {
+                    RegisteredProperties = 20344,
+                    NonRegisteredProperties = 1000,
+                    CompliantProperties = 28000,
+                    TotalFiscalBase = 85_000_000_000,
+                    TotalMarketValue = 142_000_000_000,
+                    BilledAmount = 680_000_000,
+                    OutstandingAmount = 245_000_000,
+                    RevenueToDate = 435_000_000
+                },
+                License = new GapAnalysisLicenseViewModel
+                {
+                    RegisteredBusinesses = 18500,
+                    EstimatedUnregisteredPercent = 35,
+                    BilledAmount = 520_000_000,
+                    OutstandingAmount = 156_000_000,
+                    StatutoryAverageBilled = 38_000,
+                    RealisticImprovementPercent = 20,
+                    RevenueToDate = 364_000_000
+                },
+                ProblemStatement = "Nakuru County faces significant revenue gaps driven by low property registration coverage, inadequate business license compliance, and outdated valuation rolls. The current OSR collection represents only 77% of the budgeted target, with property tax and business licenses showing the largest gaps.",
+                RootCauses = new List<string>
+                {
+                    "Outdated property valuation roll (last updated 2015)",
+                    "Weak enforcement of business license requirements",
+                    "Manual collection processes leading to revenue leakage",
+                    "Limited taxpayer awareness and engagement",
+                    "Insufficient staffing for revenue administration"
+                },
+                RecommendationSummary = "Prioritize property tax base expansion through a digital property registration drive, implement an integrated revenue management system, and strengthen enforcement mechanisms for business license compliance.",
+                ActionItems = new List<ActionItemViewModel>
+                {
+                    new ActionItemViewModel { Description = "Launch digital property enumeration exercise in all 11 sub-counties", Priority = "high" },
+                    new ActionItemViewModel { Description = "Deploy integrated revenue management information system (IRMIS)", Priority = "high" },
+                    new ActionItemViewModel { Description = "Establish revenue enforcement unit with mobile collection teams", Priority = "medium" },
+                    new ActionItemViewModel { Description = "Conduct taxpayer sensitization campaigns across all wards", Priority = "medium" },
+                    new ActionItemViewModel { Description = "Update property valuation roll using GIS-based mass appraisal", Priority = "high" }
+                }
+            };
+
+            // Save to database — this properly serializes all fields into JSON columns
+            string? userId = null;
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                userId = user?.Id;
+            }
+            var report = CreateReportFromFormData(sampleData, null, userId!);
+            report.UserId = userId; // allow null for anonymous
+            _context.RosraReports.Add(report);
+            await _context.SaveChangesAsync();
+
+            // Now load it back from DB via the same path as Edit
+            // This properly deserializes ALL fields including int? from JSON columns
+            var loaded = await _context.RosraReports.FindAsync(report.Id);
+            if (loaded == null) return RedirectToAction("Index");
+
+            var formData = new RosraFormViewModel
+            {
+                Id = loaded.Id,
+                PublicId = loaded.PublicId,
+                Title = loaded.Title,
+                Country = loaded.Country,
+                Region = loaded.Region,
+                City = loaded.City,
+                GovUnitLevel3 = loaded.GovUnitLevel3,
+                FinalUnitLevel = loaded.FinalUnitLevel,
+                Currency = loaded.Currency,
+                CurrencySymbol = loaded.CurrencySymbol,
+                FinancialYear = loaded.FinancialYear,
+                ActualOsr = loaded.ActualOsr,
+                BudgetedOsr = loaded.BudgetedOsr,
+                Population = loaded.Population,
+                GdpPerCapita = loaded.GdpPerCapita,
+                ProjectName = loaded.ProjectName,
+                ProjectDescription = loaded.ProjectDescription,
+                KeyObjectives = loaded.KeyObjectives,
+                StartDate = loaded.StartDate,
+                EndDate = loaded.EndDate,
+                PropertyTax = string.IsNullOrEmpty(loaded.PropertyTaxData)
+                    ? new GapAnalysisPropertyTaxViewModel()
+                    : DeserializePropertyTaxData(loaded.PropertyTaxData),
+                License = string.IsNullOrEmpty(loaded.LicenseData)
+                    ? new GapAnalysisLicenseViewModel()
+                    : JsonSerializer.Deserialize<GapAnalysisLicenseViewModel>(loaded.LicenseData, _jsonOptions) ?? new GapAnalysisLicenseViewModel(),
+                ProblemStatement = loaded.ProblemStatement,
+                RootCauses = string.IsNullOrEmpty(loaded.RootCauses)
+                    ? new List<string>()
+                    : JsonSerializer.Deserialize<List<string>>(loaded.RootCauses, _jsonOptions) ?? new List<string>(),
+                RecommendationSummary = loaded.RecommendationSummary,
+                ActionItems = string.IsNullOrEmpty(loaded.ActionItems)
+                    ? new List<ActionItemViewModel>()
+                    : JsonSerializer.Deserialize<List<ActionItemViewModel>>(loaded.ActionItems, _jsonOptions) ?? new List<ActionItemViewModel>(),
+                GovernmentType = loaded.GovernmentType,
+                IncomeLevel = loaded.IncomeLevel,
+                OtherRevenue = loaded.OtherRevenue,
+                PrioritizationData = loaded.PrioritizationData,
+                SelectedSolutionsData = loaded.SelectedSolutionsData,
+                ImplementationProgressData = loaded.ImplementationProgressData,
+                PeerSNGData = loaded.PeerSNGData,
+                RowVersion = loaded.RowVersion != null ? Convert.ToBase64String(loaded.RowVersion) : null
+            };
+
+            SaveFormDataToSession(formData);
+            TempData["ClearLocalStorage"] = true;
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         public IActionResult SwitchTab(string tabId, string umbrellaTabId, RosraFormViewModel formData)
         {
+            // Preserve fields from session that don't survive form POST
+            var existing = GetFormDataFromSession();
+            if (existing != null)
+            {
+                // Preserve PublicId (hidden field has no name attribute, doesn't bind)
+                if (formData.PublicId == Guid.Empty && existing.PublicId != Guid.Empty)
+                    formData.PublicId = existing.PublicId;
+                if (formData.PropertyTax?.RegisteredProperties == null && existing.PropertyTax?.RegisteredProperties != null)
+                    formData.PropertyTax = existing.PropertyTax;
+                if (formData.License?.RegisteredBusinesses == null && existing.License?.RegisteredBusinesses != null)
+                    formData.License = existing.License;
+                // Preserve other sub-objects that may not be in the form POST
+                if (formData.ShortTermUserCharge?.EstimatedDailyFeesCategoryA == null && existing.ShortTermUserCharge != null)
+                    formData.ShortTermUserCharge = existing.ShortTermUserCharge;
+                if (formData.LongTermUserCharge?.EstimatedMonthlyLeaseesCategoryA == null && existing.LongTermUserCharge != null)
+                    formData.LongTermUserCharge = existing.LongTermUserCharge;
+                if (formData.MixedUserCharge?.EstimatedDailyUsers == null && existing.MixedUserCharge != null)
+                    formData.MixedUserCharge = existing.MixedUserCharge;
+                if (formData.TotalEstimate?.TotalCurrentRevenue == null && existing.TotalEstimate != null)
+                    formData.TotalEstimate = existing.TotalEstimate;
+            }
+
             // Parse formatted number values from the form
             if (!string.IsNullOrEmpty(Request.Form["Population"]))
             {
@@ -285,6 +450,8 @@ namespace RosraApp.Controllers
 
             return RedirectToAction("Index", new { activeTab = tabId, umbrellaTab = umbrellaTabId });
         }
+
+
         
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -384,16 +551,35 @@ namespace RosraApp.Controllers
                 PeerSNGData = formData.PeerSNGData
             };
             
-            // Associate with current user if authenticated
+            // Get current user
+            ApplicationUser? currentUser = null;
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                var user = await _userManager.GetUserAsync(User);
-                if (user != null)
+                currentUser = await _userManager.GetUserAsync(User);
+                if (currentUser != null)
                 {
-                    report.UserId = user.Id;
+                    report.UserId = currentUser.Id;
                 }
             }
-            
+
+            // Validate JSON fields before saving
+            var jsonFields = new[] {
+                report.PropertyTaxData, report.LicenseData, report.ShortTermUserChargeData,
+                report.LongTermUserChargeData, report.MixedUserChargeData, report.TotalEstimateData,
+                report.RootCauses, report.ActionItems, report.TopOsrConfigData,
+                report.GenericStreamsData, report.PrioritizationData, report.SelectedSolutionsData,
+                report.ImplementationProgressData, report.PeerSNGData
+            };
+
+            foreach (var jsonField in jsonFields)
+            {
+                if (!ValidateJsonField(jsonField))
+                {
+                    TempData["ErrorMessage"] = "Invalid or oversized data detected. Please check your inputs and try again.";
+                    return RedirectToAction("Index");
+                }
+            }
+
             try
             {
                 // Check if we're updating an existing report
@@ -404,6 +590,16 @@ namespace RosraApp.Controllers
                     
                     if (existingReport != null)
                     {
+                        // Set concurrency token from form
+                        if (!string.IsNullOrEmpty(formData.RowVersion))
+                        {
+                            _context.Entry(existingReport).Property(r => r.RowVersion)
+                                .OriginalValue = Convert.FromBase64String(formData.RowVersion);
+                        }
+
+                        // Track who modified the report
+                        existingReport.LastModifiedByUserId = currentUser?.Id;
+
                         // Update the existing report
                         existingReport.Title = formData.Title;
                         existingReport.Country = formData.Country;
@@ -480,17 +676,203 @@ namespace RosraApp.Controllers
                     TempData["SuccessMessage"] = _localizer["Msg_ReportSaved"].Value;
                 }
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                TempData["ErrorMessage"] = "This report was modified by another user since you loaded it. Please reload the report and re-apply your changes.";
+            }
             catch (Exception ex)
             {
-                // Handle exception
                 TempData["ErrorMessage"] = "Failed to save report: " + ex.Message;
             }
-            
+
             return RedirectToAction("Index");
         }
-        
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AutoSaveReport(RosraFormViewModel formData, string DynamicCategoriesJson)
+        {
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+                return Json(new { success = false, message = "Not authenticated" });
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+                return Json(new { success = false, message = "User not found" });
+
+            // Parse formatted numbers (same as SaveReport)
+            if (!string.IsNullOrEmpty(Request.Form["ActualOsr"]))
+            {
+                string val = Request.Form["ActualOsr"].ToString().Replace(",", "");
+                if (decimal.TryParse(val, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var parsed))
+                    formData.ActualOsr = parsed;
+            }
+            if (!string.IsNullOrEmpty(Request.Form["BudgetedOsr"]))
+            {
+                string val = Request.Form["BudgetedOsr"].ToString().Replace(",", "");
+                if (decimal.TryParse(val, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var parsed))
+                    formData.BudgetedOsr = parsed;
+            }
+            if (!string.IsNullOrEmpty(Request.Form["Population"]))
+            {
+                string val = Request.Form["Population"].ToString().Replace(",", "");
+                if (int.TryParse(val, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var parsed))
+                    formData.Population = parsed;
+            }
+            if (!string.IsNullOrEmpty(Request.Form["GdpPerCapita"]))
+            {
+                string val = Request.Form["GdpPerCapita"].ToString().Replace(",", "");
+                if (decimal.TryParse(val, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var parsed))
+                    formData.GdpPerCapita = parsed;
+            }
+
+            SaveFormDataToSession(formData);
+
+            try
+            {
+                if (formData.Id > 0)
+                {
+                    // Update existing report
+                    var existing = await _context.RosraReports.FindAsync(formData.Id);
+                    if (existing == null)
+                        return Json(new { success = false, message = "Report not found" });
+
+                    // Only allow auto-save for Draft and NeedsRevision
+                    var status = (Models.Enums.ReportStatus)existing.Status;
+                    if (status != Models.Enums.ReportStatus.Draft && status != Models.Enums.ReportStatus.NeedsRevision)
+                        return Json(new { success = false, message = "Report is locked" });
+
+                    MapFormDataToReport(existing, formData, DynamicCategoriesJson);
+                    existing.LastModifiedByUserId = currentUser.Id;
+                    _context.Update(existing);
+                    await _context.SaveChangesAsync();
+
+                    var rowVersion = existing.RowVersion != null ? Convert.ToBase64String(existing.RowVersion) : null;
+                    return Json(new { success = true, reportId = existing.Id, publicId = existing.PublicId, rowVersion });
+                }
+                else
+                {
+                    // Create new report
+                    var report = CreateReportFromFormData(formData, DynamicCategoriesJson, currentUser.Id);
+                    _context.RosraReports.Add(report);
+                    await _context.SaveChangesAsync();
+
+                    // Update session with new ID
+                    formData.Id = report.Id;
+                    formData.PublicId = report.PublicId;
+                    SaveFormDataToSession(formData);
+
+                    var rowVersion = report.RowVersion != null ? Convert.ToBase64String(report.RowVersion) : null;
+                    return Json(new { success = true, reportId = report.Id, publicId = report.PublicId, rowVersion });
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return Json(new { success = false, message = "Conflict detected" });
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Auto-save failed" });
+            }
+        }
+
+        /// <summary>
+        /// Maps form data fields to an existing RosraReport entity for updates.
+        /// </summary>
+        private void MapFormDataToReport(RosraReport report, RosraFormViewModel formData, string? dynamicCategoriesJson)
+        {
+            report.Title = formData.Title;
+            report.Country = formData.Country;
+            report.Region = formData.Region;
+            report.City = formData.City;
+            report.GovUnitLevel3 = formData.GovUnitLevel3;
+            report.FinalUnitLevel = formData.FinalUnitLevel;
+            report.Currency = formData.Currency;
+            report.CurrencySymbol = formData.CurrencySymbol;
+            report.FinancialYear = formData.FinancialYear;
+            report.ActualOsr = formData.ActualOsr;
+            report.BudgetedOsr = formData.BudgetedOsr;
+            report.Population = formData.Population;
+            report.GdpPerCapita = formData.GdpPerCapita;
+            report.ProjectName = formData.ProjectName;
+            report.EstimatedBudget = formData.EstimatedBudget;
+            report.ProjectDescription = formData.ProjectDescription;
+            report.KeyObjectives = formData.KeyObjectives;
+            report.StartDate = formData.StartDate;
+            report.EndDate = formData.EndDate;
+            report.PropertyTaxData = JsonSerializer.Serialize(formData.PropertyTax, _jsonOptions);
+            report.LicenseData = JsonSerializer.Serialize(formData.License, _jsonOptions);
+            report.ShortTermUserChargeData = JsonSerializer.Serialize(formData.ShortTermUserCharge, _jsonOptions);
+            report.LongTermUserChargeData = JsonSerializer.Serialize(formData.LongTermUserCharge, _jsonOptions);
+            report.MixedUserChargeData = JsonSerializer.Serialize(formData.MixedUserCharge, _jsonOptions);
+            report.TotalEstimateData = JsonSerializer.Serialize(formData.TotalEstimate, _jsonOptions);
+            report.ProblemStatement = formData.ProblemStatement;
+            report.RootCauses = JsonSerializer.Serialize(formData.RootCauses, _jsonOptions);
+            report.RecommendationSummary = formData.RecommendationSummary;
+            report.ActionItems = JsonSerializer.Serialize(formData.ActionItems, _jsonOptions);
+            report.TopOsrConfigData = JsonSerializer.Serialize(formData.TopOsrConfig, _jsonOptions);
+            report.GenericStreamsData = JsonSerializer.Serialize(formData.GenericStreams, _jsonOptions);
+            report.GovernmentType = formData.GovernmentType;
+            report.IncomeLevel = formData.IncomeLevel;
+            report.OtherRevenue = formData.OtherRevenue;
+            report.PrioritizationData = formData.PrioritizationData;
+            report.SelectedSolutionsData = formData.SelectedSolutionsData;
+            report.ImplementationProgressData = formData.ImplementationProgressData;
+            report.PeerSNGData = formData.PeerSNGData;
+        }
+
+        /// <summary>
+        /// Creates a new RosraReport entity from form data.
+        /// </summary>
+        private RosraReport CreateReportFromFormData(RosraFormViewModel formData, string? dynamicCategoriesJson, string userId)
+        {
+            return new RosraReport
+            {
+                Title = formData.Title ?? "ROSRA Report",
+                Country = formData.Country,
+                Region = formData.Region,
+                City = formData.City,
+                GovUnitLevel3 = formData.GovUnitLevel3,
+                FinalUnitLevel = formData.FinalUnitLevel,
+                Currency = formData.Currency,
+                CurrencySymbol = formData.CurrencySymbol,
+                FinancialYear = formData.FinancialYear,
+                ActualOsr = formData.ActualOsr,
+                BudgetedOsr = formData.BudgetedOsr,
+                Population = formData.Population,
+                GdpPerCapita = formData.GdpPerCapita,
+                ProjectName = formData.ProjectName,
+                EstimatedBudget = formData.EstimatedBudget,
+                ProjectDescription = formData.ProjectDescription,
+                KeyObjectives = formData.KeyObjectives,
+                StartDate = formData.StartDate,
+                EndDate = formData.EndDate,
+                PropertyTaxData = JsonSerializer.Serialize(formData.PropertyTax, _jsonOptions),
+                LicenseData = JsonSerializer.Serialize(formData.License, _jsonOptions),
+                ShortTermUserChargeData = JsonSerializer.Serialize(formData.ShortTermUserCharge, _jsonOptions),
+                LongTermUserChargeData = JsonSerializer.Serialize(formData.LongTermUserCharge, _jsonOptions),
+                MixedUserChargeData = JsonSerializer.Serialize(formData.MixedUserCharge, _jsonOptions),
+                TotalEstimateData = JsonSerializer.Serialize(formData.TotalEstimate, _jsonOptions),
+                ProblemStatement = formData.ProblemStatement,
+                RootCauses = JsonSerializer.Serialize(formData.RootCauses, _jsonOptions),
+                RecommendationSummary = formData.RecommendationSummary,
+                ActionItems = JsonSerializer.Serialize(formData.ActionItems, _jsonOptions),
+                TopOsrConfigData = JsonSerializer.Serialize(formData.TopOsrConfig, _jsonOptions),
+                GenericStreamsData = JsonSerializer.Serialize(formData.GenericStreams, _jsonOptions),
+                GovernmentType = formData.GovernmentType,
+                IncomeLevel = formData.IncomeLevel,
+                OtherRevenue = formData.OtherRevenue,
+                PrioritizationData = formData.PrioritizationData,
+                SelectedSolutionsData = formData.SelectedSolutionsData,
+                ImplementationProgressData = formData.ImplementationProgressData,
+                PeerSNGData = formData.PeerSNGData,
+                CreatedAt = DateTime.UtcNow,
+                UserId = userId,
+                Status = (int)Models.Enums.ReportStatus.Draft
+            };
+        }
+
         [HttpGet]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(Guid id)
         {
             // Get the current user
             var user = await _userManager.GetUserAsync(User);
@@ -498,9 +880,9 @@ namespace RosraApp.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            
-            // Get the report
-            var report = await _context.RosraReports.FirstOrDefaultAsync(r => r.Id == id);
+
+            // Get the report by PublicId
+            var report = await _context.RosraReports.FirstOrDefaultAsync(r => r.PublicId == id);
             if (report == null)
             {
                 return NotFound();
@@ -511,7 +893,15 @@ namespace RosraApp.Controllers
             {
                 return Forbid();
             }
-            
+
+            // Status-based edit locking: only Draft and NeedsRevision are editable
+            var status = (Models.Enums.ReportStatus)report.Status;
+            if (status != Models.Enums.ReportStatus.Draft && status != Models.Enums.ReportStatus.NeedsRevision)
+            {
+                TempData["ErrorMessage"] = $"This report is currently '{status}' and cannot be edited.";
+                return RedirectToAction("Index", "Dashboard");
+            }
+
             // Create a view model for the form
             var formData = new RosraFormViewModel
             {
@@ -575,6 +965,7 @@ namespace RosraApp.Controllers
             var formDataViewModel = new RosraFormViewModel
             {
                 Id = report.Id,
+                PublicId = report.PublicId,
                 Title = report.Title,
                 // Location Information
                 Country = report.Country,
@@ -617,8 +1008,8 @@ namespace RosraApp.Controllers
                     : JsonSerializer.Deserialize<GapAnalysisTotalViewModel>(report.TotalEstimateData, _jsonOptions) ?? new GapAnalysisTotalViewModel(),
                 // Causes Analysis Tab
                 ProblemStatement = report.ProblemStatement,
-                RootCauses = string.IsNullOrEmpty(report.RootCauses) 
-                    ? new List<string>() 
+                RootCauses = string.IsNullOrEmpty(report.RootCauses)
+                    ? new List<string>()
                     : JsonSerializer.Deserialize<List<string>>(report.RootCauses, _jsonOptions) ?? new List<string>(),
                 RecommendationSummary = report.RecommendationSummary,
                 ActionItems = string.IsNullOrEmpty(report.ActionItems)
@@ -635,7 +1026,9 @@ namespace RosraApp.Controllers
                 // New tab data fields
                 PrioritizationData = report.PrioritizationData,
                 SelectedSolutionsData = report.SelectedSolutionsData,
-                ImplementationProgressData = report.ImplementationProgressData
+                ImplementationProgressData = report.ImplementationProgressData,
+                // Concurrency token
+                RowVersion = report.RowVersion != null ? Convert.ToBase64String(report.RowVersion) : null
             };
 
             // Log the PropertyTax values to verify they are loaded correctly
@@ -650,23 +1043,23 @@ namespace RosraApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> View(int id)
+        public async Task<IActionResult> View(Guid id)
         {
             // Check if user is authenticated
             if (User.Identity == null || !User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Login", "Account");
             }
-            
+
             // Get the current user
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 return RedirectToAction("Login", "Account");
             }
-            
-            // Get the report
-            var report = await _context.RosraReports.FindAsync(id);
+
+            // Get the report by PublicId
+            var report = await _context.RosraReports.FirstOrDefaultAsync(r => r.PublicId == id);
             if (report == null)
             {
                 return NotFound();
@@ -685,6 +1078,7 @@ namespace RosraApp.Controllers
             var formData = new RosraFormViewModel
             {
                 Id = report.Id,
+                PublicId = report.PublicId,
                 Title = report.Title,
                 // Location Information
                 Country = report.Country,
@@ -727,8 +1121,8 @@ namespace RosraApp.Controllers
                     : JsonSerializer.Deserialize<GapAnalysisTotalViewModel>(report.TotalEstimateData, _jsonOptions) ?? new GapAnalysisTotalViewModel(),
                 // Causes Analysis Tab
                 ProblemStatement = report.ProblemStatement,
-                RootCauses = string.IsNullOrEmpty(report.RootCauses) 
-                    ? new List<string>() 
+                RootCauses = string.IsNullOrEmpty(report.RootCauses)
+                    ? new List<string>()
                     : JsonSerializer.Deserialize<List<string>>(report.RootCauses, _jsonOptions) ?? new List<string>(),
                 RecommendationSummary = report.RecommendationSummary,
                 ActionItems = string.IsNullOrEmpty(report.ActionItems)
@@ -745,12 +1139,10 @@ namespace RosraApp.Controllers
                 // New tab data fields
                 PrioritizationData = report.PrioritizationData,
                 SelectedSolutionsData = report.SelectedSolutionsData,
-                ImplementationProgressData = report.ImplementationProgressData
+                ImplementationProgressData = report.ImplementationProgressData,
+                // Concurrency token
+                RowVersion = report.RowVersion != null ? Convert.ToBase64String(report.RowVersion) : null
             };
-
-            // Log the PropertyTax values to verify they are loaded correctly
-            _logger.LogInformation("View action - PropertyTax values: TotalPropertyTaxPayers={Total}, RegisteredPropertyTaxPayers={Registered}",
-                formData.PropertyTax.TotalPropertyTaxPayers, formData.PropertyTax.RegisteredPropertyTaxPayers);
 
             // Save form data to session
             SaveFormDataToSession(formData);
@@ -922,6 +1314,82 @@ namespace RosraApp.Controllers
         }
 
         /// <summary>
+        /// Print-optimized Top-Down Analysis page (opens in new tab, user prints to PDF)
+        /// </summary>
+        [HttpGet]
+        public IActionResult PrintTopDown()
+        {
+            var data = GetFormDataFromSession();
+            if (data == null) return RedirectToAction("Index");
+            return View("PrintTopDown", data);
+        }
+
+        /// <summary>
+        /// Print-optimized Full Report page (Top-Down + Bottom-Up combined)
+        /// </summary>
+        [HttpGet]
+        public IActionResult PrintFullReport()
+        {
+            var data = GetFormDataFromSession();
+            if (data == null) return RedirectToAction("Index");
+            return View("PrintFullReport", data);
+        }
+
+        /// <summary>
+        /// Print-optimized Bottom-Up Analysis page (opens in new tab, user prints to PDF)
+        /// </summary>
+        [HttpGet]
+        public IActionResult PrintBottomUp()
+        {
+            var data = GetFormDataFromSession();
+            if (data == null) return RedirectToAction("Index");
+            return View("PrintBottomUp", data);
+        }
+
+        /// <summary>
+        /// Export Top-Down Analysis only as a standalone PDF
+        /// </summary>
+        [HttpPost]
+        public IActionResult ExportTopDownPdf(RosraFormViewModel formData)
+        {
+            try
+            {
+                if (formData != null && !string.IsNullOrEmpty(formData.Country))
+                {
+                    SaveFormDataToSession(formData);
+                }
+                var sessionData = GetFormDataFromSession();
+                if (sessionData == null)
+                {
+                    TempData["ErrorMessage"] = _localizer["Msg_NoAnalysisData"].Value;
+                    return RedirectToAction("Index");
+                }
+                // Preserve POST data that may be fresher than session
+                if (formData != null)
+                {
+                    if (!string.IsNullOrEmpty(formData.ChartImagesData))
+                        sessionData.ChartImagesData = formData.ChartImagesData;
+                    if (!string.IsNullOrEmpty(formData.PeerSNGData))
+                        sessionData.PeerSNGData = formData.PeerSNGData;
+                    if (!string.IsNullOrEmpty(formData.PrioritizationData))
+                        sessionData.PrioritizationData = formData.PrioritizationData;
+                }
+
+                _logger.LogInformation("ExportTopDownPdf: PeerSNGData length = {Length}", sessionData.PeerSNGData?.Length ?? 0);
+
+                var pdfBytes = _pdfExportService.GenerateTopDownPdf(sessionData);
+                var filename = $"ROSRA_TopDown_{sessionData.Country ?? "Analysis"}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+                return File(pdfBytes, "application/pdf", filename);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating Top-Down PDF report");
+                TempData["ErrorMessage"] = _localizer["Msg_PdfError"].Value;
+                return RedirectToAction("Index");
+            }
+        }
+
+        /// <summary>
         /// Export analysis report as Excel (placeholder for future implementation)
         /// </summary>
         [HttpPost]
@@ -970,6 +1438,15 @@ namespace RosraApp.Controllers
             HttpContext.Session.SetString(VisitedTabsKey, visitedTabsJson);
         }
         
+        // Session serialization options — include ALL properties (no WhenWritingNull)
+        private static readonly JsonSerializerOptions _sessionJsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = null,
+            PropertyNameCaseInsensitive = true,
+            IncludeFields = true,
+            WriteIndented = false
+        };
+
         private RosraFormViewModel? GetFormDataFromSession()
         {
             var formDataJson = HttpContext.Session.GetString(RosraFormDataKey);
@@ -977,15 +1454,90 @@ namespace RosraApp.Controllers
             {
                 return null;
             }
-            return JsonSerializer.Deserialize<RosraFormViewModel>(formDataJson);
+            return JsonSerializer.Deserialize<RosraFormViewModel>(formDataJson, _sessionJsonOptions);
         }
-        
+
         private void SaveFormDataToSession(RosraFormViewModel formData)
         {
-            var formDataJson = JsonSerializer.Serialize(formData);
+            var formDataJson = JsonSerializer.Serialize(formData, _sessionJsonOptions);
             HttpContext.Session.SetString(RosraFormDataKey, formDataJson);
         }
         
+        // Validate JSON string fields before saving to database
+        private static string MapCurrencyNameToSymbol(string currencyName)
+        {
+            if (string.IsNullOrEmpty(currencyName)) return "";
+
+            var name = currencyName.Trim().ToLower();
+            // Common currency name → symbol/code mappings
+            var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "kenyan shilling", "KSh" }, { "kenya shilling", "KSh" },
+                { "us dollar", "$" }, { "united states dollar", "$" },
+                { "euro", "\u20ac" }, { "pound sterling", "\u00a3" }, { "british pound", "\u00a3" },
+                { "japanese yen", "\u00a5" }, { "chinese yuan", "\u00a5" },
+                { "indian rupee", "\u20b9" }, { "pakistani rupee", "Rs" },
+                { "south african rand", "R" }, { "nigerian naira", "\u20a6" },
+                { "ghanaian cedi", "GH\u20b5" }, { "tanzanian shilling", "TSh" },
+                { "ugandan shilling", "USh" }, { "rwandan franc", "RF" },
+                { "ethiopian birr", "Br" }, { "egyptian pound", "E\u00a3" },
+                { "moroccan dirham", "MAD" }, { "algerian dinar", "DA" },
+                { "west african cfa franc", "CFA" }, { "central african cfa franc", "FCFA" },
+                { "brazilian real", "R$" }, { "mexican peso", "MX$" },
+                { "colombian peso", "COL$" }, { "argentine peso", "AR$" },
+                { "chilean peso", "CLP$" }, { "peruvian sol", "S/" },
+                { "canadian dollar", "CA$" }, { "australian dollar", "A$" },
+                { "new zealand dollar", "NZ$" }, { "singapore dollar", "S$" },
+                { "malaysian ringgit", "RM" }, { "thai baht", "\u0e3f" },
+                { "indonesian rupiah", "Rp" }, { "philippine peso", "\u20b1" },
+                { "vietnamese dong", "\u20ab" }, { "bangladeshi taka", "\u09f3" },
+                { "sri lankan rupee", "Rs" }, { "nepalese rupee", "NRs" },
+                { "saudi riyal", "SAR" }, { "uae dirham", "AED" },
+                { "turkish lira", "\u20ba" }, { "russian ruble", "\u20bd" },
+                { "ukrainian hryvnia", "\u20b4" }, { "polish zloty", "z\u0142" },
+                { "swiss franc", "CHF" }, { "swedish krona", "SEK" },
+                { "norwegian krone", "NOK" }, { "danish krone", "DKK" },
+                { "zambian kwacha", "ZK" }, { "malawian kwacha", "MK" },
+                { "mozambican metical", "MT" }, { "botswana pula", "P" },
+                { "namibian dollar", "N$" }
+            };
+
+            // Try exact match first
+            foreach (var entry in map)
+            {
+                if (name.Contains(entry.Key.ToLower()))
+                    return entry.Value;
+            }
+
+            // Fallback: use ISO-style 3-letter code from first letters
+            var words = currencyName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (words.Length >= 2)
+            {
+                // e.g., "Kenyan Shilling" → "KSh" (first letter of each word)
+                return string.Concat(words.Select(w => char.ToUpper(w[0])));
+            }
+
+            return words.Length > 0 && words[0].Length <= 4 ? words[0] : words[0].Substring(0, 3);
+        }
+
+        private static bool ValidateJsonField(string? jsonValue, int maxSizeBytes = 1_048_576)
+        {
+            if (string.IsNullOrEmpty(jsonValue)) return true;
+
+            if (System.Text.Encoding.UTF8.GetByteCount(jsonValue) > maxSizeBytes)
+                return false;
+
+            try
+            {
+                System.Text.Json.JsonDocument.Parse(jsonValue);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         // Helper method to ensure PropertyTax values are properly serialized
         private string SerializePropertyTaxData(GapAnalysisPropertyTaxViewModel propertyTax, string dynamicCategoriesJson = null)
         {
@@ -1336,10 +1888,17 @@ namespace RosraApp.Controllers
         /// Get all distinct countries from the Country table with additional data from DB_Countries
         /// </summary>
         [HttpGet]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("api")]
         public async Task<IActionResult> GetCountries()
         {
             try
             {
+                const string cacheKey = "countries_list";
+                if (_cache.TryGetValue(cacheKey, out object? cached) && cached != null)
+                {
+                    return Json(cached);
+                }
+
                 // Get distinct countries from Country table
                 var countries = await _context.Countries
                     .Where(c => c.Name != null)
@@ -1365,7 +1924,7 @@ namespace RosraApp.Controllers
                         cd.country != null && c.name != null &&
                         cd.country.Equals(c.name, StringComparison.OrdinalIgnoreCase));
 
-                    // Fallback for currency symbol: use symbol from DB_Countries, or currency code, or currency from Country table
+                    // Fallback for currency symbol: use symbol from DB_Countries, or currency code, or known mapping, or currency name
                     string symbol = "";
                     if (!string.IsNullOrEmpty(countryData?.currencySymbol))
                     {
@@ -1373,13 +1932,12 @@ namespace RosraApp.Controllers
                     }
                     else if (!string.IsNullOrEmpty(countryData?.currencyCode))
                     {
-                        symbol = countryData.currencyCode; // Use currency code as fallback (e.g., "KES")
+                        symbol = countryData.currencyCode;
                     }
                     else if (!string.IsNullOrEmpty(c.currency))
                     {
-                        // Extract first word or abbreviation from currency name
-                        symbol = c.currency.Split(' ')[0];
-                        if (symbol.Length > 5) symbol = symbol.Substring(0, 3); // Truncate long names
+                        // Map common currency names to their standard symbols/codes
+                        symbol = MapCurrencyNameToSymbol(c.currency);
                     }
 
                     return new {
@@ -1391,6 +1949,7 @@ namespace RosraApp.Controllers
                     };
                 }).ToList();
 
+                _cache.Set(cacheKey, result, TimeSpan.FromHours(24));
                 return Json(result);
             }
             catch (Exception ex)
@@ -1404,6 +1963,7 @@ namespace RosraApp.Controllers
         /// Get all states/regions for a specific country
         /// </summary>
         [HttpGet]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("api")]
         public async Task<IActionResult> GetStatesByCountry(string country)
         {
             try
@@ -1411,6 +1971,12 @@ namespace RosraApp.Controllers
                 if (string.IsNullOrEmpty(country))
                 {
                     return Json(new List<object>());
+                }
+
+                var cacheKey = $"states_{country.ToLower()}";
+                if (_cache.TryGetValue(cacheKey, out object? cached) && cached != null)
+                {
+                    return Json(cached);
                 }
 
                 var states = await _context.Countries
@@ -1423,6 +1989,7 @@ namespace RosraApp.Controllers
                     .OrderBy(s => s.name)
                     .ToListAsync();
 
+                _cache.Set(cacheKey, states, TimeSpan.FromHours(24));
                 return Json(states);
             }
             catch (Exception ex)

@@ -387,6 +387,40 @@
         </div>
     </div>
 
+    <!-- Search and Tabs -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <ul class="nav nav-pills" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link @(Model.CurrentTab == "active" ? "active" : "")"
+                       asp-action="Index" asp-route-tab="active" asp-route-search="@Model.SearchTerm">
+                        <i class="bi bi-file-earmark-text me-1"></i> Active
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(Model.CurrentTab == "archived" ? "active" : "")"
+                       asp-action="Index" asp-route-tab="archived" asp-route-search="@Model.SearchTerm">
+                        <i class="bi bi-archive me-1"></i> Archived
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <form asp-action="Index" method="get" class="d-flex gap-2" style="max-width: 350px;">
+            <input type="hidden" name="tab" value="@Model.CurrentTab" />
+            <input type="text" name="search" class="form-control form-control-sm" placeholder="Search reports..."
+                   value="@Model.SearchTerm" />
+            <button type="submit" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-search"></i>
+            </button>
+            @if (!string.IsNullOrEmpty(Model.SearchTerm))
+            {
+                <a asp-action="Index" asp-route-tab="@Model.CurrentTab" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-x"></i>
+                </a>
+            }
+        </form>
+    </div>
+
     <!-- Reports grid -->
     <div class="row g-4" id="reports-container">
         @if (Model.Reports.Any())
@@ -401,7 +435,7 @@
                                 <div class="last-updated">
                                     <i class="bi bi-arrow-clockwise"></i>
                                     @{
-                                        var localTime = report.CreatedAt.ToLocalTime();
+                                        var localTime = (report.UpdatedAt ?? report.CreatedAt).ToLocalTime();
                                         var timeDiff = DateTime.Now - localTime;
                                         string timeDisplay;
 
@@ -438,20 +472,47 @@
                                     <span>Last updated @timeDisplay</span>
                                 </div>
                                 <div class="header-actions">
-                                    <span class="status-badge">
-                                        <i class="bi bi-circle-fill"></i>@Localizer["Submitted"]
+                                    @{
+                                        var reportStatus = (RosraApp.Models.Enums.ReportStatus)report.Status;
+                                        var statusBadgeClass = reportStatus switch {
+                                            RosraApp.Models.Enums.ReportStatus.Draft => "background: #e2e3e5; color: #383d41;",
+                                            RosraApp.Models.Enums.ReportStatus.Submitted => "background: #fff3cd; color: #856404;",
+                                            RosraApp.Models.Enums.ReportStatus.UnderReview => "background: #cce5ff; color: #004085;",
+                                            RosraApp.Models.Enums.ReportStatus.NeedsRevision => "background: #f8d7da; color: #721c24;",
+                                            RosraApp.Models.Enums.ReportStatus.Validated => "background: #d4edda; color: #155724;",
+                                            _ => "background: #d3f9d8; color: #2b8a3e;"
+                                        };
+                                    }
+                                    <span class="status-badge" style="@statusBadgeClass">
+                                        <i class="bi bi-circle-fill"></i>@reportStatus.ToString()
                                     </span>
-                                    <button class="icon-btn delete-btn" type="button" data-report-id="@report.Id">
-                                        <i class="bi bi-trash"></i>
+                                    @if (reportStatus == RosraApp.Models.Enums.ReportStatus.Draft)
+                                    {
+                                        <button class="icon-btn submit-btn" type="button" data-report-id="@report.Id" title="Submit for Review" style="color: #4c6ef5;">
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                    }
+                                    <button class="icon-btn archive-btn" type="button" data-report-id="@report.Id" title="@(report.IsArchived ? "Unarchive" : "Archive")">
+                                        <i class="bi bi-archive"></i>
                                     </button>
-                                    <button class="icon-btn">
-                                        <i class="bi bi-chevron-right"></i>
-                                    </button>
+                                    @if (reportStatus == RosraApp.Models.Enums.ReportStatus.Draft || reportStatus == RosraApp.Models.Enums.ReportStatus.NeedsRevision)
+                                    {
+                                        <button class="icon-btn delete-btn" type="button" data-report-id="@report.Id" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    }
                                 </div>
                             </div>
 
                             <!-- Report title -->
                             <h3 class="report-title">@report.Title</h3>
+
+                            @if (reportStatus == RosraApp.Models.Enums.ReportStatus.NeedsRevision && !string.IsNullOrEmpty(report.RevisionReason))
+                            {
+                                <div class="alert alert-warning py-1 px-2 mb-2" style="font-size: 0.8125rem;">
+                                    <i class="bi bi-exclamation-triangle me-1"></i> <strong>Revision requested:</strong> @report.RevisionReason
+                                </div>
+                            }
 
                             <!-- Report details with flag -->
                             <div class="report-details">
@@ -490,7 +551,7 @@
                             </div>
                         </div>
                         <div class="card-footer bg-white p-3 border-top-0">
-                            <a asp-controller="Dashboard" asp-action="ViewReport" asp-route-id="@report.Id"
+                            <a asp-controller="Dashboard" asp-action="ViewReport" asp-route-id="@report.PublicId"
                                class="btn btn-open w-100">@Localizer["Open"]</a>
                         </div>
                     </div>
@@ -511,6 +572,35 @@
             </div>
         }
     </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Report pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber - 1)"
+                       asp-route-search="@Model.SearchTerm" asp-route-tab="@Model.CurrentTab">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@i"
+                           asp-route-search="@Model.SearchTerm" asp-route-tab="@Model.CurrentTab">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.PageNumber >= Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber + 1)"
+                       asp-route-search="@Model.SearchTerm" asp-route-tab="@Model.CurrentTab">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+            <p class="text-center text-muted small">Showing @((Model.PageNumber - 1) * 12 + 1)-@Math.Min(Model.PageNumber * 12, Model.TotalCount) of @Model.TotalCount reports</p>
+        </nav>
+    }
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -525,7 +615,7 @@
             </div>
             <div class="modal-body" style="padding: 2rem;">
                 <p class="mb-0" style="color: #6c757d; font-size: 1rem;">
-                    Are you sure you want to delete this report? This action cannot be undone.
+                    Are you sure you want to delete this report? It will be moved to trash and can be restored by an administrator.
                 </p>
                 <input type="hidden" id="reportToDeleteId" value="">
             </div>
@@ -629,6 +719,52 @@
                 });
             });
             
+            // Submit for Review button click
+            $('.submit-btn').click(function() {
+                const reportId = $(this).data('report-id');
+                if (!confirm('Submit this assessment for review? You will not be able to edit it until the review is complete.')) return;
+                $.ajax({
+                    url: '@Url.Action("Submit", "Submission")/' + reportId,
+                    type: 'POST',
+                    data: { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+                    success: function(response) {
+                        if (response.success) {
+                            showToast('Success', response.message, 'success');
+                            setTimeout(function() { location.reload(); }, 1000);
+                        } else {
+                            showToast('Error', response.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        showToast('Error', 'An error occurred. Please try again.', 'error');
+                    }
+                });
+            });
+
+            // Archive report button click
+            $('.archive-btn').click(function() {
+                const reportId = $(this).data('report-id');
+                $.ajax({
+                    url: '@Url.Action("ArchiveReport", "Dashboard")',
+                    type: 'POST',
+                    data: {
+                        id: reportId,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showToast('Success', response.message, 'success');
+                            setTimeout(function() { location.reload(); }, 1000);
+                        } else {
+                            showToast('Error', response.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        showToast('Error', 'An error occurred. Please try again.', 'error');
+                    }
+                });
+            });
+
             // Toast notification helper function
             function showToast(title, message, type) {
                 $('#toast-title').text(title);

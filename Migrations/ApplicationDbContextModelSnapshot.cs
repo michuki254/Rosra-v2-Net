@@ -159,6 +159,41 @@ namespace RosraApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("RosraApp.Models.AnalysisSnapshot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FormDataJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Label")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("ReportId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SnapshotType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReportId");
+
+                    b.ToTable("AnalysisSnapshots");
+                });
+
             modelBuilder.Entity("RosraApp.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -234,6 +269,61 @@ namespace RosraApp.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("RosraApp.Models.AuditLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EntityId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("StatusFrom")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("StatusTo")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuditLogs");
                 });
 
             modelBuilder.Entity("RosraApp.Models.Country", b =>
@@ -446,6 +536,93 @@ namespace RosraApp.Migrations
                     b.ToTable("Permissions");
                 });
 
+            modelBuilder.Entity("RosraApp.Models.ReportArtifact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<long>("FileSizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("FileType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("GeneratedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GeneratedByUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReportId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SnapshotId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReportId");
+
+                    b.HasIndex("SnapshotId");
+
+                    b.ToTable("ReportArtifacts");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.ReviewNote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthorUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsInternal")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("NoteType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReportId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StreamReference")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorUserId");
+
+                    b.HasIndex("ReportId");
+
+                    b.ToTable("ReviewNotes");
+                });
+
             modelBuilder.Entity("RosraApp.Models.RolePermission", b =>
                 {
                     b.Property<int>("Id")
@@ -488,11 +665,17 @@ namespace RosraApp.Migrations
                     b.Property<decimal?>("ActualOsr")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<DateTime?>("ArchivedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<decimal?>("BudgetedOsr")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CompletionLevel")
+                        .HasColumnType("int");
 
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
@@ -504,6 +687,12 @@ namespace RosraApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CurrencySymbol")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedByUserId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("EndDate")
@@ -536,7 +725,16 @@ namespace RosraApp.Migrations
                     b.Property<string>("IncomeLevel")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("KeyObjectives")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedByUserId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LicenseData")
@@ -572,14 +770,31 @@ namespace RosraApp.Migrations
                     b.Property<string>("PropertyTaxData")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("PublicId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("RecommendationSummary")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Region")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("ReviewStartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReviewerUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RevisionReason")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("RootCauses")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("SelectedSolutionsData")
                         .HasColumnType("nvarchar(max)");
@@ -588,6 +803,12 @@ namespace RosraApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("SubmittedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
@@ -600,10 +821,22 @@ namespace RosraApp.Migrations
                     b.Property<string>("TotalEstimateData")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime?>("ValidatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ValidatedByUserId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -661,6 +894,54 @@ namespace RosraApp.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RosraApp.Models.AnalysisSnapshot", b =>
+                {
+                    b.HasOne("RosraApp.Models.RosraReport", "Report")
+                        .WithMany("Snapshots")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Report");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.ReportArtifact", b =>
+                {
+                    b.HasOne("RosraApp.Models.RosraReport", "Report")
+                        .WithMany("Artifacts")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RosraApp.Models.AnalysisSnapshot", "Snapshot")
+                        .WithMany()
+                        .HasForeignKey("SnapshotId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Report");
+
+                    b.Navigation("Snapshot");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.ReviewNote", b =>
+                {
+                    b.HasOne("RosraApp.Models.ApplicationUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RosraApp.Models.RosraReport", "Report")
+                        .WithMany("ReviewNotes")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Report");
+                });
+
             modelBuilder.Entity("RosraApp.Models.RolePermission", b =>
                 {
                     b.HasOne("RosraApp.Models.Permission", "Permission")
@@ -692,6 +973,15 @@ namespace RosraApp.Migrations
             modelBuilder.Entity("RosraApp.Models.Permission", b =>
                 {
                     b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.RosraReport", b =>
+                {
+                    b.Navigation("Artifacts");
+
+                    b.Navigation("ReviewNotes");
+
+                    b.Navigation("Snapshots");
                 });
 #pragma warning restore 612, 618
         }

@@ -8,11 +8,15 @@ namespace RosraApp.Models
     {
         [Key]
         public int Id { get; set; }
-        
+
+        public Guid PublicId { get; set; } = Guid.NewGuid();
+
         public string Title { get; set; } = string.Empty;
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        
+        public DateTime? UpdatedAt { get; set; }
+        public string? LastModifiedByUserId { get; set; }
+
         public string? UserId { get; set; }
         
         [ForeignKey("UserId")]
@@ -94,5 +98,33 @@ namespace RosraApp.Models
         /// Contains: selected peer SNGs, their OSR/GCP values, analysis results
         /// </summary>
         public string? PeerSNGData { get; set; }
+
+        // Assessment Review & Validation Workflow
+        public int Status { get; set; } = 0; // ReportStatus enum: Draft=0
+        public int CompletionLevel { get; set; } = 0; // CompletionLevel enum: Metadata=0
+        public DateTime? SubmittedAt { get; set; }
+        public DateTime? ValidatedAt { get; set; }
+        public string? ValidatedByUserId { get; set; }
+        public string? ReviewerUserId { get; set; }
+        public DateTime? ReviewStartedAt { get; set; }
+        public string? RevisionReason { get; set; }
+
+        // Soft Delete
+        public bool IsDeleted { get; set; } = false;
+        public DateTime? DeletedAt { get; set; }
+        public string? DeletedByUserId { get; set; }
+
+        // Archiving
+        public bool IsArchived { get; set; } = false;
+        public DateTime? ArchivedAt { get; set; }
+
+        // Concurrency Token
+        [Timestamp]
+        public byte[]? RowVersion { get; set; }
+
+        // Navigation properties
+        public virtual ICollection<ReviewNote> ReviewNotes { get; set; } = new List<ReviewNote>();
+        public virtual ICollection<AnalysisSnapshot> Snapshots { get; set; } = new List<AnalysisSnapshot>();
+        public virtual ICollection<ReportArtifact> Artifacts { get; set; } = new List<ReportArtifact>();
     }
 }

@@ -1,0 +1,127 @@
+@model List<RosraApp.Models.RosraReport>
+
+@{
+    ViewData["Title"] = "Validated Assessments";
+    var searchTerm = ViewData["SearchTerm"] as string;
+    var pageNumber = (int)(ViewData["PageNumber"] ?? 1);
+    var totalPages = (int)(ViewData["TotalPages"] ?? 1);
+    var totalCount = (int)(ViewData["TotalCount"] ?? 0);
+}
+
+@section Styles {
+    <style>
+        body { background: #f8f9fa; }
+        .lib-header { background: white; border-radius: 8px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .lib-header h1 { color: #212529; font-weight: 700; font-size: 2rem; margin-bottom: 0.5rem; }
+        .lib-table { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
+        .lib-table th { background: #155724; color: white; font-weight: 600; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem; }
+        .lib-table td { padding: 1rem; vertical-align: middle; font-size: 0.875rem; border-bottom: 1px solid #f1f3f5; }
+        .lib-table tr:hover { background: #f8f9fa; }
+    </style>
+}
+
+<div class="container py-4">
+    <div class="lib-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="bi bi-patch-check me-2"></i>Validated Assessments</h1>
+            <p class="text-muted mb-0">@totalCount validated assessment(s)</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Queue" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-clipboard-check me-1"></i> Review Queue
+            </a>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Admin Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <form asp-action="Validated" method="get" class="d-flex gap-2 mb-3" style="max-width: 400px;">
+        <input type="text" name="search" class="form-control form-control-sm" placeholder="Search validated assessments..." value="@searchTerm" />
+        <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-search"></i></button>
+        @if (!string.IsNullOrEmpty(searchTerm))
+        {
+            <a asp-action="Validated" class="btn btn-sm btn-outline-danger"><i class="bi bi-x"></i></a>
+        }
+    </form>
+
+    <div class="lib-table">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Location</th>
+                    <th>Financial Year</th>
+                    <th>Completion</th>
+                    <th>Validated</th>
+                    <th>Artifacts</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var report in Model)
+                    {
+                        var completion = (RosraApp.Models.Enums.CompletionLevel)report.CompletionLevel;
+                        <tr>
+                            <td><strong>@report.Title</strong>
+                                @if (report.User != null)
+                                {
+                                    <br /><small class="text-muted">by @report.User.FirstName @report.User.LastName</small>
+                                }
+                            </td>
+                            <td>@(report.City ?? "") @(report.Country ?? "")</td>
+                            <td>@(report.FinancialYear ?? "-")</td>
+                            <td>
+                                <span class="badge @(completion == RosraApp.Models.Enums.CompletionLevel.Full ? "bg-success" : "bg-warning text-dark")" style="font-size:0.75rem;">
+                                    @completion
+                                </span>
+                            </td>
+                            <td>@(report.ValidatedAt?.ToLocalTime().ToString("dd MMM yyyy") ?? "-")</td>
+                            <td>
+                                @if (report.Artifacts != null && report.Artifacts.Any())
+                                {
+                                    @foreach (var artifact in report.Artifacts.Take(2))
+                                    {
+                                        <a asp-action="Artifact" asp-route-id="@artifact.Id" class="btn btn-sm btn-outline-danger me-1" title="@artifact.FileName">
+                                            <i class="bi bi-file-pdf"></i>
+                                        </a>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted" style="font-size:0.8125rem;">None</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Review" asp-route-id="@report.PublicId" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-eye me-1"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-4">No validated assessments found</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (totalPages > 1)
+    {
+        <nav class="mt-3">
+            <ul class="pagination justify-content-center">
+                @for (int i = Math.Max(1, pageNumber - 2); i <= Math.Min(totalPages, pageNumber + 2); i++)
+                {
+                    <li class="page-item @(i == pageNumber ? "active" : "")">
+                        <a class="page-link" asp-action="Validated" asp-route-page="@i" asp-route-search="@searchTerm">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>

@@ -27,7 +27,7 @@
                                title="@Localizer["RegisteredBusinesses_Tooltip"]"></i>
                         </label>
                         <input type="text" class="form-control number-format bg-light fw-bold" id="blRegisteredBusinesses"
-                               name="License.RegisteredBusinesses" value="@(Model.License.RegisteredBusinesses?.ToString("N0") ?? "451")"
+                               name="License.RegisteredBusinesses" value="@(Model.License.RegisteredBusinesses?.ToString("N0") ?? "")"
                                placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                     </div>
 
@@ -65,7 +65,7 @@
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format bg-light fw-bold" id="blBilledAmount"
-                                   name="License.BilledAmount" value="@(Model.License.BilledAmount?.ToString("N0") ?? "233,073,733")"
+                                   name="License.BilledAmount" value="@(Model.License.BilledAmount?.ToString("N0") ?? "")"
                                    placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
@@ -79,7 +79,7 @@
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format bg-light fw-bold" id="blOutstandingAmount"
-                                   name="License.OutstandingAmount" value="@(Model.License.OutstandingAmount?.ToString("N0") ?? "55,623,018")"
+                                   name="License.OutstandingAmount" value="@(Model.License.OutstandingAmount?.ToString("N0") ?? "")"
                                    placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
@@ -120,7 +120,7 @@
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format bg-light fw-bold" id="blStatutoryAverageBilled"
-                                   name="License.StatutoryAverageBilled" value="@(Model.License.StatutoryAverageBilled?.ToString("N0") ?? "680,500")"
+                                   name="License.StatutoryAverageBilled" value="@(Model.License.StatutoryAverageBilled?.ToString("N0") ?? "")"
                                    placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
@@ -329,7 +329,7 @@
                         <div class="row g-3 align-items-stretch">
                             <!-- Matrix Visualization -->
                             <div class="col-12">
-                                <div class="matrix-container position-relative" style="height: 320px; min-height: 320px; border-radius: 8px; overflow: hidden; background: #fff;">
+                                <div class="matrix-container position-relative" style="height: 320px; min-height: 320px; border-radius: 8px; overflow: visible; background: #fff; margin-top: 15px;">
                                     <!-- Y-axis Title (rotated) -->
                                     <div class="position-absolute d-flex align-items-center justify-content-center" style="left: 0; top: 0; bottom: 30px; width: 20px; background: #f8f9fa;">
                                         <span style="transform: rotate(-90deg); white-space: nowrap; font-size: 0.6rem; color: #666;">@Localizer["Matrix_YAxisTitle"]</span>
@@ -828,10 +828,13 @@
             }
 
             // Calculate Auto-Calculated Fields
-            const totalEstimatedBusinesses = registeredBusinesses * (1 + estimatedUnregisteredPercent / 100);
-            const revenueToDate = billedAmount - outstandingAmount;
-            const compliantBusinesses = billedAmount > 0 ? registeredBusinesses * (revenueToDate / billedAmount) : 0;
-            const avgBilledAmount = registeredBusinesses > 0 ? billedAmount / registeredBusinesses : 0;
+            const totalEstimatedBusinesses = Math.max(0, registeredBusinesses * (1 + estimatedUnregisteredPercent / 100));
+            const revenueToDate = Math.max(0, billedAmount - outstandingAmount);
+            // Compliant businesses: clamped between 0 and registeredBusinesses
+            const compliantBusinesses = billedAmount > 0
+                ? Math.max(0, Math.min(registeredBusinesses, registeredBusinesses * (revenueToDate / billedAmount)))
+                : 0;
+            const avgBilledAmount = registeredBusinesses > 0 ? Math.max(0, billedAmount / registeredBusinesses) : 0;
 
             // ΔA = Realistic improvement % × MAX(0, Statutory average − Average billed)
             const deltaA = (realisticImprovementPercent / 100) * Math.max(0, statutoryAverageBilled - avgBilledAmount);
@@ -839,16 +842,16 @@
             // Achievable average bill = Avg Billed + ΔA
             const achievableAvgBill = avgBilledAmount + deltaA;
 
-            // Calculate KPI Ratios
-            const complianceRatio = billedAmount > 0 ? (revenueToDate / billedAmount) * 100 : 0;
-            const coverageRatio = totalEstimatedBusinesses > 0 ? (registeredBusinesses / totalEstimatedBusinesses) * 100 : 0;
+            // Calculate KPI Ratios (clamped 0-100%)
+            const complianceRatio = billedAmount > 0 ? Math.max(0, Math.min(100, (revenueToDate / billedAmount) * 100)) : 0;
+            const coverageRatio = totalEstimatedBusinesses > 0 ? Math.max(0, Math.min(100, (registeredBusinesses / totalEstimatedBusinesses) * 100)) : 0;
 
-            // Calculate Gaps
-            const complianceGap = outstandingAmount;
-            const coverageGap = (totalEstimatedBusinesses - registeredBusinesses) * avgBilledAmount;
-            const liabilityGap = compliantBusinesses * deltaA;
-            const mixedGapCompliance = (registeredBusinesses - compliantBusinesses) * deltaA;
-            const mixedGapCoverage = (totalEstimatedBusinesses - registeredBusinesses) * deltaA;
+            // Calculate Gaps (all non-negative)
+            const complianceGap = Math.max(0, outstandingAmount);
+            const coverageGap = Math.max(0, (totalEstimatedBusinesses - registeredBusinesses) * avgBilledAmount);
+            const liabilityGap = Math.max(0, compliantBusinesses * deltaA);
+            const mixedGapCompliance = Math.max(0, (registeredBusinesses - compliantBusinesses) * deltaA);
+            const mixedGapCoverage = Math.max(0, (totalEstimatedBusinesses - registeredBusinesses) * deltaA);
 
             // Calculate Totals
             const totalPotentialRevenue = revenueToDate + complianceGap + coverageGap + liabilityGap + mixedGapCompliance + mixedGapCoverage;
@@ -999,14 +1002,16 @@
             const currencySymbol = getCurrencySymbol();
 
             function formatCompact(value) {
-                if (value >= 1000000000) {
-                    return currencySymbol + ' ' + (value / 1000000000).toFixed(1) + 'B';
-                } else if (value >= 1000000) {
-                    return currencySymbol + ' ' + (value / 1000000).toFixed(1) + 'M';
-                } else if (value >= 1000) {
-                    return currencySymbol + ' ' + (value / 1000).toFixed(1) + 'K';
+                // Treat negative values as 0 for display
+                var v = Math.max(0, value || 0);
+                if (v >= 1000000000) {
+                    return currencySymbol + ' ' + (v / 1000000000).toFixed(1) + 'B';
+                } else if (v >= 1000000) {
+                    return currencySymbol + ' ' + (v / 1000000).toFixed(1) + 'M';
+                } else if (v >= 1000) {
+                    return currencySymbol + ' ' + (v / 1000).toFixed(1) + 'K';
                 }
-                return currencySymbol + ' ' + formatCurrency(value);
+                return currencySymbol + ' ' + formatCurrency(v);
             }
 
             function formatBusinessCount(value) {
@@ -1023,9 +1028,9 @@
             const regLabel = document.getElementById('blMatrixRegisteredLabel');
             const compLabel = document.getElementById('blMatrixCompliantLabel');
 
-            if (estLabel) estLabel.textContent = formatBusinessCount(data.totalEstimatedBusinesses);
-            if (regLabel) regLabel.textContent = formatBusinessCount(data.registeredBusinesses);
-            if (compLabel) compLabel.textContent = formatBusinessCount(data.compliantBusinesses);
+            if (estLabel) estLabel.textContent = formatBusinessCount(Math.max(0, data.totalEstimatedBusinesses));
+            if (regLabel) regLabel.textContent = formatBusinessCount(Math.max(0, Math.min(data.registeredBusinesses, data.totalEstimatedBusinesses)));
+            if (compLabel) compLabel.textContent = formatBusinessCount(Math.max(0, Math.min(data.compliantBusinesses, data.registeredBusinesses)));
 
             // Update X-axis labels
             const avgBilledLabel = document.getElementById('blMatrixAvgBilledLabel');
@@ -1052,10 +1057,13 @@
             if (matrixMixedCoverage) matrixMixedCoverage.textContent = formatCompact(data.mixedGapCoverage);
 
             // === DYNAMIC ROW HEIGHTS (proportional to business counts) ===
-            const totalBiz = data.totalEstimatedBusinesses || 1;
-            const unregBiz = Math.max(0, data.totalEstimatedBusinesses - data.registeredBusinesses);
-            const nonCompliantBiz = Math.max(0, data.registeredBusinesses - data.compliantBusinesses);
-            const compliantBiz = Math.max(0, data.compliantBusinesses);
+            // Clamp all segment counts to valid ranges
+            const clampedRegistered = Math.max(0, Math.min(data.registeredBusinesses, data.totalEstimatedBusinesses));
+            const clampedCompliant = Math.max(0, Math.min(data.compliantBusinesses, clampedRegistered));
+            const totalBiz = Math.max(1, data.totalEstimatedBusinesses);
+            const unregBiz = Math.max(0, data.totalEstimatedBusinesses - clampedRegistered);
+            const nonCompliantBiz = Math.max(0, clampedRegistered - clampedCompliant);
+            const compliantBiz = Math.max(0, clampedCompliant);
 
             // Calculate flex ratios with minimum 30% to ensure text visibility
             const minFlex = 0.3;

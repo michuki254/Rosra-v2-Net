@@ -1,5 +1,7 @@
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using RosraApp.Authorization;
 using RosraApp.Data;
@@ -10,7 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString, sqlOptions =>
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null)));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
@@ -38,7 +44,11 @@ builder.Services.AddAuthorization(options =>
         "ViewUsers", "CreateUsers", "EditUsers", "DeleteUsers", "ManageUserRoles", "ActivateDeactivateUsers",
         "UploadPeerSNGData", "UploadCountryData", "ViewDataLibrary", "DeleteUploadedData",
         "ViewRoles", "CreateRoles", "EditRoles", "DeleteRoles", "ManagePermissions",
-        "ViewDashboard", "ViewAdminDashboard", "ViewAnalytics"
+        "ViewDashboard", "ViewAdminDashboard", "ViewAnalytics",
+        // Assessment Review permissions
+        "SubmitReports", "ReviewReports", "ValidateReports", "UnlockValidatedReports",
+        "AssignReviewers", "ViewReviewNotes", "AddReviewNotes",
+        "ViewAnalysisSnapshots", "AccessReportArtifacts", "BulkValidate", "ReRunCalculations"
     };
 
     // Create a policy for each permission
@@ -56,6 +66,12 @@ builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler
 builder.Services.AddScoped<RosraApp.Services.ReportExportService>();
 builder.Services.AddScoped<RosraApp.Services.ExcelExportService>();
 
+// Register assessment review services
+builder.Services.AddScoped<RosraApp.Services.SnapshotService>();
+builder.Services.AddScoped<RosraApp.Services.ArtifactService>();
+builder.Services.AddScoped<RosraApp.Services.SubmissionService>();
+builder.Services.AddScoped<RosraApp.Services.ValidationService>();
+
 // Add session services
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -63,6 +79,22 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+});
+
+// Add memory cache for reference data
+builder.Services.AddMemoryCache();
+
+// Add rate limiting for API endpoints
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddFixedWindowLimiter("api", opt =>
+    {
+        opt.PermitLimit = 100;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 10;
+    });
 });
 
 var app = builder.Build();
@@ -102,6 +134,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseRateLimiter();
 
 // Localization middleware — must be before auth so culture is set for auth UI
 var supportedCultures = new[] { "en", "fr", "es" };

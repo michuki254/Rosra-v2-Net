@@ -38,9 +38,13 @@ namespace RosraApp.Data
                     logger.LogInformation("Seeding PeersSNG data");
                     await SeedPeersSNG(context, logger);
                     
+                    // Seed review workflow permissions (idempotent — only adds missing ones)
+                    logger.LogInformation("Seeding review workflow permissions");
+                    await SeedReviewPermissions(context, logger);
+
                     // Create roles if they don't exist
                     logger.LogInformation("Ensuring roles exist");
-                    string[] roleNames = { "Admin", "User" };
+                    string[] roleNames = { "Admin", "User", "Reviewer" };
                     foreach (var roleName in roleNames)
                     {
                         if (!await roleManager.RoleExistsAsync(roleName))
@@ -209,6 +213,116 @@ namespace RosraApp.Data
                 await context.SaveChangesAsync();
 
                 logger.LogInformation($"Assigned {basicPermissions.Count} basic permissions to User role");
+            }
+        }
+
+        private static async Task SeedReviewPermissions(ApplicationDbContext context, ILogger logger)
+        {
+            // New permissions for assessment review workflow — only add missing ones
+            var newPermissions = new List<(string Name, string Description, string Category)>
+            {
+                ("SubmitReports", "Can submit reports for review", "Assessment Review"),
+                ("ReviewReports", "Can review submitted reports", "Assessment Review"),
+                ("ValidateReports", "Can validate/approve reports", "Assessment Review"),
+                ("UnlockValidatedReports", "Can unlock validated reports for revision", "Assessment Review"),
+                ("AssignReviewers", "Can assign reviewers to reports", "Assessment Review"),
+                ("ViewReviewNotes", "Can view review notes", "Assessment Review"),
+                ("AddReviewNotes", "Can add review notes to reports", "Assessment Review"),
+                ("ViewAnalysisSnapshots", "Can view analysis snapshots", "Assessment Review"),
+                ("AccessReportArtifacts", "Can access generated PDF/Excel artifacts", "Assessment Review"),
+                ("BulkValidate", "Can bulk validate multiple reports", "Assessment Review"),
+                ("ReRunCalculations", "Can re-run calculations on reports", "Assessment Review")
+            };
+
+            var existingNames = await context.Permissions.Select(p => p.Name).ToListAsync();
+            var toAdd = newPermissions
+                .Where(p => !existingNames.Contains(p.Name))
+                .Select(p => new Permission { Name = p.Name, Description = p.Description, Category = p.Category })
+                .ToList();
+
+            if (toAdd.Any())
+            {
+                await context.Permissions.AddRangeAsync(toAdd);
+                await context.SaveChangesAsync();
+                logger.LogInformation($"Seeded {toAdd.Count} new review permissions");
+            }
+
+            // Assign all new permissions to Admin role
+            var adminRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
+            if (adminRole != null)
+            {
+                var allReviewPerms = await context.Permissions
+                    .Where(p => p.Category == "Assessment Review")
+                    .ToListAsync();
+
+                var existingAdminPermIds = await context.RolePermissions
+                    .Where(rp => rp.RoleId == adminRole.Id)
+                    .Select(rp => rp.PermissionId)
+                    .ToListAsync();
+
+                var newAdminPerms = allReviewPerms
+                    .Where(p => !existingAdminPermIds.Contains(p.Id))
+                    .Select(p => new RolePermission { RoleId = adminRole.Id, PermissionId = p.Id })
+                    .ToList();
+
+                if (newAdminPerms.Any())
+                {
+                    await context.RolePermissions.AddRangeAsync(newAdminPerms);
+                    await context.SaveChangesAsync();
+                    logger.LogInformation($"Assigned {newAdminPerms.Count} review permissions to Admin role");
+                }
+            }
+
+            // Assign review permissions to Reviewer role
+            var reviewerRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == "Reviewer");
+            if (reviewerRole != null)
+            {
+                var reviewerPermNames = new[]
+                {
+                    "ViewReports", "CreateReports", "EditReports", "DeleteReports", "ExportReports",
+                    "ViewDashboard", "SubmitReports", "ReviewReports", "ValidateReports",
+                    "ViewReviewNotes", "AddReviewNotes", "ViewAnalysisSnapshots",
+                    "AccessReportArtifacts", "BulkValidate", "ReRunCalculations"
+                };
+
+                var reviewerPerms = await context.Permissions
+                    .Where(p => reviewerPermNames.Contains(p.Name))
+                    .ToListAsync();
+
+                var existingReviewerPermIds = await context.RolePermissions
+                    .Where(rp => rp.RoleId == reviewerRole.Id)
+                    .Select(rp => rp.PermissionId)
+                    .ToListAsync();
+
+                var newReviewerPerms = reviewerPerms
+                    .Where(p => !existingReviewerPermIds.Contains(p.Id))
+                    .Select(p => new RolePermission { RoleId = reviewerRole.Id, PermissionId = p.Id })
+                    .ToList();
+
+                if (newReviewerPerms.Any())
+                {
+                    await context.RolePermissions.AddRangeAsync(newReviewerPerms);
+                    await context.SaveChangesAsync();
+                    logger.LogInformation($"Assigned {newReviewerPerms.Count} permissions to Reviewer role");
+                }
+            }
+
+            // Add SubmitReports to User role
+            var userRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == "User");
+            if (userRole != null)
+            {
+                var submitPerm = await context.Permissions.FirstOrDefaultAsync(p => p.Name == "SubmitReports");
+                if (submitPerm != null)
+                {
+                    var exists = await context.RolePermissions
+                        .AnyAsync(rp => rp.RoleId == userRole.Id && rp.PermissionId == submitPerm.Id);
+                    if (!exists)
+                    {
+                        context.RolePermissions.Add(new RolePermission { RoleId = userRole.Id, PermissionId = submitPerm.Id });
+                        await context.SaveChangesAsync();
+                        logger.LogInformation("Assigned SubmitReports permission to User role");
+                    }
+                }
             }
         }
 

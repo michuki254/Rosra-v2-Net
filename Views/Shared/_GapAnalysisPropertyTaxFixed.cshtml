@@ -27,7 +27,7 @@
                                title="@Localizer["RegisteredProperties_Tooltip"]"></i>
                         </label>
                         <input type="text" class="form-control number-format bg-light fw-bold" id="registeredProperties"
-                               name="PropertyTax.RegisteredProperties" value="@(Model.PropertyTax.RegisteredProperties?.ToString("N0") ?? "20,344")"
+                               name="PropertyTax.RegisteredProperties" value="@(Model.PropertyTax.RegisteredProperties?.ToString("N0") ?? "")"
                                placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                     </div>
 
@@ -38,7 +38,7 @@
                                title="@Localizer["NonRegisteredProperties_Tooltip"]"></i>
                         </label>
                         <input type="text" class="form-control number-format bg-light fw-bold" id="nonRegisteredProperties"
-                               name="PropertyTax.NonRegisteredProperties" value="@(Model.PropertyTax.NonRegisteredProperties?.ToString("N0") ?? "1,000")"
+                               name="PropertyTax.NonRegisteredProperties" value="@(Model.PropertyTax.NonRegisteredProperties?.ToString("N0") ?? "")"
                                placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
 
                         <!-- Estimation Option -->
@@ -90,7 +90,7 @@
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format bg-light fw-bold" id="totalFiscalBase"
-                                   name="PropertyTax.TotalFiscalBase" value="@(Model.PropertyTax.TotalFiscalBase?.ToString("N0") ?? "236,465,062,053")"
+                                   name="PropertyTax.TotalFiscalBase" value="@(Model.PropertyTax.TotalFiscalBase?.ToString("N0") ?? "")"
                                    placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
@@ -104,7 +104,7 @@
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format bg-light fw-bold" id="totalMarketValue"
-                                   name="PropertyTax.TotalMarketValue" value="@(Model.PropertyTax.TotalMarketValue?.ToString("N0") ?? "300,000,000,000")"
+                                   name="PropertyTax.TotalMarketValue" value="@(Model.PropertyTax.TotalMarketValue?.ToString("N0") ?? "")"
                                    placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
 
@@ -135,7 +135,7 @@
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format bg-light fw-bold" id="billedAmount"
-                                   name="PropertyTax.BilledAmount" value="@(Model.PropertyTax.BilledAmount?.ToString("N0") ?? "407,911,073")"
+                                   name="PropertyTax.BilledAmount" value="@(Model.PropertyTax.BilledAmount?.ToString("N0") ?? "")"
                                    placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
@@ -149,7 +149,7 @@
                         <div class="input-group">
                             <span class="input-group-text currency-prefix-display">@currencySymbol</span>
                             <input type="text" class="form-control number-format bg-light fw-bold" id="outstandingAmount"
-                                   name="PropertyTax.OutstandingAmount" value="@(Model.PropertyTax.OutstandingAmount?.ToString("N0") ?? "123,880,968")"
+                                   name="PropertyTax.OutstandingAmount" value="@(Model.PropertyTax.OutstandingAmount?.ToString("N0") ?? "")"
                                    placeholder="@Localizer["EnterValue"]" @(isViewMode ? "readonly" : "") data-input="true">
                         </div>
                     </div>
@@ -381,7 +381,7 @@
                         <div class="row g-3 align-items-stretch">
                             <!-- Matrix Visualization -->
                             <div class="col-12">
-                                <div class="matrix-container position-relative" style="height: 320px; min-height: 320px; border-radius: 8px; overflow: hidden; background: #fff;">
+                                <div class="matrix-container position-relative" style="height: 320px; min-height: 320px; border-radius: 8px; overflow: visible; background: #fff; margin-top: 15px;">
                                     <!-- Y-axis Title (rotated) -->
                                     <div class="position-absolute d-flex align-items-center justify-content-center" style="left: 0; top: 0; bottom: 30px; width: 20px; background: #f8f9fa;">
                                         <span style="transform: rotate(-90deg); white-space: nowrap; font-size: 0.6rem; color: #666;">@Localizer["Matrix_YAxisTitle"]</span>

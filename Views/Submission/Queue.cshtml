@@ -1,0 +1,202 @@
+@model List<RosraApp.Models.RosraReport>
+@using RosraApp.Models.Enums
+
+@{
+    ViewData["Title"] = "Review Queue";
+    var currentTab = ViewData["CurrentTab"] as string ?? "pending";
+    var searchTerm = ViewData["SearchTerm"] as string;
+    var pageNumber = (int)(ViewData["PageNumber"] ?? 1);
+    var totalPages = (int)(ViewData["TotalPages"] ?? 1);
+    var totalCount = (int)(ViewData["TotalCount"] ?? 0);
+}
+
+@section Styles {
+    <style>
+        body { background: #f8f9fa; }
+        .queue-header { background: white; border-radius: 8px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .queue-header h1 { color: #212529; font-weight: 700; font-size: 2rem; margin-bottom: 0.5rem; }
+        .queue-table { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
+        .queue-table th { background: #f8f9fa; color: #495057; font-weight: 600; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem; border-bottom: 2px solid #dee2e6; }
+        .queue-table td { padding: 1rem; vertical-align: middle; border-bottom: 1px solid #f1f3f5; font-size: 0.875rem; }
+        .queue-table tr:hover { background: #f8f9fa; }
+        .badge-status { padding: 0.3rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 500; }
+        .badge-submitted { background: #fff3cd; color: #856404; }
+        .badge-under-review { background: #cce5ff; color: #004085; }
+        .badge-needs-revision { background: #f8d7da; color: #721c24; }
+        .badge-validated { background: #d4edda; color: #155724; }
+        .badge-draft { background: #e2e3e5; color: #383d41; }
+        .badge-completion { padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.7rem; font-weight: 500; }
+        .badge-full { background: #d4edda; color: #155724; }
+        .badge-partial { background: #fff3cd; color: #856404; }
+        .badge-metadata { background: #e2e3e5; color: #383d41; }
+    </style>
+}
+
+<div class="container py-4">
+    <div class="queue-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="bi bi-clipboard-check me-2"></i>Review Queue</h1>
+            <p class="text-muted mb-0">@totalCount assessment(s) in current view</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-controller="Submission" asp-action="Validated" class="btn btn-outline-success btn-sm">
+                <i class="bi bi-patch-check me-1"></i> Validated Library
+            </a>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Admin Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-pills mb-3">
+        <li class="nav-item">
+            <a class="nav-link @(currentTab == "pending" ? "active" : "")" asp-action="Queue" asp-route-tab="pending" asp-route-search="@searchTerm">
+                Pending Review
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(currentTab == "my-reviews" ? "active" : "")" asp-action="Queue" asp-route-tab="my-reviews" asp-route-search="@searchTerm">
+                My Reviews
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(currentTab == "revision" ? "active" : "")" asp-action="Queue" asp-route-tab="revision" asp-route-search="@searchTerm">
+                Needs Revision
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(currentTab == "all" ? "active" : "")" asp-action="Queue" asp-route-tab="all" asp-route-search="@searchTerm">
+                All
+            </a>
+        </li>
+    </ul>
+
+    <!-- Search -->
+    <form asp-action="Queue" method="get" class="d-flex gap-2 mb-3" style="max-width: 400px;">
+        <input type="hidden" name="tab" value="@currentTab" />
+        <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by title, country, email..." value="@searchTerm" />
+        <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-search"></i></button>
+        @if (!string.IsNullOrEmpty(searchTerm))
+        {
+            <a asp-action="Queue" asp-route-tab="@currentTab" class="btn btn-sm btn-outline-danger"><i class="bi bi-x"></i></a>
+        }
+    </form>
+
+    <!-- Table -->
+    <div class="queue-table">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Location</th>
+                    <th>Completion</th>
+                    <th>Status</th>
+                    <th>Submitted</th>
+                    <th>Reviewer</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var report in Model)
+                    {
+                        var status = (ReportStatus)report.Status;
+                        var completion = (CompletionLevel)report.CompletionLevel;
+                        var statusClass = status switch {
+                            ReportStatus.Submitted => "badge-submitted",
+                            ReportStatus.UnderReview => "badge-under-review",
+                            ReportStatus.NeedsRevision => "badge-needs-revision",
+                            ReportStatus.Validated => "badge-validated",
+                            _ => "badge-draft"
+                        };
+                        var completionClass = completion switch {
+                            CompletionLevel.Full => "badge-full",
+                            CompletionLevel.Partial => "badge-partial",
+                            _ => "badge-metadata"
+                        };
+                        <tr>
+                            <td><strong>@report.Title</strong></td>
+                            <td>
+                                @if (report.User != null)
+                                {
+                                    <span>@report.User.FirstName @report.User.LastName</span>
+                                    <br /><small class="text-muted">@report.User.Email</small>
+                                }
+                            </td>
+                            <td>@(report.City ?? "") @(report.Country ?? "")</td>
+                            <td><span class="badge-completion @completionClass">@completion</span></td>
+                            <td><span class="badge-status @statusClass">@status</span></td>
+                            <td>@(report.SubmittedAt?.ToLocalTime().ToString("dd MMM yyyy") ?? "-")</td>
+                            <td>
+                                @if (report.ReviewerUserId != null)
+                                {
+                                    <span>Assigned</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Unassigned</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a asp-action="Review" asp-route-id="@report.PublicId" class="btn btn-sm btn-primary" title="Review">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @if (status == ReportStatus.Submitted)
+                                    {
+                                        <button class="btn btn-sm btn-outline-primary claim-btn" data-id="@report.Id" title="Claim">
+                                            <i class="bi bi-hand-index"></i>
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="8" class="text-center text-muted py-4">No assessments in this queue</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages > 1)
+    {
+        <nav class="mt-3">
+            <ul class="pagination justify-content-center">
+                @for (int i = Math.Max(1, pageNumber - 2); i <= Math.Min(totalPages, pageNumber + 2); i++)
+                {
+                    <li class="page-item @(i == pageNumber ? "active" : "")">
+                        <a class="page-link" asp-action="Queue" asp-route-page="@i" asp-route-tab="@currentTab" asp-route-search="@searchTerm">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>
+
+@section Scripts {
+    @Html.AntiForgeryToken()
+    <script>
+        $(document).ready(function() {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            $('.claim-btn').click(function() {
+                var id = $(this).data('id');
+                $.ajax({
+                    url: '@Url.Action("Claim", "Submission")/' + id,
+                    type: 'POST',
+                    data: { __RequestVerificationToken: token },
+                    success: function(r) {
+                        if (r.success) location.reload();
+                        else alert(r.message);
+                    }
+                });
+            });
+        });
+    </script>
+}

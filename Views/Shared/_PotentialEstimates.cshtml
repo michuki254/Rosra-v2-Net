@@ -2214,8 +2214,8 @@
         // Get the country and region elements
         const countrySelect = document.getElementById('country');
         const regionSelect = document.getElementById('region');
-        const savedCountry = '@Model.Country' || 'Kenya';
-        const savedRegion = '@Model.Region' || 'Kiambu';
+        const savedCountry = '@Model.Country' || '';
+        const savedRegion = '@Model.Region' || '';
         const savedCity = '@Model.City' || '';
         const savedGovUnitLevel3 = '@Model.GovUnitLevel3' || '';
         const savedFinalUnitLevel = parseInt('@Model.FinalUnitLevel') || 0;
@@ -2819,7 +2819,7 @@
         
         // Populate financial years
         const financialYearSelect = document.getElementById('financialYear');
-        const financialYearValue = '@Model.FinancialYear' || '2022'; // Default to 2022
+        const financialYearValue = '@Model.FinancialYear' || '';
 
         // Create financial year options for individual years 2010 through 2045
         for (let i = 2010; i <= 2045; i++) {
@@ -2827,8 +2827,7 @@
             option.value = i.toString();
             option.textContent = i.toString();
 
-            // Select if matches saved value, or default to 2022
-            if (option.value === financialYearValue || (!financialYearValue && option.value === '2022')) {
+            if (financialYearValue && option.value === financialYearValue) {
                 option.selected = true;
             }
 
@@ -3561,7 +3560,7 @@
                 }
 
                 // Add peer SNGs to the dropdown
-                const defaultPeerSNG = savedRegion || 'Kiambu';
+                const defaultPeerSNG = savedRegion || '';
                 peers.forEach(peer => {
                     const option = document.createElement('option');
                     option.value = peer.name;

@@ -8,13 +8,30 @@ namespace RosraApp.Models.ViewModels
     public class DashboardViewModel
     {
         public List<RosraReportViewModel> Reports { get; set; } = new List<RosraReportViewModel>();
+
+        // Pagination
+        public int PageNumber { get; set; } = 1;
+        public int TotalPages { get; set; } = 1;
+        public int TotalCount { get; set; }
+
+        // Search
+        public string? SearchTerm { get; set; }
+
+        // Tab (active / archived)
+        public string CurrentTab { get; set; } = "active";
     }
     
     public class RosraReportViewModel
     {
         public int Id { get; set; }
+        public Guid PublicId { get; set; }
         public string Title { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public bool IsArchived { get; set; }
+        public int Status { get; set; }
+        public int CompletionLevel { get; set; }
+        public string? RevisionReason { get; set; }
         public string? ProjectName { get; set; }
         public decimal? EstimatedBudget { get; set; }
         public string? ProblemStatement { get; set; }
@@ -22,6 +39,8 @@ namespace RosraApp.Models.ViewModels
         public string? RecommendationSummary { get; set; }
         public List<ActionItemViewModel> ActionItems { get; set; } = new List<ActionItemViewModel>();
         public string? UserName { get; set; }
+        public string? UserEmail { get; set; }
+        public string? UserFullName { get; set; }
         public string? Currency { get; set; }
         public string? CurrencySymbol { get; set; }
         public string? Region { get; set; }
@@ -40,8 +59,14 @@ namespace RosraApp.Models.ViewModels
             return new RosraReportViewModel
             {
                 Id = report.Id,
+                PublicId = report.PublicId,
                 Title = report.Title,
                 CreatedAt = report.CreatedAt,
+                UpdatedAt = report.UpdatedAt,
+                IsArchived = report.IsArchived,
+                Status = report.Status,
+                CompletionLevel = report.CompletionLevel,
+                RevisionReason = report.RevisionReason,
                 ProjectName = report.ProjectName,
                 EstimatedBudget = report.EstimatedBudget,
                 ProblemStatement = report.ProblemStatement,
@@ -53,6 +78,8 @@ namespace RosraApp.Models.ViewModels
                     ? new List<ActionItemViewModel>() 
                     : JsonSerializer.Deserialize<List<ActionItemViewModel>>(report.ActionItems) ?? new List<ActionItemViewModel>(),
                 UserName = report.User?.UserName,
+                UserEmail = report.User?.Email,
+                UserFullName = report.User != null ? $"{report.User.FirstName} {report.User.LastName}" : null,
                 Currency = report.Currency,
                 CurrencySymbol = report.CurrencySymbol,
                 Region = report.Region,

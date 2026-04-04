@@ -7,6 +7,7 @@ namespace RosraApp.Models.ViewModels
     {
         // Report identifier (0 for new reports)
         public int Id { get; set; }
+        public Guid PublicId { get; set; }
         
         // Location Information
         public string? Country { get; set; }
@@ -79,6 +80,9 @@ namespace RosraApp.Models.ViewModels
         // Chart images captured client-side as base64 PNG (not persisted to DB, used only for export)
         [System.ComponentModel.DataAnnotations.Schema.NotMapped]
         public string? ChartImagesData { get; set; }
+
+        // Concurrency token (Base64 encoded)
+        public string? RowVersion { get; set; }
     }
     
     public class ActionItemViewModel
