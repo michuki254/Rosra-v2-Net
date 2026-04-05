@@ -179,6 +179,18 @@ namespace RosraApp.Controllers
             return View(report);
         }
 
+        [Authorize(Roles = "Admin,Reviewer")]
+        public async Task<IActionResult> PrintFullReport(Guid id)
+        {
+            var report = await _context.RosraReports
+                .FirstOrDefaultAsync(r => r.PublicId == id);
+
+            if (report == null) return NotFound();
+
+            var formData = _snapshotService.BuildFormViewModelFromReport(report);
+            return View("~/Views/Rosra/PrintFullReport.cshtml", formData);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Reviewer")]
@@ -361,13 +373,18 @@ namespace RosraApp.Controllers
         }
 
         [Authorize(Roles = "Admin,Reviewer")]
-        public async Task<IActionResult> Artifact(int id)
+        public async Task<IActionResult> Artifact(int id, bool download = false)
         {
             var (stream, fileName, contentType) = await _artifactService.GetArtifactStream(id);
             if (stream == null || fileName == null || contentType == null)
                 return NotFound();
 
-            return File(stream, contentType, fileName);
+            if (download)
+                return File(stream, contentType, fileName);
+
+            // Display inline in browser (PDF opens in viewer, Excel still downloads)
+            Response.Headers["Content-Disposition"] = $"inline; filename=\"{fileName}\"";
+            return File(stream, contentType);
         }
 
         // --- Bulk Actions ---

@@ -39,15 +39,22 @@
   <data name="Sidebar_Country" xml:space="preserve"><value>País:</value></data>
   <data name="Sidebar_Region" xml:space="preserve"><value>Región:</value></data>
   <data name="Sidebar_ReportActions" xml:space="preserve"><value>Acciones del informe</value></data>
-  <data name="Sidebar_NewReport" xml:space="preserve"><value>+ Nuevo informe</value></data>
-  <data name="Sidebar_SaveReport" xml:space="preserve"><value>+ Guardar informe</value></data>
-  <data name="Sidebar_UpdateReport" xml:space="preserve"><value>+ Actualizar informe</value></data>
-  <data name="Sidebar_Export" xml:space="preserve"><value>+ Exportar</value></data>
+  <data name="Sidebar_NewReport" xml:space="preserve"><value>Nuevo informe</value></data>
+  <data name="Sidebar_SaveReport" xml:space="preserve"><value>Guardar informe</value></data>
+  <data name="Sidebar_UpdateReport" xml:space="preserve"><value>Actualizar informe</value></data>
+  <data name="Sidebar_Export" xml:space="preserve"><value>Exportar</value></data>
   <data name="Sidebar_ExportPdf" xml:space="preserve"><value>Exportar como PDF</value></data>
   <data name="Sidebar_ExportExcel" xml:space="preserve"><value>Exportar como Excel</value></data>
-  <data name="Sidebar_EditReport" xml:space="preserve"><value>+ Editar informe</value></data>
-  <data name="Sidebar_BackToDashboard" xml:space="preserve"><value>+ Volver al panel</value></data>
+  <data name="Sidebar_EditReport" xml:space="preserve"><value>Editar informe</value></data>
+  <data name="Sidebar_BackToDashboard" xml:space="preserve"><value>Volver al panel</value></data>
   <data name="Sidebar_EndOfAnalysis" xml:space="preserve"><value>Fin del análisis</value></data>
+  <data name="Sidebar_LoadSampleData" xml:space="preserve"><value>Cargar datos de ejemplo</value></data>
+  <data name="Sidebar_SaveAsDraft" xml:space="preserve"><value>Guardar como borrador</value></data>
+  <data name="Sidebar_SubmitForReview" xml:space="preserve"><value>Enviar para revisi&#xF3;n</value></data>
+  <data name="Sidebar_Submitting" xml:space="preserve"><value>Enviando...</value></data>
+  <data name="Sidebar_TopDownPrint" xml:space="preserve"><value>An&#xE1;lisis descendente (Imprimir)</value></data>
+  <data name="Sidebar_BottomUpPrint" xml:space="preserve"><value>An&#xE1;lisis ascendente (Imprimir)</value></data>
+  <data name="Sidebar_FullReportPrint" xml:space="preserve"><value>Informe completo (Imprimir)</value></data>
 
   <!-- Tabs -->
   <data name="Tab_TopDown" xml:space="preserve"><value>Análisis descendente</value></data>

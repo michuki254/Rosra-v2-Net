@@ -184,12 +184,15 @@
                                 <a class="user-dropdown-toggle" href="#" id="userDropdown" role="button"
                                    data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-user-circle"></i>
-                                    <span class="user-name">@User.Identity?.Name</span>
+                                    <span class="user-name">@SharedLocalizer["Nav_MyDashboard"]</span>
                                     <i class="fas fa-chevron-down ms-1"></i>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                     <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="Index">
                                         <i class="fas fa-tachometer-alt me-2"></i> @SharedLocalizer["Nav_MyDashboard"]
+                                    </a></li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">
+                                        <i class="fas fa-user-cog me-2"></i> My Profile
                                     </a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
@@ -256,7 +259,7 @@
                 </div>
                 <div class="footer-bottom">
                     <div class="footer-info">
-                        @SharedLocalizer["Footer_Copyright"]
+                        &copy; @DateTime.Now.Year - RosraApp - @SharedLocalizer["Footer_Tagline"]
                     </div>
                     <div class="footer-links">
                         <a asp-area="" asp-controller="Home" asp-action="Privacy">@SharedLocalizer["Footer_Privacy"]</a>

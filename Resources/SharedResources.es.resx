@@ -55,6 +55,7 @@
 
   <!-- Footer -->
   <data name="Footer_Copyright" xml:space="preserve"><value>© 2025 - RosraApp - Empoderando a los gobiernos locales a través de la optimización de IPP basada en datos</value></data>
+  <data name="Footer_Tagline" xml:space="preserve"><value>Empoderando a los gobiernos locales a través de la optimización de IPP basada en datos</value></data>
   <data name="Footer_Privacy" xml:space="preserve"><value>Privacidad</value></data>
   <data name="Footer_ContactUs" xml:space="preserve"><value>Contáctenos</value></data>
   <data name="Footer_SdgGoals" xml:space="preserve"><value>Objetivos ODS</value></data>
@@ -70,6 +71,30 @@
   <data name="Common_Next" xml:space="preserve"><value>Siguiente</value></data>
   <data name="Common_Yes" xml:space="preserve"><value>Sí</value></data>
   <data name="Common_No" xml:space="preserve"><value>No</value></data>
+
+  <!-- Profile Page -->
+  <data name="Profile_Title" xml:space="preserve"><value>Mi perfil</value></data>
+  <data name="Profile_Subtitle" xml:space="preserve"><value>Administrar la configuraci&#xF3;n de su cuenta</value></data>
+  <data name="Profile_Dashboard" xml:space="preserve"><value>Panel</value></data>
+  <data name="Profile_Verified" xml:space="preserve"><value>Verificado</value></data>
+  <data name="Profile_Unverified" xml:space="preserve"><value>No verificado</value></data>
+  <data name="Profile_Reports" xml:space="preserve"><value>Informes</value></data>
+  <data name="Profile_Joined" xml:space="preserve"><value>Registrado</value></data>
+  <data name="Profile_Account" xml:space="preserve"><value>Cuenta</value></data>
+  <data name="Profile_Email" xml:space="preserve"><value>Correo electr&#xF3;nico</value></data>
+  <data name="Profile_Phone" xml:space="preserve"><value>Tel&#xE9;fono</value></data>
+  <data name="Profile_Organization" xml:space="preserve"><value>Organizaci&#xF3;n</value></data>
+  <data name="Profile_Security" xml:space="preserve"><value>Seguridad</value></data>
+  <data name="Profile_ChangePassword" xml:space="preserve"><value>Cambiar contrase&#xF1;a</value></data>
+  <data name="Profile_EditProfile" xml:space="preserve"><value>Editar perfil</value></data>
+  <data name="Profile_FirstName" xml:space="preserve"><value>Nombre</value></data>
+  <data name="Profile_LastName" xml:space="preserve"><value>Apellido</value></data>
+  <data name="Profile_EmailReadonly" xml:space="preserve"><value>El correo no se puede cambiar. Contacte a un administrador si es necesario.</value></data>
+  <data name="Profile_OrgPlaceholder" xml:space="preserve"><value>Su organizaci&#xF3;n o empresa</value></data>
+  <data name="Profile_SaveChanges" xml:space="preserve"><value>Guardar cambios</value></data>
+  <data name="Profile_CurrentPassword" xml:space="preserve"><value>Contrase&#xF1;a actual</value></data>
+  <data name="Profile_NewPassword" xml:space="preserve"><value>Nueva contrase&#xF1;a</value></data>
+  <data name="Profile_ConfirmNewPassword" xml:space="preserve"><value>Confirmar nueva contrase&#xF1;a</value></data>
 
   <!-- Language Names -->
   <data name="Lang_English" xml:space="preserve"><value>English</value></data>

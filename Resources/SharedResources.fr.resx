@@ -55,6 +55,7 @@
 
   <!-- Footer -->
   <data name="Footer_Copyright" xml:space="preserve"><value>© 2025 - RosraApp - Autonomiser les gouvernements locaux grâce à l'optimisation des RPP basée sur les données</value></data>
+  <data name="Footer_Tagline" xml:space="preserve"><value>Autonomiser les gouvernements locaux grâce à l'optimisation des RPP basée sur les données</value></data>
   <data name="Footer_Privacy" xml:space="preserve"><value>Confidentialité</value></data>
   <data name="Footer_ContactUs" xml:space="preserve"><value>Nous contacter</value></data>
   <data name="Footer_SdgGoals" xml:space="preserve"><value>Objectifs ODD</value></data>
@@ -70,6 +71,30 @@
   <data name="Common_Next" xml:space="preserve"><value>Suivant</value></data>
   <data name="Common_Yes" xml:space="preserve"><value>Oui</value></data>
   <data name="Common_No" xml:space="preserve"><value>Non</value></data>
+
+  <!-- Profile Page -->
+  <data name="Profile_Title" xml:space="preserve"><value>Mon profil</value></data>
+  <data name="Profile_Subtitle" xml:space="preserve"><value>G&#xE9;rer les param&#xE8;tres de votre compte</value></data>
+  <data name="Profile_Dashboard" xml:space="preserve"><value>Tableau de bord</value></data>
+  <data name="Profile_Verified" xml:space="preserve"><value>V&#xE9;rifi&#xE9;</value></data>
+  <data name="Profile_Unverified" xml:space="preserve"><value>Non v&#xE9;rifi&#xE9;</value></data>
+  <data name="Profile_Reports" xml:space="preserve"><value>Rapports</value></data>
+  <data name="Profile_Joined" xml:space="preserve"><value>Inscrit</value></data>
+  <data name="Profile_Account" xml:space="preserve"><value>Compte</value></data>
+  <data name="Profile_Email" xml:space="preserve"><value>E-mail</value></data>
+  <data name="Profile_Phone" xml:space="preserve"><value>T&#xE9;l&#xE9;phone</value></data>
+  <data name="Profile_Organization" xml:space="preserve"><value>Organisation</value></data>
+  <data name="Profile_Security" xml:space="preserve"><value>S&#xE9;curit&#xE9;</value></data>
+  <data name="Profile_ChangePassword" xml:space="preserve"><value>Changer le mot de passe</value></data>
+  <data name="Profile_EditProfile" xml:space="preserve"><value>Modifier le profil</value></data>
+  <data name="Profile_FirstName" xml:space="preserve"><value>Pr&#xE9;nom</value></data>
+  <data name="Profile_LastName" xml:space="preserve"><value>Nom</value></data>
+  <data name="Profile_EmailReadonly" xml:space="preserve"><value>L'e-mail ne peut pas &#xEA;tre modifi&#xE9;. Contactez un administrateur si n&#xE9;cessaire.</value></data>
+  <data name="Profile_OrgPlaceholder" xml:space="preserve"><value>Votre organisation ou entreprise</value></data>
+  <data name="Profile_SaveChanges" xml:space="preserve"><value>Enregistrer les modifications</value></data>
+  <data name="Profile_CurrentPassword" xml:space="preserve"><value>Mot de passe actuel</value></data>
+  <data name="Profile_NewPassword" xml:space="preserve"><value>Nouveau mot de passe</value></data>
+  <data name="Profile_ConfirmNewPassword" xml:space="preserve"><value>Confirmer le nouveau mot de passe</value></data>
 
   <!-- Language Names -->
   <data name="Lang_English" xml:space="preserve"><value>English</value></data>

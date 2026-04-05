@@ -239,7 +239,7 @@ namespace RosraApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> LoadSampleData()
+        public IActionResult LoadSampleData()
         {
             // Clear existing session data
             HttpContext.Session.Remove(RosraFormDataKey);
@@ -305,72 +305,11 @@ namespace RosraApp.Controllers
                 }
             };
 
-            // Save to database — this properly serializes all fields into JSON columns
-            string? userId = null;
-            if (User.Identity?.IsAuthenticated == true)
-            {
-                var user = await _userManager.GetUserAsync(User);
-                userId = user?.Id;
-            }
-            var report = CreateReportFromFormData(sampleData, null, userId!);
-            report.UserId = userId; // allow null for anonymous
-            _context.RosraReports.Add(report);
-            await _context.SaveChangesAsync();
-
-            // Now load it back from DB via the same path as Edit
-            // This properly deserializes ALL fields including int? from JSON columns
-            var loaded = await _context.RosraReports.FindAsync(report.Id);
-            if (loaded == null) return RedirectToAction("Index");
-
-            var formData = new RosraFormViewModel
-            {
-                Id = loaded.Id,
-                PublicId = loaded.PublicId,
-                Title = loaded.Title,
-                Country = loaded.Country,
-                Region = loaded.Region,
-                City = loaded.City,
-                GovUnitLevel3 = loaded.GovUnitLevel3,
-                FinalUnitLevel = loaded.FinalUnitLevel,
-                Currency = loaded.Currency,
-                CurrencySymbol = loaded.CurrencySymbol,
-                FinancialYear = loaded.FinancialYear,
-                ActualOsr = loaded.ActualOsr,
-                BudgetedOsr = loaded.BudgetedOsr,
-                Population = loaded.Population,
-                GdpPerCapita = loaded.GdpPerCapita,
-                ProjectName = loaded.ProjectName,
-                ProjectDescription = loaded.ProjectDescription,
-                KeyObjectives = loaded.KeyObjectives,
-                StartDate = loaded.StartDate,
-                EndDate = loaded.EndDate,
-                PropertyTax = string.IsNullOrEmpty(loaded.PropertyTaxData)
-                    ? new GapAnalysisPropertyTaxViewModel()
-                    : DeserializePropertyTaxData(loaded.PropertyTaxData),
-                License = string.IsNullOrEmpty(loaded.LicenseData)
-                    ? new GapAnalysisLicenseViewModel()
-                    : JsonSerializer.Deserialize<GapAnalysisLicenseViewModel>(loaded.LicenseData, _jsonOptions) ?? new GapAnalysisLicenseViewModel(),
-                ProblemStatement = loaded.ProblemStatement,
-                RootCauses = string.IsNullOrEmpty(loaded.RootCauses)
-                    ? new List<string>()
-                    : JsonSerializer.Deserialize<List<string>>(loaded.RootCauses, _jsonOptions) ?? new List<string>(),
-                RecommendationSummary = loaded.RecommendationSummary,
-                ActionItems = string.IsNullOrEmpty(loaded.ActionItems)
-                    ? new List<ActionItemViewModel>()
-                    : JsonSerializer.Deserialize<List<ActionItemViewModel>>(loaded.ActionItems, _jsonOptions) ?? new List<ActionItemViewModel>(),
-                GovernmentType = loaded.GovernmentType,
-                IncomeLevel = loaded.IncomeLevel,
-                OtherRevenue = loaded.OtherRevenue,
-                PrioritizationData = loaded.PrioritizationData,
-                SelectedSolutionsData = loaded.SelectedSolutionsData,
-                ImplementationProgressData = loaded.ImplementationProgressData,
-                PeerSNGData = loaded.PeerSNGData,
-                RowVersion = loaded.RowVersion != null ? Convert.ToBase64String(loaded.RowVersion) : null
-            };
-
-            SaveFormDataToSession(formData);
+            // Load sample data directly into session without saving to database
+            // Id = 0 means it's not persisted - view mode prevents accidental saves
+            SaveFormDataToSession(sampleData);
             TempData["ClearLocalStorage"] = true;
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { viewMode = true });
         }
 
         [HttpPost]

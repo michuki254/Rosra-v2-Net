@@ -1,10 +1,11 @@
 @model RosraApp.Models.RosraReport
 @using RosraApp.Models.Enums
+@using RosraApp.Models.ViewModels
 
 @{
     ViewData["Title"] = "Review Assessment";
     var report = ViewData["Report"] as RosraApp.Models.RosraReport;
-    var formData = ViewData["FormData"] as RosraApp.Models.ViewModels.RosraFormViewModel;
+    var formData = ViewData["FormData"] as RosraFormViewModel;
     var snapshots = ViewData["Snapshots"] as List<RosraApp.Models.AnalysisSnapshot> ?? new();
     var artifacts = ViewData["Artifacts"] as List<RosraApp.Models.ReportArtifact> ?? new();
     var notes = ViewData["Notes"] as List<RosraApp.Models.ReviewNote> ?? new();
@@ -13,72 +14,335 @@
     var completionName = ViewData["CompletionName"] as string ?? "Unknown";
     var streamStatus = ViewData["StreamStatus"] as Dictionary<string, bool> ?? new();
     var status = (ReportStatus)(report?.Status ?? 0);
+    // Resolve currency symbol: prefer explicit symbol, then map from currency name
+    var csRaw = formData?.CurrencySymbol ?? report?.CurrencySymbol;
+    if (string.IsNullOrEmpty(csRaw))
+    {
+        var currName = (formData?.Currency ?? report?.Currency ?? "").ToLower();
+        csRaw = currName switch
+        {
+            var n when n.Contains("shilling") && n.Contains("kenya") => "KSh",
+            var n when n.Contains("shilling") && n.Contains("tanzania") => "TSh",
+            var n when n.Contains("shilling") && n.Contains("uganda") => "USh",
+            var n when n.Contains("shilling") && n.Contains("somalia") => "SSh",
+            var n when n.Contains("dollar") && (n.Contains("us") || n.Contains("united states")) => "$",
+            var n when n.Contains("dollar") && n.Contains("canad") => "C$",
+            var n when n.Contains("dollar") && n.Contains("austral") => "A$",
+            var n when n.Contains("euro") => "\u20AC",
+            var n when n.Contains("pound") => "\u00A3",
+            var n when n.Contains("yen") || n.Contains("yuan") => "\u00A5",
+            var n when n.Contains("rupee") && n.Contains("india") => "\u20B9",
+            var n when n.Contains("rand") => "R",
+            var n when n.Contains("naira") => "\u20A6",
+            var n when n.Contains("cedi") => "GH\u20B5",
+            var n when n.Contains("franc") && n.Contains("cfa") => "CFA",
+            var n when n.Contains("franc") && n.Contains("swiss") => "CHF",
+            var n when n.Contains("real") && n.Contains("brazil") => "R$",
+            var n when n.Contains("peso") && n.Contains("mexic") => "MX$",
+            var n when n.Contains("dirham") => "AED",
+            var n when n.Contains("riyal") => "SAR",
+            var n when n.Contains("ringgit") => "RM",
+            var n when n.Contains("baht") => "\u0E3F",
+            var n when n.Contains("rupiah") => "Rp",
+            var n when n.Contains("won") => "\u20A9",
+            var n when n.Contains("birr") => "Br",
+            var n when n.Contains("kwacha") => "MK",
+            var n when n.Contains("pula") => "P",
+            var n when n.Contains("dollar") => "$",
+            _ => "$"
+        };
+    }
+    var cs = csRaw;
+}
+
+@functions {
+    public string Fmt(decimal? val) => val.HasValue ? val.Value.ToString("N0") : "-";
+    public string FmtD(decimal? val) => val.HasValue ? val.Value.ToString("N2") : "-";
+    public string Pct(decimal? val) => val.HasValue ? val.Value.ToString("N1") + "%" : "-";
+    public bool HasVal(decimal? val) => val.HasValue && val.Value != 0;
+    public bool HasVal(int? val) => val.HasValue && val.Value != 0;
+
+    public string GetCountryCode(string country)
+    {
+        if (string.IsNullOrEmpty(country)) return "";
+        var codes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            {"Kenya","ke"},{"Nigeria","ng"},{"South Africa","za"},{"Egypt","eg"},{"Ethiopia","et"},
+            {"Ghana","gh"},{"Tanzania","tz"},{"Uganda","ug"},{"Rwanda","rw"},{"Morocco","ma"},
+            {"Algeria","dz"},{"Senegal","sn"},{"Cameroon","cm"},{"Zambia","zm"},{"Zimbabwe","zw"},
+            {"Botswana","bw"},{"Namibia","na"},{"Mozambique","mz"},{"Mali","ml"},{"Burkina Faso","bf"},
+            {"Ivory Coast","ci"},{"Cote d'Ivoire","ci"},{"Malawi","mw"},{"Benin","bj"},{"Togo","tg"},
+            {"Niger","ne"},{"Sierra Leone","sl"},{"Liberia","lr"},
+            {"United Kingdom","gb"},{"UK","gb"},{"Britain","gb"},{"France","fr"},{"Germany","de"},
+            {"Italy","it"},{"Spain","es"},{"Netherlands","nl"},{"Belgium","be"},{"Switzerland","ch"},
+            {"Sweden","se"},{"Norway","no"},{"Portugal","pt"},{"Poland","pl"},{"Denmark","dk"},
+            {"Finland","fi"},{"Austria","at"},{"Ireland","ie"},{"Greece","gr"},{"Czech Republic","cz"},
+            {"Romania","ro"},{"Hungary","hu"},
+            {"United States","us"},{"United States of America","us"},{"USA","us"},{"Canada","ca"},
+            {"Mexico","mx"},{"Brazil","br"},{"Argentina","ar"},{"Chile","cl"},{"Colombia","co"},
+            {"Peru","pe"},{"Venezuela","ve"},{"Ecuador","ec"},{"Bolivia","bo"},{"Paraguay","py"},
+            {"Uruguay","uy"},{"Costa Rica","cr"},{"Panama","pa"},{"Guatemala","gt"},{"Honduras","hn"},
+            {"El Salvador","sv"},{"Nicaragua","ni"},{"Jamaica","jm"},{"Trinidad and Tobago","tt"},
+            {"China","cn"},{"India","in"},{"Japan","jp"},{"Singapore","sg"},{"South Korea","kr"},
+            {"Korea","kr"},{"Thailand","th"},{"Indonesia","id"},{"Malaysia","my"},{"Philippines","ph"},
+            {"Vietnam","vn"},{"Pakistan","pk"},{"Bangladesh","bd"},{"Sri Lanka","lk"},{"Nepal","np"},
+            {"Myanmar","mm"},{"Cambodia","kh"},{"Taiwan","tw"},{"Hong Kong","hk"},
+            {"UAE","ae"},{"United Arab Emirates","ae"},{"Saudi Arabia","sa"},{"Israel","il"},
+            {"Turkey","tr"},{"Iran","ir"},{"Iraq","iq"},{"Jordan","jo"},{"Lebanon","lb"},
+            {"Kuwait","kw"},{"Qatar","qa"},{"Oman","om"},{"Bahrain","bh"},
+            {"Australia","au"},{"New Zealand","nz"},{"Fiji","fj"},{"Papua New Guinea","pg"},
+            {"Russia","ru"},{"Ukraine","ua"},{"Kazakhstan","kz"},{"Uzbekistan","uz"}
+        };
+        return codes.TryGetValue(country, out var code) ? code : "";
+    }
 }
 
 @section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
     <style>
-        body { background: #f8f9fa; }
-        .review-header { background: white; border-radius: 8px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .review-header h1 { font-weight: 700; font-size: 1.75rem; color: #212529; margin-bottom: 0.5rem; }
-        .review-grid { display: grid; grid-template-columns: 280px 1fr 300px; gap: 1.5rem; }
-        .review-sidebar, .review-notes { background: white; border-radius: 8px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); height: fit-content; position: sticky; top: 80px; }
-        .review-main { background: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .meta-label { font-size: 0.75rem; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 0.25rem; }
-        .meta-value { font-size: 0.875rem; color: #212529; margin-bottom: 1rem; }
-        .stream-indicator { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0; font-size: 0.8125rem; }
-        .stream-indicator i { font-size: 0.75rem; }
-        .note-item { border-bottom: 1px solid #f1f3f5; padding: 0.75rem 0; }
+        body { background: #FFFFFF; }
+
+        /* ── Page Header ── */
+        .review-header {
+            background: white;
+            border-radius: 12px;
+            padding: 1.75rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 20px -4px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-header-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #8B5CF6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+            box-shadow: 0 6px 12px -2px rgba(139, 92, 246, 0.25);
+            flex-shrink: 0;
+        }
+
+        .review-header h1 { color: #222222; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.25rem; }
+        .review-header .subtitle { color: #6A6A6A; font-size: 0.9375rem; }
+
+        /* ── Status Badges ── */
+        .status-pill {
+            display: inline-flex; align-items: center; gap: 0.375rem;
+            padding: 0.3rem 0.75rem; border-radius: 20px; font-size: 0.8125rem; font-weight: 600;
+        }
+        .status-pill i { font-size: 0.75rem; }
+        .sp-submitted { background: #FEF3C7; color: #92400E; }
+        .sp-review { background: #DBEAFE; color: #1E40AF; }
+        .sp-revision { background: #FEE2E2; color: #991B1B; }
+        .sp-validated { background: #D1FAE5; color: #065F46; }
+        .sp-draft { background: #F7F7F7; color: #6A6A6A; }
+
+        .completion-pill {
+            display: inline-flex; align-items: center; gap: 0.25rem;
+            padding: 0.25rem 0.625rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+            background: #F7F7F7; color: #6A6A6A;
+        }
+
+        .btn-back {
+            background: white; border: none; color: #222222; border-radius: 10px;
+            font-weight: 500; padding: 0.5rem 1rem; font-size: 0.875rem;
+            box-shadow: 0 1px 6px -1px rgba(0,0,0,0.08); transition: all 0.2s ease;
+        }
+        .btn-back:hover { color: #3B82F6; box-shadow: 0 4px 16px -4px rgba(0,0,0,0.15); }
+
+        /* ── Layout Grid ── */
+        .review-grid { display: grid; grid-template-columns: 280px 1fr 300px; gap: 1.25rem; }
+        @@media (max-width: 1400px) { .review-grid { grid-template-columns: 260px 1fr; } .review-notes-col { display: none; } }
+        @@media (max-width: 992px) { .review-grid { grid-template-columns: 1fr; } }
+
+        /* ── Sidebar ── */
+        .sidebar-card {
+            background: white; border-radius: 12px; padding: 1.25rem;
+            box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1);
+            height: fit-content; position: sticky; top: 80px;
+        }
+
+        .sidebar-card h6 { color: #222222; font-weight: 600; font-size: 0.9375rem; }
+
+        .meta-label { font-size: 0.6875rem; color: #6A6A6A; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 0.125rem; }
+        .meta-value { font-size: 0.875rem; color: #222222; margin-bottom: 0.875rem; font-weight: 500; }
+
+        .stream-item {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.3rem 0; font-size: 0.8125rem;
+        }
+        .stream-item i { font-size: 0.75rem; }
+
+        .sidebar-divider { border: none; border-top: 1px solid #F7F7F7; margin: 0.875rem 0; }
+
+        .action-btn {
+            width: 100%; border: none; border-radius: 10px; font-weight: 600;
+            padding: 0.5rem; font-size: 0.875rem; margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        .action-btn-primary { background: #3B82F6; color: white; box-shadow: 0 4px 12px -2px rgba(59,130,246,0.25); }
+        .action-btn-primary:hover { background: #2563EB; color: white; }
+        .action-btn-success { background: #10B981; color: white; box-shadow: 0 4px 12px -2px rgba(16,185,129,0.25); }
+        .action-btn-success:hover { background: #059669; color: white; }
+        .action-btn-warning { background: #F59E0B; color: white; box-shadow: 0 4px 12px -2px rgba(245,158,11,0.25); }
+        .action-btn-warning:hover { background: #D97706; color: white; }
+        .action-btn-ghost { background: white; color: #6A6A6A; box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); }
+        .action-btn-ghost:hover { color: #222222; box-shadow: 0 2px 8px -2px rgba(0,0,0,0.15); }
+        .action-btn-danger-outline { background: white; color: #EF4444; box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); }
+        .action-btn-danger-outline:hover { background: #FEE2E2; }
+
+        /* ── Main Content ── */
+        .main-content { min-width: 0; }
+
+        /* ── Section Cards ── */
+        .section-card {
+            background: white; border-radius: 12px; padding: 1.5rem;
+            box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1); margin-bottom: 1.25rem;
+        }
+
+        .section-header {
+            display: flex; align-items: center; gap: 0.625rem; margin-bottom: 1.25rem;
+            cursor: pointer; user-select: none;
+        }
+
+        .section-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 0.875rem; flex-shrink: 0;
+        }
+
+        .section-header h5 { color: #222222; font-weight: 600; margin: 0; font-size: 1rem; flex: 1; }
+        .section-header .chevron { color: #6A6A6A; transition: transform 0.2s; }
+        .section-header.collapsed .chevron { transform: rotate(-90deg); }
+
+        /* ── KPI Cards ── */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.875rem; }
+        .kpi-card {
+            background: #FAFAFA; border-radius: 10px; padding: 1rem;
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        .kpi-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; color: white; flex-shrink: 0;
+        }
+        .kpi-value { font-size: 1.125rem; font-weight: 700; color: #222222; line-height: 1.2; }
+        .kpi-label { font-size: 0.75rem; color: #6A6A6A; font-weight: 500; }
+
+        /* ── Data Tables ── */
+        .data-table { width: 100%; margin-bottom: 0; font-size: 0.8125rem; }
+        .data-table th {
+            background: #F7F7F7; color: #6A6A6A; font-weight: 600; font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 0.3px; padding: 0.625rem 0.75rem; border: none;
+        }
+        .data-table th:first-child { border-radius: 6px 0 0 6px; }
+        .data-table th:last-child { border-radius: 0 6px 6px 0; }
+        .data-table td {
+            padding: 0.625rem 0.75rem; border-bottom: 1px solid #F7F7F7;
+            color: #222222; vertical-align: middle;
+        }
+        .data-table .label-col { color: #6A6A6A; font-weight: 500; width: 45%; }
+        .data-table .value-col { font-weight: 600; text-align: right; }
+
+        .sub-section-title {
+            font-size: 0.875rem; font-weight: 600; color: #222222;
+            margin: 1rem 0 0.625rem; padding-bottom: 0.375rem; border-bottom: 1px solid #F7F7F7;
+        }
+
+        .no-data { color: #6A6A6A; font-size: 0.875rem; font-style: italic; padding: 1rem 0; }
+
+        /* ── Notes Panel ── */
+        .notes-card {
+            background: white; border-radius: 12px; padding: 1.25rem;
+            box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1);
+            height: fit-content; position: sticky; top: 80px;
+        }
+        .notes-card h6 { color: #222222; font-weight: 600; font-size: 0.9375rem; }
+        .note-textarea {
+            background: #F7F7F7; border: 1px solid #DDDDDD; border-radius: 8px;
+            font-size: 0.8125rem; resize: vertical; transition: all 0.2s;
+        }
+        .note-textarea:focus { background: white; border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .note-item { border-bottom: 1px solid #F7F7F7; padding: 0.625rem 0; }
         .note-item:last-child { border-bottom: none; }
-        .note-author { font-weight: 600; font-size: 0.8125rem; color: #212529; }
-        .note-time { font-size: 0.75rem; color: #868e96; }
-        .note-content { font-size: 0.875rem; color: #495057; margin-top: 0.25rem; }
-        .action-btn { width: 100%; margin-bottom: 0.5rem; }
-        .badge-status { padding: 0.3rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 500; }
-        .badge-submitted { background: #fff3cd; color: #856404; }
-        .badge-under-review { background: #cce5ff; color: #004085; }
-        .badge-needs-revision { background: #f8d7da; color: #721c24; }
-        .badge-validated { background: #d4edda; color: #155724; }
-        @@media (max-width: 1200px) { .review-grid { grid-template-columns: 1fr; } .review-sidebar, .review-notes { position: static; } }
+        .note-author { font-weight: 600; font-size: 0.8125rem; color: #222222; }
+        .note-time { font-size: 0.6875rem; color: #6A6A6A; }
+        .note-content { font-size: 0.8125rem; color: #6A6A6A; margin-top: 0.25rem; }
+        .note-badge { font-size: 0.625rem; padding: 0.15rem 0.4rem; border-radius: 10px; font-weight: 600; }
+
+        /* ── Stream Tag ── */
+        .stream-tag {
+            display: inline-flex; align-items: center; gap: 0.25rem;
+            padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.6875rem;
+            font-weight: 600; background: #EDE9FE; color: #7C3AED;
+        }
+
+        /* ── Peer table ── */
+        .peer-table th, .peer-table td { font-size: 0.8125rem; padding: 0.5rem 0.75rem; }
+
+        /* ── Modal ── */
+        .modal-content { border: none !important; border-radius: 12px !important; box-shadow: 0 20px 60px -12px rgba(0,0,0,0.25) !important; overflow: hidden; }
     </style>
 }
 
 <div class="container-fluid py-4 px-4">
     <!-- Header -->
     <div class="review-header">
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <h1>@(report?.Title ?? "Assessment")</h1>
-                <div class="d-flex gap-2 align-items-center">
-                    @{
-                        var badgeClass = status switch {
-                            ReportStatus.Submitted => "badge-submitted",
-                            ReportStatus.UnderReview => "badge-under-review",
-                            ReportStatus.NeedsRevision => "badge-needs-revision",
-                            ReportStatus.Validated => "badge-validated",
-                            _ => ""
-                        };
-                    }
-                    <span class="badge-status @badgeClass">@statusName</span>
-                    <span class="badge bg-light text-dark" style="font-size:0.75rem;">@completionName</span>
-                    @if (report?.User != null)
-                    {
-                        <span class="text-muted" style="font-size:0.875rem;">by @report.User.FirstName @report.User.LastName</span>
-                    }
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <div class="review-header-icon">
+                    <i class="bi bi-clipboard-data-fill"></i>
+                </div>
+                <div>
+                    <h1>@(report?.Title ?? "Assessment")</h1>
+                    <div class="d-flex gap-2 align-items-center flex-wrap">
+                        @{
+                            var pillClass = status switch {
+                                ReportStatus.Submitted => "sp-submitted",
+                                ReportStatus.UnderReview => "sp-review",
+                                ReportStatus.NeedsRevision => "sp-revision",
+                                ReportStatus.Validated => "sp-validated",
+                                _ => "sp-draft"
+                            };
+                        }
+                        <span class="status-pill @pillClass">
+                            <i class="bi bi-circle-fill"></i> @statusName
+                        </span>
+                        <span class="completion-pill">@completionName</span>
+                        @if (report?.User != null)
+                        {
+                            <span class="subtitle">by @report.User.FirstName @report.User.LastName (@report.User.Email)</span>
+                        }
+                    </div>
                 </div>
             </div>
-            <a asp-action="Queue" class="btn btn-outline-secondary btn-sm">
+            <a asp-action="Queue" class="btn btn-back">
                 <i class="bi bi-arrow-left me-1"></i> Back to Queue
             </a>
         </div>
     </div>
 
     <div class="review-grid">
-        <!-- Left Sidebar: Metadata & Actions -->
-        <div class="review-sidebar">
-            <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-1"></i> Assessment Info</h6>
+        <!-- ═══════════ LEFT SIDEBAR ═══════════ -->
+        <div class="sidebar-card">
+            <h6><i class="bi bi-info-circle me-1"></i> Assessment Info</h6>
 
             <div class="meta-label">Location</div>
-            <div class="meta-value">@(report?.Country ?? "N/A") @(report?.Region != null ? "> " + report.Region : "") @(report?.City != null ? "> " + report.City : "")</div>
+            <div class="meta-value" style="display:flex; align-items:center; gap:0.5rem;">
+                @{
+                    var cc = GetCountryCode(report?.Country);
+                }
+                @if (!string.IsNullOrEmpty(cc))
+                {
+                    <span class="fi fi-@cc" style="border-radius:3px; box-shadow:0 1px 3px rgba(0,0,0,0.15); width:24px; height:18px; background-size:cover; flex-shrink:0;"></span>
+                }
+                <span>
+                    @(report?.Country ?? "N/A")@(report?.Region != null ? " > " + report.Region : "")@(report?.City != null ? " > " + report.City : "")@(report?.GovUnitLevel3 != null ? " > " + report.GovUnitLevel3 : "")
+                </span>
+            </div>
 
             <div class="meta-label">Financial Year</div>
             <div class="meta-value">@(report?.FinancialYear ?? "N/A")</div>
@@ -86,194 +350,1015 @@
             <div class="meta-label">Currency</div>
             <div class="meta-value">@(report?.Currency ?? "N/A") @(report?.CurrencySymbol != null ? "(" + report.CurrencySymbol + ")" : "")</div>
 
+            <div class="meta-label">Government Type</div>
+            <div class="meta-value">@(formData?.GovernmentType ?? "N/A")</div>
+
+            <div class="meta-label">Income Level</div>
+            <div class="meta-value">@(formData?.IncomeLevel ?? "N/A")</div>
+
             <div class="meta-label">Submitted</div>
             <div class="meta-value">@(report?.SubmittedAt?.ToLocalTime().ToString("dd MMM yyyy HH:mm") ?? "N/A")</div>
 
             <div class="meta-label">Last Updated</div>
             <div class="meta-value">@((report?.UpdatedAt ?? report?.CreatedAt)?.ToLocalTime().ToString("dd MMM yyyy HH:mm") ?? "N/A")</div>
 
-            <hr />
+            <hr class="sidebar-divider" />
 
-            <h6 class="fw-bold mb-2"><i class="bi bi-check2-square me-1"></i> Stream Coverage</h6>
+            <h6><i class="bi bi-check2-square me-1"></i> Stream Coverage</h6>
             @foreach (var stream in streamStatus)
             {
-                <div class="stream-indicator">
+                <div class="stream-item">
                     @if (stream.Value)
                     {
-                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <i class="bi bi-check-circle-fill" style="color: #10B981;"></i>
                     }
                     else
                     {
-                        <i class="bi bi-circle text-muted"></i>
+                        <i class="bi bi-circle" style="color: #DDDDDD;"></i>
                     }
-                    <span class="@(!stream.Value ? "text-muted" : "")">@stream.Key</span>
+                    <span style="color: @(stream.Value ? "#222222" : "#6A6A6A");">@stream.Key</span>
                 </div>
             }
 
-            <hr />
+            <hr class="sidebar-divider" />
 
-            <!-- Action Buttons -->
-            <h6 class="fw-bold mb-2"><i class="bi bi-lightning me-1"></i> Actions</h6>
-
+            <h6><i class="bi bi-lightning me-1"></i> Actions</h6>
             @if (status == ReportStatus.Submitted)
             {
-                <button class="btn btn-primary action-btn" id="claimBtn"><i class="bi bi-hand-index me-1"></i> Claim for Review</button>
+                <button class="action-btn action-btn-primary" id="claimBtn"><i class="bi bi-hand-index me-1"></i> Claim for Review</button>
             }
             @if (status == ReportStatus.UnderReview)
             {
-                <button class="btn btn-success action-btn" id="validateBtn"><i class="bi bi-patch-check me-1"></i> Validate</button>
-                <button class="btn btn-warning action-btn" id="rejectBtn"><i class="bi bi-arrow-return-left me-1"></i> Request Revision</button>
-                <button class="btn btn-outline-secondary action-btn" id="unclaimBtn"><i class="bi bi-x-circle me-1"></i> Unclaim</button>
+                <button class="action-btn action-btn-success" id="validateBtn"><i class="bi bi-patch-check me-1"></i> Validate</button>
+                <button class="action-btn action-btn-warning" id="rejectBtn"><i class="bi bi-arrow-return-left me-1"></i> Request Revision</button>
+                <button class="action-btn action-btn-ghost" id="unclaimBtn"><i class="bi bi-x-circle me-1"></i> Unclaim</button>
             }
             @if (status == ReportStatus.Validated && User.IsInRole("Admin"))
             {
-                <button class="btn btn-outline-danger action-btn" id="unlockBtn"><i class="bi bi-unlock me-1"></i> Unlock for Revision</button>
+                <button class="action-btn action-btn-danger-outline" id="unlockBtn"><i class="bi bi-unlock me-1"></i> Unlock for Revision</button>
             }
-
-            <a asp-controller="Dashboard" asp-action="ViewReport" asp-route-id="@report?.PublicId" class="btn btn-outline-primary action-btn">
+            <a asp-controller="Dashboard" asp-action="ViewReport" asp-route-id="@report?.PublicId" class="action-btn action-btn-primary d-block text-center text-decoration-none">
                 <i class="bi bi-eye me-1"></i> Open Full View
             </a>
+            <a href="@Url.Action("PrintFullReport", "Submission", new { id = report?.PublicId })?autoPrint=true" target="_blank" class="action-btn action-btn-ghost d-block text-center text-decoration-none" style="color: #0EA5E9;">
+                <i class="bi bi-printer me-1"></i> Full Report (Print)
+            </a>
 
-            <hr />
-
-            <!-- Snapshots -->
             @if (snapshots.Any())
             {
-                <h6 class="fw-bold mb-2"><i class="bi bi-clock-history me-1"></i> Snapshots</h6>
+                <hr class="sidebar-divider" />
+                <h6><i class="bi bi-clock-history me-1"></i> Snapshots</h6>
                 @foreach (var snap in snapshots)
                 {
-                    <div class="d-flex justify-content-between align-items-center mb-1" style="font-size: 0.8125rem;">
-                        <a asp-action="Snapshot" asp-route-id="@snap.Id">@(snap.Label ?? $"Snapshot #{snap.Id}")</a>
+                    <div class="mb-1" style="font-size: 0.8125rem;">
+                        <a asp-action="Snapshot" asp-route-id="@snap.Id" style="color: #3B82F6;">@(snap.Label ?? $"Snapshot #{snap.Id}")</a>
                     </div>
                 }
-                <hr />
             }
 
-            <!-- Artifacts -->
             @if (artifacts.Any())
             {
-                <h6 class="fw-bold mb-2"><i class="bi bi-file-pdf me-1"></i> Generated Reports</h6>
+                <hr class="sidebar-divider" />
+                <h6><i class="bi bi-file-earmark-arrow-down me-1"></i> Generated Reports</h6>
                 @foreach (var artifact in artifacts)
                 {
-                    <div class="mb-1">
-                        <a asp-action="Artifact" asp-route-id="@artifact.Id" class="btn btn-sm btn-outline-danger w-100">
-                            <i class="bi bi-download me-1"></i> @artifact.FileName
+                    var fileType = (ArtifactFileType)artifact.FileType;
+                    var isPdf = fileType == ArtifactFileType.PDF;
+                    var iconClass = isPdf ? "bi-file-pdf" : "bi-file-earmark-excel";
+                    var iconColor = isPdf ? "#EF4444" : "#10B981";
+                    var fileSize = artifact.FileSizeBytes >= 1048576
+                        ? $"{artifact.FileSizeBytes / 1048576.0:N1} MB"
+                        : $"{artifact.FileSizeBytes / 1024.0:N0} KB";
+                    <div class="d-flex align-items-center gap-2 mb-2" style="padding:0.5rem 0.625rem; background:#FAFAFA; border-radius:8px;">
+                        <div style="width:32px; height:32px; border-radius:8px; background:white; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px -1px rgba(0,0,0,0.08); flex-shrink:0;">
+                            <i class="bi @iconClass" style="color:@iconColor; font-size:1rem;"></i>
+                        </div>
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size:0.8125rem; font-weight:600; color:#222222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@artifact.FileName</div>
+                            <div style="font-size:0.6875rem; color:#6A6A6A;">@fileSize &middot; @artifact.GeneratedAt.ToLocalTime().ToString("dd MMM yyyy")</div>
+                        </div>
+                        <a asp-action="Artifact" asp-route-id="@artifact.Id" target="_blank" title="View" style="color:#3B82F6; font-size:0.875rem; flex-shrink:0; padding:0.25rem;">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a asp-action="Artifact" asp-route-id="@artifact.Id" asp-route-download="true" title="Download" style="color:#6A6A6A; font-size:0.875rem; flex-shrink:0; padding:0.25rem;">
+                            <i class="bi bi-download"></i>
                         </a>
                     </div>
                 }
             }
         </div>
 
-        <!-- Center: Report Data Summary -->
-        <div class="review-main">
-            <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-bar-graph me-1"></i> Assessment Data Summary</h5>
-
+        <!-- ═══════════ MAIN CONTENT ═══════════ -->
+        <div class="main-content">
             @if (formData != null)
             {
-                <!-- Financial Overview -->
-                <div class="row mb-4">
-                    <div class="col-md-3">
-                        <div class="card border-0 bg-light p-3">
-                            <div class="meta-label">Actual OSR</div>
-                            <div class="fw-bold">@(formData.CurrencySymbol ?? "$") @(formData.ActualOsr?.ToString("N0") ?? "N/A")</div>
+                var pt = formData.PropertyTax;
+                var bl = formData.License;
+                var st = formData.ShortTermUserCharge;
+                var lt = formData.LongTermUserCharge;
+                var mx = formData.MixedUserCharge;
+                var te = formData.TotalEstimate;
+                <!-- ── Financial Overview KPIs ── -->
+                <div class="section-card">
+                    <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-financial">
+                        <div class="section-icon" style="background: #3B82F6; box-shadow: 0 4px 8px -2px rgba(59,130,246,0.25);">
+                            <i class="bi bi-cash-stack"></i>
                         </div>
+                        <h5>Financial Overview</h5>
+                        <i class="bi bi-chevron-down chevron"></i>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card border-0 bg-light p-3">
-                            <div class="meta-label">Budgeted OSR</div>
-                            <div class="fw-bold">@(formData.CurrencySymbol ?? "$") @(formData.BudgetedOsr?.ToString("N0") ?? "N/A")</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card border-0 bg-light p-3">
-                            <div class="meta-label">Population</div>
-                            <div class="fw-bold">@(formData.Population?.ToString("N0") ?? "N/A")</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card border-0 bg-light p-3">
-                            <div class="meta-label">GDP per Capita</div>
-                            <div class="fw-bold">@(formData.CurrencySymbol ?? "$") @(formData.GdpPerCapita?.ToString("N0") ?? "N/A")</div>
+                    <div class="collapse show" id="sec-financial">
+                        <div class="kpi-grid">
+                            <div class="kpi-card">
+                                <div class="kpi-icon" style="background: #3B82F6; box-shadow: 0 4px 8px -2px rgba(59,130,246,0.25);"><i class="bi bi-wallet2"></i></div>
+                                <div><div class="kpi-value">@cs @Fmt(formData.ActualOsr)</div><div class="kpi-label">Actual OSR</div></div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-icon" style="background: #8B5CF6; box-shadow: 0 4px 8px -2px rgba(139,92,246,0.25);"><i class="bi bi-graph-up-arrow"></i></div>
+                                <div><div class="kpi-value">@cs @Fmt(formData.BudgetedOsr)</div><div class="kpi-label">Budgeted OSR</div></div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-icon" style="background: #10B981; box-shadow: 0 4px 8px -2px rgba(16,185,129,0.25);"><i class="bi bi-people-fill"></i></div>
+                                <div><div class="kpi-value">@Fmt(formData.Population)</div><div class="kpi-label">Population</div></div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-icon" style="background: #F59E0B; box-shadow: 0 4px 8px -2px rgba(245,158,11,0.25);"><i class="bi bi-bar-chart-fill"></i></div>
+                                <div><div class="kpi-value">@cs @Fmt(formData.GdpPerCapita)</div><div class="kpi-label">GDP per Capita</div></div>
+                            </div>
+                            @if (HasVal(formData.OtherRevenue))
+                            {
+                                <div class="kpi-card">
+                                    <div class="kpi-icon" style="background: #06B6D4; box-shadow: 0 4px 8px -2px rgba(6,182,212,0.25);"><i class="bi bi-plus-circle"></i></div>
+                                    <div><div class="kpi-value">@cs @Fmt(formData.OtherRevenue)</div><div class="kpi-label">Other Revenue</div></div>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
 
-                <!-- Project Info -->
+                <!-- ── Top OSR Configuration ── -->
+                @if (formData.TopOsrConfig != null && formData.TopOsrConfig.Any())
+                {
+                    <div class="section-card">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-toposr">
+                            <div class="section-icon" style="background: #06B6D4; box-shadow: 0 4px 8px -2px rgba(6,182,212,0.25);">
+                                <i class="bi bi-diagram-3-fill"></i>
+                            </div>
+                            <h5>Top OSR Configuration <span class="stream-tag">Top-Down</span></h5>
+                            <i class="bi bi-chevron-down chevron"></i>
+                        </div>
+                        <div class="collapse show" id="sec-toposr">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead><tr><th>Stream Name</th><th>Type</th><th style="text-align:right;">Revenue (@cs)</th></tr></thead>
+                                    <tbody>
+                                        @foreach (var osr in formData.TopOsrConfig)
+                                        {
+                                            <tr>
+                                                <td style="font-weight:600;">@osr.Name</td>
+                                                <td>@osr.Type</td>
+                                                <td class="value-col">@Fmt(osr.Revenue)</td>
+                                            </tr>
+                                        }
+                                        <tr style="background: #F7F7F7; font-weight: 700;">
+                                            <td colspan="2">Total</td>
+                                            <td class="value-col">@Fmt(formData.TopOsrConfig.Sum(o => o.Revenue))</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- ── Peer SNG Analysis ── -->
+                @if (!string.IsNullOrEmpty(formData.PeerSNGData))
+                {
+                    <div class="section-card">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-peersng">
+                            <div class="section-icon" style="background: #EC4899; box-shadow: 0 4px 8px -2px rgba(236,72,153,0.25);">
+                                <i class="bi bi-globe2"></i>
+                            </div>
+                            <h5>Peer SNG / Within-Country OSR Frontier <span class="stream-tag">Top-Down</span></h5>
+                            <i class="bi bi-chevron-down chevron"></i>
+                        </div>
+                        <div class="collapse show" id="sec-peersng">
+                            @{
+                                try
+                                {
+                                    var peerItems = System.Text.Json.JsonSerializer.Deserialize<List<Dictionary<string, System.Text.Json.JsonElement>>>(formData.PeerSNGData);
+                                    if (peerItems != null && peerItems.Any())
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="data-table peer-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>SNG / Peer</th>
+                                                        <th style="text-align:right;">OSR</th>
+                                                        <th style="text-align:right;">GCP</th>
+                                                        <th style="text-align:center;">Included</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in peerItems)
+                                                    {
+                                                        var sng = item.ContainsKey("SNG") ? item["SNG"].ToString()
+                                                                 : item.ContainsKey("sng") ? item["sng"].ToString()
+                                                                 : item.ContainsKey("name") ? item["name"].ToString() : "-";
+                                                        var osr = item.ContainsKey("OSR") ? item["OSR"].ToString()
+                                                                 : item.ContainsKey("osr") ? item["osr"].ToString() : "-";
+                                                        var gcp = item.ContainsKey("GCP") ? item["GCP"].ToString()
+                                                                 : item.ContainsKey("gcp") ? item["gcp"].ToString() : "-";
+                                                        var inc = item.ContainsKey("Include") ? item["Include"].ToString()
+                                                                 : item.ContainsKey("include") ? item["include"].ToString() : "-";
+                                                        <tr>
+                                                            <td style="font-weight:600;">@sng</td>
+                                                            <td class="value-col">@osr</td>
+                                                            <td class="value-col">@gcp</td>
+                                                            <td style="text-align:center;">
+                                                                @if (inc.ToLower() == "true" || inc == "1")
+                                                                {
+                                                                    <i class="bi bi-check-circle-fill" style="color:#10B981;"></i>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <i class="bi bi-x-circle" style="color:#DDDDDD;"></i>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                }
+                                catch
+                                {
+                                    <p class="no-data">Peer SNG data available (custom format)</p>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- ══════════════════════════════════════════ -->
+                <!-- ══ BOTTOM-UP: STEP 1 - GAP ANALYSIS ══ -->
+                <!-- ══════════════════════════════════════════ -->
+
+                <!-- ── Property Tax ── -->
+                @if (HasVal(pt.RegisteredProperties) || HasVal(pt.BilledAmount) || HasVal(pt.RevenueToDate))
+                {
+                    <div class="section-card">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-ptax">
+                            <div class="section-icon" style="background: #10B981; box-shadow: 0 4px 8px -2px rgba(16,185,129,0.25);">
+                                <i class="bi bi-house-fill"></i>
+                            </div>
+                            <h5>@formData.PropertyTaxDisplayName <span class="stream-tag">Gap Analysis</span></h5>
+                            <i class="bi bi-chevron-down chevron"></i>
+                        </div>
+                        <div class="collapse show" id="sec-ptax">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead><tr><th>Field</th><th style="text-align:right;">Value</th></tr></thead>
+                                    <tbody>
+                                        <tr><td class="label-col">Registered Properties</td><td class="value-col">@Fmt(pt.RegisteredProperties)</td></tr>
+                                        <tr><td class="label-col">Non-Registered Properties</td><td class="value-col">@Fmt(pt.NonRegisteredProperties)</td></tr>
+                                        <tr><td class="label-col">Compliant Properties</td><td class="value-col">@Fmt(pt.CompliantProperties)</td></tr>
+                                        <tr><td class="label-col">Total Fiscal Base</td><td class="value-col">@cs @Fmt(pt.TotalFiscalBase)</td></tr>
+                                        <tr><td class="label-col">Total Market Value</td><td class="value-col">@cs @Fmt(pt.TotalMarketValue)</td></tr>
+                                        <tr><td class="label-col">Billed Amount</td><td class="value-col">@cs @Fmt(pt.BilledAmount)</td></tr>
+                                        <tr><td class="label-col">Outstanding Amount</td><td class="value-col">@cs @Fmt(pt.OutstandingAmount)</td></tr>
+                                        <tr style="background:#F7F7F7; font-weight:700;"><td class="label-col">Revenue to Date</td><td class="value-col">@cs @Fmt(pt.RevenueToDate)</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- ── Business License ── -->
+
+                @if (HasVal(bl.RegisteredBusinesses) || HasVal(bl.BilledAmount))
+                {
+                    <div class="section-card">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-license">
+                            <div class="section-icon" style="background: #F59E0B; box-shadow: 0 4px 8px -2px rgba(245,158,11,0.25);">
+                                <i class="bi bi-shop"></i>
+                            </div>
+                            <h5>@formData.BusinessLicenseDisplayName <span class="stream-tag">Gap Analysis</span></h5>
+                            <i class="bi bi-chevron-down chevron"></i>
+                        </div>
+                        <div class="collapse show" id="sec-license">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="sub-section-title">User Inputs</div>
+                                    <table class="data-table">
+                                        <tbody>
+                                            <tr><td class="label-col">Registered Businesses</td><td class="value-col">@Fmt(bl.RegisteredBusinesses)</td></tr>
+                                            <tr><td class="label-col">Est. Unregistered %</td><td class="value-col">@Pct(bl.EstimatedUnregisteredPercent)</td></tr>
+                                            <tr><td class="label-col">Billed Amount</td><td class="value-col">@cs @Fmt(bl.BilledAmount)</td></tr>
+                                            <tr><td class="label-col">Outstanding Amount</td><td class="value-col">@cs @Fmt(bl.OutstandingAmount)</td></tr>
+                                            <tr><td class="label-col">Statutory Avg Billed</td><td class="value-col">@cs @Fmt(bl.StatutoryAverageBilled)</td></tr>
+                                            <tr><td class="label-col">Realistic Improvement %</td><td class="value-col">@Pct(bl.RealisticImprovementPercent)</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="sub-section-title">Calculated Values</div>
+                                    <table class="data-table">
+                                        <tbody>
+                                            <tr><td class="label-col">Total Estimated Businesses</td><td class="value-col">@Fmt(bl.TotalEstimatedBusinesses)</td></tr>
+                                            <tr><td class="label-col">Compliant Businesses</td><td class="value-col">@Fmt(bl.CompliantBusinesses)</td></tr>
+                                            <tr><td class="label-col">Revenue to Date</td><td class="value-col">@cs @Fmt(bl.RevenueToDate)</td></tr>
+                                            <tr><td class="label-col">Avg Billed Amount</td><td class="value-col">@cs @Fmt(bl.AvgBilledAmount)</td></tr>
+                                            <tr><td class="label-col">Achievable Avg Bill</td><td class="value-col">@cs @Fmt(bl.AchievableAvgBill)</td></tr>
+                                            <tr><td class="label-col">Delta A</td><td class="value-col">@cs @Fmt(bl.DeltaA)</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- ── Short-Term User Charges ── -->
+
+                @if (HasVal(st.EstimatedDailyFees) || HasVal(st.EstimatedDailyFeesCategoryA))
+                {
+                    <div class="section-card">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-shortterm">
+                            <div class="section-icon" style="background: #EF4444; box-shadow: 0 4px 8px -2px rgba(239,68,68,0.25);">
+                                <i class="bi bi-clock-fill"></i>
+                            </div>
+                            <h5>Short-Term User Charges <span class="stream-tag">Gap Analysis</span></h5>
+                            <i class="bi bi-chevron-down chevron"></i>
+                        </div>
+                        <div class="collapse show" id="sec-shortterm">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead><tr><th>Category</th><th style="text-align:right;">Est. Daily Fees</th><th style="text-align:right;">Actual Daily Fees</th><th style="text-align:right;">Potential Rate</th><th style="text-align:right;">Actual Rate</th></tr></thead>
+                                    <tbody>
+                                        @if (HasVal(st.EstimatedDailyFeesCategoryA))
+                                        {
+                                            <tr><td style="font-weight:600;">Category A</td><td class="value-col">@Fmt(st.EstimatedDailyFeesCategoryA)</td><td class="value-col">@Fmt(st.ActualDailyFeesCategoryA)</td><td class="value-col">@cs @Fmt(st.PotentialRatePayableByCategoryA)</td><td class="value-col">@cs @Fmt(st.ActualRatePaidByCategoryA)</td></tr>
+                                        }
+                                        @if (HasVal(st.EstimatedDailyFeesCategoryB))
+                                        {
+                                            <tr><td style="font-weight:600;">Category B</td><td class="value-col">@Fmt(st.EstimatedDailyFeesCategoryB)</td><td class="value-col">@Fmt(st.ActualDailyFeesCategoryB)</td><td class="value-col">@cs @Fmt(st.PotentialRatePayableByCategoryB)</td><td class="value-col">@cs @Fmt(st.ActualRatePaidByCategoryB)</td></tr>
+                                        }
+                                        @if (HasVal(st.EstimatedDailyFeesCategoryC))
+                                        {
+                                            <tr><td style="font-weight:600;">Category C</td><td class="value-col">@Fmt(st.EstimatedDailyFeesCategoryC)</td><td class="value-col">@Fmt(st.ActualDailyFeesCategoryC)</td><td class="value-col">@cs @Fmt(st.PotentialRatePayableByCategoryC)</td><td class="value-col">@cs @Fmt(st.ActualRatePaidByCategoryC)</td></tr>
+                                        }
+                                        @foreach (var dc in st.DynamicCategories)
+                                        {
+                                            <tr><td style="font-weight:600;">@dc.Name</td><td class="value-col">@Fmt(dc.EstimatedDailyFees)</td><td class="value-col">@Fmt(dc.ActualDailyFees)</td><td class="value-col">@cs @Fmt(dc.PotentialRatePayable)</td><td class="value-col">@cs @Fmt(dc.ActualRatePaid)</td></tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- ── Long-Term User Charges ── -->
+
+                @if (HasVal(lt.EstimatedMonthlyLeasees) || HasVal(lt.EstimatedMonthlyLeaseesCategoryA))
+                {
+                    <div class="section-card">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-longterm">
+                            <div class="section-icon" style="background: #6366F1; box-shadow: 0 4px 8px -2px rgba(99,102,241,0.25);">
+                                <i class="bi bi-calendar3"></i>
+                            </div>
+                            <h5>Long-Term User Charges <span class="stream-tag">Gap Analysis</span></h5>
+                            <i class="bi bi-chevron-down chevron"></i>
+                        </div>
+                        <div class="collapse show" id="sec-longterm">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead><tr><th>Category</th><th style="text-align:right;">Est. Monthly Leasees</th><th style="text-align:right;">Actual Leasees</th><th style="text-align:right;">Potential Rate</th><th style="text-align:right;">Actual Rate</th></tr></thead>
+                                    <tbody>
+                                        @if (HasVal(lt.EstimatedMonthlyLeaseesCategoryA))
+                                        {
+                                            <tr><td style="font-weight:600;">Category A</td><td class="value-col">@Fmt(lt.EstimatedMonthlyLeaseesCategoryA)</td><td class="value-col">@Fmt(lt.ActualMonthlyLeaseesCategoryA)</td><td class="value-col">@cs @Fmt(lt.PotentialRatePayableByCategoryA)</td><td class="value-col">@cs @Fmt(lt.ActualRatePaidByCategoryA)</td></tr>
+                                        }
+                                        @if (HasVal(lt.EstimatedMonthlyLeaseesCategoryB))
+                                        {
+                                            <tr><td style="font-weight:600;">Category B</td><td class="value-col">@Fmt(lt.EstimatedMonthlyLeaseesCategoryB)</td><td class="value-col">@Fmt(lt.ActualMonthlyLeaseesCategoryB)</td><td class="value-col">@cs @Fmt(lt.PotentialRatePayableByCategoryB)</td><td class="value-col">@cs @Fmt(lt.ActualRatePaidByCategoryB)</td></tr>
+                                        }
+                                        @if (HasVal(lt.EstimatedMonthlyLeaseesCategoryC))
+                                        {
+                                            <tr><td style="font-weight:600;">Category C</td><td class="value-col">@Fmt(lt.EstimatedMonthlyLeaseesCategoryC)</td><td class="value-col">@Fmt(lt.ActualMonthlyLeaseesCategoryC)</td><td class="value-col">@cs @Fmt(lt.PotentialRatePayableByCategoryC)</td><td class="value-col">@cs @Fmt(lt.ActualRatePaidByCategoryC)</td></tr>
+                                        }
+                                        @foreach (var dc in lt.DynamicCategories)
+                                        {
+                                            <tr><td style="font-weight:600;">@dc.Name</td><td class="value-col">@Fmt(dc.EstimatedMonthlyLeasees)</td><td class="value-col">@Fmt(dc.ActualMonthlyLeasees)</td><td class="value-col">@cs @Fmt(dc.PotentialRatePayable)</td><td class="value-col">@cs @Fmt(dc.ActualRatePaid)</td></tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- ── Mixed User Charges ── -->
+
+                @if (HasVal(mx.EstimatedDailyUsers) || HasVal(mx.NumberOfAvailableMonthlyUsers))
+                {
+                    <div class="section-card">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-mixed">
+                            <div class="section-icon" style="background: #14B8A6; box-shadow: 0 4px 8px -2px rgba(20,184,166,0.25);">
+                                <i class="bi bi-shuffle"></i>
+                            </div>
+                            <h5>Mixed User Charges <span class="stream-tag">Gap Analysis</span></h5>
+                            <i class="bi bi-chevron-down chevron"></i>
+                        </div>
+                        <div class="collapse show" id="sec-mixed">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="sub-section-title">Daily Users</div>
+                                    <table class="data-table">
+                                        <tbody>
+                                            <tr><td class="label-col">Estimated Daily Users</td><td class="value-col">@Fmt(mx.EstimatedDailyUsers)</td></tr>
+                                            <tr><td class="label-col">Actual Daily Users</td><td class="value-col">@Fmt(mx.ActualDailyUsers)</td></tr>
+                                            <tr><td class="label-col">Average Daily Fee</td><td class="value-col">@cs @Fmt(mx.AverageDailyUserFee)</td></tr>
+                                            <tr><td class="label-col">Actual Daily Fee</td><td class="value-col">@cs @Fmt(mx.ActualDailyUserFee)</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="sub-section-title">Monthly Users</div>
+                                    <table class="data-table">
+                                        <tbody>
+                                            <tr><td class="label-col">Available Monthly Users</td><td class="value-col">@Fmt(mx.NumberOfAvailableMonthlyUsers)</td></tr>
+                                            <tr><td class="label-col">Paying Monthly Users</td><td class="value-col">@Fmt(mx.NumberOfPayingMonthlyUsers)</td></tr>
+                                            <tr><td class="label-col">Average Monthly Rate</td><td class="value-col">@cs @Fmt(mx.AverageMonthlyRate)</td></tr>
+                                            <tr><td class="label-col">Actual Monthly Rate</td><td class="value-col">@cs @Fmt(mx.ActualMonthlyRate)</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- ── Generic Streams ── -->
+                @if (formData.GenericStreams != null && formData.GenericStreams.Any())
+                {
+                    @foreach (var gs in formData.GenericStreams)
+                    {
+                        <div class="section-card">
+                            <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-gs-@gs.StreamIndex">
+                                <div class="section-icon" style="background: #8B5CF6; box-shadow: 0 4px 8px -2px rgba(139,92,246,0.25);">
+                                    <i class="bi bi-layers-fill"></i>
+                                </div>
+                                <h5>@gs.StreamName <span class="stream-tag">Gap Analysis</span></h5>
+                                <i class="bi bi-chevron-down chevron"></i>
+                            </div>
+                            <div class="collapse show" id="sec-gs-@gs.StreamIndex">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="sub-section-title">User Inputs</div>
+                                        <table class="data-table">
+                                            <tbody>
+                                                <tr><td class="label-col">Registered Units</td><td class="value-col">@Fmt(gs.RegisteredUnits)</td></tr>
+                                                <tr><td class="label-col">Est. Unregistered %</td><td class="value-col">@Pct(gs.EstimatedUnregisteredPercent)</td></tr>
+                                                <tr><td class="label-col">Billed Amount</td><td class="value-col">@cs @Fmt(gs.BilledAmount)</td></tr>
+                                                <tr><td class="label-col">Outstanding Amount</td><td class="value-col">@cs @Fmt(gs.OutstandingAmount)</td></tr>
+                                                <tr><td class="label-col">Statutory Avg Billed</td><td class="value-col">@cs @Fmt(gs.StatutoryAverageBilled)</td></tr>
+                                                <tr><td class="label-col">Realistic Improvement %</td><td class="value-col">@Pct(gs.RealisticImprovementPercent)</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="sub-section-title">Calculated Values</div>
+                                        <table class="data-table">
+                                            <tbody>
+                                                <tr><td class="label-col">Total Estimated Units</td><td class="value-col">@Fmt(gs.TotalEstimatedUnits)</td></tr>
+                                                <tr><td class="label-col">Compliant Units</td><td class="value-col">@Fmt(gs.CompliantUnits)</td></tr>
+                                                <tr><td class="label-col">Revenue to Date</td><td class="value-col">@cs @Fmt(gs.RevenueToDate)</td></tr>
+                                                <tr><td class="label-col">Avg Billed Amount</td><td class="value-col">@cs @Fmt(gs.AvgBilledAmount)</td></tr>
+                                                <tr><td class="label-col">Achievable Avg Bill</td><td class="value-col">@cs @Fmt(gs.AchievableAvgBill)</td></tr>
+                                                <tr><td class="label-col">Total Potential Revenue</td><td class="value-col">@cs @Fmt(gs.TotalPotentialRevenue)</td></tr>
+                                                <tr><td class="label-col">Total Functional Gap</td><td class="value-col">@cs @Fmt(gs.TotalFunctionalGap)</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                @if (HasVal(gs.ComplianceGap) || HasVal(gs.CoverageGap) || HasVal(gs.LiabilityGap))
+                                {
+                                    <div class="sub-section-title">Gap Breakdown</div>
+                                    <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
+                                        <div class="kpi-card"><div><div class="kpi-value" style="font-size:0.9375rem;">@cs @Fmt(gs.ComplianceGap)</div><div class="kpi-label">Compliance Gap</div></div></div>
+                                        <div class="kpi-card"><div><div class="kpi-value" style="font-size:0.9375rem;">@cs @Fmt(gs.CoverageGap)</div><div class="kpi-label">Coverage Gap</div></div></div>
+                                        <div class="kpi-card"><div><div class="kpi-value" style="font-size:0.9375rem;">@cs @Fmt(gs.LiabilityGap)</div><div class="kpi-label">Liability Gap</div></div></div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+
+                <!-- ── Total Estimates ── -->
+
+                @if (HasVal(te.TotalCurrentRevenue) || HasVal(te.TotalPotentialRevenue))
+                {
+                    <div class="section-card">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-total">
+                            <div class="section-icon" style="background: #059669; box-shadow: 0 4px 8px -2px rgba(5,150,105,0.25);">
+                                <i class="bi bi-calculator-fill"></i>
+                            </div>
+                            <h5>Total Estimates <span class="stream-tag">Gap Analysis</span></h5>
+                            <i class="bi bi-chevron-down chevron"></i>
+                        </div>
+                        <div class="collapse show" id="sec-total">
+                            <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr);">
+                                <div class="kpi-card">
+                                    <div class="kpi-icon" style="background: #3B82F6; box-shadow: 0 4px 8px -2px rgba(59,130,246,0.25);"><i class="bi bi-currency-exchange"></i></div>
+                                    <div><div class="kpi-value">@cs @Fmt(te.TotalCurrentRevenue)</div><div class="kpi-label">Current Revenue</div></div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-icon" style="background: #10B981; box-shadow: 0 4px 8px -2px rgba(16,185,129,0.25);"><i class="bi bi-graph-up"></i></div>
+                                    <div><div class="kpi-value">@cs @Fmt(te.TotalPotentialRevenue)</div><div class="kpi-label">Potential Revenue</div></div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-icon" style="background: #EF4444; box-shadow: 0 4px 8px -2px rgba(239,68,68,0.25);"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                                    <div><div class="kpi-value">@cs @Fmt(te.TotalRevenueGap)</div><div class="kpi-label">Revenue Gap</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- ══════════════════════════════════════════ -->
+                <!-- ══ BOTTOM-UP: STEP 2 - PRIORITIZATION ══ -->
+                <!-- ══════════════════════════════════════════ -->
+                @if (!string.IsNullOrEmpty(formData.PrioritizationData))
+                {
+                    <div class="section-card">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-prioritization">
+                            <div class="section-icon" style="background: #D946EF; box-shadow: 0 4px 8px -2px rgba(217,70,239,0.25);">
+                                <i class="bi bi-sort-numeric-down"></i>
+                            </div>
+                            <h5>Prioritization <span class="stream-tag">Step 2</span></h5>
+                            <i class="bi bi-chevron-down chevron"></i>
+                        </div>
+                        <div class="collapse show" id="sec-prioritization">
+                            @{
+                                try
+                                {
+                                    using var priDoc = System.Text.Json.JsonDocument.Parse(formData.PrioritizationData);
+                                    var priRoot = priDoc.RootElement;
+
+                                    // Humanize camelCase keys like "propertyTax" → "Property Tax"
+                                    string HumanizeKey(string key) {
+                                        if (string.IsNullOrEmpty(key)) return key;
+                                        var sb = new System.Text.StringBuilder();
+                                        sb.Append(char.ToUpper(key[0]));
+                                        for (int ci = 1; ci < key.Length; ci++) {
+                                            if (char.IsUpper(key[ci])) sb.Append(' ');
+                                            sb.Append(key[ci]);
+                                        }
+                                        return sb.ToString();
+                                    }
+
+                                    decimal GetDec(System.Text.Json.JsonElement el, string prop) {
+                                        if (el.TryGetProperty(prop, out var v) && v.TryGetDecimal(out var d)) return d;
+                                        return 0;
+                                    }
+
+                                    if (priRoot.ValueKind == System.Text.Json.JsonValueKind.Object)
+                                    {
+                                        // Collect stream entries (objects with gap data) vs metadata (timestamp, etc.)
+                                        var streamEntries = new List<(string Name, System.Text.Json.JsonElement Data)>();
+                                        System.Text.Json.JsonElement? totalsEl = null;
+
+                                        foreach (var prop in priRoot.EnumerateObject())
+                                        {
+                                            if (prop.Value.ValueKind == System.Text.Json.JsonValueKind.Object)
+                                            {
+                                                if (prop.Name == "totals")
+                                                    totalsEl = prop.Value;
+                                                else
+                                                    streamEntries.Add((prop.Name, prop.Value));
+                                            }
+                                        }
+
+                                        if (streamEntries.Any())
+                                        {
+                                            // Sort streams by gap descending
+                                            streamEntries = streamEntries.OrderByDescending(s => GetDec(s.Data, "gap")).ToList();
+
+                                            <div class="table-responsive">
+                                                <table class="data-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Revenue Stream</th>
+                                                            <th style="text-align:right;">Current Revenue (@cs)</th>
+                                                            <th style="text-align:right;">Potential Revenue (@cs)</th>
+                                                            <th style="text-align:right;">Total Gap (@cs)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var entry in streamEntries)
+                                                        {
+                                                            var current = GetDec(entry.Data, "currentRevenue");
+                                                            var potential = GetDec(entry.Data, "potentialRevenue");
+                                                            var gap = GetDec(entry.Data, "gap");
+                                                            <tr>
+                                                                <td style="font-weight:600;">@HumanizeKey(entry.Name)</td>
+                                                                <td class="value-col">@Fmt(current)</td>
+                                                                <td class="value-col">@Fmt(potential)</td>
+                                                                <td class="value-col" style="color:#EF4444; font-weight:700;">@Fmt(gap)</td>
+                                                            </tr>
+                                                        }
+                                                        @if (totalsEl.HasValue)
+                                                        {
+                                                            var tCurr = GetDec(totalsEl.Value, "currentTotal");
+                                                            var tPot = GetDec(totalsEl.Value, "potentialTotal");
+                                                            var tGap = GetDec(totalsEl.Value, "gapTotal");
+                                                            // If totals are zero, compute from streams
+                                                            if (tCurr == 0) tCurr = streamEntries.Sum(s => GetDec(s.Data, "currentRevenue"));
+                                                            if (tPot == 0) tPot = streamEntries.Sum(s => GetDec(s.Data, "potentialRevenue"));
+                                                            if (tGap == 0) tGap = streamEntries.Sum(s => GetDec(s.Data, "gap"));
+                                                            <tr style="background:#F7F7F7; font-weight:700;">
+                                                                <td>Total</td>
+                                                                <td class="value-col">@Fmt(tCurr)</td>
+                                                                <td class="value-col">@Fmt(tPot)</td>
+                                                                <td class="value-col" style="color:#EF4444;">@Fmt(tGap)</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- Gap Breakdown per stream -->
+                                            @foreach (var entry in streamEntries)
+                                            {
+                                                var compGap = GetDec(entry.Data, "complianceGap");
+                                                var covGap = GetDec(entry.Data, "coverageGap");
+                                                var valGap = GetDec(entry.Data, "valuationGap");
+                                                var liabGap = GetDec(entry.Data, "liabilityGap");
+                                                if (compGap != 0 || covGap != 0 || valGap != 0 || liabGap != 0)
+                                                {
+                                                    <div class="sub-section-title">@HumanizeKey(entry.Name) — Gap Breakdown</div>
+                                                    <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                                                        @if (compGap != 0)
+                                                        {
+                                                            <div class="kpi-card">
+                                                                <div class="kpi-icon" style="background:#F59E0B; box-shadow:0 4px 8px -2px rgba(245,158,11,0.25); width:32px; height:32px; font-size:0.8rem;"><i class="bi bi-shield-exclamation"></i></div>
+                                                                <div><div class="kpi-value" style="font-size:0.875rem;">@cs @Fmt(compGap)</div><div class="kpi-label">Compliance Gap</div></div>
+                                                            </div>
+                                                        }
+                                                        @if (covGap != 0)
+                                                        {
+                                                            <div class="kpi-card">
+                                                                <div class="kpi-icon" style="background:#3B82F6; box-shadow:0 4px 8px -2px rgba(59,130,246,0.25); width:32px; height:32px; font-size:0.8rem;"><i class="bi bi-geo-alt"></i></div>
+                                                                <div><div class="kpi-value" style="font-size:0.875rem;">@cs @Fmt(covGap)</div><div class="kpi-label">Coverage Gap</div></div>
+                                                            </div>
+                                                        }
+                                                        @if (valGap != 0)
+                                                        {
+                                                            <div class="kpi-card">
+                                                                <div class="kpi-icon" style="background:#8B5CF6; box-shadow:0 4px 8px -2px rgba(139,92,246,0.25); width:32px; height:32px; font-size:0.8rem;"><i class="bi bi-tag"></i></div>
+                                                                <div><div class="kpi-value" style="font-size:0.875rem;">@cs @Fmt(valGap)</div><div class="kpi-label">Valuation Gap</div></div>
+                                                            </div>
+                                                        }
+                                                        @if (liabGap != 0)
+                                                        {
+                                                            <div class="kpi-card">
+                                                                <div class="kpi-icon" style="background:#EF4444; box-shadow:0 4px 8px -2px rgba(239,68,68,0.25); width:32px; height:32px; font-size:0.8rem;"><i class="bi bi-receipt"></i></div>
+                                                                <div><div class="kpi-value" style="font-size:0.875rem;">@cs @Fmt(liabGap)</div><div class="kpi-label">Liability Gap</div></div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <p class="no-data">Prioritization data available</p>
+                                        }
+                                    }
+                                    else if (priRoot.ValueKind == System.Text.Json.JsonValueKind.Array)
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="data-table">
+                                                <thead><tr><th>#</th><th>Stream</th><th style="text-align:right;">Score / Priority</th></tr></thead>
+                                                <tbody>
+                                                    @{
+                                                        var priIdx = 1;
+                                                        foreach (var item in priRoot.EnumerateArray())
+                                                        {
+                                                            var name = item.TryGetProperty("name", out var n) ? n.GetString()
+                                                                     : item.TryGetProperty("streamName", out var sn) ? sn.GetString() : $"Stream {priIdx}";
+                                                            var score = item.TryGetProperty("score", out var sc) ? sc.ToString()
+                                                                      : item.TryGetProperty("priority", out var pr) ? pr.ToString()
+                                                                      : item.TryGetProperty("rank", out var rk) ? rk.ToString() : "-";
+                                                            <tr><td style="font-weight:600;">@priIdx</td><td>@name</td><td class="value-col">@score</td></tr>
+                                                            priIdx++;
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                }
+                                catch
+                                {
+                                    <p class="no-data">Prioritization data available</p>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- ══════════════════════════════════════════ -->
+                <!-- ══ BOTTOM-UP: STEP 3 - SOLUTIONS ══ -->
+                <!-- ══════════════════════════════════════════ -->
+                @if (!string.IsNullOrEmpty(formData.SelectedSolutionsData))
+                {
+                    <div class="section-card">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-solutions">
+                            <div class="section-icon" style="background: #0EA5E9; box-shadow: 0 4px 8px -2px rgba(14,165,233,0.25);">
+                                <i class="bi bi-lightbulb-fill"></i>
+                            </div>
+                            <h5>Selected Solutions <span class="stream-tag">Step 3</span></h5>
+                            <i class="bi bi-chevron-down chevron"></i>
+                        </div>
+                        <div class="collapse show" id="sec-solutions">
+                            @{
+                                try
+                                {
+                                    using var solDoc = System.Text.Json.JsonDocument.Parse(formData.SelectedSolutionsData);
+                                    var solRoot = solDoc.RootElement;
+
+                                    // The JSON can be either:
+                                    // A) A direct array of solutions
+                                    // B) An object { selections: {}, selectedSolutions: [], timestamp: "" }
+                                    System.Text.Json.JsonElement solutionsArray = default;
+                                    bool hasSolutions = false;
+
+                                    if (solRoot.ValueKind == System.Text.Json.JsonValueKind.Array)
+                                    {
+                                        solutionsArray = solRoot;
+                                        hasSolutions = solutionsArray.GetArrayLength() > 0;
+                                    }
+                                    else if (solRoot.ValueKind == System.Text.Json.JsonValueKind.Object
+                                             && solRoot.TryGetProperty("selectedSolutions", out var ssArr)
+                                             && ssArr.ValueKind == System.Text.Json.JsonValueKind.Array)
+                                    {
+                                        solutionsArray = ssArr;
+                                        hasSolutions = solutionsArray.GetArrayLength() > 0;
+                                    }
+
+                                    if (hasSolutions)
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="data-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Solution</th>
+                                                        <th>Revenue Stream</th>
+                                                        <th>Gap Type</th>
+                                                        <th>Timeline</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                        var solIdx2 = 1;
+                                                        foreach (var item in solutionsArray.EnumerateArray())
+                                                        {
+                                                            var title = item.TryGetProperty("title", out var tt) ? tt.GetString()
+                                                                      : item.TryGetProperty("name", out var nn) ? nn.GetString()
+                                                                      : item.TryGetProperty("solutionId", out var si) ? si.GetString()
+                                                                      : $"Solution {solIdx2}";
+                                                            var stream = item.TryGetProperty("streamName", out var sn) ? sn.GetString() : "";
+                                                            var gapType = item.TryGetProperty("gapType", out var gt) ? gt.GetString() : "";
+                                                            var timeline = item.TryGetProperty("timeline", out var tl) ? tl.GetString() : "";
+                                                            <tr>
+                                                                <td style="font-weight:600;">@solIdx2</td>
+                                                                <td style="font-weight:500;">@title</td>
+                                                                <td>@stream</td>
+                                                                <td>@gapType</td>
+                                                                <td>
+                                                                    @if (!string.IsNullOrEmpty(timeline))
+                                                                    {
+                                                                        <span style="background:#DBEAFE; color:#1E40AF; padding:0.2rem 0.5rem; border-radius:12px; font-size:0.75rem; font-weight:600;">@timeline</span>
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                            solIdx2++;
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div style="text-align:center; padding:1.5rem;">
+                                            <div style="width:48px; height:48px; border-radius:12px; background:#F7F7F7; display:inline-flex; align-items:center; justify-content:center; font-size:1.25rem; color:#6A6A6A; margin-bottom:0.5rem;">
+                                                <i class="bi bi-lightbulb"></i>
+                                            </div>
+                                            <p style="color:#6A6A6A; font-size:0.875rem; margin:0;">No solutions selected yet</p>
+                                        </div>
+                                    }
+                                }
+                                catch
+                                {
+                                    <p class="no-data">Solutions data available</p>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- ══════════════════════════════════════════════ -->
+                <!-- ══ BOTTOM-UP: STEP 4 - RECOMMENDATIONS ══ -->
+                <!-- ══════════════════════════════════════════════ -->
+
+                <!-- ── Problem Statement & Root Causes ── -->
+                @if (!string.IsNullOrEmpty(formData.ProblemStatement) || formData.RootCauses.Any())
+                {
+                    <div class="section-card">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-causes">
+                            <div class="section-icon" style="background: #DC2626; box-shadow: 0 4px 8px -2px rgba(220,38,38,0.25);">
+                                <i class="bi bi-search"></i>
+                            </div>
+                            <h5>Problem Statement & Root Causes <span class="stream-tag">Step 4</span></h5>
+                            <i class="bi bi-chevron-down chevron"></i>
+                        </div>
+                        <div class="collapse show" id="sec-causes">
+                            @if (!string.IsNullOrEmpty(formData.ProblemStatement))
+                            {
+                                <div class="sub-section-title">Problem Statement</div>
+                                <p style="color: #6A6A6A; font-size: 0.875rem; line-height: 1.6;">@formData.ProblemStatement</p>
+                            }
+                            @if (formData.RootCauses.Any())
+                            {
+                                <div class="sub-section-title">Root Causes</div>
+                                <ol style="color: #222222; font-size: 0.875rem; padding-left: 1.25rem;">
+                                    @foreach (var cause in formData.RootCauses)
+                                    {
+                                        <li style="margin-bottom: 0.375rem;">@cause</li>
+                                    }
+                                </ol>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- ── Recommendations & Action Items ── -->
+                @if (!string.IsNullOrEmpty(formData.RecommendationSummary) || formData.ActionItems.Any())
+                {
+                    <div class="section-card">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-recs">
+                            <div class="section-icon" style="background: #059669; box-shadow: 0 4px 8px -2px rgba(5,150,105,0.25);">
+                                <i class="bi bi-check2-all"></i>
+                            </div>
+                            <h5>Recommendations <span class="stream-tag">Step 4</span></h5>
+                            <i class="bi bi-chevron-down chevron"></i>
+                        </div>
+                        <div class="collapse show" id="sec-recs">
+                            @if (!string.IsNullOrEmpty(formData.RecommendationSummary))
+                            {
+                                <div class="sub-section-title">Summary</div>
+                                <p style="color: #6A6A6A; font-size: 0.875rem; line-height: 1.6;">@formData.RecommendationSummary</p>
+                            }
+                            @if (formData.ActionItems.Any())
+                            {
+                                <div class="sub-section-title">Action Items</div>
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead><tr><th>#</th><th>Action</th><th style="text-align:center;">Priority</th></tr></thead>
+                                        <tbody>
+                                            @for (var i = 0; i < formData.ActionItems.Count; i++)
+                                            {
+                                                var ai = formData.ActionItems[i];
+                                                var prClass = ai.Priority?.ToLower() switch {
+                                                    "high" => "background:#FEE2E2; color:#991B1B;",
+                                                    "medium" => "background:#FEF3C7; color:#92400E;",
+                                                    _ => "background:#F7F7F7; color:#6A6A6A;"
+                                                };
+                                                <tr>
+                                                    <td style="font-weight:600;">@(i + 1)</td>
+                                                    <td>@ai.Description</td>
+                                                    <td style="text-align:center;"><span style="@prClass padding:0.2rem 0.5rem; border-radius:12px; font-size:0.75rem; font-weight:600;">@(ai.Priority ?? "low")</span></td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- ── Project Info ── -->
                 @if (!string.IsNullOrEmpty(formData.ProjectName))
                 {
-                    <h6 class="fw-bold">Project</h6>
-                    <p class="text-muted mb-3">@formData.ProjectName — @formData.ProjectDescription</p>
-                }
-
-                <!-- Causes & Recommendations Summary -->
-                @if (!string.IsNullOrEmpty(formData.ProblemStatement))
-                {
-                    <h6 class="fw-bold">Problem Statement</h6>
-                    <p class="text-muted mb-3">@formData.ProblemStatement</p>
-                }
-
-                @if (!string.IsNullOrEmpty(formData.RecommendationSummary))
-                {
-                    <h6 class="fw-bold">Recommendations</h6>
-                    <p class="text-muted mb-3">@formData.RecommendationSummary</p>
+                    <div class="section-card">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#sec-project">
+                            <div class="section-icon" style="background: #6B7280; box-shadow: 0 4px 8px -2px rgba(107,114,128,0.25);">
+                                <i class="bi bi-folder-fill"></i>
+                            </div>
+                            <h5>Project Information</h5>
+                            <i class="bi bi-chevron-down chevron"></i>
+                        </div>
+                        <div class="collapse show" id="sec-project">
+                            <table class="data-table">
+                                <tbody>
+                                    <tr><td class="label-col">Project Name</td><td class="value-col" style="text-align:left;">@formData.ProjectName</td></tr>
+                                    @if (!string.IsNullOrEmpty(formData.ProjectDescription))
+                                    {
+                                        <tr><td class="label-col">Description</td><td style="color:#6A6A6A;">@formData.ProjectDescription</td></tr>
+                                    }
+                                    @if (!string.IsNullOrEmpty(formData.KeyObjectives))
+                                    {
+                                        <tr><td class="label-col">Key Objectives</td><td style="color:#6A6A6A;">@formData.KeyObjectives</td></tr>
+                                    }
+                                    @if (HasVal(formData.EstimatedBudget))
+                                    {
+                                        <tr><td class="label-col">Estimated Budget</td><td class="value-col">@cs @Fmt(formData.EstimatedBudget)</td></tr>
+                                    }
+                                    @if (formData.StartDate.HasValue)
+                                    {
+                                        <tr><td class="label-col">Start Date</td><td class="value-col" style="text-align:left;">@formData.StartDate.Value.ToString("dd MMM yyyy")</td></tr>
+                                    }
+                                    @if (formData.EndDate.HasValue)
+                                    {
+                                        <tr><td class="label-col">End Date</td><td class="value-col" style="text-align:left;">@formData.EndDate.Value.ToString("dd MMM yyyy")</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 }
             }
             else
             {
-                <p class="text-muted">No form data available.</p>
+                <div class="section-card" style="text-align: center; padding: 3rem;">
+                    <div style="width:64px; height:64px; border-radius:16px; background:#F7F7F7; display:inline-flex; align-items:center; justify-content:center; font-size:1.75rem; color:#6A6A6A; margin-bottom:1rem;">
+                        <i class="bi bi-file-earmark-x"></i>
+                    </div>
+                    <p style="color: #6A6A6A;">No form data available for this assessment.</p>
+                </div>
             }
         </div>
 
-        <!-- Right Sidebar: Notes -->
-        <div class="review-notes">
-            <h6 class="fw-bold mb-3"><i class="bi bi-chat-left-text me-1"></i> Review Notes</h6>
+        <!-- ═══════════ RIGHT SIDEBAR: NOTES ═══════════ -->
+        <div class="review-notes-col">
+            <div class="notes-card">
+                <h6><i class="bi bi-chat-left-text me-1"></i> Review Notes</h6>
 
-            <!-- Add Note Form -->
-            <div class="mb-3">
-                <textarea id="noteContent" class="form-control form-control-sm" rows="3" placeholder="Add a note..."></textarea>
-                <div class="d-flex gap-2 mt-2">
-                    <select id="noteType" class="form-select form-select-sm" style="width: auto;">
-                        <option value="0">General</option>
-                        <option value="1">Correction Request</option>
-                        <option value="2">Validation Comment</option>
-                    </select>
-                    <div class="form-check form-check-inline align-self-center">
-                        <input class="form-check-input" type="checkbox" id="noteInternal">
-                        <label class="form-check-label" for="noteInternal" style="font-size:0.8125rem;">Internal</label>
-                    </div>
-                </div>
-                <button class="btn btn-sm btn-primary mt-2 w-100" id="addNoteBtn">
-                    <i class="bi bi-plus-circle me-1"></i> Add Note
-                </button>
-            </div>
-
-            <hr />
-
-            <div id="notesList">
-                @foreach (var note in notes)
-                {
-                    var authorName = reviewerNames.GetValueOrDefault(note.AuthorUserId, "Unknown");
-                    var noteTypeName = ((NoteType)note.NoteType).ToString();
-                    <div class="note-item">
-                        <div class="d-flex justify-content-between">
-                            <span class="note-author">@authorName</span>
-                            <span class="note-time">@note.CreatedAt.ToLocalTime().ToString("dd MMM HH:mm")</span>
+                <div class="mb-3">
+                    <textarea id="noteContent" class="form-control form-control-sm note-textarea" rows="3" placeholder="Add a note..."></textarea>
+                    <div class="d-flex gap-2 mt-2">
+                        <select id="noteType" class="form-select form-select-sm" style="width: auto; background: #F7F7F7; border: 1px solid #DDDDDD; border-radius: 8px; font-size: 0.8125rem;">
+                            <option value="0">General</option>
+                            <option value="1">Correction</option>
+                            <option value="2">Validation</option>
+                        </select>
+                        <div class="form-check form-check-inline align-self-center">
+                            <input class="form-check-input" type="checkbox" id="noteInternal">
+                            <label class="form-check-label" for="noteInternal" style="font-size:0.8125rem; color:#6A6A6A;">Internal</label>
                         </div>
-                        @if (note.IsInternal)
-                        {
-                            <span class="badge bg-secondary" style="font-size:0.65rem;">Internal</span>
-                        }
-                        @if (note.NoteType != 0)
-                        {
-                            <span class="badge bg-info" style="font-size:0.65rem;">@noteTypeName</span>
-                        }
-                        <div class="note-content">@note.Content</div>
                     </div>
-                }
-                @if (!notes.Any())
-                {
-                    <p class="text-muted text-center" style="font-size:0.875rem;">No notes yet</p>
-                }
+                    <button class="action-btn action-btn-primary mt-2" id="addNoteBtn" style="font-size: 0.8125rem;">
+                        <i class="bi bi-plus-circle me-1"></i> Add Note
+                    </button>
+                </div>
+
+                <hr class="sidebar-divider" />
+
+                <div id="notesList">
+                    @foreach (var note in notes)
+                    {
+                        var authorName = reviewerNames.GetValueOrDefault(note.AuthorUserId, "Unknown");
+                        var noteTypeName = ((NoteType)note.NoteType).ToString();
+                        <div class="note-item">
+                            <div class="d-flex justify-content-between">
+                                <span class="note-author">@authorName</span>
+                                <span class="note-time">@note.CreatedAt.ToLocalTime().ToString("dd MMM HH:mm")</span>
+                            </div>
+                            @if (note.IsInternal)
+                            {
+                                <span class="note-badge" style="background: #F7F7F7; color: #6A6A6A;">Internal</span>
+                            }
+                            @if (note.NoteType != 0)
+                            {
+                                <span class="note-badge" style="background: #DBEAFE; color: #1E40AF;">@noteTypeName</span>
+                            }
+                            <div class="note-content">@note.Content</div>
+                        </div>
+                    }
+                    @if (!notes.Any())
+                    {
+                        <p style="color: #6A6A6A; text-align: center; font-size: 0.875rem;">No notes yet</p>
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -283,14 +1368,17 @@
 <div class="modal fade" id="rejectModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-warning text-dark"><h5 class="modal-title fw-bold">Request Revision</h5></div>
-            <div class="modal-body">
-                <label class="form-label fw-bold">Reason (required):</label>
-                <textarea id="rejectReason" class="form-control" rows="3" placeholder="Explain what needs to be revised..."></textarea>
+            <div class="modal-header" style="background: #222222; color: white; padding: 1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-arrow-return-left me-2"></i>Request Revision</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-warning" id="confirmRejectBtn"><i class="bi bi-arrow-return-left me-1"></i> Send Back</button>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <label class="form-label" style="font-weight:600; color:#222222;">Reason (required):</label>
+                <textarea id="rejectReason" class="form-control note-textarea" rows="3" placeholder="Explain what needs to be revised..."></textarea>
+            </div>
+            <div class="modal-footer" style="border:none; background:#F7F7F7; padding: 1rem 1.5rem;">
+                <button class="btn" style="background:white; color:#222222; border:none; border-radius:8px; box-shadow:0 1px 4px -1px rgba(0,0,0,0.1); font-weight:500;" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn" style="background:#F59E0B; color:white; border:none; border-radius:8px; box-shadow:0 4px 12px -2px rgba(245,158,11,0.25); font-weight:600;" id="confirmRejectBtn"><i class="bi bi-arrow-return-left me-1"></i> Send Back</button>
             </div>
         </div>
     </div>
@@ -300,17 +1388,50 @@
 <div class="modal fade" id="unlockModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-danger text-white"><h5 class="modal-title fw-bold">Unlock Validated Assessment</h5></div>
-            <div class="modal-body">
-                <p class="text-muted">This will create a backup snapshot and revert the assessment to revision status.</p>
-                <label class="form-label fw-bold">Reason (required):</label>
-                <textarea id="unlockReason" class="form-control" rows="3" placeholder="Why does this need to be unlocked?"></textarea>
+            <div class="modal-header" style="background: #222222; color: white; padding: 1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-unlock me-2"></i>Unlock Validated Assessment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-danger" id="confirmUnlockBtn"><i class="bi bi-unlock me-1"></i> Unlock</button>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <p style="color: #6A6A6A;">This will create a backup snapshot and revert the assessment to revision status.</p>
+                <label class="form-label" style="font-weight:600; color:#222222;">Reason (required):</label>
+                <textarea id="unlockReason" class="form-control note-textarea" rows="3" placeholder="Why does this need to be unlocked?"></textarea>
+            </div>
+            <div class="modal-footer" style="border:none; background:#F7F7F7; padding: 1rem 1.5rem;">
+                <button class="btn" style="background:white; color:#222222; border:none; border-radius:8px; box-shadow:0 1px 4px -1px rgba(0,0,0,0.1); font-weight:500;" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn" style="background:#EF4444; color:white; border:none; border-radius:8px; box-shadow:0 4px 12px -2px rgba(239,68,68,0.25); font-weight:600;" id="confirmUnlockBtn"><i class="bi bi-unlock me-1"></i> Unlock</button>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Validate Modal -->
+<div class="modal fade" id="validateModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #222222; color: white; padding: 1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-patch-check me-2"></i>Validate Assessment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <p style="color: #6A6A6A; margin: 0;">Validate this assessment? A snapshot and PDF will be generated.</p>
+            </div>
+            <div class="modal-footer" style="border:none; background:#F7F7F7; padding: 1rem 1.5rem;">
+                <button class="btn" style="background:white; color:#222222; border:none; border-radius:8px; box-shadow:0 1px 4px -1px rgba(0,0,0,0.1); font-weight:500;" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn" style="background:#10B981; color:white; border:none; border-radius:8px; box-shadow:0 4px 12px -2px rgba(16,185,129,0.25); font-weight:600;" id="confirmValidateBtn"><i class="bi bi-patch-check me-1"></i> Validate</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1050">
+    <div id="toast" class="toast hide" role="alert">
+        <div class="toast-header">
+            <strong class="me-auto" id="toast-title">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toast-message"></div>
     </div>
 </div>
 
@@ -321,35 +1442,41 @@
             var token = $('input[name="__RequestVerificationToken"]').val();
             var reportId = @(report?.Id ?? 0);
 
+            function showToast(title, message, type) {
+                $('#toast-title').text(title);
+                $('#toast-message').text(message);
+                $('#toast').removeClass('bg-danger bg-success').addClass(type === 'success' ? 'bg-success text-white' : 'bg-danger text-white');
+                new bootstrap.Toast(document.getElementById('toast')).show();
+            }
+
             function postAction(url, data, onSuccess) {
                 $.ajax({
                     url: url, type: 'POST',
                     data: Object.assign({ __RequestVerificationToken: token }, data),
-                    success: function(r) { if (r.success) { onSuccess ? onSuccess(r) : location.reload(); } else alert(r.message); },
-                    error: function() { alert('An error occurred'); }
+                    success: function(r) { if (r.success) { onSuccess ? onSuccess(r) : location.reload(); } else showToast('Error', r.message, 'error'); },
+                    error: function() { showToast('Error', 'An error occurred', 'error'); }
                 });
             }
 
             $('#claimBtn').click(function() { postAction('/Submission/Claim/' + reportId, {}); });
             $('#unclaimBtn').click(function() { postAction('/Submission/Unclaim/' + reportId, {}); });
 
-            $('#validateBtn').click(function() {
-                if (confirm('Validate this assessment? A snapshot and PDF will be generated.')) {
-                    postAction('/Submission/Validate/' + reportId, {});
-                }
+            $('#validateBtn').click(function() { new bootstrap.Modal(document.getElementById('validateModal')).show(); });
+            $('#confirmValidateBtn').click(function() {
+                postAction('/Submission/Validate/' + reportId, {});
             });
 
             $('#rejectBtn').click(function() { new bootstrap.Modal(document.getElementById('rejectModal')).show(); });
             $('#confirmRejectBtn').click(function() {
                 var reason = $('#rejectReason').val();
-                if (!reason) { alert('Reason is required'); return; }
+                if (!reason) { showToast('Warning', 'Reason is required', 'error'); return; }
                 postAction('/Submission/Reject/' + reportId, { reason: reason });
             });
 
             $('#unlockBtn').click(function() { new bootstrap.Modal(document.getElementById('unlockModal')).show(); });
             $('#confirmUnlockBtn').click(function() {
                 var reason = $('#unlockReason').val();
-                if (!reason) { alert('Reason is required'); return; }
+                if (!reason) { showToast('Warning', 'Reason is required', 'error'); return; }
                 postAction('/Submission/Unlock/' + reportId, { reason: reason });
             });
 
@@ -364,11 +1491,16 @@
                 }, function(r) {
                     var note = r.note;
                     var html = '<div class="note-item"><div class="d-flex justify-content-between"><span class="note-author">' + note.author + '</span><span class="note-time">' + note.createdAt + '</span></div>';
-                    if (note.isInternal) html += '<span class="badge bg-secondary" style="font-size:0.65rem;">Internal</span>';
+                    if (note.isInternal) html += '<span class="note-badge" style="background:#F7F7F7;color:#6A6A6A;">Internal</span>';
                     html += '<div class="note-content">' + note.content + '</div></div>';
                     $('#notesList').prepend(html);
                     $('#noteContent').val('');
                 });
+            });
+
+            // Collapsible section chevron toggle
+            $('.section-header').on('click', function() {
+                $(this).toggleClass('collapsed');
             });
         });
     </script>

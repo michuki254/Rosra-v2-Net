@@ -2,203 +2,209 @@
 
 @{
     ViewData["Title"] = Localizer["PageTitle"].Value;
+    var searchTerm = ViewData["SearchTerm"] as string;
+    var roleFilter = ViewData["RoleFilter"] as string;
+    var statusFilter = ViewData["StatusFilter"] as string;
+    var allRoles = ViewData["AllRoles"] as List<string> ?? new();
+    var totalUsers = (int)(ViewData["TotalUsers"] ?? 0);
+    var activeCount = (int)(ViewData["ActiveCount"] ?? 0);
+    var inactiveCount = (int)(ViewData["InactiveCount"] ?? 0);
 }
 
 @section Styles {
     <style>
-        body {
-            background: #f8f9fa;
-        }
+        body { background: #FFFFFF; }
 
+        /* ── Header ── */
         .page-header {
-            background: white;
-            border-radius: 8px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: white; border-radius: 12px; padding: 1.75rem 2rem;
+            margin-bottom: 1.75rem; box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1);
         }
-
-        .page-header h1 {
-            color: #212529;
-            font-weight: 700;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+        .header-icon {
+            width: 40px; height: 40px; border-radius: 10px; background: #3B82F6;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; color: white; box-shadow: 0 6px 12px -2px rgba(59,130,246,0.25); flex-shrink: 0;
         }
+        .page-header h1 { color: #222222; font-weight: 700; font-size: 1.75rem; margin-bottom: 0.25rem; }
+        .page-header p { color: #6A6A6A; font-size: 0.9375rem; margin: 0; }
 
-        .page-header p {
-            color: #6c757d;
-            font-size: 1rem;
-            margin: 0;
+        .btn-back {
+            background: white; border: none; color: #222222; border-radius: 10px;
+            font-weight: 500; padding: 0.5rem 1rem; font-size: 0.875rem;
+            box-shadow: 0 1px 6px -1px rgba(0,0,0,0.08); transition: all 0.2s;
         }
+        .btn-back:hover { color: #3B82F6; box-shadow: 0 4px 16px -4px rgba(0,0,0,0.15); }
 
-        .users-table-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+        /* ── KPI Cards ── */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .kpi-card {
+            background: white; border-radius: 12px; padding: 1.25rem; border: none;
+            box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 0.875rem;
+            transition: all 0.3s; cursor: pointer; text-decoration: none;
         }
-
-        .table-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #dee2e6;
+        .kpi-card:hover { box-shadow: 0 8px 30px -4px rgba(0,0,0,0.15); transform: translateY(-2px); }
+        .kpi-card.selected { outline: 2px solid #3B82F6; outline-offset: -2px; }
+        .kpi-icon {
+            width: 44px; height: 44px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.125rem; color: white; flex-shrink: 0;
         }
+        .kpi-value { font-size: 1.5rem; font-weight: 700; color: #222222; line-height: 1; }
+        .kpi-label { font-size: 0.8125rem; color: #6A6A6A; font-weight: 500; }
 
-        .table-header h5 {
-            color: #212529;
-            font-weight: 600;
-            margin: 0;
+        /* ── Search & Filters ── */
+        .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; align-items: center; }
+        .search-box {
+            background: #F7F7F7; border: 1px solid #DDDDDD; border-radius: 8px; transition: all 0.2s;
         }
-
-        .users-table {
-            margin: 0;
+        .search-box:focus { background: white; border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .filter-select {
+            background: #F7F7F7; border: 1px solid #DDDDDD; border-radius: 8px; font-size: 0.875rem;
+            color: #222222; padding: 0.25rem 0.75rem; transition: all 0.2s;
         }
-
-        .users-table thead {
-            background: #f8f9fa;
+        .filter-select:focus { background: white; border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .btn-search {
+            background: #3B82F6; color: white; border: none; border-radius: 8px;
+            box-shadow: 0 2px 6px -1px rgba(59,130,246,0.25); transition: all 0.2s;
         }
-
-        .users-table th {
-            color: #495057;
-            font-weight: 600;
-            font-size: 0.8125rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 1rem 1.5rem;
-            border: none;
+        .btn-search:hover { background: #2563EB; color: white; }
+        .btn-clear {
+            background: white; color: #EF4444; border: none; border-radius: 8px;
+            box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s;
         }
+        .btn-clear:hover { background: #FEE2E2; }
 
-        .users-table td {
-            padding: 1rem 1.5rem;
-            vertical-align: middle;
-            border-bottom: 1px solid #f1f3f5;
+        /* ── Table Card ── */
+        .table-card {
+            background: white; border-radius: 12px; padding: 1.75rem;
+            box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1);
         }
-
-        .users-table tbody tr:last-child td {
-            border-bottom: none;
+        .table-card-header { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 1.25rem; }
+        .section-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 0.875rem;
         }
+        .table-card-header h5 { color: #222222; font-weight: 600; margin: 0; font-size: 1rem; }
+        .table-card-header h5 small { color: #6A6A6A !important; }
 
-        .users-table tbody tr:hover {
-            background: #f8f9fa;
+        .users-table { margin: 0; }
+        .users-table thead th {
+            background: #F7F7F7; border-bottom: none; color: #6A6A6A; font-weight: 600;
+            font-size: 0.8125rem; padding: 0.875rem 1rem; text-transform: uppercase; letter-spacing: 0.5px;
         }
+        .users-table thead th:first-child { border-radius: 8px 0 0 8px; }
+        .users-table thead th:last-child { border-radius: 0 8px 8px 0; }
+        .users-table tbody td { padding: 0.875rem 1rem; vertical-align: middle; border-bottom: 1px solid #F7F7F7; }
+        .users-table tbody tr { transition: background 0.15s; }
+        .users-table tbody tr:hover { background: #FAFAFA; }
 
+        /* ── User Avatar ── */
         .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #4c6ef5;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 1rem;
+            width: 38px; height: 38px; border-radius: 10px; color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 0.875rem; flex-shrink: 0;
         }
+        .user-info { display: flex; align-items: center; gap: 0.75rem; }
+        .user-name { font-weight: 600; color: #222222; font-size: 0.875rem; }
+        .user-email { color: #6A6A6A; font-size: 0.8125rem; }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #212529;
-            font-size: 0.875rem;
-        }
-
-        .user-email {
-            color: #868e96;
-            font-size: 0.8125rem;
-        }
-
+        /* ── Badges ── */
         .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.375rem;
-            padding: 0.375rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.8125rem;
-            font-weight: 500;
+            display: inline-flex; align-items: center; gap: 0.375rem;
+            padding: 0.3rem 0.75rem; border-radius: 20px; font-size: 0.8125rem; font-weight: 600;
         }
-
-        .status-badge.active {
-            background: #d3f9d8;
-            color: #2b8a3e;
-        }
-
-        .status-badge.inactive {
-            background: #f1f3f5;
-            color: #868e96;
-        }
-
-        .status-badge i {
-            font-size: 6px;
-        }
+        .status-badge i { font-size: 0.5rem; }
+        .status-badge.active { background: #D1FAE5; color: #065F46; }
+        .status-badge.inactive { background: #F7F7F7; color: #6A6A6A; }
 
         .role-badge {
-            display: inline-block;
-            background: rgba(76, 110, 245, 0.1);
-            color: #4c6ef5;
-            padding: 0.25rem 0.625rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-right: 0.25rem;
-            margin-bottom: 0.25rem;
+            display: inline-flex; align-items: center; gap: 0.25rem;
+            padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+            margin-right: 0.25rem; margin-bottom: 0.25rem;
         }
+        .role-admin { background: #FEE2E2; color: #991B1B; }
+        .role-reviewer { background: #DBEAFE; color: #1E40AF; }
+        .role-default { background: #EDE9FE; color: #7C3AED; }
 
-        .toggle-btn {
-            background: white;
-            border: 1px solid #dee2e6;
-            color: #495057;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.8125rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+        .email-verified { color: #10B981; font-size: 0.75rem; }
+        .email-unverified { color: #EF4444; font-size: 0.75rem; }
 
-        .toggle-btn:hover {
-            background: #f8f9fa;
-            border-color: #adb5bd;
+        /* ── Action Buttons ── */
+        .btn-action {
+            background: white; border: none; padding: 0.375rem 0.625rem; border-radius: 8px;
+            box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s; font-size: 0.875rem;
         }
+        .btn-action:hover { box-shadow: 0 2px 8px -2px rgba(0,0,0,0.15); }
+        .btn-action.view { color: #3B82F6; }
+        .btn-action.view:hover { color: #2563EB; }
+        .btn-action.toggle-active { color: #10B981; }
+        .btn-action.toggle-active:hover { color: #059669; }
+        .btn-action.toggle-inactive { color: #EF4444; }
+        .btn-action.toggle-inactive:hover { color: #DC2626; }
 
-        .toggle-btn.deactivate:hover {
-            background: #ffe3e3;
-            border-color: #ff6b6b;
-            color: #ff6b6b;
-        }
-
-        .toggle-btn.activate:hover {
-            background: #d3f9d8;
-            border-color: #2b8a3e;
-            color: #2b8a3e;
-        }
+        /* ── Modal ── */
+        .modal-content { border: none !important; border-radius: 12px !important; box-shadow: 0 20px 60px -12px rgba(0,0,0,0.25) !important; overflow: hidden; }
     </style>
 }
 
 <div class="container py-4">
     <!-- Header -->
     <div class="page-header d-flex justify-content-between align-items-center">
-        <div>
-            <h1>@Localizer["PageTitle"]</h1>
-            <p>@Localizer["PageSubtitle"]</p>
+        <div class="d-flex align-items-center gap-3">
+            <div class="header-icon"><i class="bi bi-people-fill"></i></div>
+            <div>
+                <h1>@Localizer["PageTitle"]</h1>
+                <p>@Localizer["PageSubtitle"]</p>
+            </div>
         </div>
-        <a asp-action="Index" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i> @Localizer["BackToDashboard"]
+        <a asp-action="Index" class="btn btn-back">
+            <i class="bi bi-arrow-left me-1"></i> @Localizer["BackToDashboard"]
         </a>
     </div>
 
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <a asp-action="Users" class="kpi-card @(string.IsNullOrEmpty(statusFilter) ? "selected" : "")" style="text-decoration:none;">
+            <div class="kpi-icon" style="background:#3B82F6; box-shadow:0 4px 8px -2px rgba(59,130,246,0.25);"><i class="bi bi-people-fill"></i></div>
+            <div><div class="kpi-value">@totalUsers</div><div class="kpi-label">Total Users</div></div>
+        </a>
+        <a asp-action="Users" asp-route-status="active" asp-route-search="@searchTerm" asp-route-role="@roleFilter" class="kpi-card @(statusFilter == "active" ? "selected" : "")" style="text-decoration:none;">
+            <div class="kpi-icon" style="background:#10B981; box-shadow:0 4px 8px -2px rgba(16,185,129,0.25);"><i class="bi bi-check-circle-fill"></i></div>
+            <div><div class="kpi-value">@activeCount</div><div class="kpi-label">Active</div></div>
+        </a>
+        <a asp-action="Users" asp-route-status="inactive" asp-route-search="@searchTerm" asp-route-role="@roleFilter" class="kpi-card @(statusFilter == "inactive" ? "selected" : "")" style="text-decoration:none;">
+            <div class="kpi-icon" style="background:#6B7280; box-shadow:0 4px 8px -2px rgba(107,114,128,0.25);"><i class="bi bi-x-circle-fill"></i></div>
+            <div><div class="kpi-value">@inactiveCount</div><div class="kpi-label">Inactive</div></div>
+        </a>
+    </div>
+
+    <!-- Search & Filters -->
+    <form asp-action="Users" method="get" class="filter-bar">
+        <input type="text" name="search" class="form-control form-control-sm search-box" style="max-width:280px;"
+               placeholder="Search name, email, organization..." value="@searchTerm" />
+        <select name="role" class="form-select form-select-sm filter-select" style="width:auto;">
+            <option value="">All Roles</option>
+            @foreach (var r in allRoles)
+            {
+                <option value="@r" selected="@(roleFilter == r)">@r</option>
+            }
+        </select>
+        <select name="status" class="form-select form-select-sm filter-select" style="width:auto;">
+            <option value="">All Status</option>
+            <option value="active" selected="@(statusFilter == "active")">Active</option>
+            <option value="inactive" selected="@(statusFilter == "inactive")">Inactive</option>
+        </select>
+        <button type="submit" class="btn btn-sm btn-search"><i class="bi bi-search"></i></button>
+        @if (!string.IsNullOrEmpty(searchTerm) || !string.IsNullOrEmpty(roleFilter) || !string.IsNullOrEmpty(statusFilter))
+        {
+            <a asp-action="Users" class="btn btn-sm btn-clear"><i class="bi bi-x-lg"></i></a>
+        }
+    </form>
+
     <!-- Users Table -->
-    <div class="users-table-card">
-        <div class="table-header">
-            <h5><i class="bi bi-people me-2"></i>@Localizer["AllUsers"] (@Model.Count)</h5>
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="section-icon" style="background:#8B5CF6;"><i class="bi bi-person-lines-fill"></i></div>
+            <h5>@Localizer["AllUsers"] <small class="fw-normal ms-2">(@Model.Count results)</small></h5>
         </div>
         <div class="table-responsive">
             <table class="table users-table">
@@ -214,82 +220,98 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var userModel in Model)
+                    @if (Model.Any())
                     {
-                        <tr data-user-id="@userModel.User.Id">
-                            <td>
-                                <div class="user-info">
-                                    <div class="user-avatar">
-                                        @{
-                                            var initials = "";
-                                            if (!string.IsNullOrEmpty(userModel.User.FirstName))
-                                            {
-                                                initials += userModel.User.FirstName[0];
-                                            }
-                                            if (!string.IsNullOrEmpty(userModel.User.LastName))
-                                            {
-                                                initials += userModel.User.LastName[0];
-                                            }
-                                            if (string.IsNullOrEmpty(initials) && !string.IsNullOrEmpty(userModel.User.Email))
-                                            {
-                                                initials = userModel.User.Email[0].ToString().ToUpper();
-                                            }
+                        @foreach (var userModel in Model)
+                        {
+                            var initials = "";
+                            if (!string.IsNullOrEmpty(userModel.User.FirstName)) initials += userModel.User.FirstName[0];
+                            if (!string.IsNullOrEmpty(userModel.User.LastName)) initials += userModel.User.LastName[0];
+                            if (string.IsNullOrEmpty(initials) && !string.IsNullOrEmpty(userModel.User.Email)) initials = userModel.User.Email[0].ToString().ToUpper();
+
+                            // Deterministic avatar color from user ID hash
+                            var colors = new[] { "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EF4444", "#06B6D4", "#EC4899", "#6366F1" };
+                            var avatarColor = colors[Math.Abs(userModel.User.Id.GetHashCode()) % colors.Length];
+
+                            <tr data-user-id="@userModel.User.Id">
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-avatar" style="background:@avatarColor; box-shadow:0 4px 8px -2px @(avatarColor)40;">
+                                            @initials
+                                        </div>
+                                        <div>
+                                            <div class="user-name">
+                                                @userModel.User.FirstName @userModel.User.LastName
+                                                @if (userModel.User.EmailConfirmed)
+                                                {
+                                                    <i class="bi bi-patch-check-fill email-verified" title="Email verified"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-exclamation-circle-fill email-unverified" title="Email not verified"></i>
+                                                }
+                                            </div>
+                                            <div class="user-email">@userModel.User.Email</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="color:#222222; font-size:0.875rem;">
+                                    @(string.IsNullOrEmpty(userModel.User.Organization) ? "-" : userModel.User.Organization)
+                                </td>
+                                <td style="font-weight:600; color:#222222; font-size:0.875rem;">@userModel.ReportCount</td>
+                                <td>
+                                    @if (userModel.Roles.Any())
+                                    {
+                                        foreach (var role in userModel.Roles)
+                                        {
+                                            var roleClass = role.ToLower() switch {
+                                                "admin" => "role-admin",
+                                                "reviewer" => "role-reviewer",
+                                                _ => "role-default"
+                                            };
+                                            <span class="role-badge @roleClass">@role</span>
                                         }
-                                        @initials
-                                    </div>
-                                    <div class="user-details">
-                                        <span class="user-name">@userModel.User.FirstName @userModel.User.LastName</span>
-                                        <span class="user-email">@userModel.User.Email</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span style="color: #495057; font-size: 0.875rem;">
-                                    @(string.IsNullOrEmpty(userModel.User.Organization) ? "—" : userModel.User.Organization)
-                                </span>
-                            </td>
-                            <td>
-                                <span style="color: #495057; font-weight: 600; font-size: 0.875rem;">
-                                    @userModel.ReportCount
-                                </span>
-                            </td>
-                            <td>
-                                @if (userModel.Roles != null && userModel.Roles.Any())
-                                {
-                                    foreach (var role in userModel.Roles)
-                                    {
-                                        <span class="role-badge">@role</span>
-                                    }
-                                }
-                                else
-                                {
-                                    <span style="color: #adb5bd; font-size: 0.8125rem;">@Localizer["NoRoles"]</span>
-                                }
-                            </td>
-                            <td>
-                                <span class="status-badge @(userModel.IsActive ? "active" : "inactive")">
-                                    <i class="bi bi-circle-fill"></i>
-                                    @(userModel.IsActive ? Localizer["Active"].Value : Localizer["Inactive"].Value)
-                                </span>
-                            </td>
-                            <td>
-                                <span style="color: #868e96; font-size: 0.8125rem;">
-                                    @if (userModel.User.CreatedAt.HasValue)
-                                    {
-                                        @userModel.User.CreatedAt.Value.ToString("MMM dd, yyyy")
                                     }
                                     else
                                     {
-                                        <text>—</text>
+                                        <span style="color:#DDDDDD; font-size:0.8125rem;">@Localizer["NoRoles"]</span>
                                     }
-                                </span>
-                            </td>
-                            <td>
-                                <button class="toggle-btn @(userModel.IsActive ? "deactivate" : "activate")"
-                                        onclick="toggleUserStatus('@userModel.User.Id', @(userModel.IsActive ? "true" : "false"))">
-                                    <i class="bi bi-@(userModel.IsActive ? "x-circle" : "check-circle") me-1"></i>
-                                    @(userModel.IsActive ? Localizer["Deactivate"].Value : Localizer["Activate"].Value)
-                                </button>
+                                </td>
+                                <td>
+                                    <span class="status-badge @(userModel.IsActive ? "active" : "inactive")">
+                                        <i class="bi bi-circle-fill"></i>
+                                        @(userModel.IsActive ? Localizer["Active"].Value : Localizer["Inactive"].Value)
+                                    </span>
+                                </td>
+                                <td style="color:#6A6A6A; font-size:0.8125rem;">
+                                    @(userModel.User.CreatedAt?.ToString("MMM dd, yyyy") ?? "-")
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a asp-action="UserDetails" asp-route-id="@userModel.User.Id" class="btn btn-sm btn-action view" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <button class="btn btn-sm btn-action @(userModel.IsActive ? "toggle-inactive" : "toggle-active") toggle-btn"
+                                                data-user-id="@userModel.User.Id" data-active="@(userModel.IsActive ? "true" : "false")"
+                                                data-name="@userModel.User.FirstName @userModel.User.LastName"
+                                                title="@(userModel.IsActive ? Localizer["Deactivate"].Value : Localizer["Activate"].Value)">
+                                            <i class="bi bi-@(userModel.IsActive ? "person-slash" : "person-check")"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="py-0">
+                                <div style="text-align:center; padding:3rem 1rem;">
+                                    <div style="width:64px; height:64px; border-radius:16px; background:#F7F7F7; display:inline-flex; align-items:center; justify-content:center; font-size:1.75rem; color:#6A6A6A; margin-bottom:1rem;">
+                                        <i class="bi bi-person-x"></i>
+                                    </div>
+                                    <p style="color:#6A6A6A; font-size:0.9375rem; margin:0;">No users found matching your filters</p>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -299,79 +321,113 @@
     </div>
 </div>
 
-<!-- Toast Notification -->
+<!-- Toggle Status Modal -->
+<div class="modal fade" id="toggleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#222222; color:white; padding:1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold" id="toggleModalTitle"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <p style="color:#6A6A6A; margin:0;" id="toggleModalMessage"></p>
+                <input type="hidden" id="toggleUserId" />
+                <input type="hidden" id="toggleIsActive" />
+            </div>
+            <div class="modal-footer" style="border:none; background:#F7F7F7; padding:1rem 1.5rem;">
+                <button class="btn" style="background:white; color:#222222; border:none; border-radius:8px; box-shadow:0 1px 4px -1px rgba(0,0,0,0.1); font-weight:500;" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn" id="confirmToggleBtn" style="border:none; border-radius:8px; font-weight:600;"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
-    <div id="toast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="toast" class="toast hide" role="alert">
         <div class="toast-header">
             <strong class="me-auto" id="toast-title">@Localizer["Notification"]</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
         </div>
         <div class="toast-body" id="toast-message"></div>
     </div>
 </div>
 
 @section Scripts {
-    <script>
-        function toggleUserStatus(userId, isCurrentlyActive) {
-            if (!confirm(`Are you sure you want to ${isCurrentlyActive ? 'deactivate' : 'activate'} this user?`)) {
-                return;
-            }
-
-            $.ajax({
-                url: '@Url.Action("ToggleUserStatus", "Admin")',
-                type: 'POST',
-                data: {
-                    userId: userId,
-                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                },
-                success: function(response) {
-                    if (response.success) {
-                        showToast('Success', response.message, 'success');
-
-                        // Update the UI
-                        const row = $(`tr[data-user-id="${userId}"]`);
-                        const statusBadge = row.find('.status-badge');
-                        const toggleBtn = row.find('.toggle-btn');
-
-                        if (response.isActive) {
-                            // User is now active
-                            statusBadge.removeClass('inactive').addClass('active');
-                            statusBadge.html('<i class="bi bi-circle-fill"></i> Active');
-                            toggleBtn.removeClass('activate').addClass('deactivate');
-                            toggleBtn.html('<i class="bi bi-x-circle me-1"></i> Deactivate');
-                            toggleBtn.attr('onclick', `toggleUserStatus('${userId}', true)`);
-                        } else {
-                            // User is now inactive
-                            statusBadge.removeClass('active').addClass('inactive');
-                            statusBadge.html('<i class="bi bi-circle-fill"></i> Inactive');
-                            toggleBtn.removeClass('deactivate').addClass('activate');
-                            toggleBtn.html('<i class="bi bi-check-circle me-1"></i> Activate');
-                            toggleBtn.attr('onclick', `toggleUserStatus('${userId}', false)`);
-                        }
-                    } else {
-                        showToast('Error', response.message, 'error');
-                    }
-                },
-                error: function() {
-                    showToast('Error', 'An error occurred while updating user status', 'error');
-                }
-            });
-        }
-
-        function showToast(title, message, type) {
-            $('#toast-title').text(title);
-            $('#toast-message').text(message);
-
-            if (type === 'success') {
-                $('#toast .toast-header').removeClass('bg-danger').addClass('bg-success text-white');
-            } else {
-                $('#toast .toast-header').removeClass('bg-success').addClass('bg-danger text-white');
-            }
-
-            const toast = new bootstrap.Toast(document.getElementById('toast'));
-            toast.show();
-        }
-    </script>
-
     @Html.AntiForgeryToken()
+    <script>
+        $(document).ready(function() {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            function showToast(title, message, type) {
+                $('#toast-title').text(title);
+                $('#toast-message').text(message);
+                $('#toast').removeClass('bg-danger bg-success').addClass(type === 'success' ? 'bg-success text-white' : 'bg-danger text-white');
+                new bootstrap.Toast(document.getElementById('toast')).show();
+            }
+
+            // Toggle button click → show modal
+            $('.toggle-btn').click(function() {
+                var userId = $(this).data('user-id');
+                var isActive = $(this).data('active') === 'true' || $(this).data('active') === true;
+                var name = $(this).data('name');
+
+                $('#toggleUserId').val(userId);
+                $('#toggleIsActive').val(isActive);
+
+                if (isActive) {
+                    $('#toggleModalTitle').html('<i class="bi bi-person-slash me-2"></i>Deactivate User');
+                    $('#toggleModalMessage').text('Are you sure you want to deactivate ' + name + '? They will be locked out of the system.');
+                    $('#confirmToggleBtn').css({ background: '#EF4444', color: 'white', 'box-shadow': '0 4px 12px -2px rgba(239,68,68,0.25)' }).html('<i class="bi bi-person-slash me-1"></i> Deactivate');
+                } else {
+                    $('#toggleModalTitle').html('<i class="bi bi-person-check me-2"></i>Activate User');
+                    $('#toggleModalMessage').text('Are you sure you want to activate ' + name + '? They will regain access to the system.');
+                    $('#confirmToggleBtn').css({ background: '#10B981', color: 'white', 'box-shadow': '0 4px 12px -2px rgba(16,185,129,0.25)' }).html('<i class="bi bi-person-check me-1"></i> Activate');
+                }
+
+                new bootstrap.Modal(document.getElementById('toggleModal')).show();
+            });
+
+            // Confirm toggle
+            $('#confirmToggleBtn').click(function() {
+                var userId = $('#toggleUserId').val();
+                var isActive = $('#toggleIsActive').val() === 'true';
+
+                $.ajax({
+                    url: '@Url.Action("ToggleUserStatus", "Admin")',
+                    type: 'POST',
+                    data: { userId: userId, __RequestVerificationToken: token },
+                    success: function(r) {
+                        bootstrap.Modal.getInstance(document.getElementById('toggleModal')).hide();
+                        if (r.success) {
+                            showToast('Success', r.message, 'success');
+                            var row = $('tr[data-user-id="' + userId + '"]');
+                            var badge = row.find('.status-badge');
+                            var btn = row.find('.toggle-btn');
+
+                            if (r.isActive) {
+                                badge.removeClass('inactive').addClass('active').html('<i class="bi bi-circle-fill"></i> Active');
+                                btn.removeClass('toggle-inactive').addClass('toggle-active').data('active', true).attr('title', 'Deactivate');
+                                btn.html('<i class="bi bi-person-slash"></i>');
+                                // Swap classes back for next click
+                                btn.removeClass('toggle-active').addClass('toggle-inactive');
+                                btn.data('active', 'true');
+                            } else {
+                                badge.removeClass('active').addClass('inactive').html('<i class="bi bi-circle-fill"></i> Inactive');
+                                btn.removeClass('toggle-active toggle-inactive').addClass('toggle-active').data('active', false).attr('title', 'Activate');
+                                btn.html('<i class="bi bi-person-check"></i>');
+                                btn.data('active', 'false');
+                            }
+                        } else {
+                            showToast('Error', r.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        bootstrap.Modal.getInstance(document.getElementById('toggleModal')).hide();
+                        showToast('Error', 'An error occurred', 'error');
+                    }
+                });
+            });
+        });
+    </script>
 }

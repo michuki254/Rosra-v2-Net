@@ -67,6 +67,7 @@
 
   <!-- Footer -->
   <data name="Footer_Copyright" xml:space="preserve"><value>© 2025 - RosraApp - Empowering local governments through data-driven OSR optimization</value></data>
+  <data name="Footer_Tagline" xml:space="preserve"><value>Empowering local governments through data-driven OSR optimization</value></data>
   <data name="Footer_Privacy" xml:space="preserve"><value>Privacy</value></data>
   <data name="Footer_ContactUs" xml:space="preserve"><value>Contact Us</value></data>
   <data name="Footer_SdgGoals" xml:space="preserve"><value>SDG Goals</value></data>
@@ -82,6 +83,30 @@
   <data name="Common_Next" xml:space="preserve"><value>Next</value></data>
   <data name="Common_Yes" xml:space="preserve"><value>Yes</value></data>
   <data name="Common_No" xml:space="preserve"><value>No</value></data>
+
+  <!-- Profile Page -->
+  <data name="Profile_Title" xml:space="preserve"><value>My Profile</value></data>
+  <data name="Profile_Subtitle" xml:space="preserve"><value>Manage your account settings</value></data>
+  <data name="Profile_Dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="Profile_Verified" xml:space="preserve"><value>Verified</value></data>
+  <data name="Profile_Unverified" xml:space="preserve"><value>Unverified</value></data>
+  <data name="Profile_Reports" xml:space="preserve"><value>Reports</value></data>
+  <data name="Profile_Joined" xml:space="preserve"><value>Joined</value></data>
+  <data name="Profile_Account" xml:space="preserve"><value>Account</value></data>
+  <data name="Profile_Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Profile_Phone" xml:space="preserve"><value>Phone</value></data>
+  <data name="Profile_Organization" xml:space="preserve"><value>Organization</value></data>
+  <data name="Profile_Security" xml:space="preserve"><value>Security</value></data>
+  <data name="Profile_ChangePassword" xml:space="preserve"><value>Change Password</value></data>
+  <data name="Profile_EditProfile" xml:space="preserve"><value>Edit Profile</value></data>
+  <data name="Profile_FirstName" xml:space="preserve"><value>First Name</value></data>
+  <data name="Profile_LastName" xml:space="preserve"><value>Last Name</value></data>
+  <data name="Profile_EmailReadonly" xml:space="preserve"><value>Email cannot be changed. Contact an administrator if needed.</value></data>
+  <data name="Profile_OrgPlaceholder" xml:space="preserve"><value>Your organization or company</value></data>
+  <data name="Profile_SaveChanges" xml:space="preserve"><value>Save Changes</value></data>
+  <data name="Profile_CurrentPassword" xml:space="preserve"><value>Current Password</value></data>
+  <data name="Profile_NewPassword" xml:space="preserve"><value>New Password</value></data>
+  <data name="Profile_ConfirmNewPassword" xml:space="preserve"><value>Confirm New Password</value></data>
 
   <!-- Tab Navigation -->
   <data name="BottomUp_Intro" xml:space="preserve"><value>This is the main diagnostic. It looks at each major revenue source and shows where collection is falling short and why, so the results translate directly into priorities and next steps. Go through the tabs in order to complete the analysis.</value></data>

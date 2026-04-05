@@ -68,7 +68,8 @@ namespace RosraApp.Controllers
                     CreatedAt = r.CreatedAt,
                     UpdatedAt = r.UpdatedAt,
                     City = r.City,
-                    Country = r.Country
+                    Country = r.Country,
+                    Status = r.Status
                 })
                 .ToListAsync();
 
@@ -251,11 +252,17 @@ namespace RosraApp.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
+            // Get distinct values for filter dropdowns
+            var allActions = await _context.AuditLogs.Select(a => a.Action).Distinct().OrderBy(a => a).ToListAsync();
+            var allEntityTypes = await _context.AuditLogs.Select(a => a.EntityType).Distinct().OrderBy(a => a).ToListAsync();
+
             ViewData["PageNumber"] = page;
             ViewData["TotalPages"] = totalPages;
             ViewData["TotalCount"] = totalCount;
             ViewData["ActionFilter"] = action;
             ViewData["EntityTypeFilter"] = entityType;
+            ViewData["AllActions"] = allActions;
+            ViewData["AllEntityTypes"] = allEntityTypes;
 
             return View(logs);
         }
@@ -270,6 +277,11 @@ namespace RosraApp.Controllers
 
             var userRoles = await _userManager.GetRolesAsync(user);
             var allRoles = await _roleManager.Roles.ToListAsync();
+            var reportCount = await _context.RosraReports.CountAsync(r => r.UserId == user.Id);
+            var isActive = !user.LockoutEnabled || user.LockoutEnd == null || user.LockoutEnd < DateTimeOffset.Now;
+
+            ViewData["ReportCount"] = reportCount;
+            ViewData["IsActive"] = isActive;
 
             var model = new UserDetailsViewModel
             {
@@ -299,6 +311,7 @@ namespace RosraApp.Controllers
             var result = await _userManager.AddToRoleAsync(user, roleName);
             if (result.Succeeded)
             {
+                await LogAuditAsync("RoleAssigned", "User", userId, $"Role '{roleName}' assigned to '{user.Email}'");
                 return RedirectToAction(nameof(UserDetails), new { id = userId });
             }
 
@@ -322,6 +335,7 @@ namespace RosraApp.Controllers
             var result = await _userManager.RemoveFromRoleAsync(user, roleName);
             if (result.Succeeded)
             {
+                await LogAuditAsync("RoleRemoved", "User", userId, $"Role '{roleName}' removed from '{user.Email}'");
                 return RedirectToAction(nameof(UserDetails), new { id = userId });
             }
 
@@ -389,6 +403,7 @@ namespace RosraApp.Controllers
                             await _context.SaveChangesAsync();
                         }
 
+                        await LogAuditAsync("RoleCreated", "Role", role.Id, $"Role '{model.RoleName}' created with {model.SelectedPermissionIds?.Count ?? 0} permissions");
                         TempData["Success"] = $"Role '{model.RoleName}' created successfully with {model.SelectedPermissionIds?.Count ?? 0} permissions!";
                         return RedirectToAction(nameof(CreateRole));
                     }
@@ -446,6 +461,7 @@ namespace RosraApp.Controllers
             var result = await _roleManager.DeleteAsync(role);
             if (result.Succeeded)
             {
+                await LogAuditAsync("RoleDeleted", "Role", roleId, $"Role '{role.Name}' deleted");
                 return Json(new { success = true, message = $"Role '{role.Name}' deleted successfully." });
             }
 
@@ -453,9 +469,10 @@ namespace RosraApp.Controllers
         }
 
         // User Management Page
-        public async Task<IActionResult> Users()
+        public async Task<IActionResult> Users(string? search = null, string? role = null, string? status = null)
         {
             var users = await _userManager.Users.ToListAsync();
+            var allRoles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
             var userViewModels = new List<UserManagementViewModel>();
 
             foreach (var user in users)
@@ -472,6 +489,38 @@ namespace RosraApp.Controllers
                     IsActive = isActive
                 });
             }
+
+            // Apply search filter
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.ToLower();
+                userViewModels = userViewModels.Where(u =>
+                    (u.User.FirstName?.ToLower().Contains(term) ?? false) ||
+                    (u.User.LastName?.ToLower().Contains(term) ?? false) ||
+                    (u.User.Email?.ToLower().Contains(term) ?? false) ||
+                    (u.User.Organization?.ToLower().Contains(term) ?? false)
+                ).ToList();
+            }
+
+            // Apply role filter
+            if (!string.IsNullOrWhiteSpace(role))
+            {
+                userViewModels = userViewModels.Where(u => u.Roles.Contains(role)).ToList();
+            }
+
+            // Apply status filter
+            if (status == "active")
+                userViewModels = userViewModels.Where(u => u.IsActive).ToList();
+            else if (status == "inactive")
+                userViewModels = userViewModels.Where(u => !u.IsActive).ToList();
+
+            ViewData["SearchTerm"] = search;
+            ViewData["RoleFilter"] = role;
+            ViewData["StatusFilter"] = status;
+            ViewData["AllRoles"] = allRoles;
+            ViewData["TotalUsers"] = users.Count;
+            ViewData["ActiveCount"] = users.Count(u => !u.LockoutEnabled || u.LockoutEnd == null || u.LockoutEnd < DateTimeOffset.Now);
+            ViewData["InactiveCount"] = users.Count - (int)ViewData["ActiveCount"];
 
             return View(userViewModels);
         }
@@ -507,6 +556,12 @@ namespace RosraApp.Controllers
             if (result.Succeeded)
             {
                 var newStatus = !isCurrentlyLocked ? "deactivated" : "activated";
+                await LogAuditAsync(
+                    isCurrentlyLocked ? "UserActivated" : "UserDeactivated",
+                    "User", userId,
+                    $"User '{user.Email}' {newStatus}",
+                    statusFrom: isCurrentlyLocked ? "Inactive" : "Active",
+                    statusTo: isCurrentlyLocked ? "Active" : "Inactive");
                 return Json(new { success = true, message = $"User {newStatus} successfully", isActive = isCurrentlyLocked });
             }
 
@@ -718,6 +773,27 @@ namespace RosraApp.Controllers
                 }).ToList();
 
             return categories;
+        }
+
+        private async Task LogAuditAsync(string action, string entityType, string? entityId, string? details, string? statusFrom = null, string? statusTo = null, string? reason = null)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var auditLog = new Models.AuditLog
+            {
+                Action = action,
+                EntityType = entityType,
+                EntityId = entityId,
+                Timestamp = DateTime.UtcNow,
+                UserId = currentUser?.Id,
+                UserEmail = currentUser?.Email,
+                Details = details,
+                StatusFrom = statusFrom,
+                StatusTo = statusTo,
+                Reason = reason,
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
+            };
+            _context.AuditLogs.Add(auditLog);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -675,17 +675,17 @@
                     </a>
                     <a asp-controller="Rosra" asp-action="LoadSampleData" class="sidebar-btn" style="background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; border-radius: 6px; padding: 0.5rem 1rem; font-weight: 500; cursor: pointer; width: 100%; text-align: center; text-decoration: none; display: block; margin-top: 0.25rem;">
                         <i class="bi bi-database me-1"></i>
-                        <span>Load Sample Data</span>
+                        <span>@RosraLocalizer["Sidebar_LoadSampleData"]</span>
                     </a>
                     <button type="button" id="saveReportBtn" class="sidebar-btn sidebar-btn-secondary">
                         <i class="bi bi-save me-1"></i>
-                        <span>@(Model.TabContentModel.Id > 0 ? "Update Report" : "Save as Draft")</span>
+                        <span>@(Model.TabContentModel.Id > 0 ? RosraLocalizer["Sidebar_UpdateReport"].Value : RosraLocalizer["Sidebar_SaveAsDraft"].Value)</span>
                     </button>
                     @if (User.Identity?.IsAuthenticated ?? false)
                     {
                         <button type="button" id="submitForReviewBtn" class="sidebar-btn" style="background: #10b981; color: white; border: none; border-radius: 6px; padding: 0.5rem 1rem; font-weight: 500; cursor: pointer; width: 100%; text-align: center; margin-top: 0.25rem;">
                             <i class="bi bi-send me-1"></i>
-                            <span>Submit for Review</span>
+                            <span>@RosraLocalizer["Sidebar_SubmitForReview"]</span>
                         </button>
                     }
                     <div class="sidebar-dropdown dropdown">
@@ -696,10 +696,10 @@
                             <li><button type="button" class="dropdown-item" id="exportPdfBtn"><i class="bi bi-file-pdf text-danger me-2"></i>@RosraLocalizer["Sidebar_ExportPdf"]</button></li>
                             <li><button type="button" class="dropdown-item" id="exportExcelBtn"><i class="bi bi-file-earmark-excel text-success me-2"></i>@RosraLocalizer["Sidebar_ExportExcel"]</button></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><button type="button" class="dropdown-item" id="printTopDownBtn"><i class="bi bi-bar-chart text-primary me-2"></i>Top-Down Analysis (Print)</button></li>
-                            <li><button type="button" class="dropdown-item" id="printBottomUpBtn"><i class="bi bi-layers text-success me-2"></i>Bottom-Up Analysis (Print)</button></li>
+                            <li><button type="button" class="dropdown-item" id="printTopDownBtn"><i class="bi bi-bar-chart text-primary me-2"></i>@RosraLocalizer["Sidebar_TopDownPrint"]</button></li>
+                            <li><button type="button" class="dropdown-item" id="printBottomUpBtn"><i class="bi bi-layers text-success me-2"></i>@RosraLocalizer["Sidebar_BottomUpPrint"]</button></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><button type="button" class="dropdown-item" id="printFullReportBtn"><i class="bi bi-file-earmark-text text-info me-2"></i>Full Report (Print)</button></li>
+                            <li><button type="button" class="dropdown-item" id="printFullReportBtn"><i class="bi bi-file-earmark-text text-info me-2"></i>@RosraLocalizer["Sidebar_FullReportPrint"]</button></li>
                         </ul>
                     </div>
                 }
@@ -772,7 +772,7 @@
                 <div class="modal-content" style="border-radius: 8px; border: 1px solid #dee2e6;">
                     <div class="modal-header" style="background: #10b981; color: white; border: none;">
                         <h5 class="modal-title fw-bold" id="submitForReviewModalLabel">
-                            <i class="bi bi-send me-2"></i>Submit for Review
+                            <i class="bi bi-send me-2"></i>@RosraLocalizer["Sidebar_SubmitForReview"]
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -1517,7 +1517,7 @@
                 bootstrap.Modal.getInstance(document.getElementById('submitForReviewModal')).hide();
 
                 var btn = $("#submitForReviewBtn");
-                btn.prop('disabled', true).html('<i class="bi bi-hourglass-split me-1"></i><span>Submitting...</span>');
+                btn.prop('disabled', true).html('<i class="bi bi-hourglass-split me-1"></i><span>@RosraLocalizer["Sidebar_Submitting"].Value</span>');
 
                 // Collect latest data from localStorage before saving
                 if (typeof collectTabDataFromLocalStorage === 'function') {
@@ -1547,7 +1547,7 @@
                     success: function(saveResult) {
                         if (!saveResult.success) {
                             alert("Error saving report: " + saveResult.message);
-                            btn.prop('disabled', false).html('<i class="bi bi-send me-1"></i><span>Submit for Review</span>');
+                            btn.prop('disabled', false).html('<i class="bi bi-send me-1"></i><span>@RosraLocalizer["Sidebar_SubmitForReview"].Value</span>');
                             return;
                         }
 
@@ -1573,18 +1573,18 @@
                                     window.location.href = '@Url.Action("Index", "Dashboard")';
                                 } else {
                                     alert("Error: " + r.message);
-                                    btn.prop('disabled', false).html('<i class="bi bi-send me-1"></i><span>Submit for Review</span>');
+                                    btn.prop('disabled', false).html('<i class="bi bi-send me-1"></i><span>@RosraLocalizer["Sidebar_SubmitForReview"].Value</span>');
                                 }
                             },
                             error: function() {
                                 alert("An error occurred while submitting. Please try again.");
-                                btn.prop('disabled', false).html('<i class="bi bi-send me-1"></i><span>Submit for Review</span>');
+                                btn.prop('disabled', false).html('<i class="bi bi-send me-1"></i><span>@RosraLocalizer["Sidebar_SubmitForReview"].Value</span>');
                             }
                         });
                     },
                     error: function() {
                         alert("An error occurred while saving the report. Please try again.");
-                        btn.prop('disabled', false).html('<i class="bi bi-send me-1"></i><span>Submit for Review</span>');
+                        btn.prop('disabled', false).html('<i class="bi bi-send me-1"></i><span>@RosraLocalizer["Sidebar_SubmitForReview"].Value</span>');
                     }
                 });
             });

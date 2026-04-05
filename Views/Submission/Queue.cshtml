@@ -10,158 +10,584 @@
     var totalCount = (int)(ViewData["TotalCount"] ?? 0);
 }
 
+@functions {
+    public string GetCountryCode(string country)
+    {
+        if (string.IsNullOrEmpty(country)) return "";
+
+        var countryCodes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Kenya", "ke" }, { "Nigeria", "ng" }, { "South Africa", "za" }, { "Egypt", "eg" },
+            { "Ethiopia", "et" }, { "Ghana", "gh" }, { "Tanzania", "tz" }, { "Uganda", "ug" },
+            { "Rwanda", "rw" }, { "Morocco", "ma" }, { "Algeria", "dz" }, { "Senegal", "sn" },
+            { "Cameroon", "cm" }, { "Zambia", "zm" }, { "Zimbabwe", "zw" }, { "Botswana", "bw" },
+            { "Namibia", "na" }, { "Mozambique", "mz" }, { "Mali", "ml" }, { "Burkina Faso", "bf" },
+            { "Ivory Coast", "ci" }, { "Cote d'Ivoire", "ci" }, { "Malawi", "mw" }, { "Benin", "bj" },
+            { "Togo", "tg" }, { "Niger", "ne" }, { "Sierra Leone", "sl" }, { "Liberia", "lr" },
+            { "United Kingdom", "gb" }, { "UK", "gb" }, { "Britain", "gb" }, { "France", "fr" },
+            { "Germany", "de" }, { "Italy", "it" }, { "Spain", "es" }, { "Netherlands", "nl" },
+            { "Belgium", "be" }, { "Switzerland", "ch" }, { "Sweden", "se" }, { "Norway", "no" },
+            { "Portugal", "pt" }, { "Poland", "pl" }, { "Denmark", "dk" }, { "Finland", "fi" },
+            { "Austria", "at" }, { "Ireland", "ie" }, { "Greece", "gr" }, { "Czech Republic", "cz" },
+            { "Romania", "ro" }, { "Hungary", "hu" },
+            { "United States", "us" }, { "United States of America", "us" }, { "USA", "us" },
+            { "Canada", "ca" }, { "Mexico", "mx" }, { "Brazil", "br" }, { "Argentina", "ar" },
+            { "Chile", "cl" }, { "Colombia", "co" }, { "Peru", "pe" }, { "Venezuela", "ve" },
+            { "Ecuador", "ec" }, { "Bolivia", "bo" }, { "Paraguay", "py" }, { "Uruguay", "uy" },
+            { "Costa Rica", "cr" }, { "Panama", "pa" }, { "Guatemala", "gt" }, { "Honduras", "hn" },
+            { "El Salvador", "sv" }, { "Nicaragua", "ni" }, { "Jamaica", "jm" }, { "Trinidad and Tobago", "tt" },
+            { "China", "cn" }, { "India", "in" }, { "Japan", "jp" }, { "Singapore", "sg" },
+            { "South Korea", "kr" }, { "Korea", "kr" }, { "Thailand", "th" }, { "Indonesia", "id" },
+            { "Malaysia", "my" }, { "Philippines", "ph" }, { "Vietnam", "vn" }, { "Pakistan", "pk" },
+            { "Bangladesh", "bd" }, { "Sri Lanka", "lk" }, { "Nepal", "np" }, { "Myanmar", "mm" },
+            { "Cambodia", "kh" }, { "Taiwan", "tw" }, { "Hong Kong", "hk" },
+            { "UAE", "ae" }, { "United Arab Emirates", "ae" }, { "Saudi Arabia", "sa" },
+            { "Israel", "il" }, { "Turkey", "tr" }, { "Iran", "ir" }, { "Iraq", "iq" },
+            { "Jordan", "jo" }, { "Lebanon", "lb" }, { "Kuwait", "kw" }, { "Qatar", "qa" },
+            { "Oman", "om" }, { "Bahrain", "bh" },
+            { "Australia", "au" }, { "New Zealand", "nz" }, { "Fiji", "fj" }, { "Papua New Guinea", "pg" },
+            { "Russia", "ru" }, { "Ukraine", "ua" }, { "Kazakhstan", "kz" }, { "Uzbekistan", "uz" }
+        };
+
+        return countryCodes.TryGetValue(country, out var code) ? code : "";
+    }
+}
+
 @section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
     <style>
-        body { background: #f8f9fa; }
-        .queue-header { background: white; border-radius: 8px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .queue-header h1 { color: #212529; font-weight: 700; font-size: 2rem; margin-bottom: 0.5rem; }
-        .queue-table { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
-        .queue-table th { background: #f8f9fa; color: #495057; font-weight: 600; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem; border-bottom: 2px solid #dee2e6; }
-        .queue-table td { padding: 1rem; vertical-align: middle; border-bottom: 1px solid #f1f3f5; font-size: 0.875rem; }
-        .queue-table tr:hover { background: #f8f9fa; }
-        .badge-status { padding: 0.3rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 500; }
-        .badge-submitted { background: #fff3cd; color: #856404; }
-        .badge-under-review { background: #cce5ff; color: #004085; }
-        .badge-needs-revision { background: #f8d7da; color: #721c24; }
-        .badge-validated { background: #d4edda; color: #155724; }
-        .badge-draft { background: #e2e3e5; color: #383d41; }
-        .badge-completion { padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.7rem; font-weight: 500; }
-        .badge-full { background: #d4edda; color: #155724; }
-        .badge-partial { background: #fff3cd; color: #856404; }
-        .badge-metadata { background: #e2e3e5; color: #383d41; }
+        body {
+            background: #FFFFFF;
+        }
+
+        /* ── Page Header ── */
+        .queue-header {
+            background: white;
+            border-radius: 12px;
+            padding: 1.75rem 2rem;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 2px 20px -4px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .queue-header-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #8B5CF6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+            box-shadow: 0 6px 12px -2px rgba(139, 92, 246, 0.25);
+            flex-shrink: 0;
+        }
+
+        .queue-header h1 {
+            color: #222222;
+            font-weight: 700;
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .queue-header p {
+            color: #6A6A6A;
+            font-size: 0.9375rem;
+            margin: 0;
+        }
+
+        .btn-header-action {
+            background: white;
+            border: none;
+            color: #222222;
+            border-radius: 10px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            box-shadow: 0 1px 6px -1px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .btn-header-action:hover {
+            color: #3B82F6;
+            box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .btn-header-action.validated {
+            color: #10B981;
+        }
+
+        .btn-header-action.validated:hover {
+            color: #059669;
+        }
+
+        /* ── Tab Navigation ── */
+        .tab-nav {
+            background: white;
+            border-radius: 12px;
+            padding: 0.375rem;
+            box-shadow: 0 2px 20px -4px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .tab-nav .tab-link {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6A6A6A;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-nav .tab-link:hover {
+            color: #222222;
+            background: #F7F7F7;
+        }
+
+        .tab-nav .tab-link.active {
+            background: #3B82F6;
+            color: white;
+            box-shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.25);
+        }
+
+        /* ── Search ── */
+        .search-box {
+            background: #F7F7F7;
+            border: 1px solid #DDDDDD;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .search-box:focus {
+            background: white;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-search {
+            background: #3B82F6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px -1px rgba(59, 130, 246, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .btn-search:hover {
+            background: #2563EB;
+            color: white;
+        }
+
+        .btn-clear-search {
+            background: white;
+            color: #EF4444;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .btn-clear-search:hover {
+            background: #FEE2E2;
+        }
+
+        /* ── Table Card ── */
+        .queue-table-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.75rem;
+            box-shadow: 0 2px 20px -4px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .queue-table {
+            margin-bottom: 0;
+        }
+
+        .queue-table thead th {
+            background: #F7F7F7;
+            border-bottom: none;
+            color: #6A6A6A;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            padding: 0.875rem 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .queue-table thead th:first-child { border-radius: 8px 0 0 8px; }
+        .queue-table thead th:last-child { border-radius: 0 8px 8px 0; }
+
+        .queue-table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #F7F7F7;
+            font-size: 0.875rem;
+        }
+
+        .queue-table tbody tr {
+            transition: background 0.15s ease;
+        }
+
+        .queue-table tbody tr:hover {
+            background: #FAFAFA;
+        }
+
+        .report-title {
+            font-weight: 600;
+            color: #222222;
+        }
+
+        .author-name {
+            font-weight: 600;
+            color: #222222;
+            font-size: 0.875rem;
+        }
+
+        .author-email {
+            color: #6A6A6A;
+            font-size: 0.8125rem;
+        }
+
+        .location-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .country-flag {
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+            width: 24px;
+            height: 18px;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+        }
+
+        /* ── Status Badges ── */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-badge i { font-size: 0.75rem; }
+
+        .status-draft { background: #F7F7F7; color: #6A6A6A; }
+        .status-submitted { background: #FEF3C7; color: #92400E; }
+        .status-review { background: #DBEAFE; color: #1E40AF; }
+        .status-revision { background: #FEE2E2; color: #991B1B; }
+        .status-validated { background: #D1FAE5; color: #065F46; }
+
+        /* ── Completion Badges ── */
+        .completion-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.625rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .completion-full { background: #D1FAE5; color: #065F46; }
+        .completion-partial { background: #FEF3C7; color: #92400E; }
+        .completion-metadata { background: #F7F7F7; color: #6A6A6A; }
+
+        .date-cell {
+            font-weight: 500;
+            color: #222222;
+            font-size: 0.875rem;
+        }
+
+        .reviewer-assigned {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            color: #3B82F6;
+            font-weight: 500;
+            font-size: 0.8125rem;
+        }
+
+        .reviewer-unassigned {
+            color: #6A6A6A;
+            font-size: 0.8125rem;
+        }
+
+        /* ── Action Buttons ── */
+        .btn-review {
+            background: #3B82F6;
+            color: white;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 8px;
+            font-weight: 500;
+            box-shadow: 0 2px 6px -1px rgba(59, 130, 246, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .btn-review:hover {
+            background: #2563EB;
+            color: white;
+            box-shadow: 0 4px 10px -2px rgba(59, 130, 246, 0.35);
+        }
+
+        .btn-claim {
+            background: white;
+            border: none;
+            color: #8B5CF6;
+            padding: 0.375rem 0.625rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .btn-claim:hover {
+            color: #7C3AED;
+            box-shadow: 0 2px 8px -2px rgba(139, 92, 246, 0.3);
+        }
+
+        /* ── Pagination ── */
+        .pagination .page-link {
+            border: none;
+            border-radius: 8px;
+            color: #6A6A6A;
+            font-weight: 500;
+            padding: 0.5rem 0.875rem;
+            margin: 0 0.125rem;
+            transition: all 0.2s ease;
+        }
+
+        .pagination .page-link:hover {
+            background: #F7F7F7;
+            color: #222222;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: #3B82F6;
+            color: white;
+            box-shadow: 0 2px 8px -2px rgba(59, 130, 246, 0.3);
+        }
+
+        /* ── Empty State ── */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: #F7F7F7;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            color: #6A6A6A;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: #6A6A6A;
+            font-size: 0.9375rem;
+            margin: 0;
+        }
     </style>
 }
 
 <div class="container py-4">
+    <!-- Header -->
     <div class="queue-header d-flex justify-content-between align-items-center">
-        <div>
-            <h1><i class="bi bi-clipboard-check me-2"></i>Review Queue</h1>
-            <p class="text-muted mb-0">@totalCount assessment(s) in current view</p>
+        <div class="d-flex align-items-center gap-3">
+            <div class="queue-header-icon">
+                <i class="bi bi-clipboard-check-fill"></i>
+            </div>
+            <div>
+                <h1>Review Queue</h1>
+                <p>@totalCount assessment(s) in current view</p>
+            </div>
         </div>
         <div class="d-flex gap-2">
-            <a asp-controller="Submission" asp-action="Validated" class="btn btn-outline-success btn-sm">
+            <a asp-controller="Submission" asp-action="Validated" class="btn btn-header-action validated">
                 <i class="bi bi-patch-check me-1"></i> Validated Library
             </a>
-            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-header-action">
                 <i class="bi bi-arrow-left me-1"></i> Admin Dashboard
             </a>
         </div>
     </div>
 
-    <!-- Tabs -->
-    <ul class="nav nav-pills mb-3">
-        <li class="nav-item">
-            <a class="nav-link @(currentTab == "pending" ? "active" : "")" asp-action="Queue" asp-route-tab="pending" asp-route-search="@searchTerm">
-                Pending Review
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link @(currentTab == "my-reviews" ? "active" : "")" asp-action="Queue" asp-route-tab="my-reviews" asp-route-search="@searchTerm">
-                My Reviews
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link @(currentTab == "revision" ? "active" : "")" asp-action="Queue" asp-route-tab="revision" asp-route-search="@searchTerm">
-                Needs Revision
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link @(currentTab == "all" ? "active" : "")" asp-action="Queue" asp-route-tab="all" asp-route-search="@searchTerm">
-                All
-            </a>
-        </li>
-    </ul>
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+        <a class="tab-link @(currentTab == "pending" ? "active" : "")" asp-action="Queue" asp-route-tab="pending" asp-route-search="@searchTerm">
+            <i class="bi bi-hourglass-split"></i> Pending Review
+        </a>
+        <a class="tab-link @(currentTab == "my-reviews" ? "active" : "")" asp-action="Queue" asp-route-tab="my-reviews" asp-route-search="@searchTerm">
+            <i class="bi bi-person-check"></i> My Reviews
+        </a>
+        <a class="tab-link @(currentTab == "revision" ? "active" : "")" asp-action="Queue" asp-route-tab="revision" asp-route-search="@searchTerm">
+            <i class="bi bi-exclamation-triangle"></i> Needs Revision
+        </a>
+        <a class="tab-link @(currentTab == "all" ? "active" : "")" asp-action="Queue" asp-route-tab="all" asp-route-search="@searchTerm">
+            <i class="bi bi-list-ul"></i> All
+        </a>
+    </div>
 
     <!-- Search -->
-    <form asp-action="Queue" method="get" class="d-flex gap-2 mb-3" style="max-width: 400px;">
+    <form asp-action="Queue" method="get" class="d-flex gap-2 mb-4" style="max-width: 400px;">
         <input type="hidden" name="tab" value="@currentTab" />
-        <input type="text" name="search" class="form-control form-control-sm" placeholder="Search by title, country, email..." value="@searchTerm" />
-        <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-search"></i></button>
+        <input type="text" name="search" class="form-control form-control-sm search-box" placeholder="Search by title, country, email..." value="@searchTerm" />
+        <button type="submit" class="btn btn-sm btn-search"><i class="bi bi-search"></i></button>
         @if (!string.IsNullOrEmpty(searchTerm))
         {
-            <a asp-action="Queue" asp-route-tab="@currentTab" class="btn btn-sm btn-outline-danger"><i class="bi bi-x"></i></a>
+            <a asp-action="Queue" asp-route-tab="@currentTab" class="btn btn-sm btn-clear-search"><i class="bi bi-x"></i></a>
         }
     </form>
 
     <!-- Table -->
-    <div class="queue-table">
-        <table class="table mb-0">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>Location</th>
-                    <th>Completion</th>
-                    <th>Status</th>
-                    <th>Submitted</th>
-                    <th>Reviewer</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.Any())
-                {
-                    @foreach (var report in Model)
+    <div class="queue-table-card">
+        <div class="table-responsive">
+            <table class="table queue-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Location</th>
+                        <th>Completion</th>
+                        <th>Status</th>
+                        <th>Submitted</th>
+                        <th>Reviewer</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
                     {
-                        var status = (ReportStatus)report.Status;
-                        var completion = (CompletionLevel)report.CompletionLevel;
-                        var statusClass = status switch {
-                            ReportStatus.Submitted => "badge-submitted",
-                            ReportStatus.UnderReview => "badge-under-review",
-                            ReportStatus.NeedsRevision => "badge-needs-revision",
-                            ReportStatus.Validated => "badge-validated",
-                            _ => "badge-draft"
-                        };
-                        var completionClass = completion switch {
-                            CompletionLevel.Full => "badge-full",
-                            CompletionLevel.Partial => "badge-partial",
-                            _ => "badge-metadata"
-                        };
-                        <tr>
-                            <td><strong>@report.Title</strong></td>
-                            <td>
-                                @if (report.User != null)
-                                {
-                                    <span>@report.User.FirstName @report.User.LastName</span>
-                                    <br /><small class="text-muted">@report.User.Email</small>
-                                }
-                            </td>
-                            <td>@(report.City ?? "") @(report.Country ?? "")</td>
-                            <td><span class="badge-completion @completionClass">@completion</span></td>
-                            <td><span class="badge-status @statusClass">@status</span></td>
-                            <td>@(report.SubmittedAt?.ToLocalTime().ToString("dd MMM yyyy") ?? "-")</td>
-                            <td>
-                                @if (report.ReviewerUserId != null)
-                                {
-                                    <span>Assigned</span>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">Unassigned</span>
-                                }
-                            </td>
-                            <td>
-                                <div class="d-flex gap-1">
-                                    <a asp-action="Review" asp-route-id="@report.PublicId" class="btn btn-sm btn-primary" title="Review">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    @if (status == ReportStatus.Submitted)
+                        @foreach (var report in Model)
+                        {
+                            var status = (ReportStatus)report.Status;
+                            var completion = (CompletionLevel)report.CompletionLevel;
+                            var (statusClass, statusIcon) = status switch {
+                                ReportStatus.Submitted => ("status-submitted", "bi-send"),
+                                ReportStatus.UnderReview => ("status-review", "bi-hourglass-split"),
+                                ReportStatus.NeedsRevision => ("status-revision", "bi-exclamation-triangle"),
+                                ReportStatus.Validated => ("status-validated", "bi-patch-check-fill"),
+                                _ => ("status-draft", "bi-pencil")
+                            };
+                            var (completionClass, completionIcon) = completion switch {
+                                CompletionLevel.Full => ("completion-full", "bi-check-circle-fill"),
+                                CompletionLevel.Partial => ("completion-partial", "bi-pie-chart-fill"),
+                                _ => ("completion-metadata", "bi-file-text")
+                            };
+                            <tr>
+                                <td><span class="report-title">@report.Title</span></td>
+                                <td>
+                                    @if (report.User != null)
                                     {
-                                        <button class="btn btn-sm btn-outline-primary claim-btn" data-id="@report.Id" title="Claim">
-                                            <i class="bi bi-hand-index"></i>
-                                        </button>
+                                        <div>
+                                            <div class="author-name">@report.User.FirstName @report.User.LastName</div>
+                                            <div class="author-email">@report.User.Email</div>
+                                        </div>
                                     }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(report.City) || !string.IsNullOrEmpty(report.Country))
+                                    {
+                                        <div class="location-cell">
+                                            @{
+                                                var countryCode = GetCountryCode(report.Country);
+                                            }
+                                            @if (!string.IsNullOrEmpty(countryCode))
+                                            {
+                                                <span class="country-flag fi fi-@countryCode"></span>
+                                            }
+                                            else if (!string.IsNullOrEmpty(report.Country))
+                                            {
+                                                <i class="bi bi-globe" style="color: #6A6A6A;"></i>
+                                            }
+                                            <span>@(report.City ?? "")@(!string.IsNullOrEmpty(report.City) && !string.IsNullOrEmpty(report.Country) ? ", " : "")@(report.Country ?? "")</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #6A6A6A;">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="completion-badge @completionClass">
+                                        <i class="bi @completionIcon"></i> @completion
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge @statusClass">
+                                        <i class="bi @statusIcon"></i> @status
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="date-cell">@(report.SubmittedAt?.ToLocalTime().ToString("dd MMM yyyy") ?? "-")</span>
+                                </td>
+                                <td>
+                                    @if (report.ReviewerUserId != null)
+                                    {
+                                        <span class="reviewer-assigned">
+                                            <i class="bi bi-person-fill"></i> Assigned
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="reviewer-unassigned">Unassigned</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a asp-action="Review" asp-route-id="@report.PublicId" class="btn btn-sm btn-review" title="Review">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        @if (status == ReportStatus.Submitted)
+                                        {
+                                            <button class="btn btn-sm btn-claim claim-btn" data-id="@report.Id" title="Claim">
+                                                <i class="bi bi-hand-index"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="py-0">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">
+                                        <i class="bi bi-inbox"></i>
+                                    </div>
+                                    <p>No assessments in this queue</p>
                                 </div>
                             </td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr><td colspan="8" class="text-center text-muted py-4">No assessments in this queue</td></tr>
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Pagination -->
@@ -180,11 +606,30 @@
     }
 </div>
 
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1050">
+    <div id="toast" class="toast hide" role="alert">
+        <div class="toast-header">
+            <strong class="me-auto" id="toast-title">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toast-message"></div>
+    </div>
+</div>
+
 @section Scripts {
     @Html.AntiForgeryToken()
     <script>
         $(document).ready(function() {
             var token = $('input[name="__RequestVerificationToken"]').val();
+
+            function showToast(title, message, type) {
+                $('#toast-title').text(title);
+                $('#toast-message').text(message);
+                $('#toast').removeClass('bg-danger bg-success').addClass(type === 'success' ? 'bg-success text-white' : 'bg-danger text-white');
+                new bootstrap.Toast(document.getElementById('toast')).show();
+            }
+
             $('.claim-btn').click(function() {
                 var id = $(this).data('id');
                 $.ajax({
@@ -193,7 +638,7 @@
                     data: { __RequestVerificationToken: token },
                     success: function(r) {
                         if (r.success) location.reload();
-                        else alert(r.message);
+                        else showToast('Error', r.message, 'error');
                     }
                 });
             });

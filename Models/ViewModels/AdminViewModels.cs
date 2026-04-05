@@ -31,6 +31,7 @@ namespace RosraApp.Models.ViewModels
         public DateTime? UpdatedAt { get; set; }
         public string? City { get; set; }
         public string? Country { get; set; }
+        public int Status { get; set; }
     }
 
     public class UserManagementViewModel

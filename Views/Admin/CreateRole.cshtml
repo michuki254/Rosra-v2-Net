@@ -6,442 +6,221 @@
 
 @section Styles {
     <style>
-        body {
-            background: #f8f9fa;
-        }
+        body { background: #FFFFFF; }
 
+        /* ── Header ── */
         .page-header {
-            background: white;
-            border-radius: 8px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: white; border-radius: 12px; padding: 1.75rem 2rem;
+            margin-bottom: 1.75rem; box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1);
         }
+        .header-icon {
+            width: 40px; height: 40px; border-radius: 10px; background: #3B82F6;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; color: white; box-shadow: 0 6px 12px -2px rgba(59,130,246,0.25); flex-shrink: 0;
+        }
+        .page-header h1 { color: #222222; font-weight: 700; font-size: 1.75rem; margin-bottom: 0.25rem; }
+        .page-header p { color: #6A6A6A; font-size: 0.9375rem; margin: 0; }
+        .btn-back {
+            background: white; border: none; color: #222222; border-radius: 10px;
+            font-weight: 500; padding: 0.5rem 1rem; font-size: 0.875rem;
+            box-shadow: 0 1px 6px -1px rgba(0,0,0,0.08); transition: all 0.2s;
+        }
+        .btn-back:hover { color: #3B82F6; box-shadow: 0 4px 16px -4px rgba(0,0,0,0.15); }
 
-        .page-header h1 {
-            color: #212529;
-            font-weight: 700;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+        /* ── Alerts ── */
+        .alert-biz {
+            border: none; border-radius: 10px; padding: 0.875rem 1.25rem;
+            margin-bottom: 1.25rem; font-size: 0.875rem; font-weight: 500;
         }
+        .alert-biz.success { background: #D1FAE5; color: #065F46; }
+        .alert-biz.error { background: #FEE2E2; color: #991B1B; }
 
-        .page-header p {
-            color: #6c757d;
-            font-size: 1rem;
-            margin: 0;
+        /* ── Section Cards ── */
+        .section-card {
+            background: white; border-radius: 12px; padding: 1.75rem;
+            box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1); margin-bottom: 1.5rem;
         }
+        .section-header { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 1.25rem; }
+        .section-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 0.875rem;
+        }
+        .section-header h5 { color: #222222; font-weight: 600; margin: 0; font-size: 1rem; }
+        .section-header h5 small { color: #6A6A6A !important; }
+        .section-desc { color: #6A6A6A; font-size: 0.8125rem; margin: -0.75rem 0 1rem 0; padding-left: 2.625rem; }
 
-        .create-role-card {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            border: 1px solid #e5e7eb;
+        /* ── Form Inputs ── */
+        .form-label-biz { font-weight: 600; color: #222222; margin-bottom: 0.375rem; font-size: 0.875rem; }
+        .input-biz {
+            background: #F7F7F7; border: 1px solid #DDDDDD; border-radius: 8px;
+            padding: 0.625rem 1rem; font-size: 0.9375rem; transition: all 0.2s;
         }
+        .input-biz:focus { background: white; border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
 
-        .card-header-custom {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #f1f3f5;
-        }
+        /* ── Permissions ── */
+        .permissions-container { border-radius: 10px; overflow: hidden; }
 
-        .card-icon {
-            width: 48px;
-            height: 48px;
-            background: #4c6ef5;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-        }
-
-        .card-title-text h5 {
-            color: #212529;
-            font-weight: 700;
-            font-size: 1.25rem;
-            margin: 0;
-        }
-
-        .card-title-text p {
-            color: #6c757d;
-            font-size: 0.8125rem;
-            margin: 0.25rem 0 0 0;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-        }
-
-        .form-control {
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            transition: all 0.2s ease;
-        }
-
-        .form-control:focus {
-            border-color: #4c6ef5;
-            box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.1);
-        }
-
-        .create-btn {
-            background: #4c6ef5;
-            border: none;
-            color: white;
-            padding: 0.75rem 2rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.2s ease;
-        }
-
-        .create-btn:hover {
-            background: #3b5bdb;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(76, 110, 245, 0.3);
-        }
-
-        .roles-table-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            border: 1px solid #e5e7eb;
-        }
-
-        .table-header {
-            padding: 1.5rem 2rem;
-            border-bottom: 2px solid #f1f3f5;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .table-header-icon {
-            width: 40px;
-            height: 40px;
-            background: #4c6ef5;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.25rem;
-        }
-
-        .table-header h5 {
-            color: #212529;
-            font-weight: 700;
-            margin: 0;
-            font-size: 1.125rem;
-        }
-
-        .roles-table {
-            margin: 0;
-        }
-
-        .roles-table thead {
-            background: #f8f9fa;
-        }
-
-        .roles-table th {
-            color: #495057;
-            font-weight: 600;
-            font-size: 0.8125rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 1rem 2rem;
-            border: none;
-        }
-
-        .roles-table td {
-            padding: 1rem 2rem;
-            vertical-align: middle;
-            border-bottom: 1px solid #f1f3f5;
-        }
-
-        .roles-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .roles-table tbody tr:hover {
-            background: #f8f9fa;
-        }
-
-        .role-name {
-            font-weight: 600;
-            color: #212529;
-            font-size: 0.9375rem;
-        }
-
-        .role-badge {
-            display: inline-block;
-            background: #4c6ef5;
-            color: white;
-            padding: 0.375rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.8125rem;
-            font-weight: 600;
-        }
-
-        .system-badge {
-            background: #868e96;
-        }
-
-        .user-count {
-            color: #495057;
-            font-weight: 600;
-            font-size: 0.9375rem;
-        }
-
-        .delete-btn {
-            background: white;
-            border: 1px solid #dee2e6;
-            color: #495057;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.8125rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .delete-btn:hover {
-            background: #ffe3e3;
-            border-color: #ff6b6b;
-            color: #ff6b6b;
-        }
-
-        .delete-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .delete-btn:disabled:hover {
-            background: white;
-            border-color: #dee2e6;
-            color: #495057;
-        }
-
-        .alert {
-            border-radius: 8px;
-            border: none;
-            padding: 1rem 1.25rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-success {
-            background: #d3f9d8;
-            color: #2b8a3e;
-        }
-
-        .alert-danger {
-            background: #ffe3e3;
-            color: #c92a2a;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 2rem;
-            color: #868e96;
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .permissions-container {
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .permission-category {
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .permission-category:last-child {
-            border-bottom: none;
-        }
+        .perm-category { margin-bottom: 0.5rem; }
 
         .category-header {
-            background: #f8f9fa;
-            padding: 1rem 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
+            background: #F7F7F7; padding: 0.75rem 1rem; border-radius: 8px;
+            display: flex; align-items: center; gap: 0.625rem;
+            cursor: pointer; user-select: none; transition: all 0.15s;
         }
-
-        .category-header:hover {
-            background: #e9ecef;
-        }
-
-        .category-icon {
-            color: #4c6ef5;
-            font-size: 1rem;
-            transition: transform 0.2s ease;
-        }
-
-        .category-header.collapsed .category-icon {
-            transform: rotate(-90deg);
-        }
-
-        .category-name {
-            font-weight: 600;
-            color: #212529;
-            font-size: 0.9375rem;
-            flex: 1;
-        }
-
+        .category-header:hover { background: #EFEFEF; }
+        .category-header .chevron { color: #6A6A6A; font-size: 0.75rem; transition: transform 0.2s; }
+        .category-header.collapsed .chevron { transform: rotate(-90deg); }
+        .category-name { font-weight: 600; color: #222222; font-size: 0.875rem; flex: 1; }
         .category-count {
-            color: #868e96;
-            font-size: 0.8125rem;
+            font-size: 0.75rem; font-weight: 600; background: white; color: #6A6A6A;
+            padding: 0.15rem 0.5rem; border-radius: 10px;
         }
 
-        .category-permissions {
-            padding: 0.75rem 1.25rem 0.75rem 3rem;
-            background: white;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 0.75rem;
+        .category-body {
+            padding: 0.75rem 0 0.75rem 1rem;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.5rem;
         }
+        .category-body.collapsed { display: none; }
 
-        .category-permissions.collapsed {
-            display: none;
+        .perm-item {
+            display: flex; align-items: start; gap: 0.625rem;
+            padding: 0.625rem 0.75rem; border-radius: 8px; transition: all 0.15s; background: #FAFAFA;
         }
+        .perm-item:hover { background: #F0F7FF; }
 
-        .permission-item {
-            display: flex;
-            align-items: start;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            transition: all 0.2s ease;
+        .perm-check {
+            width: 18px; height: 18px; border: 2px solid #DDDDDD; border-radius: 5px;
+            cursor: pointer; margin-top: 1px; flex-shrink: 0; accent-color: #3B82F6;
         }
+        .perm-check:checked { border-color: #3B82F6; }
 
-        .permission-item:hover {
-            background: #f8f9fa;
-            border-color: #4c6ef5;
-        }
+        .perm-label { cursor: pointer; margin: 0; flex: 1; }
+        .perm-name { font-weight: 600; color: #222222; font-size: 0.8125rem; display: block; }
+        .perm-desc { color: #6A6A6A; font-size: 0.75rem; line-height: 1.4; display: block; }
 
-        .permission-checkbox {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #dee2e6;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 2px;
-            flex-shrink: 0;
+        .perm-toolbar { display: flex; gap: 0.5rem; justify-content: flex-end; margin-bottom: 0.75rem; }
+        .perm-toolbar-btn {
+            background: white; border: none; border-radius: 8px; padding: 0.3rem 0.75rem;
+            font-size: 0.8125rem; font-weight: 500; color: #6A6A6A;
+            box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s;
         }
+        .perm-toolbar-btn:hover { color: #3B82F6; box-shadow: 0 2px 8px -2px rgba(0,0,0,0.12); }
 
-        .permission-checkbox:checked {
-            background: #4c6ef5;
-            border-color: #4c6ef5;
+        /* ── Create Button ── */
+        .btn-create {
+            background: #3B82F6; color: white; border: none; border-radius: 10px;
+            padding: 0.625rem 1.75rem; font-weight: 600; font-size: 0.9375rem;
+            box-shadow: 0 4px 12px -2px rgba(59,130,246,0.25); transition: all 0.2s;
         }
+        .btn-create:hover { background: #2563EB; color: white; transform: translateY(-1px); box-shadow: 0 6px 16px -2px rgba(59,130,246,0.35); }
+        .btn-cancel {
+            background: white; color: #6A6A6A; border: none; border-radius: 10px;
+            padding: 0.625rem 1.25rem; font-weight: 500;
+            box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s;
+        }
+        .btn-cancel:hover { color: #222222; box-shadow: 0 2px 8px -2px rgba(0,0,0,0.12); }
 
-        .permission-label {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-            cursor: pointer;
-            margin: 0;
-            flex: 1;
+        /* ── Roles Table ── */
+        .roles-table { margin: 0; }
+        .roles-table thead th {
+            background: #F7F7F7; border-bottom: none; color: #6A6A6A; font-weight: 600;
+            font-size: 0.8125rem; padding: 0.875rem 1rem; text-transform: uppercase; letter-spacing: 0.5px;
         }
+        .roles-table thead th:first-child { border-radius: 8px 0 0 8px; }
+        .roles-table thead th:last-child { border-radius: 0 8px 8px 0; }
+        .roles-table tbody td { padding: 0.875rem 1rem; vertical-align: middle; border-bottom: 1px solid #F7F7F7; }
+        .roles-table tbody tr { transition: background 0.15s; }
+        .roles-table tbody tr:hover { background: #FAFAFA; }
 
-        .permission-name {
-            font-weight: 600;
-            color: #212529;
-            font-size: 0.875rem;
+        .role-name { font-weight: 600; color: #222222; font-size: 0.9375rem; }
+        .type-badge {
+            display: inline-flex; align-items: center; gap: 0.25rem;
+            padding: 0.25rem 0.625rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
         }
+        .type-system { background: #F7F7F7; color: #6A6A6A; }
+        .type-custom { background: #EDE9FE; color: #7C3AED; }
+        .user-count { font-weight: 600; color: #222222; font-size: 0.875rem; }
 
-        .permission-description {
-            color: #6c757d;
-            font-size: 0.8125rem;
-            line-height: 1.4;
+        .btn-perms {
+            background: white; border: none; color: #3B82F6; border-radius: 8px;
+            padding: 0.375rem 0.75rem; font-size: 0.8125rem; font-weight: 500;
+            box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s;
         }
+        .btn-perms:hover { color: #2563EB; box-shadow: 0 2px 8px -2px rgba(59,130,246,0.2); }
+
+        .btn-delete-role {
+            background: white; border: none; color: #6A6A6A; border-radius: 8px;
+            padding: 0.375rem 0.75rem; font-size: 0.8125rem; font-weight: 500;
+            box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s;
+        }
+        .btn-delete-role:hover { color: #EF4444; background: #FEE2E2; box-shadow: none; }
+        .btn-delete-role:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-delete-role:disabled:hover { color: #6A6A6A; background: white; }
+
+        /* ── Empty & Modal ── */
+        .empty-state { text-align: center; padding: 2.5rem 1rem; }
+        .empty-icon {
+            width: 56px; height: 56px; border-radius: 14px; background: #F7F7F7;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: #6A6A6A; margin-bottom: 0.75rem;
+        }
+        .empty-state p { color: #6A6A6A; font-size: 0.875rem; margin: 0; }
+
+        .modal-content { border: none !important; border-radius: 12px !important; box-shadow: 0 20px 60px -12px rgba(0,0,0,0.25) !important; overflow: hidden; }
     </style>
 }
 
 <div class="container py-4">
     <!-- Header -->
     <div class="page-header d-flex justify-content-between align-items-center">
-        <div>
-            <h1>@Localizer["PageTitle"]</h1>
-            <p>@Localizer["PageSubtitle"]</p>
+        <div class="d-flex align-items-center gap-3">
+            <div class="header-icon"><i class="bi bi-shield-lock-fill"></i></div>
+            <div>
+                <h1>@Localizer["PageTitle"]</h1>
+                <p>@Localizer["PageSubtitle"]</p>
+            </div>
         </div>
-        <a asp-action="Index" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i> @Localizer["BackToDashboard"]
+        <a asp-action="Index" class="btn btn-back">
+            <i class="bi bi-arrow-left me-1"></i> @Localizer["BackToDashboard"]
         </a>
     </div>
 
-    <!-- Success Message -->
+    <!-- Alerts -->
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>
-            @TempData["Success"]
-        </div>
+        <div class="alert-biz success"><i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]</div>
     }
-
-    <!-- Validation Errors -->
     @if (!ViewData.ModelState.IsValid)
     {
-        <div class="alert alert-danger" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            <div asp-validation-summary="All" class="mb-0"></div>
-        </div>
+        <div class="alert-biz error"><i class="bi bi-exclamation-triangle-fill me-2"></i><div asp-validation-summary="All" class="mb-0 d-inline"></div></div>
     }
 
     <!-- Create Role Form -->
-    <div class="create-role-card">
-        <div class="card-header-custom">
-            <div class="card-icon">
-                <i class="bi bi-plus-circle-fill"></i>
-            </div>
-            <div class="card-title-text">
-                <h5>@Localizer["CreateNewRole"]</h5>
-                <p>@Localizer["CreateNewRoleDescription"]</p>
-            </div>
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon" style="background:#10B981;"><i class="bi bi-plus-lg"></i></div>
+            <h5>@Localizer["CreateNewRole"]</h5>
         </div>
+        <p class="section-desc">@Localizer["CreateNewRoleDescription"]</p>
 
         <form asp-action="CreateRole" method="post">
             @Html.AntiForgeryToken()
-            <div class="row">
-                <div class="col-md-12 mb-3">
-                    <label asp-for="RoleName" class="form-label">@Localizer["RoleName"]</label>
-                    <input asp-for="RoleName" class="form-control" placeholder="@Localizer["RoleNamePlaceholder"].Value" required />
-                    <span asp-validation-for="RoleName" class="text-danger"></span>
-                </div>
+            <div class="mb-3">
+                <label asp-for="RoleName" class="form-label-biz">@Localizer["RoleName"]</label>
+                <input asp-for="RoleName" class="form-control input-biz" placeholder="@Localizer["RoleNamePlaceholder"].Value" required />
+                <span asp-validation-for="RoleName" class="text-danger" style="font-size:0.8125rem;"></span>
             </div>
 
-            <!-- Permissions Section -->
+            <!-- Permissions -->
             <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <label class="form-label mb-0">@Localizer["Permissions"]</label>
-                    <div>
-                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAllPermissions()">
-                            <i class="bi bi-check-all me-1"></i> @Localizer["SelectAll"]
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAllPermissions()">
-                            <i class="bi bi-x-lg me-1"></i> @Localizer["ClearAll"]
-                        </button>
-                    </div>
+                <label class="form-label-biz mb-2">@Localizer["Permissions"]</label>
+                <div class="perm-toolbar">
+                    <button type="button" class="perm-toolbar-btn" onclick="selectAllPermissions()">
+                        <i class="bi bi-check-all me-1"></i> @Localizer["SelectAll"]
+                    </button>
+                    <button type="button" class="perm-toolbar-btn" onclick="deselectAllPermissions()">
+                        <i class="bi bi-x-lg me-1"></i> @Localizer["ClearAll"]
+                    </button>
                 </div>
 
                 @if (Model.PermissionCategories != null && Model.PermissionCategories.Any())
@@ -449,25 +228,24 @@
                     <div class="permissions-container">
                         @foreach (var category in Model.PermissionCategories)
                         {
-                            <div class="permission-category">
+                            <div class="perm-category">
                                 <div class="category-header" onclick="toggleCategory(this)">
-                                    <i class="bi bi-chevron-down category-icon"></i>
+                                    <i class="bi bi-chevron-down chevron"></i>
                                     <span class="category-name">@category.Category</span>
-                                    <span class="category-count">@category.Permissions.Count @(category.Permissions.Count != 1 ? Localizer["Permissions_Plural"].Value : Localizer["Permission"].Value)</span>
+                                    <span class="category-count">@category.Permissions.Count</span>
                                 </div>
-                                <div class="category-permissions">
-                                    @foreach (var permission in category.Permissions)
+                                <div class="category-body">
+                                    @foreach (var perm in category.Permissions)
                                     {
-                                        <div class="permission-item">
-                                            <input type="checkbox"
-                                                   class="permission-checkbox"
-                                                   name="SelectedPermissionIds"
-                                                   value="@permission.Id"
-                                                   id="perm_@permission.Id"
-                                                   @(permission.IsSelected ? "checked" : "") />
-                                            <label for="perm_@permission.Id" class="permission-label">
-                                                <span class="permission-name">@permission.Name</span>
-                                                <span class="permission-description">@permission.Description</span>
+                                        <div class="perm-item">
+                                            <input type="checkbox" class="perm-check" name="SelectedPermissionIds"
+                                                   value="@perm.Id" id="perm_@perm.Id" @(perm.IsSelected ? "checked" : "") />
+                                            <label for="perm_@perm.Id" class="perm-label">
+                                                <span class="perm-name">@perm.Name</span>
+                                                @if (!string.IsNullOrEmpty(perm.Description))
+                                                {
+                                                    <span class="perm-desc">@perm.Description</span>
+                                                }
                                             </label>
                                         </div>
                                     }
@@ -478,30 +256,26 @@
                 }
                 else
                 {
-                    <div class="alert alert-warning">
-                        <i class="bi bi-exclamation-triangle me-2"></i>
-                        @Localizer["NoPermissionsFound"]
+                    <div style="background:#FEF3C7; color:#92400E; border-radius:8px; padding:0.75rem 1rem; font-size:0.875rem;">
+                        <i class="bi bi-exclamation-triangle me-1"></i> @Localizer["NoPermissionsFound"]
                     </div>
                 }
             </div>
 
             <div class="d-flex gap-2">
-                <button type="submit" class="create-btn">
-                    <i class="bi bi-plus-lg me-2"></i> @Localizer["CreateRole"]
-                </button>
-                <a asp-action="Index" class="btn btn-outline-secondary">@Localizer["Cancel"]</a>
+                <button type="submit" class="btn-create"><i class="bi bi-plus-lg me-2"></i> @Localizer["CreateRole"]</button>
+                <a asp-action="Index" class="btn-cancel text-decoration-none d-flex align-items-center">@Localizer["Cancel"]</a>
             </div>
         </form>
     </div>
 
     <!-- Existing Roles Table -->
-    <div class="roles-table-card">
-        <div class="table-header">
-            <div class="table-header-icon">
-                <i class="bi bi-shield-check"></i>
-            </div>
-            <h5>@Localizer["ExistingRoles"] (@Model.ExistingRoles.Count)</h5>
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon" style="background:#8B5CF6;"><i class="bi bi-shield-check"></i></div>
+            <h5>@Localizer["ExistingRoles"] <small class="fw-normal ms-2">(@Model.ExistingRoles.Count)</small></h5>
         </div>
+
         @if (Model.ExistingRoles.Any())
         {
             <div class="table-responsive">
@@ -517,44 +291,40 @@
                     <tbody>
                         @foreach (var role in Model.ExistingRoles)
                         {
+                            var isSystem = role.RoleName == "Admin" || role.RoleName == "User";
                             <tr data-role-id="@role.RoleId">
+                                <td><span class="role-name">@role.RoleName</span></td>
                                 <td>
-                                    <span class="role-name">@role.RoleName</span>
+                                    <span class="type-badge @(isSystem ? "type-system" : "type-custom")">
+                                        <i class="bi bi-@(isSystem ? "lock-fill" : "gear-fill")"></i>
+                                        @(isSystem ? Localizer["SystemRole"].Value : Localizer["CustomRole"].Value)
+                                    </span>
                                 </td>
                                 <td>
-                                    @if (role.RoleName == "Admin" || role.RoleName == "User")
-                                    {
-                                        <span class="role-badge system-badge">@Localizer["SystemRole"]</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="role-badge">@Localizer["CustomRole"]</span>
-                                    }
+                                    <span class="user-count">@role.UserCount</span>
+                                    <span style="color:#6A6A6A; font-size:0.8125rem;"> @(role.UserCount != 1 ? Localizer["UserPlural"].Value : Localizer["UserSingular"].Value)</span>
                                 </td>
                                 <td>
-                                    <span class="user-count">@role.UserCount @(role.UserCount != 1 ? Localizer["UserPlural"].Value : Localizer["UserSingular"].Value)</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <a asp-action="EditRolePermissions" asp-route-roleId="@role.RoleId" class="btn btn-sm btn-outline-primary">
+                                    <div class="d-flex gap-1">
+                                        <a asp-action="EditRolePermissions" asp-route-roleId="@role.RoleId" class="btn btn-sm btn-perms">
                                             <i class="bi bi-shield-check me-1"></i> @Localizer["PermissionsButton"]
                                         </a>
-                                        @if (role.RoleName == "Admin" || role.RoleName == "User")
+                                        @if (isSystem)
                                         {
-                                            <button class="delete-btn" disabled title="@Localizer["SystemRolesCannotBeDeleted"].Value">
-                                                <i class="bi bi-shield-lock me-1"></i> @Localizer["Protected"]
+                                            <button class="btn btn-sm btn-delete-role" disabled title="@Localizer["SystemRolesCannotBeDeleted"].Value">
+                                                <i class="bi bi-lock-fill"></i>
                                             </button>
                                         }
                                         else if (role.UserCount > 0)
                                         {
-                                            <button class="delete-btn" disabled title="@Localizer["CannotDeleteRoleWithUsers"].Value">
-                                                <i class="bi bi-info-circle me-1"></i> @Localizer["HasUsers"]
+                                            <button class="btn btn-sm btn-delete-role" disabled title="@Localizer["CannotDeleteRoleWithUsers"].Value">
+                                                <i class="bi bi-info-circle"></i>
                                             </button>
                                         }
                                         else
                                         {
-                                            <button class="delete-btn" onclick="deleteRole('@role.RoleId', '@role.RoleName')">
-                                                <i class="bi bi-trash me-1"></i> @Localizer["Delete"]
+                                            <button class="btn btn-sm btn-delete-role" onclick="showDeleteModal('@role.RoleId', '@role.RoleName')">
+                                                <i class="bi bi-trash"></i>
                                             </button>
                                         }
                                     </div>
@@ -568,19 +338,41 @@
         else
         {
             <div class="empty-state">
-                <i class="bi bi-shield-x"></i>
-                <p class="mb-0">@Localizer["NoRolesFound"]</p>
+                <div class="empty-icon"><i class="bi bi-shield-x"></i></div>
+                <p>@Localizer["NoRolesFound"]</p>
             </div>
         }
     </div>
 </div>
 
-<!-- Toast Notification -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
-    <div id="toast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#222222; color:white; padding:1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-trash me-2"></i>Delete Role</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <p style="color:#6A6A6A; margin:0;">Are you sure you want to delete the role "<strong id="deleteRoleName"></strong>"? This cannot be undone.</p>
+                <input type="hidden" id="deleteRoleId" />
+            </div>
+            <div class="modal-footer" style="border:none; background:#F7F7F7; padding:1rem 1.5rem;">
+                <button class="btn" style="background:white; color:#222222; border:none; border-radius:8px; box-shadow:0 1px 4px -1px rgba(0,0,0,0.1); font-weight:500;" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn" style="background:#EF4444; color:white; border:none; border-radius:8px; box-shadow:0 4px 12px -2px rgba(239,68,68,0.25); font-weight:600;" id="confirmDeleteBtn">
+                    <i class="bi bi-trash me-1"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1050">
+    <div id="toast" class="toast hide" role="alert">
         <div class="toast-header">
             <strong class="me-auto" id="toast-title">@Localizer["Notification"]</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
         </div>
         <div class="toast-body" id="toast-message"></div>
     </div>
@@ -588,86 +380,59 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @Html.AntiForgeryToken()
 
     <script>
-        // Permission Management Functions
         function toggleCategory(header) {
-            const permissions = header.nextElementSibling;
-            permissions.classList.toggle('collapsed');
+            header.nextElementSibling.classList.toggle('collapsed');
             header.classList.toggle('collapsed');
         }
 
         function selectAllPermissions() {
-            document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
-                checkbox.checked = true;
-            });
+            document.querySelectorAll('.perm-check').forEach(cb => cb.checked = true);
         }
 
         function deselectAllPermissions() {
-            document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
-                checkbox.checked = false;
-            });
+            document.querySelectorAll('.perm-check').forEach(cb => cb.checked = false);
         }
 
-        function deleteRole(roleId, roleName) {
-            if (!confirm(`Are you sure you want to delete the role "${roleName}"?`)) {
-                return;
+        function showDeleteModal(roleId, roleName) {
+            $('#deleteRoleId').val(roleId);
+            $('#deleteRoleName').text(roleName);
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        $(document).ready(function() {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            function showToast(title, message, type) {
+                $('#toast-title').text(title);
+                $('#toast-message').text(message);
+                $('#toast').removeClass('bg-danger bg-success').addClass(type === 'success' ? 'bg-success text-white' : 'bg-danger text-white');
+                new bootstrap.Toast(document.getElementById('toast')).show();
             }
 
-            $.ajax({
-                url: '@Url.Action("DeleteRole", "Admin")',
-                type: 'POST',
-                data: {
-                    roleId: roleId,
-                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                },
-                success: function(response) {
-                    if (response.success) {
-                        showToast('Success', response.message, 'success');
-                        // Remove the row from the table
-                        $(`tr[data-role-id="${roleId}"]`).fadeOut(300, function() {
-                            $(this).remove();
-
-                            // Update count in header
-                            var currentCount = parseInt($('.table-header h5').text().match(/\d+/)[0]);
-                            $('.table-header h5').text(`Existing Roles (${currentCount - 1})`);
-
-                            // Show empty state if no roles left
-                            if ($('.roles-table tbody tr').length === 0) {
-                                $('.table-responsive').html(
-                                    '<div class="empty-state">' +
-                                    '<i class="bi bi-shield-x"></i>' +
-                                    '<p class="mb-0">No roles found. Create your first role above.</p>' +
-                                    '</div>'
-                                );
-                            }
-                        });
-                    } else {
-                        showToast('Error', response.message, 'error');
+            $('#confirmDeleteBtn').click(function() {
+                var roleId = $('#deleteRoleId').val();
+                $.ajax({
+                    url: '@Url.Action("DeleteRole", "Admin")',
+                    type: 'POST',
+                    data: { roleId: roleId, __RequestVerificationToken: token },
+                    success: function(r) {
+                        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+                        if (r.success) {
+                            showToast('Success', r.message, 'success');
+                            $('tr[data-role-id="' + roleId + '"]').fadeOut(300, function() { $(this).remove(); });
+                        } else {
+                            showToast('Error', r.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+                        showToast('Error', 'An error occurred', 'error');
                     }
-                },
-                error: function() {
-                    showToast('Error', 'An error occurred while deleting the role', 'error');
-                }
+                });
             });
-        }
-
-        function showToast(title, message, type) {
-            $('#toast-title').text(title);
-            $('#toast-message').text(message);
-
-            if (type === 'success') {
-                $('#toast .toast-header').removeClass('bg-danger').addClass('bg-success text-white');
-                $('.btn-close', '#toast').addClass('btn-close-white');
-            } else {
-                $('#toast .toast-header').removeClass('bg-success').addClass('bg-danger text-white');
-                $('.btn-close', '#toast').addClass('btn-close-white');
-            }
-
-            const toast = new bootstrap.Toast(document.getElementById('toast'));
-            toast.show();
-        }
+        });
     </script>
-
-    @Html.AntiForgeryToken()
 }

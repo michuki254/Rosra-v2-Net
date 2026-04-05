@@ -5,183 +5,310 @@
 }
 
 @functions {
-    public string GetCountryFlag(string country)
+    public string GetCountryCode(string country)
     {
         if (string.IsNullOrEmpty(country)) return "";
 
-        var countryFlags = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        var countryCodes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             // Africa
-            { "Kenya", "🇰🇪" },
-            { "Nigeria", "🇳🇬" },
-            { "South Africa", "🇿🇦" },
-            { "Egypt", "🇪🇬" },
-            { "Ethiopia", "🇪🇹" },
-            { "Ghana", "🇬🇭" },
-            { "Tanzania", "🇹🇿" },
-            { "Uganda", "🇺🇬" },
-            { "Rwanda", "🇷🇼" },
-            { "Morocco", "🇲🇦" },
+            { "Kenya", "ke" },
+            { "Nigeria", "ng" },
+            { "South Africa", "za" },
+            { "Egypt", "eg" },
+            { "Ethiopia", "et" },
+            { "Ghana", "gh" },
+            { "Tanzania", "tz" },
+            { "Uganda", "ug" },
+            { "Rwanda", "rw" },
+            { "Morocco", "ma" },
+            { "Algeria", "dz" },
+            { "Senegal", "sn" },
+            { "Cameroon", "cm" },
+            { "Zambia", "zm" },
+            { "Zimbabwe", "zw" },
+            { "Botswana", "bw" },
+            { "Namibia", "na" },
+            { "Mozambique", "mz" },
+            { "Mali", "ml" },
+            { "Burkina Faso", "bf" },
+            { "Ivory Coast", "ci" },
+            { "Cote d'Ivoire", "ci" },
+            { "Malawi", "mw" },
+            { "Benin", "bj" },
+            { "Togo", "tg" },
+            { "Niger", "ne" },
+            { "Sierra Leone", "sl" },
+            { "Liberia", "lr" },
 
             // Europe
-            { "United Kingdom", "🇬🇧" },
-            { "UK", "🇬🇧" },
-            { "France", "🇫🇷" },
-            { "Germany", "🇩🇪" },
-            { "Italy", "🇮🇹" },
-            { "Spain", "🇪🇸" },
-            { "Netherlands", "🇳🇱" },
-            { "Belgium", "🇧🇪" },
-            { "Switzerland", "🇨🇭" },
-            { "Sweden", "🇸🇪" },
+            { "United Kingdom", "gb" },
+            { "UK", "gb" },
+            { "Britain", "gb" },
+            { "France", "fr" },
+            { "Germany", "de" },
+            { "Italy", "it" },
+            { "Spain", "es" },
+            { "Netherlands", "nl" },
+            { "Belgium", "be" },
+            { "Switzerland", "ch" },
+            { "Sweden", "se" },
+            { "Norway", "no" },
+            { "Portugal", "pt" },
+            { "Poland", "pl" },
+            { "Denmark", "dk" },
+            { "Finland", "fi" },
+            { "Austria", "at" },
+            { "Ireland", "ie" },
+            { "Greece", "gr" },
+            { "Czech Republic", "cz" },
+            { "Romania", "ro" },
+            { "Hungary", "hu" },
 
             // Americas
-            { "United States", "🇺🇸" },
-            { "USA", "🇺🇸" },
-            { "Canada", "🇨🇦" },
-            { "Mexico", "🇲🇽" },
-            { "Brazil", "🇧🇷" },
-            { "Argentina", "🇦🇷" },
-            { "Chile", "🇨🇱" },
-            { "Colombia", "🇨🇴" },
+            { "United States", "us" },
+            { "United States of America", "us" },
+            { "USA", "us" },
+            { "Canada", "ca" },
+            { "Mexico", "mx" },
+            { "Brazil", "br" },
+            { "Argentina", "ar" },
+            { "Chile", "cl" },
+            { "Colombia", "co" },
+            { "Peru", "pe" },
+            { "Venezuela", "ve" },
+            { "Ecuador", "ec" },
+            { "Bolivia", "bo" },
+            { "Paraguay", "py" },
+            { "Uruguay", "uy" },
+            { "Costa Rica", "cr" },
+            { "Panama", "pa" },
+            { "Guatemala", "gt" },
+            { "Honduras", "hn" },
+            { "El Salvador", "sv" },
+            { "Nicaragua", "ni" },
+            { "Jamaica", "jm" },
+            { "Trinidad and Tobago", "tt" },
 
             // Asia
-            { "China", "🇨🇳" },
-            { "India", "🇮🇳" },
-            { "Japan", "🇯🇵" },
-            { "Singapore", "🇸🇬" },
-            { "South Korea", "🇰🇷" },
-            { "Thailand", "🇹🇭" },
-            { "Indonesia", "🇮🇩" },
-            { "Malaysia", "🇲🇾" },
-            { "Philippines", "🇵🇭" },
-            { "Vietnam", "🇻🇳" },
+            { "China", "cn" },
+            { "India", "in" },
+            { "Japan", "jp" },
+            { "Singapore", "sg" },
+            { "South Korea", "kr" },
+            { "Korea", "kr" },
+            { "Thailand", "th" },
+            { "Indonesia", "id" },
+            { "Malaysia", "my" },
+            { "Philippines", "ph" },
+            { "Vietnam", "vn" },
+            { "Pakistan", "pk" },
+            { "Bangladesh", "bd" },
+            { "Sri Lanka", "lk" },
+            { "Nepal", "np" },
+            { "Myanmar", "mm" },
+            { "Cambodia", "kh" },
+            { "Taiwan", "tw" },
+            { "Hong Kong", "hk" },
 
             // Middle East
-            { "UAE", "🇦🇪" },
-            { "United Arab Emirates", "🇦🇪" },
-            { "Saudi Arabia", "🇸🇦" },
-            { "Israel", "🇮🇱" },
+            { "UAE", "ae" },
+            { "United Arab Emirates", "ae" },
+            { "Saudi Arabia", "sa" },
+            { "Israel", "il" },
+            { "Turkey", "tr" },
+            { "Iran", "ir" },
+            { "Iraq", "iq" },
+            { "Jordan", "jo" },
+            { "Lebanon", "lb" },
+            { "Kuwait", "kw" },
+            { "Qatar", "qa" },
+            { "Oman", "om" },
+            { "Bahrain", "bh" },
 
             // Oceania
-            { "Australia", "🇦🇺" },
-            { "New Zealand", "🇳🇿" }
+            { "Australia", "au" },
+            { "New Zealand", "nz" },
+            { "Fiji", "fj" },
+            { "Papua New Guinea", "pg" },
+
+            // Other
+            { "Russia", "ru" },
+            { "Ukraine", "ua" },
+            { "Kazakhstan", "kz" },
+            { "Uzbekistan", "uz" }
         };
 
-        return countryFlags.TryGetValue(country, out var flag) ? flag : "🌍";
+        return countryCodes.TryGetValue(country, out var code) ? code : "";
     }
 }
 
 @section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
     <style>
         body {
-            background: #f8f9fa;
+            background: #FFFFFF;
         }
 
+        /* ── Page Header ── */
         .admin-header {
             background: white;
-            border-radius: 8px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 1.75rem 2rem;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 2px 20px -4px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .admin-header-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: #3B82F6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 8px 16px -4px rgba(59, 130, 246, 0.25);
+            flex-shrink: 0;
         }
 
         .admin-header h1 {
-            color: #212529;
+            color: #222222;
             font-weight: 700;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
         }
 
         .admin-header p {
-            color: #6c757d;
-            font-size: 1rem;
+            color: #6A6A6A;
+            font-size: 0.9375rem;
             margin: 0;
         }
 
+        .btn-manage-users {
+            background: #3B82F6;
+            border: none;
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 0.625rem 1.25rem;
+            box-shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .btn-manage-users:hover {
+            background: #2563EB;
+            color: white;
+            box-shadow: 0 6px 16px -2px rgba(59, 130, 246, 0.35);
+            transform: translateY(-1px);
+        }
+
+        /* ── KPI Stat Cards ── */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1.25rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.75rem;
         }
 
         .stat-card {
             background: white;
             border-radius: 12px;
             padding: 1.5rem;
-            border: 1px solid #e5e7eb;
+            border: none;
+            box-shadow: 0 2px 20px -4px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--card-color);
-        }
-
-        .stat-card:nth-child(1) { --card-color: #4c6ef5; }
-        .stat-card:nth-child(2) { --card-color: #10b981; }
-        .stat-card:nth-child(3) { --card-color: #6b7280; }
-        .stat-card:nth-child(4) { --card-color: #f59e0b; }
 
         .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
         }
 
         .stat-content {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 1rem;
         }
 
         .stat-icon {
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             color: white;
+            flex-shrink: 0;
         }
 
-        .stat-card:nth-child(1) .stat-icon { background: #4c6ef5; }
-        .stat-card:nth-child(2) .stat-icon { background: #10b981; }
-        .stat-card:nth-child(3) .stat-icon { background: #6b7280; }
-        .stat-card:nth-child(4) .stat-icon { background: #f59e0b; }
+        .stat-icon.blue { background: #3B82F6; box-shadow: 0 6px 12px -2px rgba(59, 130, 246, 0.25); }
+        .stat-icon.green { background: #10B981; box-shadow: 0 6px 12px -2px rgba(16, 185, 129, 0.25); }
+        .stat-icon.gray { background: #6B7280; box-shadow: 0 6px 12px -2px rgba(107, 114, 128, 0.25); }
+        .stat-icon.amber { background: #F59E0B; box-shadow: 0 6px 12px -2px rgba(245, 158, 11, 0.25); }
 
         .stat-details {
-            text-align: right;
+            flex: 1;
         }
 
         .stat-number {
             font-size: 1.75rem;
             font-weight: 700;
-            color: #1f2937;
+            color: #222222;
             line-height: 1;
             margin-bottom: 0.25rem;
         }
 
         .stat-label {
             font-size: 0.875rem;
-            color: #6b7280;
+            color: #6A6A6A;
             font-weight: 500;
         }
 
+        /* ── Quick Links ── */
+        .admin-links {
+            display: flex;
+            gap: 0.625rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-link-card {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: white;
+            border: none;
+            border-radius: 10px;
+            color: #222222;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            box-shadow: 0 1px 6px -1px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .admin-link-card:hover {
+            color: #3B82F6;
+            box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .admin-link-card i {
+            font-size: 1rem;
+        }
+
+        /* ── Reports Table Section ── */
         .reports-section {
             background: white;
             border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin-top: 2rem;
+            padding: 1.75rem;
+            box-shadow: 0 2px 20px -4px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-top: 1.75rem;
         }
 
         .reports-header {
@@ -193,11 +320,46 @@
             gap: 1rem;
         }
 
+        .reports-header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+        }
+
+        .reports-header-title .section-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #8B5CF6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+        }
+
         .reports-header h5 {
-            color: #212529;
+            color: #222222;
             font-weight: 600;
             margin: 0;
             font-size: 1.125rem;
+        }
+
+        .reports-header h5 small {
+            color: #6A6A6A !important;
+        }
+
+        .search-box {
+            background: #F7F7F7;
+            border: 1px solid #DDDDDD;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .search-box:focus {
+            background: white;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .reports-table {
@@ -205,29 +367,36 @@
         }
 
         .reports-table thead th {
-            background: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-            color: #495057;
+            background: #F7F7F7;
+            border-bottom: none;
+            color: #6A6A6A;
             font-weight: 600;
-            font-size: 0.875rem;
-            padding: 1rem;
+            font-size: 0.8125rem;
+            padding: 0.875rem 1rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
+        .reports-table thead th:first-child { border-radius: 8px 0 0 8px; }
+        .reports-table thead th:last-child { border-radius: 0 8px 8px 0; }
+
         .reports-table tbody td {
             padding: 1rem;
             vertical-align: middle;
-            border-bottom: 1px solid #f1f3f5;
+            border-bottom: 1px solid #F7F7F7;
+        }
+
+        .reports-table tbody tr {
+            transition: background 0.15s ease;
         }
 
         .reports-table tbody tr:hover {
-            background: #f8f9fa;
+            background: #FAFAFA;
         }
 
         .report-title-cell {
             font-weight: 600;
-            color: #212529;
+            color: #222222;
             font-size: 0.9375rem;
         }
 
@@ -238,12 +407,12 @@
 
         .user-name-cell {
             font-weight: 600;
-            color: #212529;
+            color: #222222;
             font-size: 0.875rem;
         }
 
         .user-email-cell {
-            color: #868e96;
+            color: #6A6A6A;
             font-size: 0.8125rem;
         }
 
@@ -254,88 +423,164 @@
         }
 
         .country-flag {
-            font-size: 1.25rem;
-            line-height: 1;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+            width: 24px;
+            height: 18px;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
         }
 
         .date-cell {
             display: block;
             font-weight: 500;
-            color: #212529;
+            color: #222222;
             font-size: 0.875rem;
         }
 
         .time-cell {
             display: block;
-            color: #868e96;
+            color: #6A6A6A;
             font-size: 0.8125rem;
         }
 
+        /* ── Status Badges ── */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-badge i {
+            font-size: 0.75rem;
+        }
+
+        .status-draft {
+            background: #F7F7F7;
+            color: #6A6A6A;
+        }
+
+        .status-submitted {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-review {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .status-revision {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .status-validated {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
         .btn-view {
-            background: #4c6ef5;
+            background: #3B82F6;
             color: white;
             border: none;
             padding: 0.375rem 0.75rem;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: 500;
+            box-shadow: 0 2px 6px -1px rgba(59, 130, 246, 0.25);
             transition: all 0.2s ease;
         }
 
         .btn-view:hover {
-            background: #3b5bdb;
+            background: #2563EB;
             color: white;
+            box-shadow: 0 4px 10px -2px rgba(59, 130, 246, 0.35);
         }
 
-        .admin-links {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        .admin-link-card {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
+        .btn-action-ghost {
             background: white;
-            border: 1px solid #dee2e6;
+            border: none;
+            color: #6A6A6A;
+            padding: 0.375rem 0.625rem;
             border-radius: 8px;
-            color: #495057;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.875rem;
+            box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.08);
             transition: all 0.2s ease;
         }
 
-        .admin-link-card:hover {
-            border-color: #4c6ef5;
-            color: #4c6ef5;
-            box-shadow: 0 2px 8px rgba(76, 110, 245, 0.15);
+        .btn-action-ghost:hover {
+            color: #222222;
+            box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-action-ghost.delete:hover {
+            color: #EF4444;
         }
 
         .select-all-col { width: 40px; }
+
         .bulk-bar {
             display: none;
-            background: #212529;
+            background: #222222;
             color: white;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 0.75rem 1.25rem;
             margin-bottom: 1rem;
             align-items: center;
             justify-content: space-between;
+            box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.2);
         }
         .bulk-bar.active { display: flex; }
+
+        /* ── Pagination ── */
+        .pagination .page-link {
+            border: none;
+            border-radius: 8px;
+            color: #6A6A6A;
+            font-weight: 500;
+            padding: 0.5rem 0.875rem;
+            margin: 0 0.125rem;
+            transition: all 0.2s ease;
+        }
+
+        .pagination .page-link:hover {
+            background: #F7F7F7;
+            color: #222222;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: #3B82F6;
+            color: white;
+            box-shadow: 0 2px 8px -2px rgba(59, 130, 246, 0.3);
+        }
+
+        /* ── Modal ── */
+        .modal-content {
+            border: none !important;
+            border-radius: 12px !important;
+            box-shadow: 0 20px 60px -12px rgba(0, 0, 0, 0.25) !important;
+        }
     </style>
 }
 
 <div class="container py-4">
     <!-- Header -->
     <div class="admin-header d-flex justify-content-between align-items-center">
-        <div>
-            <h1>@Localizer["PageTitle"]</h1>
-            <p>@Localizer["PageSubtitle"]</p>
+        <div class="d-flex align-items-center gap-3">
+            <div class="admin-header-icon">
+                <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <div>
+                <h1>@Localizer["PageTitle"]</h1>
+                <p>@Localizer["PageSubtitle"]</p>
+            </div>
         </div>
-        <a asp-action="Users" class="btn btn-primary">
+        <a asp-action="Users" class="btn btn-manage-users">
             <i class="bi bi-people me-2"></i> @Localizer["ManageUsers"]
         </a>
     </div>
@@ -344,7 +589,7 @@
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-content">
-                <div class="stat-icon">
+                <div class="stat-icon blue">
                     <i class="bi bi-people-fill"></i>
                 </div>
                 <div class="stat-details">
@@ -355,7 +600,7 @@
         </div>
         <div class="stat-card">
             <div class="stat-content">
-                <div class="stat-icon">
+                <div class="stat-icon green">
                     <i class="bi bi-check-circle-fill"></i>
                 </div>
                 <div class="stat-details">
@@ -366,7 +611,7 @@
         </div>
         <div class="stat-card">
             <div class="stat-content">
-                <div class="stat-icon">
+                <div class="stat-icon gray">
                     <i class="bi bi-x-circle-fill"></i>
                 </div>
                 <div class="stat-details">
@@ -377,7 +622,7 @@
         </div>
         <div class="stat-card">
             <div class="stat-content">
-                <div class="stat-icon">
+                <div class="stat-icon amber">
                     <i class="bi bi-file-text-fill"></i>
                 </div>
                 <div class="stat-details">
@@ -390,45 +635,50 @@
 
     <!-- Quick Admin Links -->
     <div class="admin-links mb-3">
-        <a asp-controller="Submission" asp-action="Queue" class="admin-link-card" style="border-color: #4c6ef5; color: #4c6ef5;">
-            <i class="bi bi-clipboard-check"></i> Review Queue
+        <a asp-controller="Submission" asp-action="Queue" class="admin-link-card">
+            <i class="bi bi-clipboard-check" style="color: #3B82F6;"></i> Review Queue
         </a>
-        <a asp-controller="Submission" asp-action="Validated" class="admin-link-card" style="border-color: #10b981; color: #10b981;">
-            <i class="bi bi-patch-check"></i> Validated Assessments
+        <a asp-controller="Submission" asp-action="Validated" class="admin-link-card">
+            <i class="bi bi-patch-check" style="color: #10B981;"></i> Validated Assessments
         </a>
         <a asp-action="AllReports" class="admin-link-card">
-            <i class="bi bi-grid"></i> All Reports (Cards)
+            <i class="bi bi-grid" style="color: #8B5CF6;"></i> All Reports (Cards)
         </a>
         <a asp-action="DeletedReports" class="admin-link-card">
-            <i class="bi bi-trash"></i> Deleted Reports (Trash)
+            <i class="bi bi-trash" style="color: #EF4444;"></i> Deleted Reports (Trash)
         </a>
         <a asp-action="AuditLog" class="admin-link-card">
-            <i class="bi bi-clock-history"></i> Audit Log
+            <i class="bi bi-clock-history" style="color: #F59E0B;"></i> Audit Log
         </a>
         <a asp-action="CreateRole" class="admin-link-card">
-            <i class="bi bi-shield-lock"></i> Manage Roles
+            <i class="bi bi-shield-lock" style="color: #06B6D4;"></i> Manage Roles
         </a>
         <a asp-action="DataUpload" class="admin-link-card">
-            <i class="bi bi-cloud-upload"></i> Data Upload
+            <i class="bi bi-cloud-upload" style="color: #8B5CF6;"></i> Data Upload
         </a>
     </div>
 
     <!-- Reports Data Table -->
     <div class="reports-section">
         <div class="reports-header">
-            <h5><i class="bi bi-file-text me-2"></i>@Localizer["UserReports"]
-                <small class="text-muted fw-normal ms-2">(@Model.TotalCount total)</small>
-            </h5>
+            <div class="reports-header-title">
+                <div class="section-icon">
+                    <i class="bi bi-file-text"></i>
+                </div>
+                <h5>@Localizer["UserReports"]
+                    <small class="fw-normal ms-2">(@Model.TotalCount total)</small>
+                </h5>
+            </div>
             <form asp-action="Index" method="get" class="d-flex gap-2" style="max-width: 400px;">
-                <input type="text" name="search" class="form-control form-control-sm"
+                <input type="text" name="search" class="form-control form-control-sm search-box"
                        placeholder="@Localizer["SearchPlaceholder"].Value"
                        value="@Model.SearchTerm" />
-                <button type="submit" class="btn btn-sm btn-outline-primary">
+                <button type="submit" class="btn btn-sm btn-view">
                     <i class="bi bi-search"></i>
                 </button>
                 @if (!string.IsNullOrEmpty(Model.SearchTerm))
                 {
-                    <a asp-action="Index" class="btn btn-sm btn-outline-danger">
+                    <a asp-action="Index" class="btn btn-sm btn-action-ghost delete">
                         <i class="bi bi-x"></i>
                     </a>
                 }
@@ -458,6 +708,7 @@
                         <th>@Localizer["Title"]</th>
                         <th>@Localizer["User"]</th>
                         <th>@Localizer["Location"]</th>
+                        <th>Status</th>
                         <th>@Localizer["CreatedDate"]</th>
                         <th>@Localizer["Actions"]</th>
                     </tr>
@@ -484,9 +735,16 @@
                                     @if (!string.IsNullOrEmpty(report.City) || !string.IsNullOrEmpty(report.Country))
                                     {
                                         <div class="location-cell">
-                                            @if (!string.IsNullOrEmpty(report.Country))
+                                            @{
+                                                var countryCode = GetCountryCode(report.Country);
+                                            }
+                                            @if (!string.IsNullOrEmpty(countryCode))
                                             {
-                                                <span class="country-flag">@GetCountryFlag(report.Country)</span>
+                                                <span class="country-flag fi fi-@countryCode"></span>
+                                            }
+                                            else if (!string.IsNullOrEmpty(report.Country))
+                                            {
+                                                <i class="bi bi-globe" style="color: #6A6A6A;"></i>
                                             }
                                             <span>@report.City@(!string.IsNullOrEmpty(report.City) && !string.IsNullOrEmpty(report.Country) ? ", " : "")@report.Country</span>
                                         </div>
@@ -495,6 +753,23 @@
                                     {
                                         <span class="text-muted">-</span>
                                     }
+                                </td>
+                                <td>
+                                    @{
+                                        var reportStatus = (RosraApp.Models.Enums.ReportStatus)report.Status;
+                                        var (statusClass, statusIcon) = reportStatus switch
+                                        {
+                                            RosraApp.Models.Enums.ReportStatus.Draft => ("status-draft", "bi-pencil"),
+                                            RosraApp.Models.Enums.ReportStatus.Submitted => ("status-submitted", "bi-send"),
+                                            RosraApp.Models.Enums.ReportStatus.UnderReview => ("status-review", "bi-hourglass-split"),
+                                            RosraApp.Models.Enums.ReportStatus.NeedsRevision => ("status-revision", "bi-exclamation-triangle"),
+                                            RosraApp.Models.Enums.ReportStatus.Validated => ("status-validated", "bi-patch-check-fill"),
+                                            _ => ("status-draft", "bi-pencil")
+                                        };
+                                    }
+                                    <span class="status-badge @statusClass">
+                                        <i class="bi @statusIcon"></i> @reportStatus.ToString()
+                                    </span>
                                 </td>
                                 <td>
                                     @{
@@ -509,10 +784,10 @@
                                            class="btn btn-sm btn-view" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <button class="btn btn-sm btn-outline-secondary archive-btn" data-id="@report.Id" title="Archive">
+                                        <button class="btn btn-sm btn-action-ghost archive-btn" data-id="@report.Id" title="Archive">
                                             <i class="bi bi-archive"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-id="@report.Id" title="Delete">
+                                        <button class="btn btn-sm btn-action-ghost delete delete-btn" data-id="@report.Id" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -523,7 +798,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
+                            <td colspan="7" class="text-center text-muted py-4">
                                 <i class="bi bi-inbox display-4"></i>
                                 <p class="mt-2">@Localizer["NoReportsFound"]</p>
                             </td>
@@ -569,22 +844,60 @@
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 8px;">
-            <div class="modal-header" style="background: #212529; color: white; border: none;">
+        <div class="modal-content" style="border-radius: 12px; border: none; overflow: hidden;">
+            <div class="modal-header" style="background: #222222; color: white; border: none; padding: 1.25rem 1.5rem;">
                 <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Confirm Deletion</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" style="padding: 2rem;">
-                <p class="mb-0" style="color: #6c757d;">
+                <p class="mb-0" style="color: #6A6A6A;">
                     This report will be moved to trash. You can restore it from the Deleted Reports page.
                 </p>
                 <input type="hidden" id="deleteReportId" />
             </div>
-            <div class="modal-footer" style="border: none; background: #f8f9fa;">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+            <div class="modal-footer" style="border: none; background: #F7F7F7; padding: 1rem 1.5rem;">
+                <button type="button" class="btn" style="background: white; color: #222222; border: none; border-radius: 8px; box-shadow: 0 1px 4px -1px rgba(0,0,0,0.1); font-weight: 500;" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn" style="background: #EF4444; color: white; border: none; border-radius: 8px; box-shadow: 0 4px 12px -2px rgba(239,68,68,0.25); font-weight: 600;" id="confirmDeleteBtn">
                     <i class="bi bi-trash me-1"></i> Delete
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Delete Modal -->
+<div class="modal fade" id="bulkDeleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:12px; border:none; overflow:hidden;">
+            <div class="modal-header" style="background:#222222; color:white; border:none; padding:1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-trash me-2"></i>Bulk Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <p style="color:#6A6A6A; margin:0;">Delete <strong id="bulkDeleteCount">0</strong> report(s)? They will be moved to trash.</p>
+            </div>
+            <div class="modal-footer" style="border:none; background:#F7F7F7; padding:1rem 1.5rem;">
+                <button class="btn" style="background:white; color:#222222; border:none; border-radius:8px; box-shadow:0 1px 4px -1px rgba(0,0,0,0.1); font-weight:500;" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn" style="background:#EF4444; color:white; border:none; border-radius:8px; box-shadow:0 4px 12px -2px rgba(239,68,68,0.25); font-weight:600;" id="confirmBulkDeleteBtn"><i class="bi bi-trash me-1"></i> Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Archive Modal -->
+<div class="modal fade" id="bulkArchiveModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:12px; border:none; overflow:hidden;">
+            <div class="modal-header" style="background:#222222; color:white; border:none; padding:1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-archive me-2"></i>Bulk Archive</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <p style="color:#6A6A6A; margin:0;">Archive <strong id="bulkArchiveCount">0</strong> report(s)?</p>
+            </div>
+            <div class="modal-footer" style="border:none; background:#F7F7F7; padding:1rem 1.5rem;">
+                <button class="btn" style="background:white; color:#222222; border:none; border-radius:8px; box-shadow:0 1px 4px -1px rgba(0,0,0,0.1); font-weight:500;" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn" style="background:#3B82F6; color:white; border:none; border-radius:8px; box-shadow:0 4px 12px -2px rgba(59,130,246,0.25); font-weight:600;" id="confirmBulkArchiveBtn"><i class="bi bi-archive me-1"></i> Archive</button>
             </div>
         </div>
     </div>
@@ -677,7 +990,14 @@
             // --- Bulk Delete ---
             $('#bulkDeleteBtn').click(function() {
                 var ids = $('.report-checkbox:checked').map(function() { return parseInt(this.value); }).get();
-                if (!ids.length || !confirm('Delete ' + ids.length + ' report(s)? They will be moved to trash.')) return;
+                if (!ids.length) return;
+                $('#bulkDeleteCount').text(ids.length);
+                new bootstrap.Modal(document.getElementById('bulkDeleteModal')).show();
+            });
+
+            $('#confirmBulkDeleteBtn').click(function() {
+                var ids = $('.report-checkbox:checked').map(function() { return parseInt(this.value); }).get();
+                bootstrap.Modal.getInstance(document.getElementById('bulkDeleteModal')).hide();
                 $.ajax({
                     url: '@Url.Action("BulkDelete", "Dashboard")',
                     type: 'POST',
@@ -698,7 +1018,14 @@
             // --- Bulk Archive ---
             $('#bulkArchiveBtn').click(function() {
                 var ids = $('.report-checkbox:checked').map(function() { return parseInt(this.value); }).get();
-                if (!ids.length || !confirm('Archive ' + ids.length + ' report(s)?')) return;
+                if (!ids.length) return;
+                $('#bulkArchiveCount').text(ids.length);
+                new bootstrap.Modal(document.getElementById('bulkArchiveModal')).show();
+            });
+
+            $('#confirmBulkArchiveBtn').click(function() {
+                var ids = $('.report-checkbox:checked').map(function() { return parseInt(this.value); }).get();
+                bootstrap.Modal.getInstance(document.getElementById('bulkArchiveModal')).hide();
                 $.ajax({
                     url: '@Url.Action("BulkArchive", "Dashboard")',
                     type: 'POST',

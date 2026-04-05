@@ -4,73 +4,248 @@
     ViewData["Title"] = "Deleted Reports (Trash)";
 }
 
+@functions {
+    public string GetCountryCode(string country)
+    {
+        if (string.IsNullOrEmpty(country)) return "";
+        var codes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            {"Kenya","ke"},{"Nigeria","ng"},{"South Africa","za"},{"Egypt","eg"},{"Ethiopia","et"},
+            {"Ghana","gh"},{"Tanzania","tz"},{"Uganda","ug"},{"Rwanda","rw"},{"Morocco","ma"},
+            {"Algeria","dz"},{"Senegal","sn"},{"Cameroon","cm"},{"Zambia","zm"},{"Zimbabwe","zw"},
+            {"Botswana","bw"},{"Namibia","na"},{"Mozambique","mz"},{"Mali","ml"},{"Burkina Faso","bf"},
+            {"Ivory Coast","ci"},{"Cote d'Ivoire","ci"},{"Malawi","mw"},{"Benin","bj"},{"Togo","tg"},
+            {"Niger","ne"},{"Sierra Leone","sl"},{"Liberia","lr"},
+            {"United Kingdom","gb"},{"UK","gb"},{"Britain","gb"},{"France","fr"},{"Germany","de"},
+            {"Italy","it"},{"Spain","es"},{"Netherlands","nl"},{"Belgium","be"},{"Switzerland","ch"},
+            {"Sweden","se"},{"Norway","no"},{"Portugal","pt"},{"Poland","pl"},{"Denmark","dk"},
+            {"Finland","fi"},{"Austria","at"},{"Ireland","ie"},{"Greece","gr"},{"Czech Republic","cz"},
+            {"Romania","ro"},{"Hungary","hu"},
+            {"United States","us"},{"United States of America","us"},{"USA","us"},{"Canada","ca"},
+            {"Mexico","mx"},{"Brazil","br"},{"Argentina","ar"},{"Chile","cl"},{"Colombia","co"},
+            {"Peru","pe"},{"Venezuela","ve"},{"Ecuador","ec"},{"Bolivia","bo"},{"Paraguay","py"},
+            {"Uruguay","uy"},{"Costa Rica","cr"},{"Panama","pa"},{"Guatemala","gt"},{"Honduras","hn"},
+            {"El Salvador","sv"},{"Nicaragua","ni"},{"Jamaica","jm"},{"Trinidad and Tobago","tt"},
+            {"China","cn"},{"India","in"},{"Japan","jp"},{"Singapore","sg"},{"South Korea","kr"},
+            {"Korea","kr"},{"Thailand","th"},{"Indonesia","id"},{"Malaysia","my"},{"Philippines","ph"},
+            {"Vietnam","vn"},{"Pakistan","pk"},{"Bangladesh","bd"},{"Sri Lanka","lk"},{"Nepal","np"},
+            {"Myanmar","mm"},{"Cambodia","kh"},{"Taiwan","tw"},{"Hong Kong","hk"},
+            {"UAE","ae"},{"United Arab Emirates","ae"},{"Saudi Arabia","sa"},{"Israel","il"},
+            {"Turkey","tr"},{"Iran","ir"},{"Iraq","iq"},{"Jordan","jo"},{"Lebanon","lb"},
+            {"Kuwait","kw"},{"Qatar","qa"},{"Oman","om"},{"Bahrain","bh"},
+            {"Australia","au"},{"New Zealand","nz"},{"Fiji","fj"},{"Papua New Guinea","pg"},
+            {"Russia","ru"},{"Ukraine","ua"},{"Kazakhstan","kz"},{"Uzbekistan","uz"}
+        };
+        return codes.TryGetValue(country, out var code) ? code : "";
+    }
+}
+
 @section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
     <style>
-        body { background: #f8f9fa; }
-        .trash-header { background: white; border-radius: 8px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .trash-header h1 { color: #212529; font-weight: 700; font-size: 2rem; margin-bottom: 0.5rem; }
-        .trash-table { background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
-        .trash-table th { background: #212529; color: white; font-weight: 600; font-size: 0.875rem; text-transform: uppercase; }
-        .trash-table td { font-size: 0.875rem; vertical-align: middle; }
+        body { background: #FFFFFF; }
+
+        .page-header {
+            background: white; border-radius: 12px; padding: 1.75rem 2rem;
+            margin-bottom: 1.75rem; box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1);
+        }
+        .header-icon {
+            width: 40px; height: 40px; border-radius: 10px; background: #EF4444;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; color: white; box-shadow: 0 6px 12px -2px rgba(239,68,68,0.25); flex-shrink: 0;
+        }
+        .page-header h1 { color: #222222; font-weight: 700; font-size: 1.75rem; margin-bottom: 0.25rem; }
+        .page-header p { color: #6A6A6A; font-size: 0.9375rem; margin: 0; }
+        .btn-back {
+            background: white; border: none; color: #222222; border-radius: 10px;
+            font-weight: 500; padding: 0.5rem 1rem; font-size: 0.875rem;
+            box-shadow: 0 1px 6px -1px rgba(0,0,0,0.08); transition: all 0.2s;
+        }
+        .btn-back:hover { color: #3B82F6; box-shadow: 0 4px 16px -4px rgba(0,0,0,0.15); }
+
+        .table-card {
+            background: white; border-radius: 12px; padding: 1.75rem;
+            box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1);
+        }
+        .table-card-header { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 1.25rem; }
+        .section-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 0.875rem;
+        }
+        .table-card-header h5 { color: #222222; font-weight: 600; margin: 0; font-size: 1rem; }
+        .table-card-header h5 small { color: #6A6A6A !important; }
+
+        .trash-table { margin: 0; }
+        .trash-table thead th {
+            background: #F7F7F7; border-bottom: none; color: #6A6A6A; font-weight: 600;
+            font-size: 0.8125rem; padding: 0.875rem 1rem; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .trash-table thead th:first-child { border-radius: 8px 0 0 8px; }
+        .trash-table thead th:last-child { border-radius: 0 8px 8px 0; }
+        .trash-table tbody td { padding: 0.875rem 1rem; vertical-align: middle; border-bottom: 1px solid #F7F7F7; font-size: 0.875rem; }
+        .trash-table tbody tr { transition: background 0.15s; }
+        .trash-table tbody tr:hover { background: #FAFAFA; }
+
+        .report-title { font-weight: 600; color: #222222; }
+        .author-name { font-weight: 600; color: #222222; font-size: 0.875rem; }
+        .author-email { color: #6A6A6A; font-size: 0.8125rem; }
+
+        .location-cell { display: flex; align-items: center; gap: 0.5rem; }
+        .country-flag {
+            border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            width: 24px; height: 18px; background-size: cover; background-position: center; flex-shrink: 0;
+        }
+
+        .deleted-date { font-weight: 500; color: #222222; font-size: 0.875rem; }
+        .deleted-time { color: #6A6A6A; font-size: 0.8125rem; }
+
+        .btn-restore {
+            background: white; border: none; color: #10B981; border-radius: 8px;
+            padding: 0.375rem 0.75rem; font-size: 0.8125rem; font-weight: 500;
+            box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s;
+        }
+        .btn-restore:hover { background: #D1FAE5; color: #059669; box-shadow: none; }
+
+        .btn-perm-delete {
+            background: white; border: none; color: #EF4444; border-radius: 8px;
+            padding: 0.375rem 0.75rem; font-size: 0.8125rem; font-weight: 500;
+            box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s;
+        }
+        .btn-perm-delete:hover { background: #FEE2E2; color: #DC2626; box-shadow: none; }
+
+        .pagination .page-link {
+            border: none; border-radius: 8px; color: #6A6A6A; font-weight: 500;
+            padding: 0.5rem 0.875rem; margin: 0 0.125rem; transition: all 0.2s;
+        }
+        .pagination .page-link:hover { background: #F7F7F7; color: #222222; }
+        .pagination .page-item.active .page-link {
+            background: #3B82F6; color: white; box-shadow: 0 2px 8px -2px rgba(59,130,246,0.3);
+        }
+
+        .empty-state { text-align: center; padding: 3rem 1rem; }
+        .empty-icon {
+            width: 64px; height: 64px; border-radius: 16px; background: #F7F7F7;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 1.75rem; color: #6A6A6A; margin-bottom: 1rem;
+        }
+
+        .modal-content { border: none !important; border-radius: 12px !important; box-shadow: 0 20px 60px -12px rgba(0,0,0,0.25) !important; overflow: hidden; }
     </style>
 }
 
 <div class="container py-4">
-    <div class="trash-header d-flex justify-content-between align-items-center">
-        <div>
-            <h1><i class="bi bi-trash me-2"></i>Deleted Reports</h1>
-            <p class="text-muted mb-0">@Model.TotalCount deleted report(s)</p>
+    <!-- Header -->
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <div class="header-icon"><i class="bi bi-trash3-fill"></i></div>
+            <div>
+                <h1>Deleted Reports</h1>
+                <p>@Model.TotalCount report(s) in trash</p>
+            </div>
         </div>
-        <a asp-action="Index" class="btn btn-outline-secondary">
+        <a asp-action="Index" class="btn btn-back">
             <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
         </a>
     </div>
 
-    <div class="trash-table">
-        <table class="table table-hover mb-0">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>Location</th>
-                    <th>Deleted</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.AllReports.Any())
-                {
-                    @foreach (var report in Model.AllReports)
+    <!-- Table -->
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="section-icon" style="background:#EF4444;"><i class="bi bi-trash3"></i></div>
+            <h5>Trash <small class="fw-normal ms-2">(@Model.TotalCount)</small></h5>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table trash-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Location</th>
+                        <th>Deleted</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.AllReports.Any())
                     {
-                        <tr id="report-row-@report.Id">
-                            <td>@report.Title</td>
-                            <td>@report.UserName<br/><small class="text-muted">@report.UserEmail</small></td>
-                            <td>@(report.City ?? "") @(report.Country ?? "")</td>
-                            <td>@(report.UpdatedAt?.ToLocalTime().ToString("dd MMM yyyy HH:mm") ?? "Unknown")</td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-success restore-btn" data-report-id="@report.Id">
-                                    <i class="bi bi-arrow-counterclockwise"></i> Restore
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger permanent-delete-btn" data-report-id="@report.Id">
-                                    <i class="bi bi-x-circle"></i> Permanently Delete
-                                </button>
+                        @foreach (var report in Model.AllReports)
+                        {
+                            <tr id="report-row-@report.Id">
+                                <td><span class="report-title">@report.Title</span></td>
+                                <td>
+                                    <div class="author-name">@report.UserName</div>
+                                    <div class="author-email">@report.UserEmail</div>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(report.City) || !string.IsNullOrEmpty(report.Country))
+                                    {
+                                        <div class="location-cell">
+                                            @{
+                                                var cc = GetCountryCode(report.Country);
+                                            }
+                                            @if (!string.IsNullOrEmpty(cc))
+                                            {
+                                                <span class="country-flag fi fi-@cc"></span>
+                                            }
+                                            else if (!string.IsNullOrEmpty(report.Country))
+                                            {
+                                                <i class="bi bi-globe" style="color:#6A6A6A;"></i>
+                                            }
+                                            <span>@(report.City ?? "")@(!string.IsNullOrEmpty(report.City) && !string.IsNullOrEmpty(report.Country) ? ", " : "")@(report.Country ?? "")</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:#6A6A6A;">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (report.UpdatedAt.HasValue)
+                                    {
+                                        <div class="deleted-date">@report.UpdatedAt.Value.ToLocalTime().ToString("dd MMM yyyy")</div>
+                                        <div class="deleted-time">@report.UpdatedAt.Value.ToLocalTime().ToString("HH:mm")</div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:#6A6A6A;">Unknown</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-restore restore-btn" data-report-id="@report.Id" title="Restore">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i> Restore
+                                        </button>
+                                        <button class="btn btn-sm btn-perm-delete permanent-delete-btn" data-report-id="@report.Id" title="Permanently Delete">
+                                            <i class="bi bi-x-circle me-1"></i> Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="py-0">
+                                <div class="empty-state">
+                                    <div class="empty-icon"><i class="bi bi-trash3"></i></div>
+                                    <p style="color:#6A6A6A; font-size:0.9375rem; margin:0;">Trash is empty</p>
+                                </div>
                             </td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr><td colspan="5" class="text-center text-muted py-4">Trash is empty</td></tr>
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 
+    <!-- Pagination -->
     @if (Model.TotalPages > 1)
     {
         <nav class="mt-3">
             <ul class="pagination justify-content-center">
-                @for (int i = 1; i <= Model.TotalPages; i++)
+                @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
                 {
                     <li class="page-item @(i == Model.PageNumber ? "active" : "")">
                         <a class="page-link" asp-action="DeletedReports" asp-route-page="@i">@i</a>
@@ -81,34 +256,118 @@
     }
 </div>
 
+<!-- Permanent Delete Modal -->
+<div class="modal fade" id="permDeleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#222222; color:white; padding:1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Permanently Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <p style="color:#6A6A6A; margin:0;">This report will be <strong style="color:#EF4444;">permanently deleted</strong> and cannot be recovered. Are you sure?</p>
+                <input type="hidden" id="permDeleteId" />
+            </div>
+            <div class="modal-footer" style="border:none; background:#F7F7F7; padding:1rem 1.5rem;">
+                <button class="btn" style="background:white; color:#222222; border:none; border-radius:8px; box-shadow:0 1px 4px -1px rgba(0,0,0,0.1); font-weight:500;" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn" style="background:#EF4444; color:white; border:none; border-radius:8px; box-shadow:0 4px 12px -2px rgba(239,68,68,0.25); font-weight:600;" id="confirmPermDeleteBtn">
+                    <i class="bi bi-x-circle me-1"></i> Delete Permanently
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Restore Modal -->
+<div class="modal fade" id="restoreModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#222222; color:white; padding:1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-arrow-counterclockwise me-2"></i>Restore Report</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <p style="color:#6A6A6A; margin:0;">Restore this report? It will be moved back to the active reports list.</p>
+                <input type="hidden" id="restoreId" />
+            </div>
+            <div class="modal-footer" style="border:none; background:#F7F7F7; padding:1rem 1.5rem;">
+                <button class="btn" style="background:white; color:#222222; border:none; border-radius:8px; box-shadow:0 1px 4px -1px rgba(0,0,0,0.1); font-weight:500;" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn" style="background:#10B981; color:white; border:none; border-radius:8px; box-shadow:0 4px 12px -2px rgba(16,185,129,0.25); font-weight:600;" id="confirmRestoreBtn">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Restore
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1050">
+    <div id="toast" class="toast hide" role="alert">
+        <div class="toast-header">
+            <strong class="me-auto" id="toast-title">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toast-message"></div>
+    </div>
+</div>
+
 @section Scripts {
     @Html.AntiForgeryToken()
     <script>
         $(document).ready(function() {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            function showToast(title, message, type) {
+                $('#toast-title').text(title);
+                $('#toast-message').text(message);
+                $('#toast').removeClass('bg-danger bg-success').addClass(type === 'success' ? 'bg-success text-white' : 'bg-danger text-white');
+                new bootstrap.Toast(document.getElementById('toast')).show();
+            }
+
+            // Restore
             $('.restore-btn').click(function() {
-                var id = $(this).data('report-id');
-                if (!confirm('Restore this report?')) return;
+                $('#restoreId').val($(this).data('report-id'));
+                new bootstrap.Modal(document.getElementById('restoreModal')).show();
+            });
+
+            $('#confirmRestoreBtn').click(function() {
+                var id = $('#restoreId').val();
                 $.ajax({
                     url: '@Url.Action("RestoreReport", "Admin")',
                     type: 'POST',
-                    data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+                    data: { id: id, __RequestVerificationToken: token },
                     success: function(r) {
-                        if (r.success) { $('#report-row-' + id).fadeOut(); }
-                        alert(r.message);
+                        bootstrap.Modal.getInstance(document.getElementById('restoreModal')).hide();
+                        if (r.success) {
+                            $('#report-row-' + id).fadeOut(300);
+                            showToast('Success', r.message, 'success');
+                        } else {
+                            showToast('Error', r.message, 'error');
+                        }
                     }
                 });
             });
 
+            // Permanent Delete
             $('.permanent-delete-btn').click(function() {
-                var id = $(this).data('report-id');
-                if (!confirm('PERMANENTLY delete this report? This cannot be undone.')) return;
+                $('#permDeleteId').val($(this).data('report-id'));
+                new bootstrap.Modal(document.getElementById('permDeleteModal')).show();
+            });
+
+            $('#confirmPermDeleteBtn').click(function() {
+                var id = $('#permDeleteId').val();
                 $.ajax({
                     url: '@Url.Action("PermanentlyDeleteReport", "Admin")',
                     type: 'POST',
-                    data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+                    data: { id: id, __RequestVerificationToken: token },
                     success: function(r) {
-                        if (r.success) { $('#report-row-' + id).fadeOut(); }
-                        alert(r.message);
+                        bootstrap.Modal.getInstance(document.getElementById('permDeleteModal')).hide();
+                        if (r.success) {
+                            $('#report-row-' + id).fadeOut(300);
+                            showToast('Success', r.message, 'success');
+                        } else {
+                            showToast('Error', r.message, 'error');
+                        }
                     }
                 });
             });

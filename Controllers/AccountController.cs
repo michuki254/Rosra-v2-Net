@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RosraApp.Data;
 using RosraApp.Models;
 using RosraApp.Models.ViewModels;
 using System.Linq;
@@ -11,13 +14,16 @@ namespace RosraApp.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationDbContext _context;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
 
         [HttpGet]
@@ -210,6 +216,103 @@ namespace RosraApp.Controllers
             }
 
             return Json(new { isAuthenticated = false });
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login");
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var reportCount = await _context.RosraReports.CountAsync(r => r.UserId == user.Id);
+
+            var model = new ProfileViewModel
+            {
+                FirstName = user.FirstName ?? "",
+                LastName = user.LastName ?? "",
+                Email = user.Email ?? "",
+                Organization = user.Organization,
+                PhoneNumber = user.PhoneNumber,
+                CreatedAt = user.CreatedAt,
+                EmailConfirmed = user.EmailConfirmed,
+                ReportCount = reportCount,
+                Roles = roles.ToList()
+            };
+
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Profile(ProfileViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login");
+
+            if (!ModelState.IsValid)
+            {
+                // Reload read-only fields
+                var roles = await _userManager.GetRolesAsync(user);
+                model.CreatedAt = user.CreatedAt;
+                model.EmailConfirmed = user.EmailConfirmed;
+                model.ReportCount = await _context.RosraReports.CountAsync(r => r.UserId == user.Id);
+                model.Roles = roles.ToList();
+                return View(model);
+            }
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.Organization = model.Organization;
+            user.PhoneNumber = model.PhoneNumber;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                TempData["ProfileSuccess"] = "Profile updated successfully.";
+                return RedirectToAction("Profile");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            model.CreatedAt = user.CreatedAt;
+            model.EmailConfirmed = user.EmailConfirmed;
+            model.ReportCount = await _context.RosraReports.CountAsync(r => r.UserId == user.Id);
+            model.Roles = userRoles.ToList();
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Please fill in all fields correctly." });
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "User not found." });
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            if (result.Succeeded)
+            {
+                await _signInManager.RefreshSignInAsync(user);
+                return Json(new { success = true, message = "Password changed successfully." });
+            }
+
+            var errors = result.Errors.Select(e => e.Description).ToList();
+            return Json(new { success = false, message = string.Join(" ", errors) });
         }
     }
 }

@@ -39,15 +39,22 @@
   <data name="Sidebar_Country" xml:space="preserve"><value>Pays :</value></data>
   <data name="Sidebar_Region" xml:space="preserve"><value>Région :</value></data>
   <data name="Sidebar_ReportActions" xml:space="preserve"><value>Actions du rapport</value></data>
-  <data name="Sidebar_NewReport" xml:space="preserve"><value>+ Nouveau rapport</value></data>
-  <data name="Sidebar_SaveReport" xml:space="preserve"><value>+ Enregistrer le rapport</value></data>
-  <data name="Sidebar_UpdateReport" xml:space="preserve"><value>+ Mettre à jour le rapport</value></data>
-  <data name="Sidebar_Export" xml:space="preserve"><value>+ Exporter</value></data>
+  <data name="Sidebar_NewReport" xml:space="preserve"><value>Nouveau rapport</value></data>
+  <data name="Sidebar_SaveReport" xml:space="preserve"><value>Enregistrer le rapport</value></data>
+  <data name="Sidebar_UpdateReport" xml:space="preserve"><value>Mettre à jour le rapport</value></data>
+  <data name="Sidebar_Export" xml:space="preserve"><value>Exporter</value></data>
   <data name="Sidebar_ExportPdf" xml:space="preserve"><value>Exporter en PDF</value></data>
   <data name="Sidebar_ExportExcel" xml:space="preserve"><value>Exporter en Excel</value></data>
-  <data name="Sidebar_EditReport" xml:space="preserve"><value>+ Modifier le rapport</value></data>
-  <data name="Sidebar_BackToDashboard" xml:space="preserve"><value>+ Retour au tableau de bord</value></data>
+  <data name="Sidebar_EditReport" xml:space="preserve"><value>Modifier le rapport</value></data>
+  <data name="Sidebar_BackToDashboard" xml:space="preserve"><value>Retour au tableau de bord</value></data>
   <data name="Sidebar_EndOfAnalysis" xml:space="preserve"><value>Fin de l'analyse</value></data>
+  <data name="Sidebar_LoadSampleData" xml:space="preserve"><value>Charger les donn&#xE9;es d'exemple</value></data>
+  <data name="Sidebar_SaveAsDraft" xml:space="preserve"><value>Enregistrer comme brouillon</value></data>
+  <data name="Sidebar_SubmitForReview" xml:space="preserve"><value>Soumettre pour r&#xE9;vision</value></data>
+  <data name="Sidebar_Submitting" xml:space="preserve"><value>Soumission en cours...</value></data>
+  <data name="Sidebar_TopDownPrint" xml:space="preserve"><value>Analyse descendante (Imprimer)</value></data>
+  <data name="Sidebar_BottomUpPrint" xml:space="preserve"><value>Analyse ascendante (Imprimer)</value></data>
+  <data name="Sidebar_FullReportPrint" xml:space="preserve"><value>Rapport complet (Imprimer)</value></data>
 
   <!-- Tabs -->
   <data name="Tab_TopDown" xml:space="preserve"><value>Analyse descendante</value></data>

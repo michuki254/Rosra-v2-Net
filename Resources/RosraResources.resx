@@ -39,15 +39,22 @@
   <data name="Sidebar_Country" xml:space="preserve"><value>Country:</value></data>
   <data name="Sidebar_Region" xml:space="preserve"><value>Region:</value></data>
   <data name="Sidebar_ReportActions" xml:space="preserve"><value>Report Actions</value></data>
-  <data name="Sidebar_NewReport" xml:space="preserve"><value>+ New Report</value></data>
-  <data name="Sidebar_SaveReport" xml:space="preserve"><value>+ Save Report</value></data>
-  <data name="Sidebar_UpdateReport" xml:space="preserve"><value>+ Update Report</value></data>
-  <data name="Sidebar_Export" xml:space="preserve"><value>+ Export</value></data>
+  <data name="Sidebar_NewReport" xml:space="preserve"><value>New Report</value></data>
+  <data name="Sidebar_SaveReport" xml:space="preserve"><value>Save Report</value></data>
+  <data name="Sidebar_UpdateReport" xml:space="preserve"><value>Update Report</value></data>
+  <data name="Sidebar_Export" xml:space="preserve"><value>Export</value></data>
   <data name="Sidebar_ExportPdf" xml:space="preserve"><value>Export as PDF</value></data>
   <data name="Sidebar_ExportExcel" xml:space="preserve"><value>Export as Excel</value></data>
-  <data name="Sidebar_EditReport" xml:space="preserve"><value>+ Edit Report</value></data>
-  <data name="Sidebar_BackToDashboard" xml:space="preserve"><value>+ Back to Dashboard</value></data>
+  <data name="Sidebar_EditReport" xml:space="preserve"><value>Edit Report</value></data>
+  <data name="Sidebar_BackToDashboard" xml:space="preserve"><value>Back to Dashboard</value></data>
   <data name="Sidebar_EndOfAnalysis" xml:space="preserve"><value>End of Analysis</value></data>
+  <data name="Sidebar_LoadSampleData" xml:space="preserve"><value>Load Sample Data</value></data>
+  <data name="Sidebar_SaveAsDraft" xml:space="preserve"><value>Save as Draft</value></data>
+  <data name="Sidebar_SubmitForReview" xml:space="preserve"><value>Submit for Review</value></data>
+  <data name="Sidebar_Submitting" xml:space="preserve"><value>Submitting...</value></data>
+  <data name="Sidebar_TopDownPrint" xml:space="preserve"><value>Top-Down Analysis (Print)</value></data>
+  <data name="Sidebar_BottomUpPrint" xml:space="preserve"><value>Bottom-Up Analysis (Print)</value></data>
+  <data name="Sidebar_FullReportPrint" xml:space="preserve"><value>Full Report (Print)</value></data>
 
   <!-- Tabs -->
   <data name="Tab_TopDown" xml:space="preserve"><value>Top-Down Analysis</value></data>

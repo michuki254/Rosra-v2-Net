@@ -1,4 +1,5 @@
 @model List<RosraApp.Models.RosraReport>
+@using RosraApp.Models.Enums
 
 @{
     ViewData["Title"] = "Validated Assessments";
@@ -8,109 +9,330 @@
     var totalCount = (int)(ViewData["TotalCount"] ?? 0);
 }
 
+@functions {
+    public string GetCountryCode(string country)
+    {
+        if (string.IsNullOrEmpty(country)) return "";
+        var codes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            {"Kenya","ke"},{"Nigeria","ng"},{"South Africa","za"},{"Egypt","eg"},{"Ethiopia","et"},
+            {"Ghana","gh"},{"Tanzania","tz"},{"Uganda","ug"},{"Rwanda","rw"},{"Morocco","ma"},
+            {"Algeria","dz"},{"Senegal","sn"},{"Cameroon","cm"},{"Zambia","zm"},{"Zimbabwe","zw"},
+            {"Botswana","bw"},{"Namibia","na"},{"Mozambique","mz"},{"Mali","ml"},{"Burkina Faso","bf"},
+            {"Ivory Coast","ci"},{"Cote d'Ivoire","ci"},{"Malawi","mw"},{"Benin","bj"},{"Togo","tg"},
+            {"Niger","ne"},{"Sierra Leone","sl"},{"Liberia","lr"},
+            {"United Kingdom","gb"},{"UK","gb"},{"Britain","gb"},{"France","fr"},{"Germany","de"},
+            {"Italy","it"},{"Spain","es"},{"Netherlands","nl"},{"Belgium","be"},{"Switzerland","ch"},
+            {"Sweden","se"},{"Norway","no"},{"Portugal","pt"},{"Poland","pl"},{"Denmark","dk"},
+            {"Finland","fi"},{"Austria","at"},{"Ireland","ie"},{"Greece","gr"},{"Czech Republic","cz"},
+            {"Romania","ro"},{"Hungary","hu"},
+            {"United States","us"},{"United States of America","us"},{"USA","us"},{"Canada","ca"},
+            {"Mexico","mx"},{"Brazil","br"},{"Argentina","ar"},{"Chile","cl"},{"Colombia","co"},
+            {"Peru","pe"},{"Venezuela","ve"},{"Ecuador","ec"},{"Bolivia","bo"},{"Paraguay","py"},
+            {"Uruguay","uy"},{"Costa Rica","cr"},{"Panama","pa"},{"Guatemala","gt"},{"Honduras","hn"},
+            {"El Salvador","sv"},{"Nicaragua","ni"},{"Jamaica","jm"},{"Trinidad and Tobago","tt"},
+            {"China","cn"},{"India","in"},{"Japan","jp"},{"Singapore","sg"},{"South Korea","kr"},
+            {"Korea","kr"},{"Thailand","th"},{"Indonesia","id"},{"Malaysia","my"},{"Philippines","ph"},
+            {"Vietnam","vn"},{"Pakistan","pk"},{"Bangladesh","bd"},{"Sri Lanka","lk"},{"Nepal","np"},
+            {"Myanmar","mm"},{"Cambodia","kh"},{"Taiwan","tw"},{"Hong Kong","hk"},
+            {"UAE","ae"},{"United Arab Emirates","ae"},{"Saudi Arabia","sa"},{"Israel","il"},
+            {"Turkey","tr"},{"Iran","ir"},{"Iraq","iq"},{"Jordan","jo"},{"Lebanon","lb"},
+            {"Kuwait","kw"},{"Qatar","qa"},{"Oman","om"},{"Bahrain","bh"},
+            {"Australia","au"},{"New Zealand","nz"},{"Fiji","fj"},{"Papua New Guinea","pg"},
+            {"Russia","ru"},{"Ukraine","ua"},{"Kazakhstan","kz"},{"Uzbekistan","uz"}
+        };
+        return codes.TryGetValue(country, out var code) ? code : "";
+    }
+}
+
 @section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
     <style>
-        body { background: #f8f9fa; }
-        .lib-header { background: white; border-radius: 8px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .lib-header h1 { color: #212529; font-weight: 700; font-size: 2rem; margin-bottom: 0.5rem; }
-        .lib-table { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
-        .lib-table th { background: #155724; color: white; font-weight: 600; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem; }
-        .lib-table td { padding: 1rem; vertical-align: middle; font-size: 0.875rem; border-bottom: 1px solid #f1f3f5; }
-        .lib-table tr:hover { background: #f8f9fa; }
+        body { background: #FFFFFF; }
+
+        /* ── Page Header ── */
+        .validated-header {
+            background: white;
+            border-radius: 12px;
+            padding: 1.75rem 2rem;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 2px 20px -4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #10B981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+            box-shadow: 0 6px 12px -2px rgba(16, 185, 129, 0.25);
+            flex-shrink: 0;
+        }
+
+        .validated-header h1 { color: #222222; font-weight: 700; font-size: 1.75rem; margin-bottom: 0.25rem; }
+        .validated-header p { color: #6A6A6A; font-size: 0.9375rem; margin: 0; }
+
+        .btn-header-action {
+            background: white; border: none; color: #222222; border-radius: 10px;
+            font-weight: 500; padding: 0.5rem 1rem; font-size: 0.875rem;
+            box-shadow: 0 1px 6px -1px rgba(0, 0, 0, 0.08); transition: all 0.2s ease;
+        }
+        .btn-header-action:hover { color: #3B82F6; box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.15); transform: translateY(-1px); }
+        .btn-header-action.queue { color: #8B5CF6; }
+        .btn-header-action.queue:hover { color: #7C3AED; }
+
+        /* ── Search ── */
+        .search-box {
+            background: #F7F7F7; border: 1px solid #DDDDDD; border-radius: 8px; transition: all 0.2s;
+        }
+        .search-box:focus { background: white; border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+        .btn-search {
+            background: #3B82F6; color: white; border: none; border-radius: 8px;
+            box-shadow: 0 2px 6px -1px rgba(59, 130, 246, 0.25); transition: all 0.2s;
+        }
+        .btn-search:hover { background: #2563EB; color: white; }
+
+        .btn-clear { background: white; color: #EF4444; border: none; border-radius: 8px; box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s; }
+        .btn-clear:hover { background: #FEE2E2; }
+
+        /* ── Table Card ── */
+        .table-card {
+            background: white; border-radius: 12px; padding: 1.75rem;
+            box-shadow: 0 2px 20px -4px rgba(0, 0, 0, 0.1); border: none;
+        }
+
+        .validated-table { margin-bottom: 0; }
+
+        .validated-table thead th {
+            background: #F7F7F7; border-bottom: none; color: #6A6A6A;
+            font-weight: 600; font-size: 0.8125rem; padding: 0.875rem 1rem;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .validated-table thead th:first-child { border-radius: 8px 0 0 8px; }
+        .validated-table thead th:last-child { border-radius: 0 8px 8px 0; }
+
+        .validated-table tbody td {
+            padding: 1rem; vertical-align: middle;
+            border-bottom: 1px solid #F7F7F7; font-size: 0.875rem;
+        }
+        .validated-table tbody tr { transition: background 0.15s; }
+        .validated-table tbody tr:hover { background: #FAFAFA; }
+
+        .report-title { font-weight: 600; color: #222222; }
+        .report-author { font-size: 0.8125rem; color: #6A6A6A; }
+
+        .location-cell { display: flex; align-items: center; gap: 0.5rem; }
+        .country-flag {
+            border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            width: 24px; height: 18px; background-size: cover; background-position: center; flex-shrink: 0;
+        }
+
+        /* ── Badges ── */
+        .completion-badge {
+            display: inline-flex; align-items: center; gap: 0.25rem;
+            padding: 0.25rem 0.625rem; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 600;
+        }
+        .completion-full { background: #D1FAE5; color: #065F46; }
+        .completion-partial { background: #FEF3C7; color: #92400E; }
+        .completion-metadata { background: #F7F7F7; color: #6A6A6A; }
+
+        .validated-badge {
+            display: inline-flex; align-items: center; gap: 0.375rem;
+            padding: 0.3rem 0.75rem; border-radius: 20px;
+            font-size: 0.8125rem; font-weight: 600;
+            background: #D1FAE5; color: #065F46;
+        }
+
+        /* ── Artifact Icons ── */
+        .artifact-btn {
+            width: 30px; height: 30px; border-radius: 8px; background: white; border: none;
+            display: inline-flex; align-items: center; justify-content: center;
+            box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s;
+            color: #EF4444; font-size: 0.875rem;
+        }
+        .artifact-btn:hover { box-shadow: 0 2px 8px -2px rgba(0,0,0,0.15); transform: translateY(-1px); }
+        .artifact-btn.excel { color: #10B981; }
+
+        /* ── Action Buttons ── */
+        .btn-view {
+            background: #3B82F6; color: white; border: none; padding: 0.375rem 0.75rem;
+            border-radius: 8px; font-weight: 500; font-size: 0.8125rem;
+            box-shadow: 0 2px 6px -1px rgba(59, 130, 246, 0.25); transition: all 0.2s;
+        }
+        .btn-view:hover { background: #2563EB; color: white; box-shadow: 0 4px 10px -2px rgba(59, 130, 246, 0.35); }
+
+        .btn-print {
+            background: white; color: #0EA5E9; border: none; padding: 0.375rem 0.625rem;
+            border-radius: 8px; font-size: 0.875rem;
+            box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s;
+        }
+        .btn-print:hover { color: #0284C7; box-shadow: 0 2px 8px -2px rgba(14,165,233,0.3); }
+
+        /* ── Pagination ── */
+        .pagination .page-link {
+            border: none; border-radius: 8px; color: #6A6A6A; font-weight: 500;
+            padding: 0.5rem 0.875rem; margin: 0 0.125rem; transition: all 0.2s;
+        }
+        .pagination .page-link:hover { background: #F7F7F7; color: #222222; }
+        .pagination .page-item.active .page-link {
+            background: #3B82F6; color: white; box-shadow: 0 2px 8px -2px rgba(59, 130, 246, 0.3);
+        }
+
+        /* ── Empty State ── */
+        .empty-state { text-align: center; padding: 3rem 1rem; }
+        .empty-state-icon {
+            width: 64px; height: 64px; border-radius: 16px; background: #F7F7F7;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 1.75rem; color: #6A6A6A; margin-bottom: 1rem;
+        }
+        .empty-state p { color: #6A6A6A; font-size: 0.9375rem; margin: 0; }
     </style>
 }
 
 <div class="container py-4">
-    <div class="lib-header d-flex justify-content-between align-items-center">
-        <div>
-            <h1><i class="bi bi-patch-check me-2"></i>Validated Assessments</h1>
-            <p class="text-muted mb-0">@totalCount validated assessment(s)</p>
+    <!-- Header -->
+    <div class="validated-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <div class="header-icon">
+                <i class="bi bi-patch-check-fill"></i>
+            </div>
+            <div>
+                <h1>Validated Assessments</h1>
+                <p>@totalCount validated assessment(s)</p>
+            </div>
         </div>
         <div class="d-flex gap-2">
-            <a asp-action="Queue" class="btn btn-outline-primary btn-sm">
+            <a asp-action="Queue" class="btn btn-header-action queue">
                 <i class="bi bi-clipboard-check me-1"></i> Review Queue
             </a>
-            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-header-action">
                 <i class="bi bi-arrow-left me-1"></i> Admin Dashboard
             </a>
         </div>
     </div>
 
     <!-- Search -->
-    <form asp-action="Validated" method="get" class="d-flex gap-2 mb-3" style="max-width: 400px;">
-        <input type="text" name="search" class="form-control form-control-sm" placeholder="Search validated assessments..." value="@searchTerm" />
-        <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-search"></i></button>
+    <form asp-action="Validated" method="get" class="d-flex gap-2 mb-4" style="max-width: 400px;">
+        <input type="text" name="search" class="form-control form-control-sm search-box" placeholder="Search validated assessments..." value="@searchTerm" />
+        <button type="submit" class="btn btn-sm btn-search"><i class="bi bi-search"></i></button>
         @if (!string.IsNullOrEmpty(searchTerm))
         {
-            <a asp-action="Validated" class="btn btn-sm btn-outline-danger"><i class="bi bi-x"></i></a>
+            <a asp-action="Validated" class="btn btn-sm btn-clear"><i class="bi bi-x"></i></a>
         }
     </form>
 
-    <div class="lib-table">
-        <table class="table mb-0">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Location</th>
-                    <th>Financial Year</th>
-                    <th>Completion</th>
-                    <th>Validated</th>
-                    <th>Artifacts</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.Any())
-                {
-                    @foreach (var report in Model)
+    <!-- Table -->
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table validated-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Location</th>
+                        <th>Financial Year</th>
+                        <th>Completion</th>
+                        <th>Validated</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
                     {
-                        var completion = (RosraApp.Models.Enums.CompletionLevel)report.CompletionLevel;
-                        <tr>
-                            <td><strong>@report.Title</strong>
-                                @if (report.User != null)
-                                {
-                                    <br /><small class="text-muted">by @report.User.FirstName @report.User.LastName</small>
-                                }
-                            </td>
-                            <td>@(report.City ?? "") @(report.Country ?? "")</td>
-                            <td>@(report.FinancialYear ?? "-")</td>
-                            <td>
-                                <span class="badge @(completion == RosraApp.Models.Enums.CompletionLevel.Full ? "bg-success" : "bg-warning text-dark")" style="font-size:0.75rem;">
-                                    @completion
-                                </span>
-                            </td>
-                            <td>@(report.ValidatedAt?.ToLocalTime().ToString("dd MMM yyyy") ?? "-")</td>
-                            <td>
-                                @if (report.Artifacts != null && report.Artifacts.Any())
-                                {
-                                    @foreach (var artifact in report.Artifacts.Take(2))
+                        @foreach (var report in Model)
+                        {
+                            var completion = (CompletionLevel)report.CompletionLevel;
+                            var (compClass, compIcon) = completion switch {
+                                CompletionLevel.Full => ("completion-full", "bi-check-circle-fill"),
+                                CompletionLevel.Partial => ("completion-partial", "bi-pie-chart-fill"),
+                                _ => ("completion-metadata", "bi-file-text")
+                            };
+                            <tr>
+                                <td>
+                                    <div class="report-title">@report.Title</div>
+                                    @if (report.User != null)
                                     {
-                                        <a asp-action="Artifact" asp-route-id="@artifact.Id" class="btn btn-sm btn-outline-danger me-1" title="@artifact.FileName">
-                                            <i class="bi bi-file-pdf"></i>
-                                        </a>
+                                        <div class="report-author">by @report.User.FirstName @report.User.LastName</div>
                                     }
-                                }
-                                else
-                                {
-                                    <span class="text-muted" style="font-size:0.8125rem;">None</span>
-                                }
-                            </td>
-                            <td>
-                                <a asp-action="Review" asp-route-id="@report.PublicId" class="btn btn-sm btn-primary">
-                                    <i class="bi bi-eye me-1"></i> View
-                                </a>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(report.City) || !string.IsNullOrEmpty(report.Country))
+                                    {
+                                        <div class="location-cell">
+                                            @{
+                                                var cc = GetCountryCode(report.Country);
+                                            }
+                                            @if (!string.IsNullOrEmpty(cc))
+                                            {
+                                                <span class="country-flag fi fi-@cc"></span>
+                                            }
+                                            else if (!string.IsNullOrEmpty(report.Country))
+                                            {
+                                                <i class="bi bi-globe" style="color: #6A6A6A;"></i>
+                                            }
+                                            <span>@(report.City ?? "")@(!string.IsNullOrEmpty(report.City) && !string.IsNullOrEmpty(report.Country) ? ", " : "")@(report.Country ?? "")</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #6A6A6A;">-</span>
+                                    }
+                                </td>
+                                <td style="font-weight: 500; color: #222222;">@(report.FinancialYear ?? "-")</td>
+                                <td>
+                                    <span class="completion-badge @compClass">
+                                        <i class="bi @compIcon"></i> @completion
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (report.ValidatedAt.HasValue)
+                                    {
+                                        <span class="validated-badge">
+                                            <i class="bi bi-patch-check-fill"></i> @report.ValidatedAt.Value.ToLocalTime().ToString("dd MMM yyyy")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #6A6A6A;">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a asp-action="Review" asp-route-id="@report.PublicId" class="btn btn-sm btn-view" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="PrintFullReport" asp-route-id="@report.PublicId" target="_blank" class="btn btn-sm btn-print" title="Full Report (Print)">
+                                            <i class="bi bi-printer"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="py-0">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">
+                                        <i class="bi bi-patch-check"></i>
+                                    </div>
+                                    <p>No validated assessments found</p>
+                                </div>
                             </td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr><td colspan="7" class="text-center text-muted py-4">No validated assessments found</td></tr>
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 
+    <!-- Pagination -->
     @if (totalPages > 1)
     {
         <nav class="mt-3">

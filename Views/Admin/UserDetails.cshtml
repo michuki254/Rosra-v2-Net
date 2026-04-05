@@ -2,93 +2,443 @@
 
 @{
     ViewData["Title"] = "User Details";
+    var reportCount = (int)(ViewData["ReportCount"] ?? 0);
+    var isActive = (bool)(ViewData["IsActive"] ?? true);
+    var user = Model.User;
+    var initials = "";
+    if (!string.IsNullOrEmpty(user?.FirstName)) initials += user.FirstName[0];
+    if (!string.IsNullOrEmpty(user?.LastName)) initials += user.LastName[0];
+    if (string.IsNullOrEmpty(initials) && !string.IsNullOrEmpty(user?.Email)) initials = user.Email[0].ToString().ToUpper();
+    var colors = new[] { "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EF4444", "#06B6D4", "#EC4899", "#6366F1" };
+    var avatarColor = colors[Math.Abs((user?.Id ?? "").GetHashCode()) % colors.Length];
 }
 
-<h1>User Details</h1>
+@section Styles {
+    <style>
+        body { background: #FFFFFF; }
 
-<div class="row">
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5>User Information</h5>
+        .page-header {
+            background: white; border-radius: 12px; padding: 1.75rem 2rem;
+            margin-bottom: 1.75rem; box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1);
+        }
+        .btn-back {
+            background: white; border: none; color: #222222; border-radius: 10px;
+            font-weight: 500; padding: 0.5rem 1rem; font-size: 0.875rem;
+            box-shadow: 0 1px 6px -1px rgba(0,0,0,0.08); transition: all 0.2s;
+        }
+        .btn-back:hover { color: #3B82F6; box-shadow: 0 4px 16px -4px rgba(0,0,0,0.15); }
+
+        /* ── Profile Card ── */
+        .profile-card {
+            background: white; border-radius: 12px; padding: 2rem;
+            box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1); text-align: center;
+        }
+        .avatar-lg {
+            width: 80px; height: 80px; border-radius: 20px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 1.75rem; font-weight: 700; color: white; margin-bottom: 1rem;
+        }
+        .profile-name { font-size: 1.25rem; font-weight: 700; color: #222222; margin-bottom: 0.125rem; }
+        .profile-email { font-size: 0.875rem; color: #6A6A6A; margin-bottom: 0.75rem; }
+        .profile-org { font-size: 0.8125rem; color: #222222; font-weight: 500; }
+
+        .status-pill {
+            display: inline-flex; align-items: center; gap: 0.375rem;
+            padding: 0.3rem 0.75rem; border-radius: 20px; font-size: 0.8125rem; font-weight: 600;
+        }
+        .status-pill i { font-size: 0.5rem; }
+        .status-pill.active { background: #D1FAE5; color: #065F46; }
+        .status-pill.inactive { background: #F7F7F7; color: #6A6A6A; }
+
+        .email-badge { font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 12px; }
+        .email-verified { background: #D1FAE5; color: #065F46; }
+        .email-unverified { background: #FEE2E2; color: #991B1B; }
+
+        /* ── Stat Chips ── */
+        .stat-chips { display: flex; gap: 0.75rem; justify-content: center; margin-top: 1.25rem; }
+        .stat-chip {
+            background: #FAFAFA; border-radius: 10px; padding: 0.75rem 1rem;
+            display: flex; align-items: center; gap: 0.5rem; flex: 1;
+        }
+        .stat-chip-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.875rem; color: white; flex-shrink: 0;
+        }
+        .stat-chip-value { font-size: 1rem; font-weight: 700; color: #222222; line-height: 1; }
+        .stat-chip-label { font-size: 0.6875rem; color: #6A6A6A; font-weight: 500; }
+
+        /* ── Info Card ── */
+        .info-card {
+            background: white; border-radius: 12px; padding: 1.5rem;
+            box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1);
+        }
+        .info-card-header { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 1.25rem; }
+        .section-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 0.875rem;
+        }
+        .info-card-header h5 { color: #222222; font-weight: 600; margin: 0; font-size: 1rem; }
+
+        .meta-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.625rem 0; border-bottom: 1px solid #F7F7F7;
+        }
+        .meta-row:last-child { border-bottom: none; }
+        .meta-label { font-size: 0.8125rem; color: #6A6A6A; font-weight: 500; }
+        .meta-value { font-size: 0.875rem; color: #222222; font-weight: 600; }
+
+        /* ── Roles ── */
+        .role-badge {
+            display: inline-flex; align-items: center; gap: 0.375rem;
+            padding: 0.375rem 0.75rem; border-radius: 10px; font-size: 0.8125rem; font-weight: 600;
+        }
+        .role-admin { background: #FEE2E2; color: #991B1B; }
+        .role-reviewer { background: #DBEAFE; color: #1E40AF; }
+        .role-default { background: #EDE9FE; color: #7C3AED; }
+
+        .role-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.625rem 0.75rem; background: #FAFAFA; border-radius: 8px; margin-bottom: 0.5rem;
+        }
+        .btn-remove {
+            background: white; border: none; color: #EF4444; border-radius: 8px;
+            padding: 0.25rem 0.625rem; font-size: 0.8125rem; font-weight: 500;
+            box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s;
+        }
+        .btn-remove:hover { background: #FEE2E2; }
+
+        /* ── Add Role ── */
+        .add-role-form { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+        .role-select {
+            background: #F7F7F7; border: 1px solid #DDDDDD; border-radius: 8px;
+            font-size: 0.875rem; padding: 0.375rem 0.75rem; flex: 1; transition: all 0.2s;
+        }
+        .role-select:focus { background: white; border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .btn-add-role {
+            background: #3B82F6; color: white; border: none; border-radius: 8px;
+            padding: 0.375rem 1rem; font-weight: 600; font-size: 0.875rem;
+            box-shadow: 0 2px 6px -1px rgba(59,130,246,0.25); transition: all 0.2s;
+        }
+        .btn-add-role:hover { background: #2563EB; }
+
+        /* ── Action Buttons ── */
+        .action-btn {
+            width: 100%; border: none; border-radius: 10px; font-weight: 600;
+            padding: 0.625rem; font-size: 0.875rem; margin-bottom: 0.5rem; transition: all 0.2s;
+        }
+        .action-btn-toggle-off {
+            background: white; color: #EF4444;
+            box-shadow: 0 1px 6px -1px rgba(0,0,0,0.08);
+        }
+        .action-btn-toggle-off:hover { background: #FEE2E2; }
+        .action-btn-toggle-on {
+            background: #10B981; color: white;
+            box-shadow: 0 4px 12px -2px rgba(16,185,129,0.25);
+        }
+        .action-btn-toggle-on:hover { background: #059669; color: white; }
+
+        .modal-content { border: none !important; border-radius: 12px !important; box-shadow: 0 20px 60px -12px rgba(0,0,0,0.25) !important; overflow: hidden; }
+    </style>
+}
+
+<div class="container py-4" style="max-width: 900px;">
+    <!-- Header -->
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <div style="width:40px; height:40px; border-radius:10px; background:#8B5CF6; display:flex; align-items:center; justify-content:center; font-size:1.1rem; color:white; box-shadow:0 6px 12px -2px rgba(139,92,246,0.25);">
+                <i class="bi bi-person-gear"></i>
             </div>
-            <div class="card-body">
-                @if (Model.User != null)
-                {
-                    <dl class="row">
-                        <dt class="col-sm-4">Email</dt>
-                        <dd class="col-sm-8">@Model.User.Email</dd>
-                        
-                        <dt class="col-sm-4">First Name</dt>
-                        <dd class="col-sm-8">@Model.User.FirstName</dd>
-                        
-                        <dt class="col-sm-4">Last Name</dt>
-                        <dd class="col-sm-8">@Model.User.LastName</dd>
-                        
-                        <dt class="col-sm-4">Created At</dt>
-                        <dd class="col-sm-8">@(Model.User.CreatedAt?.ToString("yyyy-MM-dd HH:mm") ?? "N/A")</dd>
-                    </dl>
-                }
+            <div>
+                <h1 style="color:#222222; font-weight:700; font-size:1.5rem; margin:0;">User Details</h1>
+                <p style="color:#6A6A6A; font-size:0.875rem; margin:0;">Manage user profile and roles</p>
             </div>
         </div>
+        <a asp-action="Users" class="btn btn-back">
+            <i class="bi bi-arrow-left me-1"></i> Back to Users
+        </a>
     </div>
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5>User Roles</h5>
+
+    @if (user != null)
+    {
+        <div class="row g-4">
+            <!-- Left Column: Profile + Actions -->
+            <div class="col-md-5">
+                <!-- Profile Card -->
+                <div class="profile-card mb-4">
+                    <div class="avatar-lg" style="background: @avatarColor; box-shadow: 0 8px 16px -4px @(avatarColor)40;">
+                        @initials
+                    </div>
+                    <div class="profile-name">@user.FirstName @user.LastName</div>
+                    <div class="profile-email">@user.Email</div>
+                    @if (!string.IsNullOrEmpty(user.Organization))
+                    {
+                        <div class="profile-org"><i class="bi bi-building me-1"></i> @user.Organization</div>
+                    }
+                    <div class="d-flex gap-2 justify-content-center mt-3">
+                        <span class="status-pill @(isActive ? "active" : "inactive")">
+                            <i class="bi bi-circle-fill"></i> @(isActive ? "Active" : "Inactive")
+                        </span>
+                        <span class="email-badge @(user.EmailConfirmed ? "email-verified" : "email-unverified")">
+                            <i class="bi bi-@(user.EmailConfirmed ? "patch-check-fill" : "exclamation-circle-fill") me-1"></i>
+                            @(user.EmailConfirmed ? "Verified" : "Unverified")
+                        </span>
+                    </div>
+
+                    <!-- Stat Chips -->
+                    <div class="stat-chips">
+                        <div class="stat-chip">
+                            <div class="stat-chip-icon" style="background:#F59E0B; box-shadow:0 4px 8px -2px rgba(245,158,11,0.25);"><i class="bi bi-file-text-fill"></i></div>
+                            <div><div class="stat-chip-value">@reportCount</div><div class="stat-chip-label">Reports</div></div>
+                        </div>
+                        <div class="stat-chip">
+                            <div class="stat-chip-icon" style="background:#8B5CF6; box-shadow:0 4px 8px -2px rgba(139,92,246,0.25);"><i class="bi bi-shield-fill"></i></div>
+                            <div><div class="stat-chip-value">@(Model.UserRoles?.Count ?? 0)</div><div class="stat-chip-label">Roles</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Details -->
+                <div class="info-card mb-4">
+                    <div class="info-card-header">
+                        <div class="section-icon" style="background:#06B6D4;"><i class="bi bi-info-circle-fill"></i></div>
+                        <h5>Account Details</h5>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">User ID</span>
+                        <span class="meta-value" style="font-size:0.75rem; font-family:monospace; color:#6A6A6A;">@user.Id[..8]...</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Username</span>
+                        <span class="meta-value">@(user.UserName ?? "-")</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Phone</span>
+                        <span class="meta-value">@(user.PhoneNumber ?? "-")</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Joined</span>
+                        <span class="meta-value">@(user.CreatedAt?.ToString("dd MMM yyyy") ?? "-")</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Two-Factor</span>
+                        <span class="meta-value">
+                            @if (user.TwoFactorEnabled)
+                            {
+                                <span style="color:#10B981;">Enabled</span>
+                            }
+                            else
+                            {
+                                <span style="color:#6A6A6A;">Disabled</span>
+                            }
+                        </span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Failed Logins</span>
+                        <span class="meta-value">@user.AccessFailedCount</span>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <div class="section-icon" style="background:#EF4444;"><i class="bi bi-lightning-fill"></i></div>
+                        <h5>Quick Actions</h5>
+                    </div>
+                    <button class="action-btn @(isActive ? "action-btn-toggle-off" : "action-btn-toggle-on")" id="toggleStatusBtn"
+                            data-user-id="@user.Id" data-active="@(isActive ? "true" : "false")">
+                        <i class="bi bi-@(isActive ? "person-slash" : "person-check") me-1"></i>
+                        @(isActive ? "Deactivate User" : "Activate User")
+                    </button>
+                </div>
             </div>
-            <div class="card-body">
-                <h6>Current Roles</h6>
-                <ul class="list-group mb-3">
+
+            <!-- Right Column: Roles -->
+            <div class="col-md-7">
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <div class="section-icon" style="background:#3B82F6;"><i class="bi bi-shield-lock-fill"></i></div>
+                        <h5>Role Management</h5>
+                    </div>
+
                     @if (Model.UserRoles != null && Model.UserRoles.Any())
                     {
-                        foreach (var role in Model.UserRoles)
-                        {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                @role
-                                @if (Model.User != null)
-                                {
-                                    <form asp-action="RemoveUserFromRole" method="post">
-                                        <input type="hidden" name="userId" value="@Model.User.Id" />
-                                        <input type="hidden" name="roleName" value="@role" />
-                                        <button type="submit" class="btn btn-sm btn-danger">Remove</button>
-                                    </form>
-                                }
-                            </li>
-                        }
+                        <div class="mb-3">
+                            <div style="font-size:0.75rem; color:#6A6A6A; text-transform:uppercase; font-weight:600; letter-spacing:0.5px; margin-bottom:0.5rem;">Current Roles</div>
+                            @foreach (var role in Model.UserRoles)
+                            {
+                                var roleClass = role.ToLower() switch {
+                                    "admin" => "role-admin",
+                                    "reviewer" => "role-reviewer",
+                                    _ => "role-default"
+                                };
+                                <div class="role-item">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="role-badge @roleClass">
+                                            <i class="bi bi-shield-fill"></i> @role
+                                        </span>
+                                    </div>
+                                    <button class="btn-remove remove-role-btn" data-role="@role">
+                                        <i class="bi bi-x-lg me-1"></i> Remove
+                                    </button>
+                                </div>
+                            }
+                        </div>
                     }
                     else
                     {
-                        <li class="list-group-item">No roles assigned</li>
+                        <div style="text-align:center; padding:1.5rem; background:#FAFAFA; border-radius:10px; margin-bottom:1rem;">
+                            <i class="bi bi-shield" style="font-size:1.5rem; color:#DDDDDD;"></i>
+                            <p style="color:#6A6A6A; font-size:0.875rem; margin:0.5rem 0 0;">No roles assigned</p>
+                        </div>
                     }
-                </ul>
-                
-                @if (Model.User != null && Model.AllRoles != null && Model.UserRoles != null)
-                {
-                    <h6>Add Role</h6>
-                    <form asp-action="AddUserToRole" method="post">
-                        <input type="hidden" name="userId" value="@Model.User.Id" />
-                        <div class="input-group mb-3">
-                            <select name="roleName" class="form-control">
-                                @foreach (var role in Model.AllRoles)
-                                {
-                                    if (role.Name != null && !Model.UserRoles.Contains(role.Name))
+
+                    @if (Model.AllRoles != null && Model.UserRoles != null)
+                    {
+                        var availableRoles = Model.AllRoles.Where(r => r.Name != null && !Model.UserRoles.Contains(r.Name)).ToList();
+                        if (availableRoles.Any())
+                        {
+                            <div style="font-size:0.75rem; color:#6A6A6A; text-transform:uppercase; font-weight:600; letter-spacing:0.5px; margin-bottom:0.5rem;">Add Role</div>
+                            <form asp-action="AddUserToRole" method="post" class="add-role-form">
+                                <input type="hidden" name="userId" value="@user.Id" />
+                                <select name="roleName" class="form-select form-select-sm role-select">
+                                    @foreach (var role in availableRoles)
                                     {
                                         <option value="@role.Name">@role.Name</option>
                                     }
-                                }
-                            </select>
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="submit">Add</button>
+                                </select>
+                                <button class="btn btn-sm btn-add-role" type="submit">
+                                    <i class="bi bi-plus-lg me-1"></i> Add
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <div style="padding:0.75rem; background:#D1FAE5; border-radius:8px; font-size:0.8125rem; color:#065F46; text-align:center;">
+                                <i class="bi bi-check-circle me-1"></i> User has all available roles assigned
                             </div>
-                        </div>
-                    </form>
-                }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Toggle Status Modal -->
+<!-- Remove Role Modal -->
+<div class="modal fade" id="removeRoleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#222222; color:white; padding:1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-shield-x me-2"></i>Remove Role</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <p style="color:#6A6A6A; margin:0;">Remove the <strong id="removeRoleName"></strong> role from this user?</p>
+            </div>
+            <div class="modal-footer" style="border:none; background:#F7F7F7; padding:1rem 1.5rem;">
+                <button class="btn" style="background:white; color:#222222; border:none; border-radius:8px; box-shadow:0 1px 4px -1px rgba(0,0,0,0.1); font-weight:500;" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn" style="background:#EF4444; color:white; border:none; border-radius:8px; box-shadow:0 4px 12px -2px rgba(239,68,68,0.25); font-weight:600;" id="confirmRemoveRoleBtn">
+                    <i class="bi bi-x-lg me-1"></i> Remove
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<form id="removeRoleForm" asp-action="RemoveUserFromRole" method="post" style="display:none;">
+    <input type="hidden" name="userId" value="@user?.Id" />
+    <input type="hidden" name="roleName" id="removeRoleInput" />
+</form>
+
+<!-- Toggle Status Modal -->
+<div class="modal fade" id="toggleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#222222; color:white; padding:1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold" id="toggleModalTitle"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <p style="color:#6A6A6A; margin:0;" id="toggleModalMessage"></p>
+            </div>
+            <div class="modal-footer" style="border:none; background:#F7F7F7; padding:1rem 1.5rem;">
+                <button class="btn" style="background:white; color:#222222; border:none; border-radius:8px; box-shadow:0 1px 4px -1px rgba(0,0,0,0.1); font-weight:500;" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn" id="confirmToggleBtn" style="border:none; border-radius:8px; font-weight:600;"></button>
             </div>
         </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1050">
+    <div id="toast" class="toast hide" role="alert">
+        <div class="toast-header">
+            <strong class="me-auto" id="toast-title">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toast-message"></div>
+    </div>
 </div>
+
+@section Scripts {
+    @Html.AntiForgeryToken()
+    <script>
+        $(document).ready(function() {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            function showToast(title, message, type) {
+                $('#toast-title').text(title);
+                $('#toast-message').text(message);
+                $('#toast').removeClass('bg-danger bg-success').addClass(type === 'success' ? 'bg-success text-white' : 'bg-danger text-white');
+                new bootstrap.Toast(document.getElementById('toast')).show();
+            }
+
+            // Remove Role
+            $('.remove-role-btn').click(function() {
+                var role = $(this).data('role');
+                $('#removeRoleName').text(role);
+                $('#removeRoleInput').val(role);
+                new bootstrap.Modal(document.getElementById('removeRoleModal')).show();
+            });
+
+            $('#confirmRemoveRoleBtn').click(function() {
+                $('#removeRoleForm').submit();
+            });
+
+            $('#toggleStatusBtn').click(function() {
+                var isActive = $(this).data('active') === 'true' || $(this).data('active') === true;
+                var name = '@(user?.FirstName) @(user?.LastName)';
+
+                if (isActive) {
+                    $('#toggleModalTitle').html('<i class="bi bi-person-slash me-2"></i>Deactivate User');
+                    $('#toggleModalMessage').text('Are you sure you want to deactivate ' + name + '? They will be locked out.');
+                    $('#confirmToggleBtn').css({ background: '#EF4444', color: 'white', 'box-shadow': '0 4px 12px -2px rgba(239,68,68,0.25)' }).html('<i class="bi bi-person-slash me-1"></i> Deactivate');
+                } else {
+                    $('#toggleModalTitle').html('<i class="bi bi-person-check me-2"></i>Activate User');
+                    $('#toggleModalMessage').text('Are you sure you want to activate ' + name + '?');
+                    $('#confirmToggleBtn').css({ background: '#10B981', color: 'white', 'box-shadow': '0 4px 12px -2px rgba(16,185,129,0.25)' }).html('<i class="bi bi-person-check me-1"></i> Activate');
+                }
+
+                new bootstrap.Modal(document.getElementById('toggleModal')).show();
+            });
+
+            $('#confirmToggleBtn').click(function() {
+                $.ajax({
+                    url: '@Url.Action("ToggleUserStatus", "Admin")',
+                    type: 'POST',
+                    data: { userId: '@user?.Id', __RequestVerificationToken: token },
+                    success: function(r) {
+                        bootstrap.Modal.getInstance(document.getElementById('toggleModal')).hide();
+                        if (r.success) {
+                            showToast('Success', r.message, 'success');
+                            setTimeout(function() { location.reload(); }, 800);
+                        } else {
+                            showToast('Error', r.message, 'error');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}
