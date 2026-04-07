@@ -301,7 +301,7 @@
                             <td class="col-gen-rev num-cell" style="display:none;">@(r.HasGeneric?cs+r.GenericTotalRevenue.ToString("N0"):"—")</td>
                             <!-- Meta -->
                             <td class="col-author author-cell"><div class="name">@r.AuthorName</div><div class="email">@r.AuthorEmail</div></td>
-                            <td class="col-version" style="display:none; text-align:center;">v@r.SubmissionVersion</td>
+                            <td class="col-version" style="display:none; text-align:center;">v@(r.SubmissionVersion)</td>
                             <td class="col-created" style="font-size:0.75rem;">@r.CreatedAt.ToString("dd MMM yy")</td>
                             <td class="col-submitted" style="display:none; font-size:0.75rem;">@(r.SubmittedAt?.ToString("dd MMM yy") ?? "—")</td>
                             <td class="col-validated" style="display:none; font-size:0.75rem;">@(r.ValidatedAt?.ToString("dd MMM yy") ?? "—")</td>
