@@ -1,9 +1,11 @@
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RosraApp.Data;
 using RosraApp.Models;
+using RosraApp.Models.Enums;
 using RosraApp.Models.ViewModels;
 using System.Linq;
 using System.Threading.Tasks;
@@ -818,6 +820,477 @@ namespace RosraApp.Controllers
             };
             _context.AuditLogs.Add(auditLog);
             await _context.SaveChangesAsync();
+        }
+
+        // ══════════════════════════════════════════════════
+        //  DATA MANAGEMENT
+        // ══════════════════════════════════════════════════
+
+        public async Task<IActionResult> DataManagement(
+            int page = 1, int pageSize = 25, string? search = null,
+            string? country = null, string? status = null, string? completionLevel = null,
+            string? author = null, string? financialYear = null,
+            string? dateFrom = null, string? dateTo = null)
+        {
+            // Base query (include soft-deleted for full picture)
+            IQueryable<RosraReport> query = _context.RosraReports
+                .IgnoreQueryFilters()
+                .Where(r => !r.IsDeleted)
+                .Include(r => r.User);
+
+            // Gather filter options from all data
+            var allReports = _context.RosraReports.IgnoreQueryFilters().Where(r => !r.IsDeleted);
+            var countries = await allReports.Where(r => r.Country != null).Select(r => r.Country!).Distinct().OrderBy(c => c).ToListAsync();
+            var years = await allReports.Where(r => r.FinancialYear != null).Select(r => r.FinancialYear!).Distinct().OrderByDescending(y => y).ToListAsync();
+            var authorList = await allReports.Include(r => r.User)
+                .Where(r => r.User != null)
+                .Select(r => r.User!.Email ?? "")
+                .Distinct().OrderBy(a => a).ToListAsync();
+
+            // Apply filters
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.ToLower();
+                query = query.Where(r =>
+                    (r.Title != null && r.Title.ToLower().Contains(term)) ||
+                    (r.Country != null && r.Country.ToLower().Contains(term)) ||
+                    (r.Region != null && r.Region.ToLower().Contains(term)) ||
+                    (r.City != null && r.City.ToLower().Contains(term)) ||
+                    (r.User != null && r.User.Email != null && r.User.Email.ToLower().Contains(term)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(country))
+                query = query.Where(r => r.Country == country);
+
+            if (!string.IsNullOrWhiteSpace(status) && int.TryParse(status, out var statusVal))
+                query = query.Where(r => r.Status == statusVal);
+
+            if (!string.IsNullOrWhiteSpace(completionLevel) && int.TryParse(completionLevel, out var compVal))
+                query = query.Where(r => r.CompletionLevel == compVal);
+
+            if (!string.IsNullOrWhiteSpace(author))
+                query = query.Where(r => r.User != null && r.User.Email == author);
+
+            if (!string.IsNullOrWhiteSpace(financialYear))
+                query = query.Where(r => r.FinancialYear == financialYear);
+
+            if (!string.IsNullOrWhiteSpace(dateFrom) && DateTime.TryParse(dateFrom, out var from))
+                query = query.Where(r => r.CreatedAt >= from);
+
+            if (!string.IsNullOrWhiteSpace(dateTo) && DateTime.TryParse(dateTo, out var to))
+                query = query.Where(r => r.CreatedAt <= to.AddDays(1));
+
+            // Stats (from filtered query)
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPages)));
+
+            // Status counts (from all non-deleted)
+            var statusCounts = await allReports.GroupBy(r => r.Status)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var rawReports = await query
+                .OrderByDescending(r => r.UpdatedAt ?? r.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var jsonOpts = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var reports = rawReports.Select(r =>
+            {
+                var item = new DataManagementReportItem
+                {
+                    Id = r.Id,
+                    PublicId = r.PublicId,
+                    Title = r.Title ?? "",
+                    Country = r.Country,
+                    Region = r.Region,
+                    City = r.City,
+                    FinancialYear = r.FinancialYear,
+                    Currency = r.Currency,
+                    CurrencySymbol = r.CurrencySymbol,
+                    ActualOsr = r.ActualOsr ?? 0,
+                    BudgetedOsr = r.BudgetedOsr ?? 0,
+                    Population = r.Population ?? 0,
+                    GdpPerCapita = r.GdpPerCapita ?? 0,
+                    OtherRevenue = r.OtherRevenue ?? 0,
+                    Status = r.Status,
+                    CompletionLevel = r.CompletionLevel,
+                    SubmissionVersion = r.SubmissionVersion,
+                    AuthorName = r.User != null ? $"{r.User.FirstName} {r.User.LastName}" : "Unknown",
+                    AuthorEmail = r.User != null ? r.User.Email ?? "" : "",
+                    CreatedAt = r.CreatedAt,
+                    UpdatedAt = r.UpdatedAt,
+                    SubmittedAt = r.SubmittedAt,
+                    ValidatedAt = r.ValidatedAt,
+                    IsArchived = r.IsArchived,
+                    HasPropertyTax = !string.IsNullOrEmpty(r.PropertyTaxData),
+                    HasLicense = !string.IsNullOrEmpty(r.LicenseData),
+                    HasShortTerm = !string.IsNullOrEmpty(r.ShortTermUserChargeData),
+                    HasLongTerm = !string.IsNullOrEmpty(r.LongTermUserChargeData),
+                    HasMixed = !string.IsNullOrEmpty(r.MixedUserChargeData),
+                    HasGeneric = !string.IsNullOrEmpty(r.GenericStreamsData),
+                    HasPeerSNG = !string.IsNullOrEmpty(r.PeerSNGData),
+                };
+
+                // Parse Property Tax data
+                if (!string.IsNullOrEmpty(r.PropertyTaxData))
+                {
+                    try
+                    {
+                        var pt = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisPropertyTaxViewModel>(r.PropertyTaxData, jsonOpts);
+                        if (pt != null)
+                        {
+                            item.PtRevenue = pt.RevenueToDate ?? 0;
+                            item.PtBilled = pt.BilledAmount ?? 0;
+                            item.PtOutstanding = pt.OutstandingAmount ?? 0;
+                            item.PtRegistered = pt.RegisteredProperties ?? 0;
+                            item.PtCompliant = pt.CompliantProperties ?? 0;
+                            item.Streams.Add(new StreamDetailItem
+                            {
+                                StreamType = "Property Tax", StreamName = "Property Tax",
+                                Revenue = pt.RevenueToDate ?? 0, Billed = pt.BilledAmount ?? 0,
+                                Outstanding = pt.OutstandingAmount ?? 0,
+                                RegisteredUnits = pt.RegisteredProperties ?? 0,
+                                CompliantUnits = pt.CompliantProperties ?? 0,
+                            });
+                        }
+                    }
+                    catch { }
+                }
+
+                // Parse Business License data
+                if (!string.IsNullOrEmpty(r.LicenseData))
+                {
+                    try
+                    {
+                        var bl = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisLicenseViewModel>(r.LicenseData, jsonOpts);
+                        if (bl != null)
+                        {
+                            item.BlRevenue = bl.RevenueToDate ?? 0;
+                            item.BlBilled = bl.BilledAmount ?? 0;
+                            item.BlOutstanding = bl.OutstandingAmount ?? 0;
+                            item.BlRegistered = bl.RegisteredBusinesses ?? 0;
+                            item.Streams.Add(new StreamDetailItem
+                            {
+                                StreamType = "Business License", StreamName = "Business License",
+                                Revenue = bl.RevenueToDate ?? 0, Billed = bl.BilledAmount ?? 0,
+                                Outstanding = bl.OutstandingAmount ?? 0,
+                                RegisteredUnits = bl.RegisteredBusinesses ?? 0,
+                            });
+                        }
+                    }
+                    catch { }
+                }
+
+                // Parse Generic Streams data — each stream becomes its own row
+                if (!string.IsNullOrEmpty(r.GenericStreamsData))
+                {
+                    try
+                    {
+                        var streams = System.Text.Json.JsonSerializer.Deserialize<List<GenericStreamViewModel>>(r.GenericStreamsData, jsonOpts);
+                        if (streams != null && streams.Count > 0)
+                        {
+                            item.GenericStreamCount = streams.Count;
+                            item.GenericStreamNames = string.Join(", ", streams.Select(s => s.StreamName));
+                            item.GenericTotalRevenue = streams.Sum(s => s.RevenueToDate ?? 0);
+                            item.GenericTotalBilled = streams.Sum(s => s.BilledAmount ?? 0);
+                            foreach (var s in streams)
+                            {
+                                item.Streams.Add(new StreamDetailItem
+                                {
+                                    StreamType = "Generic", StreamName = s.StreamName ?? "Unnamed",
+                                    Revenue = s.RevenueToDate ?? 0, Billed = s.BilledAmount ?? 0,
+                                    Outstanding = s.OutstandingAmount ?? 0,
+                                    RegisteredUnits = s.RegisteredUnits ?? 0,
+                                    ComplianceGap = s.ComplianceGap ?? 0,
+                                    CoverageGap = s.CoverageGap ?? 0,
+                                    LiabilityGap = s.LiabilityGap ?? 0,
+                                    TotalPotentialRevenue = s.TotalPotentialRevenue ?? 0,
+                                });
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
+                return item;
+            }).ToList();
+
+            var model = new DataManagementViewModel
+            {
+                Reports = reports,
+                PageNumber = page,
+                TotalPages = totalPages,
+                TotalCount = totalCount,
+                PageSize = pageSize,
+                Search = search,
+                Country = country,
+                Status = status,
+                CompletionLevel = completionLevel,
+                Author = author,
+                FinancialYear = financialYear,
+                DateFrom = dateFrom,
+                DateTo = dateTo,
+                Countries = countries,
+                Authors = authorList,
+                FinancialYears = years,
+                TotalReports = await allReports.CountAsync(),
+                DraftCount = statusCounts.FirstOrDefault(s => s.Status == 0)?.Count ?? 0,
+                SubmittedCount = statusCounts.FirstOrDefault(s => s.Status == 1)?.Count ?? 0,
+                UnderReviewCount = statusCounts.FirstOrDefault(s => s.Status == 2)?.Count ?? 0,
+                NeedsRevisionCount = statusCounts.FirstOrDefault(s => s.Status == 3)?.Count ?? 0,
+                ValidatedCount = statusCounts.FirstOrDefault(s => s.Status == 4)?.Count ?? 0,
+            };
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExportDataExcel(
+            string? search = null, string? country = null, string? status = null,
+            string? completionLevel = null, string? author = null,
+            string? financialYear = null, string? dateFrom = null, string? dateTo = null)
+        {
+            IQueryable<RosraReport> query = _context.RosraReports
+                .IgnoreQueryFilters()
+                .Where(r => !r.IsDeleted)
+                .Include(r => r.User);
+
+            // Apply same filters as the page
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.ToLower();
+                query = query.Where(r =>
+                    (r.Title != null && r.Title.ToLower().Contains(term)) ||
+                    (r.Country != null && r.Country.ToLower().Contains(term)) ||
+                    (r.City != null && r.City.ToLower().Contains(term)) ||
+                    (r.User != null && r.User.Email != null && r.User.Email.ToLower().Contains(term)));
+            }
+            if (!string.IsNullOrWhiteSpace(country))
+                query = query.Where(r => r.Country == country);
+            if (!string.IsNullOrWhiteSpace(status) && int.TryParse(status, out var sv))
+                query = query.Where(r => r.Status == sv);
+            if (!string.IsNullOrWhiteSpace(completionLevel) && int.TryParse(completionLevel, out var cv))
+                query = query.Where(r => r.CompletionLevel == cv);
+            if (!string.IsNullOrWhiteSpace(author))
+                query = query.Where(r => r.User != null && r.User.Email == author);
+            if (!string.IsNullOrWhiteSpace(financialYear))
+                query = query.Where(r => r.FinancialYear == financialYear);
+            if (!string.IsNullOrWhiteSpace(dateFrom) && DateTime.TryParse(dateFrom, out var from))
+                query = query.Where(r => r.CreatedAt >= from);
+            if (!string.IsNullOrWhiteSpace(dateTo) && DateTime.TryParse(dateTo, out var to))
+                query = query.Where(r => r.CreatedAt <= to.AddDays(1));
+
+            var reports = await query.OrderByDescending(r => r.UpdatedAt ?? r.CreatedAt).ToListAsync();
+
+            using var workbook = new XLWorkbook();
+            var ws = workbook.Worksheets.Add("ROSRA Data");
+
+            var jsonOpts = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            // Headers
+            var headers = new[] {
+                "ID", "Title", "Country", "Region", "City", "Financial Year",
+                "Currency", "Actual OSR", "Budgeted OSR", "Population", "GDP per Capita", "Other Revenue",
+                "Status", "Completion", "Version", "Author", "Email",
+                "Created", "Submitted", "Validated",
+                // Property Tax
+                "PT Revenue", "PT Billed", "PT Outstanding", "PT Registered", "PT Compliant",
+                // Business License
+                "BL Revenue", "BL Billed", "BL Outstanding", "BL Registered",
+                // Generic Streams
+                "Generic Count", "Generic Names", "Generic Total Revenue",
+                // Stream flags
+                "Has Property Tax", "Has License", "Has Short-Term", "Has Long-Term", "Has Mixed", "Has Generic", "Has Peer SNG"
+            };
+
+            // Header colors by group
+            var headerColors = new Dictionary<string, string> {
+                {"PT", "#F59E0B"}, {"BL", "#8B5CF6"}, {"Generic", "#06B6D4"}, {"Has", "#6A6A6A"}
+            };
+
+            for (int i = 0; i < headers.Length; i++)
+            {
+                var cell = ws.Cell(1, i + 1);
+                cell.Value = headers[i];
+                cell.Style.Font.Bold = true;
+                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                // Color-code header groups
+                var h = headers[i];
+                if (h.StartsWith("PT")) { cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#FEF3C7"); cell.Style.Font.FontColor = XLColor.FromHtml("#92400E"); }
+                else if (h.StartsWith("BL")) { cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#EDE9FE"); cell.Style.Font.FontColor = XLColor.FromHtml("#5B21B6"); }
+                else if (h.StartsWith("Generic")) { cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#CFFAFE"); cell.Style.Font.FontColor = XLColor.FromHtml("#155E75"); }
+                else if (h.StartsWith("Has")) { cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#F3F4F6"); cell.Style.Font.FontColor = XLColor.FromHtml("#374151"); }
+                else { cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#00689D"); cell.Style.Font.FontColor = XLColor.White; }
+            }
+
+            // Data rows
+            int row = 2;
+            foreach (var r in reports)
+            {
+                var statusName = ((ReportStatus)r.Status).ToString();
+                var compName = ((Models.Enums.CompletionLevel)r.CompletionLevel).ToString();
+                var authorName = r.User != null ? $"{r.User.FirstName} {r.User.LastName}" : "Unknown";
+                var authorEmail = r.User?.Email ?? "";
+
+                int col = 1;
+                ws.Cell(row, col++).Value = r.Id;
+                ws.Cell(row, col++).Value = r.Title ?? "";
+                ws.Cell(row, col++).Value = r.Country ?? "";
+                ws.Cell(row, col++).Value = r.Region ?? "";
+                ws.Cell(row, col++).Value = r.City ?? "";
+                ws.Cell(row, col++).Value = r.FinancialYear ?? "";
+                ws.Cell(row, col++).Value = r.Currency ?? "";
+                ws.Cell(row, col).Value = r.ActualOsr ?? 0; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
+                ws.Cell(row, col).Value = r.BudgetedOsr ?? 0; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
+                ws.Cell(row, col).Value = r.Population ?? 0; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
+                ws.Cell(row, col).Value = r.GdpPerCapita ?? 0; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
+                ws.Cell(row, col).Value = r.OtherRevenue ?? 0; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
+                ws.Cell(row, col++).Value = statusName;
+                ws.Cell(row, col++).Value = compName;
+                ws.Cell(row, col++).Value = r.SubmissionVersion;
+                ws.Cell(row, col++).Value = authorName;
+                ws.Cell(row, col++).Value = authorEmail;
+                ws.Cell(row, col++).Value = r.CreatedAt.ToString("yyyy-MM-dd HH:mm");
+                ws.Cell(row, col++).Value = r.SubmittedAt?.ToString("yyyy-MM-dd HH:mm") ?? "";
+                ws.Cell(row, col++).Value = r.ValidatedAt?.ToString("yyyy-MM-dd HH:mm") ?? "";
+
+                // Parse Property Tax
+                decimal ptRev = 0, ptBill = 0, ptOut = 0; int ptReg = 0, ptComp = 0;
+                if (!string.IsNullOrEmpty(r.PropertyTaxData))
+                {
+                    try { var pt = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisPropertyTaxViewModel>(r.PropertyTaxData, jsonOpts);
+                        if (pt != null) { ptRev = pt.RevenueToDate ?? 0; ptBill = pt.BilledAmount ?? 0; ptOut = pt.OutstandingAmount ?? 0; ptReg = pt.RegisteredProperties ?? 0; ptComp = pt.CompliantProperties ?? 0; }
+                    } catch { }
+                }
+                ws.Cell(row, col).Value = ptRev; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
+                ws.Cell(row, col).Value = ptBill; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
+                ws.Cell(row, col).Value = ptOut; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
+                ws.Cell(row, col++).Value = ptReg;
+                ws.Cell(row, col++).Value = ptComp;
+
+                // Parse Business License
+                decimal blRev = 0, blBill = 0, blOut = 0; int blReg = 0;
+                if (!string.IsNullOrEmpty(r.LicenseData))
+                {
+                    try { var bl = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisLicenseViewModel>(r.LicenseData, jsonOpts);
+                        if (bl != null) { blRev = bl.RevenueToDate ?? 0; blBill = bl.BilledAmount ?? 0; blOut = bl.OutstandingAmount ?? 0; blReg = bl.RegisteredBusinesses ?? 0; }
+                    } catch { }
+                }
+                ws.Cell(row, col).Value = blRev; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
+                ws.Cell(row, col).Value = blBill; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
+                ws.Cell(row, col).Value = blOut; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
+                ws.Cell(row, col++).Value = blReg;
+
+                // Parse Generic Streams
+                int genCount = 0; string genNames = ""; decimal genRev = 0;
+                if (!string.IsNullOrEmpty(r.GenericStreamsData))
+                {
+                    try { var streams = System.Text.Json.JsonSerializer.Deserialize<List<GenericStreamViewModel>>(r.GenericStreamsData, jsonOpts);
+                        if (streams != null) { genCount = streams.Count; genNames = string.Join(", ", streams.Select(s => s.StreamName)); genRev = streams.Sum(s => s.RevenueToDate ?? 0); }
+                    } catch { }
+                }
+                ws.Cell(row, col++).Value = genCount;
+                ws.Cell(row, col++).Value = genNames;
+                ws.Cell(row, col).Value = genRev; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
+
+                // Stream flags
+                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.PropertyTaxData) ? "Yes" : "No";
+                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.LicenseData) ? "Yes" : "No";
+                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.ShortTermUserChargeData) ? "Yes" : "No";
+                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.LongTermUserChargeData) ? "Yes" : "No";
+                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.MixedUserChargeData) ? "Yes" : "No";
+                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.GenericStreamsData) ? "Yes" : "No";
+                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.PeerSNGData) ? "Yes" : "No";
+
+                row++;
+            }
+
+            // Auto-fit columns
+            ws.Columns().AdjustToContents();
+
+            // Add autofilter
+            if (reports.Count > 0)
+                ws.Range(1, 1, row - 1, headers.Length).SetAutoFilter();
+
+            // ── Sheet 2: Stream Details (one row per stream per report) ──
+            var sd = workbook.Worksheets.Add("Stream Details");
+            var sdHeaders = new[] { "Report ID", "Title", "Country", "City", "Financial Year",
+                "Stream Type", "Stream Name", "Revenue", "Billed", "Outstanding",
+                "Registered Units", "Compliant Units",
+                "Compliance Gap", "Coverage Gap", "Liability Gap", "Total Potential Revenue" };
+
+            for (int i = 0; i < sdHeaders.Length; i++)
+            {
+                var cell = sd.Cell(1, i + 1);
+                cell.Value = sdHeaders[i];
+                cell.Style.Font.Bold = true;
+                cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#06B6D4");
+                cell.Style.Font.FontColor = XLColor.White;
+                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            }
+
+            int sdRow = 2;
+            foreach (var r in reports)
+            {
+                // Parse all streams for this report
+                var streamItems = new List<(string Type, string Name, decimal Rev, decimal Bill, decimal Out, int Reg, int Comp, decimal CG, decimal CovG, decimal LG, decimal TPR)>();
+
+                if (!string.IsNullOrEmpty(r.PropertyTaxData))
+                {
+                    try { var pt = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisPropertyTaxViewModel>(r.PropertyTaxData, jsonOpts);
+                        if (pt != null) streamItems.Add(("Property Tax", "Property Tax", pt.RevenueToDate??0, pt.BilledAmount??0, pt.OutstandingAmount??0, pt.RegisteredProperties??0, pt.CompliantProperties??0, 0, 0, 0, 0));
+                    } catch { }
+                }
+                if (!string.IsNullOrEmpty(r.LicenseData))
+                {
+                    try { var bl = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisLicenseViewModel>(r.LicenseData, jsonOpts);
+                        if (bl != null) streamItems.Add(("Business License", "Business License", bl.RevenueToDate??0, bl.BilledAmount??0, bl.OutstandingAmount??0, bl.RegisteredBusinesses??0, 0, 0, 0, 0, 0));
+                    } catch { }
+                }
+                if (!string.IsNullOrEmpty(r.GenericStreamsData))
+                {
+                    try { var streams = System.Text.Json.JsonSerializer.Deserialize<List<GenericStreamViewModel>>(r.GenericStreamsData, jsonOpts);
+                        if (streams != null) foreach (var s in streams)
+                            streamItems.Add(("Generic", s.StreamName??"Unnamed", s.RevenueToDate??0, s.BilledAmount??0, s.OutstandingAmount??0, s.RegisteredUnits??0, (int)(s.CompliantUnits??0), s.ComplianceGap??0, s.CoverageGap??0, s.LiabilityGap??0, s.TotalPotentialRevenue??0));
+                    } catch { }
+                }
+
+                foreach (var si in streamItems)
+                {
+                    int c = 1;
+                    sd.Cell(sdRow, c++).Value = r.Id;
+                    sd.Cell(sdRow, c++).Value = r.Title ?? "";
+                    sd.Cell(sdRow, c++).Value = r.Country ?? "";
+                    sd.Cell(sdRow, c++).Value = r.City ?? "";
+                    sd.Cell(sdRow, c++).Value = r.FinancialYear ?? "";
+                    sd.Cell(sdRow, c++).Value = si.Type;
+                    sd.Cell(sdRow, c++).Value = si.Name;
+                    sd.Cell(sdRow, c).Value = si.Rev; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                    sd.Cell(sdRow, c).Value = si.Bill; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                    sd.Cell(sdRow, c).Value = si.Out; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                    sd.Cell(sdRow, c++).Value = si.Reg;
+                    sd.Cell(sdRow, c++).Value = si.Comp;
+                    sd.Cell(sdRow, c).Value = si.CG; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                    sd.Cell(sdRow, c).Value = si.CovG; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                    sd.Cell(sdRow, c).Value = si.LG; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                    sd.Cell(sdRow, c).Value = si.TPR; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                    sdRow++;
+                }
+            }
+
+            sd.Columns().AdjustToContents();
+            if (sdRow > 2)
+                sd.Range(1, 1, sdRow - 1, sdHeaders.Length).SetAutoFilter();
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            var filename = $"ROSRA_Data_Export_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+            return File(stream.ToArray(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
         }
     }
 }

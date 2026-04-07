@@ -1,0 +1,444 @@
+@model RosraApp.Models.ViewModels.DataManagementViewModel
+@{
+    ViewData["Title"] = "Data Management";
+    string[] statusNames = { "Draft", "Submitted", "Under Review", "Needs Revision", "Validated" };
+    string[] statusColors = { "#6A6A6A", "#F59E0B", "#3B82F6", "#EF4444", "#10B981" };
+    string[] statusBgs = { "#F7F7F7", "#FEF3C7", "#DBEAFE", "#FEE2E2", "#D1FAE5" };
+    string[] compNames = { "Metadata", "Partial", "Full" };
+}
+
+@section Styles {
+<style>
+    body { background: #f8f9fa; }
+    .page-header { background: #fff; border-radius: 12px; padding: 1.5rem 2rem; box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+    .page-header h1 { color: #222; font-weight: 700; font-size: 1.6rem; margin-bottom: 0.25rem; }
+    .page-header p { color: #6A6A6A; font-size: 0.875rem; margin-bottom: 0; }
+    .header-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+    .kpi-card { background: #fff; border-radius: 10px; padding: 0.875rem 1rem; box-shadow: 0 1px 8px -2px rgba(0,0,0,0.08); border-left: 4px solid; transition: transform 0.15s; cursor: pointer; }
+    .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px -4px rgba(0,0,0,0.12); }
+    .kpi-card.active { outline: 2px solid; outline-offset: -2px; }
+    .kpi-value { font-size: 1.6rem; font-weight: 700; line-height: 1; }
+    .kpi-label { font-size: 0.6875rem; color: #6A6A6A; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 0.2rem; }
+
+    .filter-panel { background: #fff; border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+    .filter-title { font-size: 0.8125rem; font-weight: 600; color: #222; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+    .filter-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: end; }
+    .filter-group { flex: 1; min-width: 150px; }
+    .filter-group label { font-size: 0.6875rem; color: #6A6A6A; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem; display: block; }
+    .filter-group select, .filter-group input { width: 100%; background: #F7F7F7; border: 1px solid #DDD; border-radius: 8px; padding: 0.45rem 0.75rem; font-size: 0.8125rem; color: #222; transition: border-color 0.2s, box-shadow 0.2s; }
+    .filter-group select:focus, .filter-group input:focus { background: #fff; border-color: #3B82F6; outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+    .filter-actions { display: flex; gap: 0.5rem; align-items: end; padding-bottom: 1px; }
+    .btn-filter { background: #3B82F6; color: #fff; border: none; border-radius: 8px; padding: 0.45rem 1rem; font-size: 0.8125rem; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .btn-filter:hover { background: #2563EB; color: #fff; }
+    .btn-clear { background: #fff; color: #EF4444; border: 1px solid #FECACA; border-radius: 8px; padding: 0.45rem 1rem; font-size: 0.8125rem; font-weight: 500; cursor: pointer; white-space: nowrap; text-decoration: none; }
+    .btn-clear:hover { background: #FEF2F2; color: #EF4444; }
+
+    .table-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1); overflow: hidden; }
+    .table-toolbar { display: flex; justify-content: space-between; align-items: center; padding: 0.875rem 1.5rem; border-bottom: 1px solid #F7F7F7; flex-wrap: wrap; gap: 0.75rem; }
+    .table-toolbar-left { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .table-toolbar-right { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .result-count { font-size: 0.8125rem; color: #6A6A6A; }
+    .result-count strong { color: #222; }
+
+    .btn-export { background: #10B981; color: #fff; border: none; border-radius: 8px; padding: 0.45rem 1.1rem; font-size: 0.8125rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; }
+    .btn-export:hover { background: #059669; color: #fff; }
+
+    /* Column Picker */
+    .col-picker-btn { background: #fff; color: #495057; border: 1px solid #dee2e6; border-radius: 8px; padding: 0.45rem 0.875rem; font-size: 0.8125rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; }
+    .col-picker-btn:hover { background: #F7F7F7; }
+    .col-picker-menu { position: absolute; right: 0; top: 100%; background: #fff; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 8px 24px -4px rgba(0,0,0,0.15); padding: 0.75rem 0; z-index: 100; min-width: 240px; max-height: 420px; overflow-y: auto; display: none; }
+    .col-picker-menu.show { display: block; }
+    .col-picker-menu .menu-header { padding: 0 1rem 0.5rem; font-size: 0.6875rem; font-weight: 700; color: #6A6A6A; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f0f0f0; margin-bottom: 0.25rem; }
+    .col-picker-menu .group-label { padding: 0.5rem 1rem 0.2rem; font-size: 0.625rem; font-weight: 700; color: #3B82F6; text-transform: uppercase; letter-spacing: 0.5px; }
+    .col-picker-menu label { display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 1rem; font-size: 0.8125rem; color: #222; cursor: pointer; transition: background 0.1s; }
+    .col-picker-menu label:hover { background: #F7F7F7; }
+    .col-picker-menu input[type="checkbox"] { accent-color: #3B82F6; width: 14px; height: 14px; }
+
+    .table-scroll { overflow-x: auto; max-height: 65vh; overflow-y: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+    .data-table thead th { background: #F7F7F7; color: #6A6A6A; font-weight: 600; font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.7rem 0.75rem; position: sticky; top: 0; z-index: 1; white-space: nowrap; border-bottom: 2px solid #eee; }
+    .data-table tbody td { padding: 0.55rem 0.75rem; vertical-align: middle; border-bottom: 1px solid #F7F7F7; color: #222; white-space: nowrap; }
+    .data-table tbody tr:hover { background: #FAFAFA; }
+    .data-table tbody tr.selected { background: #EFF6FF; }
+
+    .status-badge { display: inline-flex; padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.6875rem; font-weight: 600; white-space: nowrap; }
+    .comp-badge { display: inline-flex; padding: 0.15rem 0.45rem; border-radius: 5px; font-size: 0.6875rem; font-weight: 500; }
+    .stream-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 1px; }
+    .stream-dot.active { background: #10B981; }
+    .stream-dot.inactive { background: #E5E7EB; }
+    .row-check { width: 15px; height: 15px; cursor: pointer; accent-color: #3B82F6; }
+    .num-cell { text-align: right; font-variant-numeric: tabular-nums; }
+    .title-cell { max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+    .author-cell .name { font-weight: 500; color: #222; font-size: 0.75rem; }
+    .author-cell .email { color: #6A6A6A; font-size: 0.6875rem; }
+
+    /* Gap columns header coloring */
+    .th-pt { border-top: 3px solid #F59E0B !important; }
+    .th-bl { border-top: 3px solid #8B5CF6 !important; }
+    .th-gen { border-top: 3px solid #06B6D4 !important; }
+
+    .table-footer { display: flex; justify-content: space-between; align-items: center; padding: 0.875rem 1.5rem; border-top: 1px solid #F7F7F7; }
+    .pagination { margin: 0; }
+    .pagination .page-link { border: none; border-radius: 8px; color: #6A6A6A; padding: 0.45rem 0.8rem; font-size: 0.8125rem; }
+    .pagination .page-item.active .page-link { background: #3B82F6; color: #fff; box-shadow: 0 2px 8px -2px rgba(59,130,246,0.3); }
+    .pagination .page-link:hover { background: #F7F7F7; }
+
+    .export-toast { position: fixed; bottom: 24px; right: 24px; background: #3B82F6; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 0.5rem; }
+
+    @@media (max-width: 768px) {
+        .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+        .filter-row { flex-direction: column; }
+        .filter-group { min-width: 100%; }
+    }
+</style>
+}
+
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="header-icon" style="background: #DBEAFE; color: #3B82F6;"><i class="bi bi-database"></i></div>
+            <div>
+                <h1>Data Management</h1>
+                <p>Browse, filter, and export ROSRA assessment data for external analysis</p>
+            </div>
+        </div>
+        <a asp-action="Index" class="btn btn-sm" style="background:#fff; border:1px solid #dee2e6; border-radius:8px; color:#222; font-size:0.8125rem;">
+            <i class="bi bi-arrow-left me-1"></i> Dashboard
+        </a>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card @(string.IsNullOrEmpty(Model.Status) ? "active" : "")" style="border-color:#3B82F6;" onclick="filterByStatus('')"><div class="kpi-value" style="color:#3B82F6;">@Model.TotalReports</div><div class="kpi-label">Total</div></div>
+        <div class="kpi-card @(Model.Status=="0"?"active":"")" style="border-color:#6A6A6A;" onclick="filterByStatus('0')"><div class="kpi-value" style="color:#6A6A6A;">@Model.DraftCount</div><div class="kpi-label">Draft</div></div>
+        <div class="kpi-card @(Model.Status=="1"?"active":"")" style="border-color:#F59E0B;" onclick="filterByStatus('1')"><div class="kpi-value" style="color:#F59E0B;">@Model.SubmittedCount</div><div class="kpi-label">Submitted</div></div>
+        <div class="kpi-card @(Model.Status=="2"?"active":"")" style="border-color:#3B82F6;" onclick="filterByStatus('2')"><div class="kpi-value" style="color:#3B82F6;">@Model.UnderReviewCount</div><div class="kpi-label">In Review</div></div>
+        <div class="kpi-card @(Model.Status=="3"?"active":"")" style="border-color:#EF4444;" onclick="filterByStatus('3')"><div class="kpi-value" style="color:#EF4444;">@Model.NeedsRevisionCount</div><div class="kpi-label">Revision</div></div>
+        <div class="kpi-card @(Model.Status=="4"?"active":"")" style="border-color:#10B981;" onclick="filterByStatus('4')"><div class="kpi-value" style="color:#10B981;">@Model.ValidatedCount</div><div class="kpi-label">Validated</div></div>
+    </div>
+
+    <!-- Filter Panel -->
+    <form id="filterForm" method="get" asp-action="DataManagement">
+        <div class="filter-panel">
+            <div class="filter-title"><i class="bi bi-funnel"></i> Filters</div>
+            <div class="filter-row">
+                <div class="filter-group" style="min-width:200px;"><label>Search</label><input type="text" name="search" value="@Model.Search" placeholder="Title, country, email..." /></div>
+                <div class="filter-group"><label>Country</label><select name="country"><option value="">All</option>@foreach(var c in Model.Countries){<option value="@c" selected="@(Model.Country==c)">@c</option>}</select></div>
+                <div class="filter-group"><label>Status</label><select name="status" id="statusFilter"><option value="">All</option>@for(int i=0;i<statusNames.Length;i++){<option value="@i" selected="@(Model.Status==i.ToString())">@statusNames[i]</option>}</select></div>
+                <div class="filter-group"><label>Completion</label><select name="completionLevel"><option value="">All</option>@for(int i=0;i<compNames.Length;i++){<option value="@i" selected="@(Model.CompletionLevel==i.ToString())">@compNames[i]</option>}</select></div>
+                <div class="filter-group"><label>Author</label><select name="author"><option value="">All</option>@foreach(var a in Model.Authors){<option value="@a" selected="@(Model.Author==a)">@a</option>}</select></div>
+                <div class="filter-group"><label>Year</label><select name="financialYear"><option value="">All</option>@foreach(var y in Model.FinancialYears){<option value="@y" selected="@(Model.FinancialYear==y)">@y</option>}</select></div>
+                <div class="filter-group"><label>From</label><input type="date" name="dateFrom" value="@Model.DateFrom" /></div>
+                <div class="filter-group"><label>To</label><input type="date" name="dateTo" value="@Model.DateTo" /></div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn-filter"><i class="bi bi-search me-1"></i>Apply</button>
+                    <a asp-action="DataManagement" class="btn-clear"><i class="bi bi-x-lg me-1"></i>Clear</a>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Data Table -->
+    <div class="table-card">
+        <div class="table-toolbar">
+            <div class="table-toolbar-left">
+                <span class="result-count"><strong>@Model.TotalCount</strong> report(s)</span>
+                <span class="result-count" id="selectedCount" style="display:none;"> | <strong id="selCount">0</strong> selected</span>
+            </div>
+            <div class="table-toolbar-right">
+                <!-- Column Picker -->
+                <div style="position:relative;">
+                    <button type="button" class="col-picker-btn" id="colPickerBtn"><i class="bi bi-layout-three-columns me-1"></i>Columns</button>
+                    <div class="col-picker-menu" id="colPickerMenu">
+                        <div class="menu-header">Show / Hide Columns</div>
+
+                        <div class="group-label">General</div>
+                        <label><input type="checkbox" data-col="col-title" checked /> Title</label>
+                        <label><input type="checkbox" data-col="col-country" checked /> Country</label>
+                        <label><input type="checkbox" data-col="col-location" checked /> Region / City</label>
+                        <label><input type="checkbox" data-col="col-year" checked /> Financial Year</label>
+                        <label><input type="checkbox" data-col="col-status" checked /> Status</label>
+                        <label><input type="checkbox" data-col="col-comp" checked /> Completion</label>
+                        <label><input type="checkbox" data-col="col-author" checked /> Author</label>
+                        <label><input type="checkbox" data-col="col-version" /> Version</label>
+                        <label><input type="checkbox" data-col="col-streams" checked /> Streams</label>
+
+                        <div class="group-label">Financial</div>
+                        <label><input type="checkbox" data-col="col-osr" checked /> Actual OSR</label>
+                        <label><input type="checkbox" data-col="col-budgeted" /> Budgeted OSR</label>
+                        <label><input type="checkbox" data-col="col-pop" /> Population</label>
+                        <label><input type="checkbox" data-col="col-gdp" /> GDP/Capita</label>
+                        <label><input type="checkbox" data-col="col-other" /> Other Revenue</label>
+
+                        <div class="group-label">Property Tax</div>
+                        <label><input type="checkbox" data-col="col-pt-rev" /> PT Revenue</label>
+                        <label><input type="checkbox" data-col="col-pt-billed" /> PT Billed</label>
+                        <label><input type="checkbox" data-col="col-pt-outstanding" /> PT Outstanding</label>
+                        <label><input type="checkbox" data-col="col-pt-registered" /> PT Registered</label>
+                        <label><input type="checkbox" data-col="col-pt-compliant" /> PT Compliant</label>
+
+                        <div class="group-label">Business License</div>
+                        <label><input type="checkbox" data-col="col-bl-rev" /> BL Revenue</label>
+                        <label><input type="checkbox" data-col="col-bl-billed" /> BL Billed</label>
+                        <label><input type="checkbox" data-col="col-bl-outstanding" /> BL Outstanding</label>
+                        <label><input type="checkbox" data-col="col-bl-registered" /> BL Registered</label>
+
+                        <div class="group-label">Generic Streams</div>
+                        <label><input type="checkbox" data-col="col-gen-count" /> Stream Count</label>
+                        <label><input type="checkbox" data-col="col-gen-names" /> Stream Names</label>
+                        <label><input type="checkbox" data-col="col-gen-rev" /> Total Revenue</label>
+
+                        <div class="group-label">Dates</div>
+                        <label><input type="checkbox" data-col="col-created" checked /> Created</label>
+                        <label><input type="checkbox" data-col="col-submitted" /> Submitted</label>
+                        <label><input type="checkbox" data-col="col-validated" /> Validated</label>
+                    </div>
+                </div>
+
+                <a href="@Url.Action("ExportDataExcel", "Admin", new { Model.Search, Model.Country, Model.Status, Model.CompletionLevel, Model.Author, Model.FinancialYear, Model.DateFrom, Model.DateTo })"
+                   class="btn-export" onclick="showExportToast()">
+                    <i class="bi bi-file-earmark-excel"></i> Export Excel
+                </a>
+            </div>
+        </div>
+
+        <div class="table-scroll">
+            <table class="data-table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th style="width:32px;"><input type="checkbox" class="row-check" id="selectAll" /></th>
+                        <th class="col-title">Title</th>
+                        <th class="col-country">Country</th>
+                        <th class="col-location">Region / City</th>
+                        <th class="col-year">Year</th>
+                        <th class="col-status">Status</th>
+                        <th class="col-comp">Completion</th>
+                        <th class="col-streams">Streams</th>
+                        <th class="col-osr">Actual OSR</th>
+                        <th class="col-budgeted" style="display:none;">Budgeted OSR</th>
+                        <th class="col-pop" style="display:none;">Population</th>
+                        <th class="col-gdp" style="display:none;">GDP/Cap</th>
+                        <th class="col-other" style="display:none;">Other Rev</th>
+                        <!-- Property Tax -->
+                        <th class="col-pt-rev th-pt" style="display:none;">PT Revenue</th>
+                        <th class="col-pt-billed th-pt" style="display:none;">PT Billed</th>
+                        <th class="col-pt-outstanding th-pt" style="display:none;">PT Outstanding</th>
+                        <th class="col-pt-registered th-pt" style="display:none;">PT Registered</th>
+                        <th class="col-pt-compliant th-pt" style="display:none;">PT Compliant</th>
+                        <!-- Business License -->
+                        <th class="col-bl-rev th-bl" style="display:none;">BL Revenue</th>
+                        <th class="col-bl-billed th-bl" style="display:none;">BL Billed</th>
+                        <th class="col-bl-outstanding th-bl" style="display:none;">BL Outstanding</th>
+                        <th class="col-bl-registered th-bl" style="display:none;">BL Registered</th>
+                        <!-- Generic Streams -->
+                        <th class="col-gen-count th-gen" style="display:none;">Streams #</th>
+                        <th class="col-gen-names th-gen" style="display:none;">Stream Names</th>
+                        <th class="col-gen-rev th-gen" style="display:none;">Gen Revenue</th>
+                        <!-- Meta -->
+                        <th class="col-author">Author</th>
+                        <th class="col-version" style="display:none;">Ver</th>
+                        <th class="col-created">Created</th>
+                        <th class="col-submitted" style="display:none;">Submitted</th>
+                        <th class="col-validated" style="display:none;">Validated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Reports.Any())
+                    {
+                        <tr><td colspan="30" style="text-align:center; padding:3rem 1rem; color:#6A6A6A;">
+                            <i class="bi bi-inbox" style="font-size:2rem; color:#ccc; display:block; margin-bottom:0.5rem;"></i>No reports match the current filters
+                        </td></tr>
+                    }
+                    @foreach (var r in Model.Reports)
+                    {
+                        var sIdx = Math.Min(r.Status, statusNames.Length - 1);
+                        var cIdx = Math.Min(r.CompletionLevel, compNames.Length - 1);
+                        var cs = r.CurrencySymbol ?? "";
+                        <tr data-id="@r.Id">
+                            <td><input type="checkbox" class="row-check row-select" value="@r.Id" /></td>
+                            <td class="col-title title-cell" title="@r.Title"><a href="@Url.Action("View","Rosra",new{id=r.PublicId})" style="color:#222;text-decoration:none;font-weight:500;">@(r.Title.Length>28?r.Title.Substring(0,28)+"...":r.Title)</a>@if(r.IsArchived){<i class="bi bi-archive ms-1" style="font-size:0.625rem;color:#6A6A6A;"></i>}</td>
+                            <td class="col-country">@(r.Country ?? "—")</td>
+                            <td class="col-location" style="font-size:0.75rem;">@(r.Region ?? "")@(r.Region!=null&&r.City!=null?" / ":"")@(r.City ?? "")</td>
+                            <td class="col-year">@(r.FinancialYear ?? "—")</td>
+                            <td class="col-status"><span class="status-badge" style="background:@statusBgs[sIdx];color:@statusColors[sIdx];">@statusNames[sIdx]</span></td>
+                            <td class="col-comp"><span class="comp-badge" style="background:@(cIdx==2?"#D1FAE5":cIdx==1?"#FEF3C7":"#F7F7F7");color:@(cIdx==2?"#065F46":cIdx==1?"#92400E":"#6A6A6A");">@compNames[cIdx]</span></td>
+                            <td class="col-streams" style="white-space:nowrap;">
+                                <span class="stream-dot @(r.HasPropertyTax?"active":"inactive")" title="Property Tax"></span>
+                                <span class="stream-dot @(r.HasLicense?"active":"inactive")" title="License"></span>
+                                <span class="stream-dot @(r.HasShortTerm?"active":"inactive")" title="Short-Term"></span>
+                                <span class="stream-dot @(r.HasLongTerm?"active":"inactive")" title="Long-Term"></span>
+                                <span class="stream-dot @(r.HasMixed?"active":"inactive")" title="Mixed"></span>
+                                <span class="stream-dot @(r.HasGeneric?"active":"inactive")" title="Generic"></span>
+                                <span class="stream-dot @(r.HasPeerSNG?"active":"inactive")" title="Peer SNG"></span>
+                                @if (r.Streams.Any())
+                                {
+                                    <button type="button" class="expand-btn" data-target="detail-@r.Id" title="Expand stream details" style="background:none;border:none;color:#3B82F6;cursor:pointer;font-size:0.75rem;padding:0 0 0 4px;"><i class="bi bi-chevron-down"></i></button>
+                                }
+                            </td>
+                            <td class="col-osr num-cell">@cs@r.ActualOsr.ToString("N0")</td>
+                            <td class="col-budgeted num-cell" style="display:none;">@cs@r.BudgetedOsr.ToString("N0")</td>
+                            <td class="col-pop num-cell" style="display:none;">@r.Population.ToString("N0")</td>
+                            <td class="col-gdp num-cell" style="display:none;">@cs@r.GdpPerCapita.ToString("N0")</td>
+                            <td class="col-other num-cell" style="display:none;">@cs@r.OtherRevenue.ToString("N0")</td>
+                            <!-- Property Tax -->
+                            <td class="col-pt-rev num-cell" style="display:none;">@(r.HasPropertyTax?cs+r.PtRevenue.ToString("N0"):"—")</td>
+                            <td class="col-pt-billed num-cell" style="display:none;">@(r.HasPropertyTax?cs+r.PtBilled.ToString("N0"):"—")</td>
+                            <td class="col-pt-outstanding num-cell" style="display:none;">@(r.HasPropertyTax?cs+r.PtOutstanding.ToString("N0"):"—")</td>
+                            <td class="col-pt-registered num-cell" style="display:none;">@(r.HasPropertyTax?r.PtRegistered.ToString("N0"):"—")</td>
+                            <td class="col-pt-compliant num-cell" style="display:none;">@(r.HasPropertyTax?r.PtCompliant.ToString("N0"):"—")</td>
+                            <!-- Business License -->
+                            <td class="col-bl-rev num-cell" style="display:none;">@(r.HasLicense?cs+r.BlRevenue.ToString("N0"):"—")</td>
+                            <td class="col-bl-billed num-cell" style="display:none;">@(r.HasLicense?cs+r.BlBilled.ToString("N0"):"—")</td>
+                            <td class="col-bl-outstanding num-cell" style="display:none;">@(r.HasLicense?cs+r.BlOutstanding.ToString("N0"):"—")</td>
+                            <td class="col-bl-registered num-cell" style="display:none;">@(r.HasLicense?r.BlRegistered.ToString("N0"):"—")</td>
+                            <!-- Generic Streams -->
+                            <td class="col-gen-count num-cell" style="display:none;">@(r.HasGeneric?r.GenericStreamCount.ToString():"—")</td>
+                            <td class="col-gen-names" style="display:none; max-width:180px; overflow:hidden; text-overflow:ellipsis;" title="@r.GenericStreamNames">@(r.HasGeneric?r.GenericStreamNames:"—")</td>
+                            <td class="col-gen-rev num-cell" style="display:none;">@(r.HasGeneric?cs+r.GenericTotalRevenue.ToString("N0"):"—")</td>
+                            <!-- Meta -->
+                            <td class="col-author author-cell"><div class="name">@r.AuthorName</div><div class="email">@r.AuthorEmail</div></td>
+                            <td class="col-version" style="display:none; text-align:center;">v@r.SubmissionVersion</td>
+                            <td class="col-created" style="font-size:0.75rem;">@r.CreatedAt.ToString("dd MMM yy")</td>
+                            <td class="col-submitted" style="display:none; font-size:0.75rem;">@(r.SubmittedAt?.ToString("dd MMM yy") ?? "—")</td>
+                            <td class="col-validated" style="display:none; font-size:0.75rem;">@(r.ValidatedAt?.ToString("dd MMM yy") ?? "—")</td>
+                        </tr>
+                        @if (r.Streams.Any())
+                        {
+                            <tr class="stream-detail-row" id="detail-@r.Id" style="display:none;">
+                                <td colspan="30" style="padding:0.5rem 1rem 0.75rem 2.5rem; background:#FAFBFC; border-bottom:2px solid #E5E7EB;">
+                                    <div style="font-size:0.6875rem; font-weight:700; color:#6A6A6A; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;">
+                                        <i class="bi bi-layers me-1"></i>Revenue Streams (@r.Streams.Count)
+                                    </div>
+                                    <table style="width:100%; font-size:0.75rem; border-collapse:collapse;">
+                                        <thead>
+                                            <tr style="background:#EFF6FF;">
+                                                <th style="padding:0.35rem 0.5rem; text-align:left; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Type</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:left; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Name</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Revenue</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Billed</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Outstanding</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Registered</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Compliant</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Compliance Gap</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Coverage Gap</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Potential Revenue</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var s in r.Streams)
+                                            {
+                                                var typeColor = s.StreamType == "Property Tax" ? "#F59E0B" : s.StreamType == "Business License" ? "#8B5CF6" : "#06B6D4";
+                                                <tr style="border-bottom:1px solid #F0F0F0;">
+                                                    <td style="padding:0.3rem 0.5rem;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:@typeColor;margin-right:4px;"></span>@s.StreamType</td>
+                                                    <td style="padding:0.3rem 0.5rem; font-weight:500;">@s.StreamName</td>
+                                                    <td style="padding:0.3rem 0.5rem; text-align:right;">@cs@s.Revenue.ToString("N0")</td>
+                                                    <td style="padding:0.3rem 0.5rem; text-align:right;">@cs@s.Billed.ToString("N0")</td>
+                                                    <td style="padding:0.3rem 0.5rem; text-align:right;">@cs@s.Outstanding.ToString("N0")</td>
+                                                    <td style="padding:0.3rem 0.5rem; text-align:right;">@s.RegisteredUnits.ToString("N0")</td>
+                                                    <td style="padding:0.3rem 0.5rem; text-align:right;">@s.CompliantUnits.ToString("N0")</td>
+                                                    <td style="padding:0.3rem 0.5rem; text-align:right;">@(s.ComplianceGap != 0 ? cs+s.ComplianceGap.ToString("N0") : "—")</td>
+                                                    <td style="padding:0.3rem 0.5rem; text-align:right;">@(s.CoverageGap != 0 ? cs+s.CoverageGap.ToString("N0") : "—")</td>
+                                                    <td style="padding:0.3rem 0.5rem; text-align:right; font-weight:600;">@(s.TotalPotentialRevenue != 0 ? cs+s.TotalPotentialRevenue.ToString("N0") : "—")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <div class="table-footer">
+                <span class="result-count">Page @Model.PageNumber of @Model.TotalPages</span>
+                <nav><ul class="pagination">
+                    @if(Model.PageNumber>1){<li class="page-item"><a class="page-link" href="@Url.Action("DataManagement",new{page=Model.PageNumber-1,Model.Search,Model.Country,Model.Status,Model.CompletionLevel,Model.Author,Model.FinancialYear,Model.DateFrom,Model.DateTo})"><i class="bi bi-chevron-left"></i></a></li>}
+                    @for(int i=Math.Max(1,Model.PageNumber-2);i<=Math.Min(Model.TotalPages,Model.PageNumber+2);i++){<li class="page-item @(i==Model.PageNumber?"active":"")"><a class="page-link" href="@Url.Action("DataManagement",new{page=i,Model.Search,Model.Country,Model.Status,Model.CompletionLevel,Model.Author,Model.FinancialYear,Model.DateFrom,Model.DateTo})">@i</a></li>}
+                    @if(Model.PageNumber<Model.TotalPages){<li class="page-item"><a class="page-link" href="@Url.Action("DataManagement",new{page=Model.PageNumber+1,Model.Search,Model.Country,Model.Status,Model.CompletionLevel,Model.Author,Model.FinancialYear,Model.DateFrom,Model.DateTo})"><i class="bi bi-chevron-right"></i></a></li>}
+                </ul></nav>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function filterByStatus(s) { document.getElementById('statusFilter').value = s; document.getElementById('filterForm').submit(); }
+
+    // Select all
+    document.getElementById('selectAll').addEventListener('change', function() {
+        document.querySelectorAll('.row-select').forEach(cb => { cb.checked = this.checked; cb.closest('tr').classList.toggle('selected', this.checked); });
+        updateSelected();
+    });
+    document.querySelectorAll('.row-select').forEach(cb => cb.addEventListener('change', function() { this.closest('tr').classList.toggle('selected', this.checked); updateSelected(); }));
+    function updateSelected() {
+        var c = document.querySelectorAll('.row-select:checked').length;
+        document.getElementById('selCount').textContent = c;
+        document.getElementById('selectedCount').style.display = c > 0 ? 'inline' : 'none';
+    }
+
+    // Column picker
+    var pickerBtn = document.getElementById('colPickerBtn');
+    var pickerMenu = document.getElementById('colPickerMenu');
+    pickerBtn.addEventListener('click', function(e) { e.stopPropagation(); pickerMenu.classList.toggle('show'); });
+    document.addEventListener('click', function(e) { if (!pickerMenu.contains(e.target)) pickerMenu.classList.remove('show'); });
+
+    // Save/restore column preferences in localStorage
+    var COL_KEY = 'rosra_dm_columns';
+    function saveColPrefs() {
+        var prefs = {};
+        pickerMenu.querySelectorAll('input[data-col]').forEach(cb => { prefs[cb.dataset.col] = cb.checked; });
+        localStorage.setItem(COL_KEY, JSON.stringify(prefs));
+    }
+    function loadColPrefs() {
+        var saved = localStorage.getItem(COL_KEY);
+        if (!saved) return;
+        try {
+            var prefs = JSON.parse(saved);
+            Object.keys(prefs).forEach(col => {
+                var cb = pickerMenu.querySelector('input[data-col="' + col + '"]');
+                if (cb) { cb.checked = prefs[col]; toggleCol(col, prefs[col]); }
+            });
+        } catch(e) {}
+    }
+    function toggleCol(colClass, show) {
+        document.querySelectorAll('.' + colClass).forEach(el => { el.style.display = show ? '' : 'none'; });
+    }
+
+    pickerMenu.querySelectorAll('input[data-col]').forEach(cb => {
+        cb.addEventListener('change', function() { toggleCol(this.dataset.col, this.checked); saveColPrefs(); });
+    });
+
+    // Load saved preferences on page load
+    loadColPrefs();
+
+    // Expand/collapse stream detail rows
+    document.querySelectorAll('.expand-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var target = document.getElementById(this.dataset.target);
+            if (target) {
+                var isOpen = target.style.display !== 'none';
+                target.style.display = isOpen ? 'none' : 'table-row';
+                this.querySelector('i').className = isOpen ? 'bi bi-chevron-down' : 'bi bi-chevron-up';
+            }
+        });
+    });
+
+    // Export toast
+    function showExportToast() {
+        var t = document.createElement('div'); t.className = 'export-toast';
+        t.innerHTML = '<i class="bi bi-hourglass-split"></i> Generating Excel...';
+        document.body.appendChild(t);
+        setTimeout(function() { t.style.background = '#10B981'; t.innerHTML = '<i class="bi bi-check-circle-fill"></i> Excel downloaded'; setTimeout(function() { t.style.opacity='0'; setTimeout(function(){t.remove();},300); },3000); },1500);
+    }
+</script>
+}
