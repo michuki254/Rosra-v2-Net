@@ -72,6 +72,7 @@ builder.Services.AddScoped<RosraApp.Services.ExcelExportService>();
 builder.Services.AddScoped<RosraApp.Services.SnapshotService>();
 builder.Services.AddScoped<RosraApp.Services.ArtifactService>();
 builder.Services.AddScoped<RosraApp.Services.HtmlToPdfService>();
+builder.Services.AddScoped<RosraApp.Services.IEmailService, RosraApp.Services.EmailService>();
 builder.Services.AddScoped<RosraApp.Services.SubmissionService>();
 builder.Services.AddScoped<RosraApp.Services.ValidationService>();
 

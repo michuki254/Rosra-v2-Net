@@ -7,6 +7,7 @@ using RosraApp.Data;
 using RosraApp.Models;
 using RosraApp.Models.Enums;
 using RosraApp.Models.ViewModels;
+using RosraApp.Services;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,15 +19,18 @@ namespace RosraApp.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
+        private readonly IEmailService _emailService;
 
         public AdminController(
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
+            _emailService = emailService;
         }
 
         public async Task<IActionResult> Index(int page = 1, int pageSize = 25, string? search = null)
@@ -1291,6 +1295,111 @@ namespace RosraApp.Controllers
             var filename = $"ROSRA_Data_Export_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
             return File(stream.ToArray(),
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+        }
+
+        // ══════════════════════════════════════════════════
+        //  EMAIL SETTINGS
+        // ══════════════════════════════════════════════════
+
+        public async Task<IActionResult> EmailSettings(int logPage = 1, int logPageSize = 20)
+        {
+            var settings = await _emailService.GetSettingsAsync() ?? new EmailSettings();
+
+            var logQuery = _context.EmailLogs.OrderByDescending(l => l.CreatedAt);
+            var logCount = await logQuery.CountAsync();
+            var logTotalPages = (int)Math.Ceiling(logCount / (double)logPageSize);
+            logPage = Math.Max(1, Math.Min(logPage, Math.Max(1, logTotalPages)));
+
+            var today = DateTime.UtcNow.Date;
+            var model = new EmailManagementViewModel
+            {
+                Settings = settings,
+                RecentLogs = await logQuery.Skip((logPage - 1) * logPageSize).Take(logPageSize).ToListAsync(),
+                LogPageNumber = logPage,
+                LogTotalPages = logTotalPages,
+                LogTotalCount = logCount,
+                TemplatePreviews = EmailTemplateService.GetAllTemplatePreviews(),
+                TotalSent = await _context.EmailLogs.CountAsync(l => l.Status == "Sent"),
+                TotalFailed = await _context.EmailLogs.CountAsync(l => l.Status == "Failed"),
+                SentToday = await _context.EmailLogs.CountAsync(l => l.Status == "Sent" && l.SentAt >= today),
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateEmailSettings(
+            string smtpServer, int smtpPort, string? smtpUsername, string? smtpPassword,
+            bool useSsl, string senderEmail, string senderDisplayName, bool isEnabled,
+            int maxRetries, int retryDelaySeconds)
+        {
+            var settings = await _emailService.GetSettingsAsync();
+            if (settings == null)
+                return Json(new { success = false, message = "Email settings not found" });
+
+            settings.SmtpServer = smtpServer;
+            settings.SmtpPort = smtpPort;
+            settings.SmtpUsername = smtpUsername;
+            // Only update password if a new one was provided
+            if (!string.IsNullOrEmpty(smtpPassword) && smtpPassword != "••••••••")
+                settings.SmtpPassword = smtpPassword;
+            settings.UseSsl = useSsl;
+            settings.SenderEmail = senderEmail;
+            settings.SenderDisplayName = senderDisplayName;
+            settings.IsEnabled = isEnabled;
+            settings.MaxRetries = maxRetries;
+            settings.RetryDelaySeconds = retryDelaySeconds;
+
+            var user = await _userManager.GetUserAsync(User);
+            settings.UpdatedByUserId = user?.Id;
+
+            await _emailService.SaveSettingsAsync(settings);
+            return Json(new { success = true, message = "Email settings updated" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleNotificationType(string type, bool enabled)
+        {
+            var settings = await _emailService.GetSettingsAsync();
+            if (settings == null)
+                return Json(new { success = false, message = "Settings not found" });
+
+            switch (type)
+            {
+                case "ReportSubmitted": settings.EnableReportSubmitted = enabled; break;
+                case "ReportClaimed": settings.EnableReportClaimed = enabled; break;
+                case "ReportValidated": settings.EnableReportValidated = enabled; break;
+                case "ReportRejected": settings.EnableReportRejected = enabled; break;
+                case "ReportUnlocked": settings.EnableReportUnlocked = enabled; break;
+                case "WelcomeEmail": settings.EnableWelcomeEmail = enabled; break;
+                default: return Json(new { success = false, message = "Unknown notification type" });
+            }
+
+            await _emailService.SaveSettingsAsync(settings);
+            return Json(new { success = true, message = $"{type} {(enabled ? "enabled" : "disabled")}" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendTestEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return Json(new { success = false, message = "Email address is required" });
+
+            var user = await _userManager.GetUserAsync(User);
+            var result = await _emailService.SendTestEmailAsync(email, user?.FirstName ?? "Admin");
+            return Json(new { success = result.Success, message = result.Message });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PreviewTemplate(string type)
+        {
+            var previews = EmailTemplateService.GetAllTemplatePreviews();
+            if (previews.TryGetValue(type, out var html))
+                return Content(html, "text/html");
+            return NotFound();
         }
     }
 }

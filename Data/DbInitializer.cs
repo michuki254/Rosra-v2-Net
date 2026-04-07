@@ -106,6 +106,10 @@ namespace RosraApp.Data
                     logger.LogInformation("Seeding currency data for DB_Countries");
                     await SeedCurrencyData(context, logger);
 
+                    // Seed default email settings
+                    logger.LogInformation("Seeding email settings");
+                    await SeedEmailSettings(context, logger);
+
                     // Seed Country table with states/regions (idempotent)
                     logger.LogInformation("Seeding country administrative divisions");
                     await SeedCountryStates(context, logger);
@@ -397,6 +401,35 @@ namespace RosraApp.Data
             await context.SaveChangesAsync();
 
             logger.LogInformation($"Seeded {peersSNG.Count} Kenya counties into PeersSNG table");
+        }
+
+        private static async Task SeedEmailSettings(ApplicationDbContext context, ILogger logger)
+        {
+            if (await context.EmailSettings.AnyAsync())
+            {
+                logger.LogInformation("Email settings already exist — skipping");
+                return;
+            }
+
+            context.EmailSettings.Add(new EmailSettings
+            {
+                SmtpServer = "smtp.gmail.com",
+                SmtpPort = 587,
+                UseSsl = true,
+                SenderEmail = "noreply@rosra.org",
+                SenderDisplayName = "ROSRA UN-Habitat",
+                IsEnabled = false, // Admin must configure and enable
+                EnableReportSubmitted = true,
+                EnableReportClaimed = false,
+                EnableReportValidated = true,
+                EnableReportRejected = true,
+                EnableReportUnlocked = true,
+                EnableWelcomeEmail = true,
+                MaxRetries = 3,
+                RetryDelaySeconds = 30
+            });
+            await context.SaveChangesAsync();
+            logger.LogInformation("Seeded default email settings (disabled — admin must configure)");
         }
 
         private static async Task SeedCurrencyData(ApplicationDbContext context, ILogger logger)

@@ -1,0 +1,341 @@
+@model RosraApp.Models.ViewModels.EmailManagementViewModel
+@{
+    ViewData["Title"] = "Email Settings";
+    string[] notifTypes = { "ReportSubmitted","ReportClaimed","ReportValidated","ReportRejected","ReportUnlocked","WelcomeEmail" };
+    string[] notifLabels = { "Report Submitted","Report Claimed","Report Validated","Report Rejected","Report Unlocked","Welcome Email" };
+    string[] notifDescs = { "Notify reviewers when a new report is submitted","Notify author when a reviewer claims their report","Notify author when their report is validated","Notify author when their report needs revision","Notify author when a validated report is unlocked","Send welcome email to new users on registration" };
+    string[] notifIcons = { "bi-send","bi-person-check","bi-check-circle","bi-exclamation-triangle","bi-unlock","bi-person-plus" };
+    string[] notifColors = { "#3B82F6","#06B6D4","#10B981","#EF4444","#F59E0B","#8B5CF6" };
+    bool[] notifEnabled = {
+        Model.Settings.EnableReportSubmitted, Model.Settings.EnableReportClaimed,
+        Model.Settings.EnableReportValidated, Model.Settings.EnableReportRejected,
+        Model.Settings.EnableReportUnlocked, Model.Settings.EnableWelcomeEmail
+    };
+}
+
+@section Styles {
+<style>
+    body { background: #f8f9fa; }
+    .page-header { background:#fff; border-radius:12px; padding:1.5rem 2rem; box-shadow:0 2px 20px -4px rgba(0,0,0,0.1); margin-bottom:1.5rem; }
+    .page-header h1 { color:#222; font-weight:700; font-size:1.6rem; margin-bottom:0.25rem; }
+    .page-header p { color:#6A6A6A; font-size:0.875rem; margin-bottom:0; }
+    .header-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.25rem; }
+
+    .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:0.75rem; margin-bottom:1.5rem; }
+    .kpi-card { background:#fff; border-radius:10px; padding:0.875rem 1rem; box-shadow:0 1px 8px -2px rgba(0,0,0,0.08); border-left:4px solid; }
+    .kpi-value { font-size:1.6rem; font-weight:700; line-height:1; }
+    .kpi-label { font-size:0.6875rem; color:#6A6A6A; text-transform:uppercase; letter-spacing:0.5px; font-weight:600; margin-top:0.2rem; }
+
+    .tab-nav { display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .tab-btn { background:#fff; border:1px solid #dee2e6; border-radius:8px; padding:0.5rem 1.25rem; font-size:0.8125rem; font-weight:500; color:#6A6A6A; cursor:pointer; transition:all 0.15s; }
+    .tab-btn:hover { background:#f7f7f7; }
+    .tab-btn.active { background:#3B82F6; color:#fff; border-color:#3B82F6; }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+
+    .settings-card { background:#fff; border-radius:12px; box-shadow:0 2px 20px -4px rgba(0,0,0,0.1); padding:1.5rem 2rem; margin-bottom:1.5rem; }
+    .settings-card h3 { font-size:1rem; font-weight:600; color:#222; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+    .form-row { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1rem; }
+    .form-group { flex:1; min-width:200px; }
+    .form-group label { font-size:0.6875rem; font-weight:600; color:#6A6A6A; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.25rem; display:block; }
+    .form-group input, .form-group select { width:100%; background:#F7F7F7; border:1px solid #DDD; border-radius:8px; padding:0.5rem 0.75rem; font-size:0.8125rem; }
+    .form-group input:focus, .form-group select:focus { background:#fff; border-color:#3B82F6; outline:none; box-shadow:0 0 0 3px rgba(59,130,246,0.1); }
+
+    .notif-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
+    .notif-card { background:#fff; border:1px solid #eee; border-radius:10px; padding:1rem 1.25rem; display:flex; align-items:center; gap:1rem; transition:all 0.15s; }
+    .notif-card:hover { box-shadow:0 2px 12px -2px rgba(0,0,0,0.1); }
+    .notif-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+    .notif-info { flex:1; }
+    .notif-info .name { font-weight:600; font-size:0.875rem; color:#222; }
+    .notif-info .desc { font-size:0.75rem; color:#6A6A6A; margin-top:2px; }
+
+    .toggle-switch { position:relative; width:44px; height:24px; flex-shrink:0; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-switch .slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:#ccc; border-radius:24px; transition:0.2s; }
+    .toggle-switch .slider:before { content:""; position:absolute; height:18px; width:18px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:0.2s; }
+    .toggle-switch input:checked + .slider { background:#10B981; }
+    .toggle-switch input:checked + .slider:before { transform:translateX(20px); }
+
+    .preview-frame { width:100%; height:500px; border:1px solid #eee; border-radius:8px; background:#fff; }
+
+    .log-table { width:100%; border-collapse:collapse; font-size:0.8125rem; }
+    .log-table thead th { background:#F7F7F7; color:#6A6A6A; font-weight:600; font-size:0.6875rem; text-transform:uppercase; letter-spacing:0.5px; padding:0.7rem 0.75rem; border-bottom:2px solid #eee; }
+    .log-table tbody td { padding:0.55rem 0.75rem; border-bottom:1px solid #F7F7F7; color:#222; }
+    .log-table tbody tr:hover { background:#FAFAFA; }
+    .log-badge { display:inline-flex; padding:0.15rem 0.5rem; border-radius:6px; font-size:0.6875rem; font-weight:600; }
+    .log-badge.sent { background:#D1FAE5; color:#065F46; }
+    .log-badge.failed { background:#FEE2E2; color:#991B1B; }
+    .log-badge.pending { background:#FEF3C7; color:#92400E; }
+
+    .btn-primary-biz { background:#3B82F6; color:#fff; border:none; border-radius:8px; padding:0.5rem 1.25rem; font-size:0.8125rem; font-weight:500; cursor:pointer; }
+    .btn-primary-biz:hover { background:#2563EB; color:#fff; }
+    .btn-success-biz { background:#10B981; color:#fff; border:none; border-radius:8px; padding:0.5rem 1.25rem; font-size:0.8125rem; font-weight:500; cursor:pointer; }
+    .btn-success-biz:hover { background:#059669; color:#fff; }
+    .btn-outline-biz { background:#fff; color:#222; border:1px solid #dee2e6; border-radius:8px; padding:0.5rem 1rem; font-size:0.8125rem; cursor:pointer; }
+
+    .status-dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; }
+    .status-dot.on { background:#10B981; }
+    .status-dot.off { background:#EF4444; }
+
+    .toast-biz { position:fixed; bottom:24px; right:24px; padding:12px 20px; border-radius:8px; font-size:0.875rem; font-weight:500; z-index:9999; box-shadow:0 4px 12px rgba(0,0,0,0.15); display:flex; align-items:center; gap:0.5rem; color:#fff; }
+</style>
+}
+
+<div class="container py-4">
+    <!-- Header -->
+    <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="header-icon" style="background:#FEF3C7; color:#F59E0B;"><i class="bi bi-envelope"></i></div>
+            <div>
+                <h1>Email Settings</h1>
+                <p>Configure email notifications, SMTP settings, and view send history</p>
+            </div>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            <span class="status-dot @(Model.Settings.IsEnabled ? "on" : "off")"></span>
+            <span style="font-size:0.8125rem; color:@(Model.Settings.IsEnabled ? "#10B981" : "#EF4444"); font-weight:600;">
+                @(Model.Settings.IsEnabled ? "Emails Enabled" : "Emails Disabled")
+            </span>
+            <a asp-action="Index" class="btn-outline-biz ms-3"><i class="bi bi-arrow-left me-1"></i>Dashboard</a>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card" style="border-color:#10B981;"><div class="kpi-value" style="color:#10B981;">@Model.TotalSent</div><div class="kpi-label">Emails Sent</div></div>
+        <div class="kpi-card" style="border-color:#EF4444;"><div class="kpi-value" style="color:#EF4444;">@Model.TotalFailed</div><div class="kpi-label">Failed</div></div>
+        <div class="kpi-card" style="border-color:#3B82F6;"><div class="kpi-value" style="color:#3B82F6;">@Model.SentToday</div><div class="kpi-label">Sent Today</div></div>
+        <div class="kpi-card" style="border-color:@(Model.Settings.IsEnabled ? "#10B981" : "#EF4444");"><div class="kpi-value" style="color:@(Model.Settings.IsEnabled ? "#10B981" : "#EF4444");">@(Model.Settings.IsEnabled ? "ON" : "OFF")</div><div class="kpi-label">System Status</div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="config"><i class="bi bi-gear me-1"></i>Configuration</button>
+        <button class="tab-btn" data-tab="notifications"><i class="bi bi-bell me-1"></i>Notification Types</button>
+        <button class="tab-btn" data-tab="templates"><i class="bi bi-file-earmark-code me-1"></i>Templates</button>
+        <button class="tab-btn" data-tab="history"><i class="bi bi-clock-history me-1"></i>Email History <span style="background:#eee; padding:0.1rem 0.5rem; border-radius:10px; font-size:0.6875rem; margin-left:4px;">@Model.LogTotalCount</span></button>
+    </div>
+
+    <!-- Tab 1: Configuration -->
+    <div class="tab-content active" id="tab-config">
+        <div class="settings-card">
+            <h3><i class="bi bi-hdd-network" style="color:#3B82F6;"></i> SMTP Configuration</h3>
+            <p style="font-size:0.75rem; color:#6A6A6A; margin-bottom:1.25rem;">Environment variables (SMTP_SERVER, SMTP_PASSWORD, etc.) override these values in production.</p>
+            <form id="smtpForm">
+                @Html.AntiForgeryToken()
+                <div class="form-row">
+                    <div class="form-group" style="flex:2;"><label>SMTP Server</label><input type="text" name="smtpServer" value="@Model.Settings.SmtpServer" /></div>
+                    <div class="form-group" style="flex:0.5;"><label>Port</label><input type="number" name="smtpPort" value="@Model.Settings.SmtpPort" /></div>
+                    <div class="form-group" style="flex:0.5; display:flex; align-items:end;">
+                        <label class="toggle-switch" title="Use SSL/TLS"><input type="checkbox" name="useSsl" @(Model.Settings.UseSsl ? "checked" : "") /><span class="slider"></span></label>
+                        <span style="font-size:0.75rem; color:#6A6A6A; margin-left:8px;">SSL/TLS</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Username</label><input type="text" name="smtpUsername" value="@Model.Settings.SmtpUsername" placeholder="email@example.com" /></div>
+                    <div class="form-group"><label>Password</label><input type="password" name="smtpPassword" value="@(string.IsNullOrEmpty(Model.Settings.SmtpPassword) ? "" : "••••••••")" placeholder="App password or SMTP password" /></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Sender Email</label><input type="email" name="senderEmail" value="@Model.Settings.SenderEmail" /></div>
+                    <div class="form-group"><label>Display Name</label><input type="text" name="senderDisplayName" value="@Model.Settings.SenderDisplayName" /></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:0.5;"><label>Max Retries</label><input type="number" name="maxRetries" value="@Model.Settings.MaxRetries" min="0" max="10" /></div>
+                    <div class="form-group" style="flex:0.5;"><label>Retry Delay (sec)</label><input type="number" name="retryDelaySeconds" value="@Model.Settings.RetryDelaySeconds" min="5" max="300" /></div>
+                    <div class="form-group" style="display:flex; align-items:end; gap:8px;">
+                        <label class="toggle-switch" title="Enable email notifications globally">
+                            <input type="checkbox" name="isEnabled" id="globalToggle" @(Model.Settings.IsEnabled ? "checked" : "") />
+                            <span class="slider"></span>
+                        </label>
+                        <span style="font-size:0.8125rem; font-weight:600;" id="globalToggleLabel">@(Model.Settings.IsEnabled ? "Enabled" : "Disabled")</span>
+                    </div>
+                </div>
+                <div style="display:flex; gap:0.75rem; margin-top:1rem;">
+                    <button type="submit" class="btn-primary-biz"><i class="bi bi-save me-1"></i>Save Settings</button>
+                    <button type="button" class="btn-outline-biz" id="testEmailBtn"><i class="bi bi-send me-1"></i>Send Test Email</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tab 2: Notification Types -->
+    <div class="tab-content" id="tab-notifications">
+        <div class="settings-card">
+            <h3><i class="bi bi-bell" style="color:#8B5CF6;"></i> Notification Types</h3>
+            <p style="font-size:0.75rem; color:#6A6A6A; margin-bottom:1.25rem;">Enable or disable individual notification types. The global switch must be ON for any emails to send.</p>
+            <div class="notif-grid">
+                @for (int i = 0; i < notifTypes.Length; i++)
+                {
+                    <div class="notif-card">
+                        <div class="notif-icon" style="background:@(notifColors[i])15; color:@notifColors[i];"><i class="bi @notifIcons[i]"></i></div>
+                        <div class="notif-info">
+                            <div class="name">@notifLabels[i]</div>
+                            <div class="desc">@notifDescs[i]</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="notif-toggle" data-type="@notifTypes[i]" @(notifEnabled[i] ? "checked" : "") />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 3: Templates -->
+    <div class="tab-content" id="tab-templates">
+        <div class="settings-card">
+            <h3><i class="bi bi-file-earmark-code" style="color:#06B6D4;"></i> Email Template Previews</h3>
+            <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem;">
+                <select class="form-select form-select-sm" id="templateSelect" style="max-width:300px; background:#F7F7F7; border:1px solid #DDD; border-radius:8px;">
+                    @foreach (var kv in Model.TemplatePreviews)
+                    {
+                        <option value="@kv.Key">@kv.Key</option>
+                    }
+                </select>
+                <button class="btn-outline-biz" id="sendPreviewBtn"><i class="bi bi-send me-1"></i>Send Preview</button>
+            </div>
+            <iframe class="preview-frame" id="previewFrame" srcdoc="@Model.TemplatePreviews.Values.FirstOrDefault()"></iframe>
+        </div>
+    </div>
+
+    <!-- Tab 4: Email History -->
+    <div class="tab-content" id="tab-history">
+        <div class="settings-card" style="padding:0; overflow:hidden;">
+            <div style="padding:1.25rem 1.5rem; border-bottom:1px solid #f0f0f0;">
+                <h3 style="margin:0;"><i class="bi bi-clock-history" style="color:#F59E0B;"></i> Email History</h3>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="log-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>To</th>
+                            <th>Subject</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Retries</th>
+                            <th>Error</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.RecentLogs.Any())
+                        {
+                            <tr><td colspan="7" style="text-align:center; padding:2rem; color:#6A6A6A;"><i class="bi bi-inbox" style="font-size:1.5rem; display:block; margin-bottom:0.5rem; color:#ccc;"></i>No emails sent yet</td></tr>
+                        }
+                        @foreach (var log in Model.RecentLogs)
+                        {
+                            var typeName = ((RosraApp.Models.Enums.NotificationType)log.NotificationType).ToString();
+                            <tr>
+                                <td style="white-space:nowrap; font-size:0.75rem;">@log.CreatedAt.ToString("dd MMM yy HH:mm")</td>
+                                <td>@log.ToEmail</td>
+                                <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="@log.Subject">@log.Subject</td>
+                                <td><span style="font-size:0.6875rem; font-weight:500;">@typeName</span></td>
+                                <td><span class="log-badge @log.Status.ToLower()">@log.Status</span></td>
+                                <td style="text-align:center;">@log.RetryCount</td>
+                                <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; font-size:0.75rem; color:#EF4444;" title="@log.ErrorMessage">@(log.ErrorMessage ?? "—")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (Model.LogTotalPages > 1)
+            {
+                <div style="display:flex; justify-content:space-between; padding:0.875rem 1.5rem; border-top:1px solid #f0f0f0;">
+                    <span style="font-size:0.8125rem; color:#6A6A6A;">Page @Model.LogPageNumber of @Model.LogTotalPages</span>
+                    <nav><ul class="pagination" style="margin:0;">
+                        @if(Model.LogPageNumber>1){<li class="page-item"><a class="page-link" href="@Url.Action("EmailSettings", new{logPage=Model.LogPageNumber-1})" style="border:none; border-radius:8px;"><i class="bi bi-chevron-left"></i></a></li>}
+                        @for(int i=Math.Max(1,Model.LogPageNumber-2);i<=Math.Min(Model.LogTotalPages,Model.LogPageNumber+2);i++){<li class="page-item @(i==Model.LogPageNumber?"active":"")"><a class="page-link" href="@Url.Action("EmailSettings", new{logPage=i})" style="border:none; border-radius:8px; @(i==Model.LogPageNumber?"background:#3B82F6; color:#fff;":"")">@i</a></li>}
+                        @if(Model.LogPageNumber<Model.LogTotalPages){<li class="page-item"><a class="page-link" href="@Url.Action("EmailSettings", new{logPage=Model.LogPageNumber+1})" style="border:none; border-radius:8px;"><i class="bi bi-chevron-right"></i></a></li>}
+                    </ul></nav>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+        });
+    });
+
+    // Global toggle label
+    document.getElementById('globalToggle')?.addEventListener('change', function() {
+        document.getElementById('globalToggleLabel').textContent = this.checked ? 'Enabled' : 'Disabled';
+    });
+
+    // Toast helper
+    function showToast(msg, success) {
+        var t = document.createElement('div');
+        t.className = 'toast-biz';
+        t.style.background = success ? '#10B981' : '#EF4444';
+        t.innerHTML = '<i class="bi ' + (success ? 'bi-check-circle-fill' : 'bi-x-circle-fill') + '"></i>' + msg;
+        document.body.appendChild(t);
+        setTimeout(function() { t.style.opacity='0'; setTimeout(function(){t.remove();},300); }, 4000);
+    }
+
+    // Save SMTP settings
+    document.getElementById('smtpForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var fd = new FormData(this);
+        // Ensure checkboxes are sent as booleans
+        fd.set('useSsl', this.querySelector('[name=useSsl]').checked);
+        fd.set('isEnabled', this.querySelector('[name=isEnabled]').checked);
+        fetch('@Url.Action("UpdateEmailSettings")', { method:'POST', body:fd })
+            .then(r => r.json()).then(d => showToast(d.message, d.success))
+            .catch(() => showToast('Failed to save settings', false));
+    });
+
+    // Send test email
+    document.getElementById('testEmailBtn').addEventListener('click', function() {
+        var email = prompt('Send test email to:', '@User.Identity?.Name');
+        if (!email) return;
+        var fd = new FormData();
+        fd.append('email', email);
+        fd.append('__RequestVerificationToken', document.querySelector('[name=__RequestVerificationToken]').value);
+        this.disabled = true;
+        this.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Sending...';
+        fetch('@Url.Action("SendTestEmail")', { method:'POST', body:fd })
+            .then(r => r.json()).then(d => { showToast(d.message, d.success); this.disabled=false; this.innerHTML='<i class="bi bi-send me-1"></i>Send Test Email'; })
+            .catch(() => { showToast('Failed to send', false); this.disabled=false; this.innerHTML='<i class="bi bi-send me-1"></i>Send Test Email'; });
+    });
+
+    // Notification type toggles
+    document.querySelectorAll('.notif-toggle').forEach(cb => {
+        cb.addEventListener('change', function() {
+            var fd = new FormData();
+            fd.append('type', this.dataset.type);
+            fd.append('enabled', this.checked);
+            fd.append('__RequestVerificationToken', document.querySelector('[name=__RequestVerificationToken]').value);
+            fetch('@Url.Action("ToggleNotificationType")', { method:'POST', body:fd })
+                .then(r => r.json()).then(d => showToast(d.message, d.success))
+                .catch(() => showToast('Failed to toggle', false));
+        });
+    });
+
+    // Template preview
+    document.getElementById('templateSelect').addEventListener('change', function() {
+        fetch('@Url.Action("PreviewTemplate")?type=' + encodeURIComponent(this.value))
+            .then(r => r.text()).then(html => { document.getElementById('previewFrame').srcdoc = html; });
+    });
+
+    // Send preview email
+    document.getElementById('sendPreviewBtn').addEventListener('click', function() {
+        var email = prompt('Send preview to:', '@User.Identity?.Name');
+        if (!email) return;
+        var fd = new FormData();
+        fd.append('email', email);
+        fd.append('__RequestVerificationToken', document.querySelector('[name=__RequestVerificationToken]').value);
+        fetch('@Url.Action("SendTestEmail")', { method:'POST', body:fd })
+            .then(r => r.json()).then(d => showToast(d.message, d.success))
+            .catch(() => showToast('Failed to send preview', false));
+    });
+</script>
+}

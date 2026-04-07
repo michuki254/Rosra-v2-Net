@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RosraApp.Data;
 using RosraApp.Models;
+using RosraApp.Models.Enums;
 using RosraApp.Models.ViewModels;
+using RosraApp.Services;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,15 +17,18 @@ namespace RosraApp.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
+        private readonly IEmailService _emailService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -53,6 +58,9 @@ namespace RosraApp.Controllers
                 {
                     // Add the user to the User role
                     await _userManager.AddToRoleAsync(user, "User");
+
+                    // Send welcome email
+                    SendWelcomeEmail(user);
 
                     // Sign the user in
                     await _signInManager.SignInAsync(user, isPersistent: false);
@@ -186,6 +194,9 @@ namespace RosraApp.Controllers
                 // Add the user to the User role
                 await _userManager.AddToRoleAsync(user, "User");
 
+                // Send welcome email
+                SendWelcomeEmail(user);
+
                 // Sign the user in
                 await _signInManager.SignInAsync(user, isPersistent: false);
 
@@ -313,6 +324,18 @@ namespace RosraApp.Controllers
 
             var errors = result.Errors.Select(e => e.Description).ToList();
             return Json(new { success = false, message = string.Join(" ", errors) });
+        }
+
+        private void SendWelcomeEmail(ApplicationUser user)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(user.Email)) return;
+                var html = EmailTemplateService.WelcomeEmail(user.FirstName ?? "User", "/Account/Login");
+                _emailService.SendEmailInBackground(user.Email, user.FirstName, "Welcome to ROSRA",
+                    html, NotificationType.WelcomeEmail, "User", user.Id);
+            }
+            catch { /* never fail registration */ }
         }
     }
 }

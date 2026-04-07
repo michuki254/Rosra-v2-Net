@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RosraApp.Data;
 using RosraApp.Models;
@@ -10,15 +11,21 @@ namespace RosraApp.Services
         private readonly ApplicationDbContext _context;
         private readonly SnapshotService _snapshotService;
         private readonly ArtifactService _artifactService;
+        private readonly IEmailService _emailService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public ValidationService(
             ApplicationDbContext context,
             SnapshotService snapshotService,
-            ArtifactService artifactService)
+            ArtifactService artifactService,
+            IEmailService emailService,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _snapshotService = snapshotService;
             _artifactService = artifactService;
+            _emailService = emailService;
+            _userManager = userManager;
         }
 
         public async Task<(bool Success, string Message)> ValidateReport(int reportId, string reviewerUserId, string? comment = null)
@@ -64,6 +71,9 @@ namespace RosraApp.Services
                 await _context.SaveChangesAsync();
             }
 
+            // Notify report owner
+            await NotifyOwnerAsync(report, NotificationType.ReportValidated, null);
+
             return (true, "Report validated successfully");
         }
 
@@ -98,6 +108,10 @@ namespace RosraApp.Services
             });
 
             await _context.SaveChangesAsync();
+
+            // Notify report owner with rejection reason
+            await NotifyOwnerAsync(report, NotificationType.ReportRejected, reason);
+
             return (true, "Report sent back for revision");
         }
 
@@ -131,6 +145,10 @@ namespace RosraApp.Services
             });
 
             await _context.SaveChangesAsync();
+
+            // Notify report owner about unlock
+            await NotifyOwnerAsync(report, NotificationType.ReportUnlocked, reason);
+
             return (true, "Report unlocked for revision");
         }
 
@@ -153,6 +171,44 @@ namespace RosraApp.Services
             }
 
             return (succeeded, failed, errors);
+        }
+
+        private async Task NotifyOwnerAsync(RosraReport report, NotificationType type, string? reason)
+        {
+            try
+            {
+                var settings = await _emailService.GetSettingsAsync();
+                if (settings == null || !_emailService.IsNotificationEnabled(settings, type)) return;
+
+                var owner = await _userManager.FindByIdAsync(report.UserId ?? "");
+                if (owner?.Email == null) return;
+
+                var userName = owner.FirstName ?? "User";
+                var title = report.Title ?? "ROSRA Report";
+                var url = $"/Rosra/View/{report.PublicId}";
+                string subject, html;
+
+                switch (type)
+                {
+                    case NotificationType.ReportValidated:
+                        subject = $"Assessment Validated: {title}";
+                        html = EmailTemplateService.ReportValidated(userName, title, url);
+                        break;
+                    case NotificationType.ReportRejected:
+                        subject = $"Assessment Needs Revision: {title}";
+                        html = EmailTemplateService.ReportRejected(userName, title, reason ?? "", url);
+                        break;
+                    case NotificationType.ReportUnlocked:
+                        subject = $"Validated Assessment Unlocked: {title}";
+                        html = EmailTemplateService.ReportUnlocked(userName, title, reason ?? "");
+                        break;
+                    default:
+                        return;
+                }
+
+                _emailService.SendEmailInBackground(owner.Email, userName, subject, html, type, "RosraReport", report.Id.ToString());
+            }
+            catch { /* never fail the main operation */ }
         }
     }
 }

@@ -22,6 +22,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ReviewNote> ReviewNotes { get; set; } = null!;
     public DbSet<AnalysisSnapshot> AnalysisSnapshots { get; set; } = null!;
     public DbSet<ReportArtifact> ReportArtifacts { get; set; } = null!;
+    public DbSet<EmailSettings> EmailSettings { get; set; } = null!;
+    public DbSet<EmailLog> EmailLogs { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
