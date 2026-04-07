@@ -102,6 +102,10 @@ namespace RosraApp.Data
                         logger.LogInformation("User acmichuki@gmail.com not found. Please register this account first.");
                     }
 
+                    // Seed Country table with states/regions (idempotent)
+                    logger.LogInformation("Seeding country administrative divisions");
+                    await SeedCountryStates(context, logger);
+
                     logger.LogInformation("Database initialization completed successfully");
                 }
                 catch (Exception ex)
@@ -389,6 +393,46 @@ namespace RosraApp.Data
             await context.SaveChangesAsync();
 
             logger.LogInformation($"Seeded {peersSNG.Count} Kenya counties into PeersSNG table");
+        }
+
+        private static async Task SeedCountryStates(ApplicationDbContext context, ILogger logger)
+        {
+            var existingCount = await context.Countries.CountAsync();
+            var expectedCount = CountryStatesData.GetAll().Count;
+            logger.LogInformation($"Country table has {existingCount} records, expected ~{expectedCount}");
+
+            // Skip if already fully seeded (within 10% tolerance)
+            if (existingCount >= expectedCount * 0.9)
+            {
+                logger.LogInformation("Country states already seeded — skipping");
+                return;
+            }
+
+            // Clear and reseed
+            if (existingCount > 0)
+            {
+                context.Countries.RemoveRange(context.Countries);
+                await context.SaveChangesAsync();
+                logger.LogInformation($"Cleared {existingCount} existing Country records for re-seeding");
+            }
+
+            var allData = CountryStatesData.GetAll();
+            var countries = allData.Select(d => new Country
+            {
+                Name = d.Country,
+                Region = d.Region,
+                Subregion = d.Subregion,
+                Capital = d.Capital,
+                Currency = d.Currency,
+                StateName = d.StateName,
+                StateCode = d.StateCode,
+            }).ToList();
+
+            await context.Countries.AddRangeAsync(countries);
+            await context.SaveChangesAsync();
+
+            var countryCount = allData.Select(d => d.Country).Distinct().Count();
+            logger.LogInformation($"Seeded {countries.Count} state/region records for {countryCount} countries");
         }
     }
 }

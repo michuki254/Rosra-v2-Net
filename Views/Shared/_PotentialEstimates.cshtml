@@ -2630,22 +2630,49 @@
 
                 console.log('Loaded', states.length, 'states for', countryName);
 
-                // Clear existing options
-                regionSelect.innerHTML = '<option value="">Select a state/region</option>';
+                const container = regionSelect.parentElement;
 
-                // Add states to the dropdown
-                states.forEach(state => {
-                    const option = document.createElement('option');
-                    option.value = state.name;
-                    option.textContent = state.name;
-
-                    // Select the saved state if it matches
-                    if (selectedState && state.name === selectedState) {
-                        option.selected = true;
+                if (states.length > 0) {
+                    // Has state data — show dropdown
+                    if (document.getElementById('regionTextInput')) {
+                        document.getElementById('regionTextInput').remove();
                     }
+                    regionSelect.style.display = '';
+                    regionSelect.innerHTML = '<option value="">Select a state/region</option>';
 
-                    regionSelect.appendChild(option);
-                });
+                    states.forEach(state => {
+                        const option = document.createElement('option');
+                        option.value = state.name;
+                        option.textContent = state.name;
+                        if (selectedState && state.name === selectedState) {
+                            option.selected = true;
+                        }
+                        regionSelect.appendChild(option);
+                    });
+                } else {
+                    // No state data for this country — switch to text input
+                    regionSelect.style.display = 'none';
+                    regionSelect.innerHTML = '<option value="">Select a state/region</option>';
+
+                    if (!document.getElementById('regionTextInput')) {
+                        const textInput = document.createElement('input');
+                        textInput.type = 'text';
+                        textInput.id = 'regionTextInput';
+                        textInput.className = 'form-control form-control-sm';
+                        textInput.placeholder = 'Type region / state / province name';
+                        textInput.value = selectedState || '';
+                        container.appendChild(textInput);
+
+                        // Sync text input value to the hidden select so form submission works
+                        textInput.addEventListener('input', function() {
+                            // Add the typed value as the selected option
+                            regionSelect.innerHTML = '<option value="' + this.value + '" selected>' + this.value + '</option>';
+                            regionSelect.dispatchEvent(new Event('change'));
+                        });
+                    } else {
+                        document.getElementById('regionTextInput').value = selectedState || '';
+                    }
+                }
             } catch (error) {
                 console.error('Error loading states:', error);
             }
@@ -2882,8 +2909,11 @@
             const selectedCountry = this.value;
             console.log('Country changed to:', selectedCountry);
 
-            // Clear the region dropdown and all government unit levels
+            // Clear the region dropdown/input and all government unit levels
             regionSelect.innerHTML = '<option value="">Select a level 1 unit</option>';
+            regionSelect.style.display = '';
+            var existingTextInput = document.getElementById('regionTextInput');
+            if (existingTextInput) existingTextInput.remove();
             cityInput.value = '';
             govUnitLevel3Input.value = '';
             level1IsFinal.checked = false;
