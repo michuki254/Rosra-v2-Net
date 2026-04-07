@@ -102,6 +102,10 @@ namespace RosraApp.Data
                         logger.LogInformation("User acmichuki@gmail.com not found. Please register this account first.");
                     }
 
+                    // Seed currency data into DB_Countries (if missing)
+                    logger.LogInformation("Seeding currency data for DB_Countries");
+                    await SeedCurrencyData(context, logger);
+
                     // Seed Country table with states/regions (idempotent)
                     logger.LogInformation("Seeding country administrative divisions");
                     await SeedCountryStates(context, logger);
@@ -393,6 +397,93 @@ namespace RosraApp.Data
             await context.SaveChangesAsync();
 
             logger.LogInformation($"Seeded {peersSNG.Count} Kenya counties into PeersSNG table");
+        }
+
+        private static async Task SeedCurrencyData(ApplicationDbContext context, ILogger logger)
+        {
+            // Check if currency data is already populated
+            var missingCount = await context.DB_Countries
+                .Where(c => c.CurrencyCode == null || c.CurrencyCode == "")
+                .CountAsync();
+
+            if (missingCount == 0)
+            {
+                logger.LogInformation("Currency data already populated — skipping");
+                return;
+            }
+
+            logger.LogInformation($"Populating currency data for {missingCount} countries");
+
+            var currencyMap = new Dictionary<string, (string Code, string Symbol)>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Albania"] = ("ALL", "Lek"), ["Angola"] = ("AOA", "Kz"), ["Argentina"] = ("ARS", "$"),
+                ["Armenia"] = ("AMD", "֏"), ["Australia"] = ("AUD", "$"), ["Austria"] = ("EUR", "€"),
+                ["Azerbaijan"] = ("AZN", "₼"), ["Bangladesh"] = ("BDT", "৳"), ["Belgium"] = ("EUR", "€"),
+                ["Benin"] = ("XOF", "₣"), ["Bolivia"] = ("BOB", "Bs"), ["Bosnia and Herzegovina"] = ("BAM", "KM"),
+                ["Botswana"] = ("BWP", "P"), ["Brazil"] = ("BRL", "R$"), ["Bulgaria"] = ("BGN", "лв"),
+                ["Burkina Faso"] = ("XOF", "₣"), ["Burundi"] = ("BIF", "Br"), ["Cabo Verde"] = ("CVE", "$"),
+                ["Cambodia"] = ("KHR", "៛"), ["Cameroon"] = ("XAF", "₣"), ["Canada"] = ("CAD", "$"),
+                ["Chad"] = ("XAF", "₣"), ["Chile"] = ("CLP", "$"), ["China"] = ("CNY", "¥"),
+                ["Colombia"] = ("COP", "$"), ["Costa Rica"] = ("CRC", "₡"), ["Croatia"] = ("EUR", "€"),
+                ["Cyprus"] = ("EUR", "€"), ["Czechia"] = ("CZK", "Kč"), ["Côte d'Ivoire"] = ("XOF", "₣"),
+                ["Denmark"] = ("DKK", "kr"), ["Djibouti"] = ("DJF", "Fdj"), ["Dominican Republic"] = ("DOP", "RD$"),
+                ["Ecuador"] = ("USD", "$"), ["Egypt"] = ("EGP", "E£"), ["El Salvador"] = ("USD", "$"),
+                ["Estonia"] = ("EUR", "€"), ["Eswatini"] = ("SZL", "E"), ["Ethiopia"] = ("ETB", "Br"),
+                ["Finland"] = ("EUR", "€"), ["France"] = ("EUR", "€"), ["Gambia"] = ("GMD", "D"),
+                ["Georgia"] = ("GEL", "₾"), ["Germany"] = ("EUR", "€"), ["Ghana"] = ("GHS", "₵"),
+                ["Greece"] = ("EUR", "€"), ["Guatemala"] = ("GTQ", "Q"), ["Guinea"] = ("GNF", "FG"),
+                ["Haiti"] = ("HTG", "G"), ["Honduras"] = ("HNL", "L"), ["Hungary"] = ("HUF", "Ft"),
+                ["Iceland"] = ("ISK", "kr"), ["India"] = ("INR", "₹"), ["Indonesia"] = ("IDR", "Rp"),
+                ["Ireland"] = ("EUR", "€"), ["Israel"] = ("ILS", "₪"), ["Italy"] = ("EUR", "€"),
+                ["Jamaica"] = ("JMD", "J$"), ["Japan"] = ("JPY", "¥"), ["Jordan"] = ("JOD", "JD"),
+                ["Kazakhstan"] = ("KZT", "₸"), ["Kenya"] = ("KES", "KSh"), ["Korea"] = ("KRW", "₩"),
+                ["Kosovo"] = ("EUR", "€"), ["Kyrgyzstan"] = ("KGS", "с"), ["Latvia"] = ("EUR", "€"),
+                ["Liberia"] = ("LRD", "L$"), ["Lithuania"] = ("EUR", "€"), ["Luxembourg"] = ("EUR", "€"),
+                ["Madagascar"] = ("MGA", "Ar"), ["Malawi"] = ("MWK", "MK"), ["Malaysia"] = ("MYR", "RM"),
+                ["Mali"] = ("XOF", "₣"), ["Malta"] = ("EUR", "€"), ["Mauritania"] = ("MRU", "UM"),
+                ["Mauritius"] = ("MUR", "₨"), ["Mexico"] = ("MXN", "$"), ["Moldova"] = ("MDL", "L"),
+                ["Mongolia"] = ("MNT", "₮"), ["Montenegro"] = ("EUR", "€"), ["Morocco"] = ("MAD", "د.م"),
+                ["Mozambique"] = ("MZN", "MT"), ["Myanmar"] = ("MMK", "K"), ["Namibia"] = ("NAD", "$"),
+                ["Nepal"] = ("NPR", "₨"), ["Netherlands"] = ("EUR", "€"), ["New Zealand"] = ("NZD", "$"),
+                ["Nicaragua"] = ("NIO", "C$"), ["Niger"] = ("XOF", "₣"), ["Nigeria"] = ("NGN", "₦"),
+                ["North Macedonia"] = ("MKD", "ден"), ["Norway"] = ("NOK", "kr"), ["Pakistan"] = ("PKR", "₨"),
+                ["Panama"] = ("USD", "$"), ["Paraguay"] = ("PYG", "₲"), ["Peru"] = ("PEN", "S/"),
+                ["Philippines"] = ("PHP", "₱"), ["Poland"] = ("PLN", "zł"), ["Portugal"] = ("EUR", "€"),
+                ["Romania"] = ("RON", "lei"), ["Rwanda"] = ("RWF", "RF"), ["Saudi Arabia"] = ("SAR", "﷼"),
+                ["Senegal"] = ("XOF", "₣"), ["Serbia"] = ("RSD", "дин"), ["Seychelles"] = ("SCR", "₨"),
+                ["Sierra Leone"] = ("SLL", "Le"), ["Slovak Republic"] = ("EUR", "€"), ["Slovenia"] = ("EUR", "€"),
+                ["Somalia"] = ("SOS", "Sh"), ["South Africa"] = ("ZAR", "R"), ["Spain"] = ("EUR", "€"),
+                ["Sri Lanka"] = ("LKR", "₨"), ["Sweden"] = ("SEK", "kr"), ["Switzerland"] = ("CHF", "CHF"),
+                ["Tajikistan"] = ("TJS", "ЅМ"), ["Tanzania"] = ("TZS", "Sh"), ["Thailand"] = ("THB", "฿"),
+                ["Togo"] = ("XOF", "₣"), ["Tunisia"] = ("TND", "د.ت"), ["Turkey"] = ("TRY", "₺"),
+                ["Türkiye"] = ("TRY", "₺"), ["Uganda"] = ("UGX", "Sh"), ["Ukraine"] = ("UAH", "₴"),
+                ["United Arab Emirates"] = ("AED", "د.إ"), ["United Kingdom"] = ("GBP", "£"),
+                ["United States"] = ("USD", "$"), ["Uruguay"] = ("UYU", "$U"), ["Uzbekistan"] = ("UZS", "сўм"),
+                ["Venezuela"] = ("VES", "Bs"), ["Viet Nam"] = ("VND", "₫"),
+                ["West Bank and Gaza Strip"] = ("ILS", "₪"), ["Zambia"] = ("ZMW", "ZK"),
+                ["Zimbabwe"] = ("ZWL", "Z$"),
+            };
+
+            var allCountries = await context.DB_Countries.ToListAsync();
+            int updated = 0;
+            foreach (var c in allCountries)
+            {
+                if (!string.IsNullOrEmpty(c.CurrencyCode) && !string.IsNullOrEmpty(c.CurrencySymbol))
+                    continue;
+
+                if (currencyMap.TryGetValue(c.Country, out var cur))
+                {
+                    c.CurrencyCode = cur.Code;
+                    c.CurrencySymbol = cur.Symbol;
+                    updated++;
+                }
+            }
+
+            if (updated > 0)
+            {
+                await context.SaveChangesAsync();
+                logger.LogInformation($"Updated currency data for {updated} countries");
+            }
         }
 
         private static async Task SeedCountryStates(ApplicationDbContext context, ILogger logger)

@@ -1916,55 +1916,45 @@ namespace RosraApp.Controllers
                     return Json(cached);
                 }
 
-                // Get distinct countries from Country table
-                var countries = await _context.Countries
-                    .Where(c => c.Name != null)
-                    .Select(c => new { name = c.Name, currency = c.Currency })
-                    .Distinct()
-                    .OrderBy(c => c.name)
-                    .ToListAsync();
-
-                // Get additional data from DB_Countries table (includes currency symbol)
-                var countryDataList = await _context.DB_Countries
+                // Primary source: DB_Countries has currency, income level, government type
+                var dbCountries = await _context.DB_Countries
+                    .Where(cd => cd.Country != null)
                     .Select(cd => new {
-                        country = cd.Country,
-                        governmentType = cd.Government_Type,
-                        incomeLevel = cd.Income_Level,
+                        name = cd.Country,
+                        currencyCode = cd.CurrencyCode,
                         currencySymbol = cd.CurrencySymbol,
-                        currencyCode = cd.CurrencyCode
+                        governmentType = cd.Government_Type,
+                        incomeLevel = cd.Income_Level
                     })
+                    .OrderBy(cd => cd.name)
                     .ToListAsync();
 
-                // Join the data
-                var result = countries.Select(c => {
-                    var countryData = countryDataList.FirstOrDefault(cd =>
-                        cd.country != null && c.name != null &&
-                        cd.country.Equals(c.name, StringComparison.OrdinalIgnoreCase));
+                // Also get any countries from the Country table that might not be in DB_Countries
+                var countryTableNames = await _context.Countries
+                    .Where(c => c.Name != null)
+                    .Select(c => c.Name!)
+                    .Distinct()
+                    .ToListAsync();
 
-                    // Fallback for currency symbol: use symbol from DB_Countries, or currency code, or known mapping, or currency name
-                    string symbol = "";
-                    if (!string.IsNullOrEmpty(countryData?.currencySymbol))
-                    {
-                        symbol = countryData.currencySymbol;
-                    }
-                    else if (!string.IsNullOrEmpty(countryData?.currencyCode))
-                    {
-                        symbol = countryData.currencyCode;
-                    }
-                    else if (!string.IsNullOrEmpty(c.currency))
-                    {
-                        // Map common currency names to their standard symbols/codes
-                        symbol = MapCurrencyNameToSymbol(c.currency);
-                    }
-
-                    return new {
-                        name = c.name,
-                        currency = c.currency,
-                        currencySymbol = symbol,
-                        governmentType = countryData?.governmentType ?? "",
-                        incomeLevel = countryData?.incomeLevel ?? ""
-                    };
+                // Build result: DB_Countries is authoritative, supplement with Country table entries
+                var dbNames = new HashSet<string>(dbCountries.Select(c => c.name!), StringComparer.OrdinalIgnoreCase);
+                var result = dbCountries.Select(c => new {
+                    name = c.name,
+                    currency = c.currencyCode ?? "",
+                    currencySymbol = !string.IsNullOrEmpty(c.currencySymbol) ? c.currencySymbol
+                                   : !string.IsNullOrEmpty(c.currencyCode) ? c.currencyCode
+                                   : "",
+                    governmentType = c.governmentType ?? "",
+                    incomeLevel = c.incomeLevel ?? ""
                 }).ToList();
+
+                // Add any countries from Country table not in DB_Countries (with no fiscal data)
+                foreach (var name in countryTableNames.Where(n => !dbNames.Contains(n)).OrderBy(n => n))
+                {
+                    result.Add(new { name = name, currency = "", currencySymbol = "", governmentType = "", incomeLevel = "" });
+                }
+
+                result = result.OrderBy(r => r.name).ToList();
 
                 _cache.Set(cacheKey, result, TimeSpan.FromHours(24));
                 return Json(result);

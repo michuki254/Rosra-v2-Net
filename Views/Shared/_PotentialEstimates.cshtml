@@ -41,7 +41,7 @@
                             <div class="compact-field">
                                 <label class="compact-label">@Localizer["Country"]</label>
                                 <div class="country-select-wrapper">
-                                    <img id="country-flag" class="country-flag" src="" alt="" style="display: none;">
+                                    <span id="country-flag" class="fi" style="display: none; font-size: 1.25rem; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></span>
                                     <select class="form-select form-select-sm @(isViewMode ? "readonly" : "")" id="country" name="Country" @(isViewMode ? "disabled" : "")>
                                         <option value="">@Localizer["SelectCountry"]</option>
                                     </select>
@@ -650,12 +650,7 @@
     gap: 0.5rem;
 }
 
-.country-flag {
-    width: 28px;
-    height: 20px;
-    border-radius: 3px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-    object-fit: cover;
+.country-flag, .country-select-wrapper .fi {
     flex-shrink: 0;
 }
 
@@ -2558,6 +2553,8 @@
                     // Select the saved country if it matches
                     if (savedCountry && country.name === savedCountry) {
                         option.selected = true;
+                        // Show flag
+                        updateCountryFlag(savedCountry);
                         // Auto-populate Government Type and Income Level
                         document.getElementById('governmentType').value = country.governmentType || '';
                         document.getElementById('incomeLevel').value = country.incomeLevel || '';
@@ -2716,6 +2713,53 @@
             'Uzbekistan': 'UZB', 'Venezuela': 'VEN', 'Vietnam': 'VNM', 'Yemen': 'YEM', 'Zambia': 'ZMB',
             'Zimbabwe': 'ZWE'
         };
+
+        // Country name to 2-letter ISO code mapping (for flag-icons CSS)
+        const countryFlagCodes = {
+            'Afghanistan':'af','Albania':'al','Algeria':'dz','Angola':'ao','Argentina':'ar','Armenia':'am',
+            'Australia':'au','Austria':'at','Azerbaijan':'az','Bahrain':'bh','Bangladesh':'bd','Belarus':'by',
+            'Belgium':'be','Benin':'bj','Bhutan':'bt','Bolivia':'bo','Bosnia and Herzegovina':'ba','Botswana':'bw',
+            'Brazil':'br','Brunei':'bn','Bulgaria':'bg','Burkina Faso':'bf','Burundi':'bi','Cabo Verde':'cv',
+            'Cambodia':'kh','Cameroon':'cm','Canada':'ca','Central African Republic':'cf','Chad':'td',
+            'Chile':'cl','China':'cn','Colombia':'co','Congo':'cg','Costa Rica':'cr','Croatia':'hr',
+            'Cuba':'cu','Cyprus':'cy','Czech Republic':'cz','Czechia':'cz',"Côte d'Ivoire":'ci','Ivory Coast':'ci',
+            'Denmark':'dk','Djibouti':'dj','Dominican Republic':'do','Ecuador':'ec','Egypt':'eg',
+            'El Salvador':'sv','Estonia':'ee','Eswatini':'sz','Ethiopia':'et','Finland':'fi','France':'fr',
+            'Gabon':'ga','Gambia':'gm','Georgia':'ge','Germany':'de','Ghana':'gh','Greece':'gr',
+            'Guatemala':'gt','Guinea':'gn','Haiti':'ht','Honduras':'hn','Hungary':'hu','Iceland':'is',
+            'India':'in','Indonesia':'id','Iran':'ir','Iraq':'iq','Ireland':'ie','Israel':'il','Italy':'it',
+            'Jamaica':'jm','Japan':'jp','Jordan':'jo','Kazakhstan':'kz','Kenya':'ke','Korea':'kr',
+            'Kosovo':'xk','Kuwait':'kw','Kyrgyzstan':'kg','Laos':'la','Latvia':'lv','Lebanon':'lb',
+            'Lesotho':'ls','Liberia':'lr','Libya':'ly','Lithuania':'lt','Luxembourg':'lu','Madagascar':'mg',
+            'Malawi':'mw','Malaysia':'my','Mali':'ml','Malta':'mt','Mauritania':'mr','Mauritius':'mu',
+            'Mexico':'mx','Moldova':'md','Mongolia':'mn','Montenegro':'me','Morocco':'ma','Mozambique':'mz',
+            'Myanmar':'mm','Namibia':'na','Nepal':'np','Netherlands':'nl','New Zealand':'nz','Nicaragua':'ni',
+            'Niger':'ne','Nigeria':'ng','North Macedonia':'mk','Norway':'no','Oman':'om','Pakistan':'pk',
+            'Panama':'pa','Papua New Guinea':'pg','Paraguay':'py','Peru':'pe','Philippines':'ph','Poland':'pl',
+            'Portugal':'pt','Qatar':'qa','Romania':'ro','Russia':'ru','Rwanda':'rw','Saudi Arabia':'sa',
+            'Senegal':'sn','Serbia':'rs','Seychelles':'sc','Sierra Leone':'sl','Singapore':'sg',
+            'Slovak Republic':'sk','Slovakia':'sk','Slovenia':'si','Somalia':'so','South Africa':'za',
+            'South Korea':'kr','South Sudan':'ss','Spain':'es','Sri Lanka':'lk','Sudan':'sd','Sweden':'se',
+            'Switzerland':'ch','Syria':'sy','Taiwan':'tw','Tajikistan':'tj','Tanzania':'tz','Thailand':'th',
+            'Togo':'tg','Trinidad and Tobago':'tt','Tunisia':'tn','Turkey':'tr','Türkiye':'tr',
+            'Turkmenistan':'tm','Uganda':'ug','Ukraine':'ua','United Arab Emirates':'ae','UAE':'ae',
+            'United Kingdom':'gb','UK':'gb','United States':'us','USA':'us','Uruguay':'uy',
+            'Uzbekistan':'uz','Venezuela':'ve','Vietnam':'vn','Viet Nam':'vn',
+            'West Bank and Gaza Strip':'ps','Yemen':'ye','Zambia':'zm','Zimbabwe':'zw'
+        };
+
+        function updateCountryFlag(countryName) {
+            const flagEl = document.getElementById('country-flag');
+            if (!flagEl) return;
+            const code = countryFlagCodes[countryName];
+            if (code) {
+                flagEl.className = 'fi fi-' + code;
+                flagEl.style.display = '';
+            } else {
+                flagEl.className = 'fi';
+                flagEl.style.display = 'none';
+            }
+        }
 
         // Fetch GDP per capita from World Bank API based on selected year
         async function fetchGdpPerCapita(countryName, year = null) {
@@ -2919,6 +2963,9 @@
             level1IsFinal.checked = false;
             level2IsFinal.checked = false;
             updateGovernmentUnitVisibility();
+
+            // Update flag
+            updateCountryFlag(selectedCountry);
 
             // If no country is selected, clear auto-populated fields and return
             if (!selectedCountry) {
