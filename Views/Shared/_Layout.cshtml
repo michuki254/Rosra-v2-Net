@@ -135,6 +135,9 @@
                                 <li><a class="dropdown-item" href="/#testimonials">
                                     <i class="fas fa-quote-left me-2"></i> @SharedLocalizer["Nav_Testimonials"]
                                 </a></li>
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="JobAid">
+                                    <i class="fas fa-book-reader me-2"></i> User Guide
+                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="https://unhabitat.org" target="_blank">
                                     <i class="fas fa-external-link-alt me-2"></i> @SharedLocalizer["Nav_UnHabitatWebsite"]
@@ -145,41 +148,13 @@
                             </ul>
                         </li>
 
-                        @if (User.Identity != null && User.Identity.IsAuthenticated)
-                        {
-                            var user = await UserManager.GetUserAsync(User);
-                            if (user != null && await UserManager.IsInRoleAsync(user, "Admin"))
-                            {
-                                <!-- Admin Dropdown -->
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" ? "active" : "")"
-                                       href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        @SharedLocalizer["Nav_Admin"]
-                                    </a>
-                                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">
-                                            <i class="fas fa-tachometer-alt me-2"></i> @SharedLocalizer["Nav_Dashboard"]
-                                        </a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Users">
-                                            <i class="fas fa-users-cog me-2"></i> @SharedLocalizer["Nav_ManageUsers"]
-                                        </a></li>
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="DataUpload">
-                                            <i class="fas fa-cloud-upload-alt me-2"></i> @SharedLocalizer["Nav_DataUpload"]
-                                        </a></li>
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="CreateRole">
-                                            <i class="fas fa-user-shield me-2"></i> @SharedLocalizer["Nav_CreateRole"]
-                                        </a></li>
-                                    </ul>
-                                </li>
-                            }
-                        }
                     </ul>
 
                     <!-- Right Side: Auth & CTA -->
                     <div class="nav-right-section">
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
+                            var user = await UserManager.GetUserAsync(User);
                             <div class="user-menu dropdown">
                                 <a class="user-dropdown-toggle" href="#" id="userDropdown" role="button"
                                    data-bs-toggle="dropdown" aria-expanded="false">
@@ -191,9 +166,36 @@
                                     <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="Index">
                                         <i class="fas fa-tachometer-alt me-2"></i> @SharedLocalizer["Nav_MyDashboard"]
                                     </a></li>
+                                    <li><a class="dropdown-item" asp-controller="Home" asp-action="JobAid">
+                                        <i class="fas fa-book-reader me-2"></i> User Guide
+                                    </a></li>
                                     <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">
                                         <i class="fas fa-user-cog me-2"></i> My Profile
                                     </a></li>
+                                    @if (user != null && await UserManager.IsInRoleAsync(user, "Admin"))
+                                    {
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li class="dropdown-header">@SharedLocalizer["Nav_Admin"]</li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">
+                                            <i class="fas fa-tachometer-alt me-2"></i> @SharedLocalizer["Nav_Dashboard"]
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Users">
+                                            <i class="fas fa-users-cog me-2"></i> @SharedLocalizer["Nav_ManageUsers"]
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="DataUpload">
+                                            <i class="fas fa-cloud-upload-alt me-2"></i> @SharedLocalizer["Nav_DataUpload"]
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="CreateRole">
+                                            <i class="fas fa-user-shield me-2"></i> @SharedLocalizer["Nav_CreateRole"]
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-controller="Home" asp-action="AdminGuide">
+                                            <i class="fas fa-book me-2"></i> Admin Guide
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Home" asp-action="DevGuide">
+                                            <i class="fas fa-code me-2"></i> Developer Guide
+                                        </a></li>
+                                    }
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form asp-controller="Account" asp-action="Logout" method="post">
@@ -215,9 +217,12 @@
                         @await Html.PartialAsync("_LanguageSwitcher")
 
                         <!-- Primary CTA Button -->
-                        <a class="btn-create-report" asp-controller="Rosra" asp-action="NewReport">
-                            <i class="fas fa-plus-circle me-1"></i> @SharedLocalizer["Nav_CreateReport"]
-                        </a>
+                        @if (ViewContext.RouteData.Values["controller"]?.ToString() != "Dashboard")
+                        {
+                            <a class="btn-create-report" asp-controller="Rosra" asp-action="NewReport">
+                                <i class="fas fa-plus-circle me-1"></i> @SharedLocalizer["Nav_CreateReport"]
+                            </a>
+                        }
                     </div>
                 </div>
 

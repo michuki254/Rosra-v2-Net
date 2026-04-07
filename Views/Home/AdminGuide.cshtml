@@ -1,0 +1,1030 @@
+@{
+    ViewData["Title"] = "Administrator Guide";
+}
+
+@section Styles {
+    <style>
+        body { background: #f8f9fa; }
+
+        /* ── Hero ── */
+        .admin-hero {
+            background: #1e3a5f;
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .admin-hero h1 { font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .admin-hero .lead { font-size: 1.05rem; opacity: 0.9; margin-bottom: 0; }
+
+        .admin-hero .badge-admin {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .btn-print-guide {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.9);
+            border-radius: 6px;
+            font-weight: 500;
+            padding: 0.45rem 1rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-print-guide:hover { background: rgba(255,255,255,0.15); color: white; }
+
+        /* ── TOC Sidebar ── */
+        .toc-sidebar {
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .toc-sidebar::-webkit-scrollbar { width: 3px; }
+        .toc-sidebar::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 3px; }
+
+        .toc-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            padding: 1.25rem;
+        }
+
+        .toc-card h6 {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #868e96;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f1f3f5;
+        }
+
+        .toc-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.65rem;
+            border-radius: 6px;
+            color: #495057;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            margin-bottom: 2px;
+        }
+
+        .toc-link:hover, .toc-link.active { background: #dbeafe; color: #1d4ed8; }
+        .toc-link i { font-size: 0.75rem; width: 18px; text-align: center; color: #adb5bd; }
+        .toc-link:hover i, .toc-link.active i { color: #1d4ed8; }
+
+        /* ── Sections ── */
+        .guide-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .guide-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .guide-section h2 .section-icon {
+            width: 38px;
+            height: 38px;
+            background: #1e3a5f;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .guide-section h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #334155;
+            margin-top: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .guide-section h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #475569;
+            margin-top: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .guide-section p, .guide-section li {
+            color: #475569;
+            font-size: 0.925rem;
+            line-height: 1.75;
+        }
+
+        .guide-section ol, .guide-section ul { padding-left: 1.25rem; }
+        .guide-section ol li, .guide-section ul li { margin-bottom: 0.5rem; }
+
+        /* ── Tables ── */
+        .guide-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .guide-table thead th {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+            padding: 0.7rem 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: left;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .guide-table tbody td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid #f1f3f5;
+            color: #475569;
+            vertical-align: top;
+        }
+
+        .guide-table tbody tr:last-child td { border-bottom: none; }
+        .guide-table tbody tr:hover { background: #f8fafc; }
+
+        /* ── Callout Boxes ── */
+        .guide-tip {
+            background: #dbeafe;
+            border-left: 4px solid #2563eb;
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #1e40af;
+        }
+
+        .guide-tip i { margin-right: 0.5rem; }
+
+        .guide-warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #92400e;
+        }
+
+        .guide-warning i { margin-right: 0.5rem; }
+
+        .guide-danger {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #991b1b;
+        }
+
+        .guide-danger i { margin-right: 0.5rem; }
+
+        /* ── Step Boxes ── */
+        .step-box {
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 1.25rem;
+            margin: 0.75rem 0;
+        }
+
+        .step-box h4 {
+            margin-top: 0;
+            color: #1e3a5f;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ── Status Badges ── */
+        .status-ex {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .st-draft { background: #e9ecef; color: #495057; }
+        .st-submitted { background: #dcfce7; color: #16a34a; }
+        .st-review { background: #dbeafe; color: #2563eb; }
+        .st-revision { background: #fef3c7; color: #d97706; }
+        .st-validated { background: #d1fae5; color: #059669; }
+
+        /* ── Workflow Diagram ── */
+        .wf-flow {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            padding: 1.25rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .wf-box {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.5rem 0.85rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #475569;
+            text-align: center;
+            background: white;
+        }
+
+        .wf-box.wf-draft { border-color: #94a3b8; }
+        .wf-box.wf-submitted { border-color: #22c55e; color: #16a34a; background: #f0fdf4; }
+        .wf-box.wf-review { border-color: #3b82f6; color: #2563eb; background: #eff6ff; }
+        .wf-box.wf-revision { border-color: #f59e0b; color: #d97706; background: #fffbeb; }
+        .wf-box.wf-validated { border-color: #10b981; color: #059669; background: #ecfdf5; }
+
+        .wf-arrow { color: #cbd5e1; font-size: 1.1rem; }
+
+        /* ── Nav path styling ── */
+        .nav-path {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: #f1f5f9;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .nav-path i { font-size: 0.65rem; color: #94a3b8; }
+
+        /* ── Responsive ── */
+        @@media (max-width: 991.98px) {
+            .toc-sidebar { position: static; max-height: none; margin-bottom: 1.5rem; }
+        }
+
+        @@media print {
+            .admin-hero { padding: 1.5rem 0; }
+            .toc-sidebar { display: none; }
+            .guide-section { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            .btn-print-guide { display: none; }
+        }
+    </style>
+}
+
+<!-- Hero -->
+<div class="admin-hero">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h1><i class="bi bi-shield-lock me-2"></i> Administrator Guide</h1>
+                <p class="lead">A practical guide to managing users, roles, reports, and the review process in ROSRA</p>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+                <span class="badge-admin">Admin Only</span>
+                <button class="btn-print-guide" onclick="window.print()">
+                    <i class="bi bi-printer me-1"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row">
+
+        <!-- Sidebar TOC -->
+        <div class="col-lg-3">
+            <div class="toc-sidebar">
+                <div class="toc-card">
+                    <h6>Contents</h6>
+                    <nav>
+                        <a href="#overview" class="toc-link"><i class="bi bi-speedometer2"></i> Admin Dashboard</a>
+                        <a href="#manage-users" class="toc-link"><i class="bi bi-people"></i> Managing Users</a>
+                        <a href="#user-details" class="toc-link"><i class="bi bi-person-gear"></i> User Details & Roles</a>
+                        <a href="#activate-deactivate" class="toc-link"><i class="bi bi-toggle-on"></i> Activate / Deactivate</a>
+                        <a href="#roles-permissions" class="toc-link"><i class="bi bi-shield-check"></i> Roles & Permissions</a>
+                        <a href="#all-reports" class="toc-link"><i class="bi bi-grid-3x3-gap"></i> All Reports</a>
+                        <a href="#deleted-reports" class="toc-link"><i class="bi bi-trash3"></i> Deleted Reports</a>
+                        <a href="#review-queue" class="toc-link"><i class="bi bi-inbox"></i> Review Queue</a>
+                        <a href="#reviewing" class="toc-link"><i class="bi bi-clipboard-check"></i> Reviewing a Report</a>
+                        <a href="#review-decisions" class="toc-link"><i class="bi bi-check2-square"></i> Validate or Revise</a>
+                        <a href="#audit-log" class="toc-link"><i class="bi bi-journal-text"></i> Audit Log</a>
+                        <a href="#data-upload" class="toc-link"><i class="bi bi-cloud-upload"></i> Data Upload</a>
+                        <a href="#tips" class="toc-link"><i class="bi bi-lightbulb"></i> Tips & Best Practices</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+
+            <!-- 1. Admin Dashboard -->
+            <section id="overview" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-speedometer2"></i></span>
+                    Admin Dashboard
+                </h2>
+                <p>The Admin Dashboard is your central control panel. It gives you a quick overview of the entire system at a glance.</p>
+
+                <h3>How to Access</h3>
+                <ol>
+                    <li>Click <strong>My Dashboard</strong> in the top-right corner of the navigation bar.</li>
+                    <li>In the dropdown, click <strong>Admin Dashboard</strong> (under the Admin section).</li>
+                </ol>
+
+                <h3>What You Will See</h3>
+
+                <h4>Statistics Cards</h4>
+                <p>Four cards at the top show key numbers:</p>
+                <table class="guide-table">
+                    <thead><tr><th>Card</th><th>What It Shows</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Total Users</strong></td><td>Total number of registered accounts</td></tr>
+                        <tr><td><strong>Active Users</strong></td><td>Users who can currently log in</td></tr>
+                        <tr><td><strong>Pending Reviews</strong></td><td>Reports waiting to be reviewed</td></tr>
+                        <tr><td><strong>Validated Reports</strong></td><td>Reports that have been approved</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>Quick Links</h4>
+                <p>Below the statistics, you will find shortcut buttons to common admin tasks:</p>
+                <ul>
+                    <li><strong>View All Reports</strong> &mdash; See every report in the system</li>
+                    <li><strong>User Management</strong> &mdash; Manage user accounts</li>
+                    <li><strong>Roles & Permissions</strong> &mdash; Create or edit roles</li>
+                    <li><strong>Audit Log</strong> &mdash; View a history of all actions</li>
+                    <li><strong>Data Upload</strong> &mdash; Upload reference data files</li>
+                    <li><strong>Deleted Reports</strong> &mdash; View and restore deleted reports</li>
+                </ul>
+
+                <h4>Recent Reports Table</h4>
+                <p>The bottom section shows a table of the most recent reports across all users. You can search by title, location, or user email. Click <strong>View</strong> on any report to open it.</p>
+            </section>
+
+            <!-- 2. Managing Users -->
+            <section id="manage-users" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-people"></i></span>
+                    Managing Users
+                </h2>
+                <p>
+                    The Users page lets you see everyone registered in the system and manage their accounts.
+                </p>
+
+                <h3>How to Access</h3>
+                <p>From the Admin Dashboard, click <strong>Manage Users</strong>. Or use the navigation: <span class="nav-path">My Dashboard <i class="bi bi-chevron-right"></i> Manage Users</span></p>
+
+                <h3>Finding a User</h3>
+                <p>The page shows all users in a table. To find a specific person:</p>
+                <ol>
+                    <li>Type their <strong>name</strong>, <strong>email</strong>, or <strong>organization</strong> in the search box.</li>
+                    <li>Use the <strong>Role</strong> dropdown to filter by role (e.g., show only Admins or Reviewers).</li>
+                    <li>Use the <strong>Status</strong> dropdown to show only Active or Inactive users.</li>
+                    <li>Click <strong>Search</strong> to apply your filters.</li>
+                    <li>Click <strong>Clear</strong> (the red X) to reset all filters.</li>
+                </ol>
+
+                <h3>What Each Column Shows</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Column</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>User</strong></td><td>Name with avatar, plus email address</td></tr>
+                        <tr><td><strong>Organization</strong></td><td>The organization they entered during registration</td></tr>
+                        <tr><td><strong>Reports</strong></td><td>How many reports they have created</td></tr>
+                        <tr><td><strong>Roles</strong></td><td>Color-coded badges showing assigned roles</td></tr>
+                        <tr><td><strong>Status</strong></td><td>Green = Active, Gray = Inactive</td></tr>
+                        <tr><td><strong>Joined</strong></td><td>When they created their account</td></tr>
+                        <tr><td><strong>Actions</strong></td><td>Buttons to view details or activate/deactivate</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="guide-tip">
+                    <i class="bi bi-lightbulb"></i>
+                    <strong>Tip:</strong> Click the <strong>Total</strong>, <strong>Active</strong>, or <strong>Inactive</strong> cards at the top to quickly filter the table by status.
+                </div>
+            </section>
+
+            <!-- 3. User Details & Roles -->
+            <section id="user-details" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-person-gear"></i></span>
+                    User Details & Role Management
+                </h2>
+                <p>Click <strong>View Details</strong> (the eye icon) on any user in the Users table to open their detail page.</p>
+
+                <h3>What You Will See</h3>
+                <ul>
+                    <li><strong>Profile information</strong> &mdash; Name, email, organization, phone, join date</li>
+                    <li><strong>Account status</strong> &mdash; Active or Inactive</li>
+                    <li><strong>Report count</strong> &mdash; How many reports they have created</li>
+                    <li><strong>Current roles</strong> &mdash; All roles currently assigned to this user</li>
+                </ul>
+
+                <h3>Adding a Role to a User</h3>
+                <div class="step-box">
+                    <h4><span class="step-num">1</span> Open the user's detail page</h4>
+                    <p>Go to <strong>Manage Users</strong>, find the user, and click <strong>View Details</strong>.</p>
+                </div>
+                <div class="step-box">
+                    <h4><span class="step-num">2</span> Find the "Add Role" section</h4>
+                    <p>On the right side, look for the <strong>Role Management</strong> card. Below the current roles, you will see a dropdown labeled with available roles.</p>
+                </div>
+                <div class="step-box">
+                    <h4><span class="step-num">3</span> Select and add the role</h4>
+                    <p>Choose the role you want to assign from the dropdown, then click the <strong>Add</strong> button (blue plus icon). The role will be assigned immediately.</p>
+                </div>
+
+                <h3>Removing a Role from a User</h3>
+                <ol>
+                    <li>On the user's detail page, find their <strong>Current Roles</strong> list.</li>
+                    <li>Click the <strong>Remove</strong> button (red X) next to the role you want to remove.</li>
+                    <li>A confirmation dialog will appear. Click <strong>Remove</strong> to confirm.</li>
+                </ol>
+
+                <div class="guide-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Important:</strong> All role changes are automatically recorded in the Audit Log so you can track who made what changes and when.
+                </div>
+            </section>
+
+            <!-- 4. Activate / Deactivate Users -->
+            <section id="activate-deactivate" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-toggle-on"></i></span>
+                    Activating & Deactivating Users
+                </h2>
+                <p>
+                    If a user should no longer have access to the system, you can <strong>deactivate</strong> their account.
+                    Deactivated users cannot log in but their data is preserved. You can reactivate them at any time.
+                </p>
+
+                <h3>To Deactivate a User</h3>
+                <ol>
+                    <li>Go to <strong>Manage Users</strong> and find the user.</li>
+                    <li>Either:
+                        <ul>
+                            <li>Click the <strong>person icon</strong> in the Actions column of the users table, or</li>
+                            <li>Open their <strong>User Details</strong> page and click <strong>Deactivate User</strong></li>
+                        </ul>
+                    </li>
+                    <li>A confirmation dialog will appear asking "Are you sure?"</li>
+                    <li>Click <strong>Deactivate</strong> to confirm.</li>
+                </ol>
+                <p>The user's status will change to <strong>Inactive</strong> (gray badge) and they will no longer be able to log in.</p>
+
+                <h3>To Reactivate a User</h3>
+                <ol>
+                    <li>Go to <strong>Manage Users</strong> and filter by <strong>Inactive</strong> status.</li>
+                    <li>Find the user and click the <strong>person icon</strong> or open their details.</li>
+                    <li>Click <strong>Activate User</strong> and confirm.</li>
+                </ol>
+                <p>The user's status will change back to <strong>Active</strong> (green badge) and they can log in again.</p>
+
+                <div class="guide-tip">
+                    <i class="bi bi-lightbulb"></i>
+                    <strong>Note:</strong> Deactivating a user does <em>not</em> delete their reports. Their reports remain in the system and can still be viewed by admins.
+                </div>
+            </section>
+
+            <!-- 5. Roles & Permissions -->
+            <section id="roles-permissions" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-shield-check"></i></span>
+                    Roles & Permissions
+                </h2>
+                <p>
+                    Roles control what each user can do in the system. Each role has a set of <strong>permissions</strong>
+                    that determine which features are accessible.
+                </p>
+
+                <h3>How to Access</h3>
+                <p><span class="nav-path">My Dashboard <i class="bi bi-chevron-right"></i> Create Role</span>, or click <strong>Roles & Permissions</strong> on the Admin Dashboard.</p>
+
+                <h3>Default Roles</h3>
+                <p>The system comes with three built-in roles:</p>
+                <table class="guide-table">
+                    <thead><tr><th>Role</th><th>What They Can Do</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>User</strong></td>
+                            <td>Create and edit their own reports, submit reports for review, export reports, view their dashboard</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reviewer</strong></td>
+                            <td>Everything a User can do, plus: review submitted reports, add review notes, validate or request revision, view report snapshots</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Admin</strong></td>
+                            <td>Full access to all features including user management, role management, data uploads, audit log, and all reviewer capabilities</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Creating a New Role</h3>
+                <div class="step-box">
+                    <h4><span class="step-num">1</span> Enter a role name</h4>
+                    <p>On the Role Management page, type a name for your new role in the <strong>Role Name</strong> field (e.g., "Data Entry Clerk" or "Regional Manager").</p>
+                </div>
+                <div class="step-box">
+                    <h4><span class="step-num">2</span> Select permissions</h4>
+                    <p>Below the name field, you will see permissions organized by category (Reports, User Management, Data Management, etc.). Check the box next to each permission you want this role to have.</p>
+                    <p>Use the <strong>Select All</strong> or <strong>Clear All</strong> buttons to quickly check or uncheck everything.</p>
+                </div>
+                <div class="step-box">
+                    <h4><span class="step-num">3</span> Click "Create Role"</h4>
+                    <p>Click the blue <strong>Create Role</strong> button. The new role will appear in the <strong>Existing Roles</strong> table below.</p>
+                </div>
+
+                <h3>Permission Categories Explained</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Category</th><th>Controls Access To</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Reports</strong></td><td>Viewing, creating, editing, deleting, and exporting reports</td></tr>
+                        <tr><td><strong>User Management</strong></td><td>Viewing, creating, editing, and deactivating user accounts</td></tr>
+                        <tr><td><strong>Data Management</strong></td><td>Uploading reference data (country data, peer SNG data)</td></tr>
+                        <tr><td><strong>Role Management</strong></td><td>Creating, editing, and deleting roles</td></tr>
+                        <tr><td><strong>Dashboard</strong></td><td>Viewing the user dashboard, admin dashboard, and analytics</td></tr>
+                        <tr><td><strong>Assessment Review</strong></td><td>Reviewing, validating, and adding notes to submitted reports</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Editing a Role's Permissions</h3>
+                <ol>
+                    <li>In the <strong>Existing Roles</strong> table, find the role you want to edit.</li>
+                    <li>Click the <strong>Permissions</strong> button (blue shield icon).</li>
+                    <li>Check or uncheck permissions as needed.</li>
+                    <li>Click <strong>Save</strong> to apply your changes.</li>
+                </ol>
+
+                <h3>Deleting a Role</h3>
+                <ol>
+                    <li>In the <strong>Existing Roles</strong> table, click the <strong>Delete</strong> button (trash icon) next to the role.</li>
+                    <li>Confirm the deletion in the dialog.</li>
+                </ol>
+
+                <div class="guide-danger">
+                    <i class="bi bi-exclamation-octagon"></i>
+                    <strong>Restrictions:</strong> You cannot delete the built-in <strong>Admin</strong> or <strong>User</strong> roles.
+                    You also cannot delete a role that still has users assigned to it &mdash; remove all users from the role first.
+                </div>
+            </section>
+
+            <!-- 6. All Reports -->
+            <section id="all-reports" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-grid-3x3-gap"></i></span>
+                    Viewing All Reports
+                </h2>
+                <p>As an admin, you can see every report created by every user in the system.</p>
+
+                <h3>How to Access</h3>
+                <p>From the Admin Dashboard, click <strong>View All Reports</strong>.</p>
+
+                <h3>What You Will See</h3>
+                <p>Reports are displayed as cards in a grid (3 per row, 12 per page). Each card shows:</p>
+                <ul>
+                    <li><strong>Report title</strong> and when it was last updated</li>
+                    <li><strong>Author</strong> &mdash; who created the report</li>
+                    <li><strong>Status</strong> &mdash; color-coded badge:
+                        <div class="d-flex flex-wrap gap-2 mt-2 mb-2">
+                            <span class="status-ex st-draft"><i class="bi bi-circle-fill" style="font-size:5px"></i> Draft</span>
+                            <span class="status-ex st-submitted"><i class="bi bi-circle-fill" style="font-size:5px"></i> Submitted</span>
+                            <span class="status-ex st-review"><i class="bi bi-circle-fill" style="font-size:5px"></i> Under Review</span>
+                            <span class="status-ex st-revision"><i class="bi bi-circle-fill" style="font-size:5px"></i> Needs Revision</span>
+                            <span class="status-ex st-validated"><i class="bi bi-circle-fill" style="font-size:5px"></i> Validated</span>
+                        </div>
+                    </li>
+                    <li><strong>Location</strong> with country flag</li>
+                    <li><strong>Financial year</strong> and <strong>currency</strong></li>
+                </ul>
+
+                <h3>Searching & Filtering</h3>
+                <ul>
+                    <li>Use the <strong>search box</strong> to find reports by title, country, region, city, financial year, or user email.</li>
+                    <li>Switch between <strong>Active</strong> and <strong>Archived</strong> tabs to see different report groups.</li>
+                </ul>
+
+                <h3>Actions</h3>
+                <ul>
+                    <li><strong>Open</strong> &mdash; Click the blue Open button to view the full report.</li>
+                    <li><strong>Archive</strong> &mdash; Click the archive icon to move a report to the Archived tab.</li>
+                    <li><strong>Delete</strong> &mdash; Click the trash icon to move a report to the Deleted Reports (trash). A confirmation dialog will appear.</li>
+                </ul>
+            </section>
+
+            <!-- 7. Deleted Reports -->
+            <section id="deleted-reports" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-trash3"></i></span>
+                    Deleted Reports (Trash)
+                </h2>
+                <p>When users or admins delete a report, it is not permanently removed. It goes to the <strong>trash</strong> where you can restore or permanently delete it.</p>
+
+                <h3>How to Access</h3>
+                <p>From the Admin Dashboard, click <strong>Deleted Reports</strong>.</p>
+
+                <h3>Restoring a Report</h3>
+                <ol>
+                    <li>Find the report in the trash list.</li>
+                    <li>Click the <strong>Restore</strong> button (green arrow icon).</li>
+                    <li>Confirm in the dialog by clicking <strong>Restore</strong>.</li>
+                    <li>The report will be moved back to the owner's dashboard as an active report.</li>
+                </ol>
+
+                <h3>Permanently Deleting a Report</h3>
+                <ol>
+                    <li>Find the report in the trash list.</li>
+                    <li>Click the <strong>Delete</strong> button (red X icon).</li>
+                    <li>A warning dialog will appear. Click <strong>Delete Permanently</strong> to confirm.</li>
+                </ol>
+
+                <div class="guide-danger">
+                    <i class="bi bi-exclamation-octagon"></i>
+                    <strong>Warning:</strong> Permanent deletion <em>cannot be undone</em>. The report and all its data will be removed from the system forever. Only use this for reports you are certain should be destroyed.
+                </div>
+            </section>
+
+            <!-- 8. Review Queue -->
+            <section id="review-queue" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-inbox"></i></span>
+                    Review Queue
+                </h2>
+                <p>
+                    When users submit reports for review, they appear in the <strong>Review Queue</strong>.
+                    As an admin, you can review reports yourself or monitor the review process.
+                </p>
+
+                <h3>How to Access</h3>
+                <p>From the Admin Dashboard, click the <strong>Pending Reviews</strong> stat card, or navigate to the Submission Queue.</p>
+
+                <h3>Queue Tabs</h3>
+                <p>The queue is organized into four tabs:</p>
+                <table class="guide-table">
+                    <thead><tr><th>Tab</th><th>What It Shows</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Pending Review</strong></td><td>Reports that have been submitted but no reviewer has claimed them yet</td></tr>
+                        <tr><td><strong>My Reviews</strong></td><td>Reports that <em>you</em> have claimed and are currently reviewing</td></tr>
+                        <tr><td><strong>Needs Revision</strong></td><td>Reports that were sent back to the author for changes</td></tr>
+                        <tr><td><strong>All</strong></td><td>All reports that have been submitted (regardless of status)</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Understanding Completion Levels</h3>
+                <p>Each report shows a <strong>completion level</strong> badge indicating how complete the report is:</p>
+                <table class="guide-table">
+                    <thead><tr><th>Level</th><th>Meaning</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Metadata</strong> (gray)</td><td>Only basic information filled in (country, city, financial year)</td></tr>
+                        <tr><td><strong>Partial</strong> (amber)</td><td>At least one revenue stream has data, but analysis sections are incomplete</td></tr>
+                        <tr><td><strong>Full</strong> (green)</td><td>All sections completed: revenue streams, root causes, recommendations, and prioritization</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Claiming a Report</h3>
+                <p>Before you can review a report, you need to <strong>claim</strong> it. This tells other reviewers that you are working on it.</p>
+                <ol>
+                    <li>Go to the <strong>Pending Review</strong> tab.</li>
+                    <li>Find the report you want to review.</li>
+                    <li>Click the <strong>Claim</strong> button (purple hand icon).</li>
+                    <li>The report moves to the <strong>My Reviews</strong> tab and its status changes to <strong>Under Review</strong>.</li>
+                </ol>
+
+                <div class="guide-tip">
+                    <i class="bi bi-lightbulb"></i>
+                    <strong>Tip:</strong> Use the search box to find specific reports by title, country, city, or author email.
+                </div>
+            </section>
+
+            <!-- 9. Reviewing a Report -->
+            <section id="reviewing" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-clipboard-check"></i></span>
+                    Reviewing a Report
+                </h2>
+                <p>After claiming a report, click <strong>Review</strong> (the eye icon) to open the full review page.</p>
+
+                <h3>Review Page Layout</h3>
+                <p>The review page is divided into three areas:</p>
+
+                <h4>Left Sidebar &mdash; Assessment Information</h4>
+                <ul>
+                    <li><strong>Assessment Info</strong> &mdash; Location, financial year, currency, government type, dates</li>
+                    <li><strong>Stream Coverage</strong> &mdash; Checkmarks showing which revenue streams have data:
+                        <ul>
+                            <li>Green checkmark = data has been entered</li>
+                            <li>Empty circle = no data yet</li>
+                        </ul>
+                    </li>
+                    <li><strong>Action buttons</strong> &mdash; Claim, Validate, Request Revision, Unclaim, and more</li>
+                    <li><strong>Snapshots</strong> &mdash; Previous saved versions of the report (click to compare)</li>
+                    <li><strong>Generated Reports</strong> &mdash; PDF and Excel files that have been generated (click to view or download)</li>
+                </ul>
+
+                <h4>Main Content &mdash; Report Data</h4>
+                <p>This area shows all the data the user entered, organized in collapsible sections:</p>
+                <ul>
+                    <li><strong>Financial Overview</strong> &mdash; Actual OSR, Budgeted OSR, Population, GDP per Capita</li>
+                    <li><strong>Gap Analysis sections</strong> &mdash; Property Tax, Business License, User Charges, etc.</li>
+                    <li><strong>Top-Down data</strong> &mdash; OSR configuration and peer benchmarks (if filled)</li>
+                </ul>
+                <p>Click the section headers to expand or collapse them.</p>
+
+                <h4>Right Sidebar &mdash; Review Notes</h4>
+                <ul>
+                    <li>View all previous notes left by reviewers</li>
+                    <li>Each note shows the reviewer name, date, and content</li>
+                    <li>Use the text box at the top to <strong>add a new note</strong>, then click <strong>Add Note</strong></li>
+                </ul>
+            </section>
+
+            <!-- 10. Validate or Request Revision -->
+            <section id="review-decisions" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-check2-square"></i></span>
+                    Making a Review Decision
+                </h2>
+                <p>After reviewing a report, you have three options:</p>
+
+                <h3>Report Lifecycle</h3>
+                <div class="wf-flow">
+                    <div class="wf-box wf-draft">Draft</div>
+                    <i class="bi bi-arrow-right wf-arrow"></i>
+                    <div class="wf-box wf-submitted">Submitted</div>
+                    <i class="bi bi-arrow-right wf-arrow"></i>
+                    <div class="wf-box wf-review">Under Review</div>
+                    <i class="bi bi-arrow-right wf-arrow"></i>
+                    <div class="wf-box wf-validated">Validated</div>
+                </div>
+                <div class="wf-flow">
+                    <div class="wf-box wf-review">Under Review</div>
+                    <i class="bi bi-arrow-right wf-arrow"></i>
+                    <div class="wf-box wf-revision">Needs Revision</div>
+                    <i class="bi bi-arrow-right wf-arrow"></i>
+                    <div class="wf-box wf-submitted">Resubmitted</div>
+                    <span style="color:#94a3b8;font-size:0.8rem;margin-left:0.5rem">(user fixes and resubmits)</span>
+                </div>
+
+                <h3>Option 1: Validate (Approve)</h3>
+                <p>Use this when the report is complete and accurate.</p>
+                <ol>
+                    <li>On the review page, click the green <strong>Validate</strong> button.</li>
+                    <li>Optionally add a comment.</li>
+                    <li>The report status changes to <strong>Validated</strong>.</li>
+                    <li>A PDF copy is automatically generated and saved.</li>
+                    <li>A snapshot of the approved report is preserved.</li>
+                </ol>
+
+                <h3>Option 2: Request Revision</h3>
+                <p>Use this when the report needs changes before it can be approved.</p>
+                <ol>
+                    <li>On the review page, click the amber <strong>Request Revision</strong> button.</li>
+                    <li>Enter a <strong>reason</strong> explaining what needs to change. Be specific so the author knows exactly what to fix.</li>
+                    <li>Click <strong>Submit</strong>.</li>
+                    <li>The report status changes to <strong>Needs Revision</strong>.</li>
+                    <li>The author sees your message on their dashboard and can edit and resubmit.</li>
+                </ol>
+
+                <h3>Option 3: Unclaim</h3>
+                <p>If you cannot complete the review, you can release the report back to the queue.</p>
+                <ol>
+                    <li>Click the gray <strong>Unclaim</strong> button.</li>
+                    <li>The report returns to the <strong>Pending Review</strong> tab for another reviewer to claim.</li>
+                </ol>
+
+                <h3>Unlocking a Validated Report (Admin Only)</h3>
+                <p>If a validated report needs corrections after approval:</p>
+                <ol>
+                    <li>Open the report on the review page.</li>
+                    <li>Click <strong>Unlock for Revision</strong> (red button, only visible to admins).</li>
+                    <li>Enter a reason for unlocking.</li>
+                    <li>The system saves a backup snapshot, then changes the status to <strong>Needs Revision</strong>.</li>
+                    <li>The author can edit and resubmit the report.</li>
+                </ol>
+
+                <div class="guide-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Best Practice:</strong> Always add a review note explaining your reasoning before validating or requesting revision. This creates a clear record of the review process.
+                </div>
+            </section>
+
+            <!-- 11. Audit Log -->
+            <section id="audit-log" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-journal-text"></i></span>
+                    Audit Log
+                </h2>
+                <p>
+                    The Audit Log records every important action in the system. Use it to track changes, investigate issues, or verify that actions were properly completed.
+                </p>
+
+                <h3>How to Access</h3>
+                <p>From the Admin Dashboard, click <strong>Audit Log</strong>.</p>
+
+                <h3>What Gets Logged</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Action</th><th>When It Is Recorded</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Created</strong></td><td>A new report is saved for the first time</td></tr>
+                        <tr><td><strong>Updated</strong></td><td>A report is modified</td></tr>
+                        <tr><td><strong>Status Changed</strong></td><td>A report moves between statuses (e.g., Draft to Submitted)</td></tr>
+                        <tr><td><strong>Deleted / Restored</strong></td><td>A report is moved to trash or restored from trash</td></tr>
+                        <tr><td><strong>Role Assigned / Removed</strong></td><td>A role is added to or removed from a user</td></tr>
+                        <tr><td><strong>Role Created / Deleted</strong></td><td>A new role is created or an existing one is deleted</td></tr>
+                        <tr><td><strong>User Activated / Deactivated</strong></td><td>A user account is enabled or disabled</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Filtering the Log</h3>
+                <ol>
+                    <li>Use the <strong>All Actions</strong> dropdown to show only specific action types (e.g., only "Role Assigned" entries).</li>
+                    <li>Use the <strong>All Entities</strong> dropdown to show only specific entity types (e.g., only User or Report entries).</li>
+                    <li>Click <strong>Filter</strong> to apply, or <strong>Clear</strong> to reset.</li>
+                </ol>
+
+                <h3>Reading an Entry</h3>
+                <p>Each row in the log shows:</p>
+                <ul>
+                    <li><strong>Timestamp</strong> &mdash; Exact date and time the action occurred</li>
+                    <li><strong>Action</strong> &mdash; What was done (color-coded badge)</li>
+                    <li><strong>Entity</strong> &mdash; What type of item was affected (Report, User, or Role)</li>
+                    <li><strong>User</strong> &mdash; Who performed the action</li>
+                    <li><strong>Details</strong> &mdash; Additional information about the change</li>
+                    <li><strong>Status Transition</strong> &mdash; For reports, shows the old and new status (e.g., Draft &rarr; Submitted)</li>
+                </ul>
+            </section>
+
+            <!-- 12. Data Upload -->
+            <section id="data-upload" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-cloud-upload"></i></span>
+                    Uploading Reference Data
+                </h2>
+                <p>
+                    ROSRA uses reference data for benchmarking and peer comparisons. As an admin, you can upload updated datasets.
+                </p>
+
+                <h3>How to Access</h3>
+                <p><span class="nav-path">My Dashboard <i class="bi bi-chevron-right"></i> Data Upload</span>, or click <strong>Data Upload</strong> on the Admin Dashboard.</p>
+
+                <h3>Available Datasets</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Dataset</th><th>Purpose</th><th>File Format</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Peer SNG Data</strong></td>
+                            <td>Subnational government benchmarks (e.g., Kenya county revenue data) used for peer comparisons within the same country</td>
+                            <td>CSV with 4 columns: SNG name, OSR, GCP, Include flag</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Country Data</strong></td>
+                            <td>Economic indicators by country (GDP, population, income level, currency) that auto-populate when a user selects a country</td>
+                            <td>CSV with 16 columns starting with: Country, Currency Code, Currency Symbol, then economic indicators</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>How to Upload</h3>
+                <div class="step-box">
+                    <h4><span class="step-num">1</span> Select the dataset type</h4>
+                    <p>On the Data Upload page, choose which dataset you want to upload from the dropdown.</p>
+                </div>
+                <div class="step-box">
+                    <h4><span class="step-num">2</span> Prepare your file</h4>
+                    <p>Make sure your CSV file matches the expected format. You can click <strong>Download Template</strong> to get a blank template with the correct column headers.</p>
+                </div>
+                <div class="step-box">
+                    <h4><span class="step-num">3</span> Upload the file</h4>
+                    <p>Drag and drop your file into the upload area, or click to browse and select it. Then click <strong>Upload</strong>.</p>
+                </div>
+                <div class="step-box">
+                    <h4><span class="step-num">4</span> Verify the result</h4>
+                    <p>A success message will tell you how many records were imported. If there are errors, an error message will explain what went wrong.</p>
+                </div>
+
+                <div class="guide-tip">
+                    <i class="bi bi-lightbulb"></i>
+                    <strong>Tip:</strong> The upload will update existing records (matched by country or SNG name) and add new ones. It will not delete records that are not in your file.
+                </div>
+            </section>
+
+            <!-- 13. Tips & Best Practices -->
+            <section id="tips" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-lightbulb"></i></span>
+                    Tips & Best Practices
+                </h2>
+
+                <h3>User Management</h3>
+                <ul>
+                    <li><strong>Deactivate instead of deleting:</strong> If someone leaves the organization, deactivate their account rather than deleting it. This preserves their reports and audit history.</li>
+                    <li><strong>Use roles wisely:</strong> Only give users the roles they need. Most people only need the default <strong>User</strong> role. Give the <strong>Reviewer</strong> role to those who will review and approve reports.</li>
+                    <li><strong>Create custom roles</strong> for specific needs rather than giving everyone the Admin role. For example, a "Data Manager" role with only data upload permissions.</li>
+                </ul>
+
+                <h3>Report Reviews</h3>
+                <ul>
+                    <li><strong>Claim promptly:</strong> When a report appears in the Pending queue, claim it quickly so the author knows it is being reviewed.</li>
+                    <li><strong>Add notes as you go:</strong> Use review notes to document your observations during the review. This helps the author understand your feedback.</li>
+                    <li><strong>Be specific when requesting revision:</strong> Instead of "fix the data", write something like "The property tax section shows 0 registered properties &mdash; please update with the actual cadastre count."</li>
+                    <li><strong>Check stream coverage:</strong> Use the stream coverage checklist on the review page to quickly see which sections are complete.</li>
+                </ul>
+
+                <h3>Audit & Compliance</h3>
+                <ul>
+                    <li><strong>Review the audit log regularly:</strong> Check it weekly to ensure all actions are expected and authorized.</li>
+                    <li><strong>Use filters effectively:</strong> Filter by action type or entity type to find specific events quickly.</li>
+                    <li><strong>All changes are tracked:</strong> Every role assignment, user status change, and report status transition is recorded with who did it and when.</li>
+                </ul>
+
+                <h3>Data Management</h3>
+                <ul>
+                    <li><strong>Keep reference data current:</strong> Upload updated country and peer SNG data at least once a year so that benchmarking comparisons are accurate.</li>
+                    <li><strong>Back up before large uploads:</strong> For major data updates, consider downloading the current data first in case you need to revert.</li>
+                    <li><strong>Use the trash carefully:</strong> Only permanently delete reports you are certain should be destroyed. Restoring from a permanent delete is not possible.</li>
+                </ul>
+            </section>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sections = document.querySelectorAll('.guide-section');
+            const tocLinks = document.querySelectorAll('.toc-link');
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        tocLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                        });
+                    }
+                });
+            }, { rootMargin: '-80px 0px -70% 0px' });
+
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+}

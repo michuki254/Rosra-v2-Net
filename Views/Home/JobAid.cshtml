@@ -1,0 +1,1296 @@
+@{
+    ViewData["Title"] = "User Guide";
+}
+
+@section Styles {
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        /* ── Page Header ── */
+        .guide-hero {
+            background: #00689D;
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .guide-hero h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .guide-hero .lead {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+
+        .guide-hero .badge-version {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        /* ── Sidebar TOC ── */
+        .toc-sidebar {
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .toc-sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .toc-sidebar::-webkit-scrollbar-thumb {
+            background: #dee2e6;
+            border-radius: 3px;
+        }
+
+        .toc-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            padding: 1.25rem;
+        }
+
+        .toc-card h6 {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #868e96;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f1f3f5;
+        }
+
+        .toc-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.65rem;
+            border-radius: 6px;
+            color: #495057;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            margin-bottom: 2px;
+        }
+
+        .toc-link:hover,
+        .toc-link.active {
+            background: #e7f5ff;
+            color: #00689D;
+        }
+
+        .toc-link i {
+            font-size: 0.75rem;
+            width: 18px;
+            text-align: center;
+            color: #adb5bd;
+        }
+
+        .toc-link:hover i,
+        .toc-link.active i {
+            color: #00689D;
+        }
+
+        .toc-sub {
+            padding-left: 1.5rem;
+        }
+
+        .toc-sub .toc-link {
+            font-size: 0.8rem;
+            color: #6c757d;
+            padding: 0.3rem 0.5rem;
+        }
+
+        /* ── Content Sections ── */
+        .guide-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .guide-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .guide-section h2 .section-icon {
+            width: 38px;
+            height: 38px;
+            background: #00689D;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .guide-section h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #343a40;
+            margin-top: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .guide-section h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #495057;
+            margin-top: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .guide-section p,
+        .guide-section li {
+            color: #495057;
+            font-size: 0.925rem;
+            line-height: 1.7;
+        }
+
+        .guide-section ol,
+        .guide-section ul {
+            padding-left: 1.25rem;
+        }
+
+        .guide-section ol li,
+        .guide-section ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        /* ── Tables ── */
+        .guide-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .guide-table thead th {
+            background: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid #dee2e6;
+            text-align: left;
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .guide-table tbody td {
+            padding: 0.65rem 1rem;
+            border-bottom: 1px solid #f1f3f5;
+            color: #495057;
+            vertical-align: top;
+        }
+
+        .guide-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .guide-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* ── Tip / Note Boxes ── */
+        .guide-tip {
+            background: #e7f5ff;
+            border-left: 4px solid #00b2e3;
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #1c7ed6;
+        }
+
+        .guide-tip i {
+            margin-right: 0.5rem;
+        }
+
+        .guide-warning {
+            background: #fff9db;
+            border-left: 4px solid #FD9D24;
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #e67700;
+        }
+
+        .guide-warning i {
+            margin-right: 0.5rem;
+        }
+
+        /* ── Status badges ── */
+        .status-example {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.2rem 0.65rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-draft { background: #e9ecef; color: #495057; }
+        .status-submitted { background: #d3f9d8; color: #2b8a3e; }
+        .status-review { background: #d0ebff; color: #1971c2; }
+        .status-revision { background: #fff3bf; color: #e67700; }
+        .status-validated { background: #d3f9d8; color: #087f5b; }
+
+        /* ── Workflow Diagram ── */
+        .workflow-flow {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1.25rem 0;
+        }
+
+        .workflow-step {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #495057;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .workflow-step.active-step {
+            border-color: #00689D;
+            color: #00689D;
+            background: #e7f5ff;
+        }
+
+        .workflow-arrow {
+            color: #adb5bd;
+            font-size: 1.25rem;
+        }
+
+        .workflow-branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* ── Step Cards (for 4-step pipeline) ── */
+        .step-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin: 0.75rem 0;
+            border-left: 4px solid #00689D;
+        }
+
+        .step-card h4 {
+            color: #00689D;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: #00689D;
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ── Gap Type Cards ── */
+        .gap-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .gap-card {
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .gap-card.coverage { background: #fff3bf; border: 1px solid #ffd43b; }
+        .gap-card.compliance { background: #d3f9d8; border: 1px solid #69db7c; }
+        .gap-card.valuation { background: #d0ebff; border: 1px solid #74c0fc; }
+        .gap-card.liability { background: #ffe8cc; border: 1px solid #ffc078; }
+
+        .gap-card h5 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .gap-card p {
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        /* ── Permissions Grid ── */
+        .perm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin: 0.75rem 0;
+        }
+
+        .perm-item {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.825rem;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .perm-item i {
+            color: #00689D;
+            font-size: 0.7rem;
+        }
+
+        /* ── FAQ Accordion ── */
+        .faq-item {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            background: #f8f9fa;
+            padding: 0.85rem 1.15rem;
+            font-weight: 600;
+            color: #343a40;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.925rem;
+            transition: background 0.15s ease;
+        }
+
+        .faq-question:hover {
+            background: #e9ecef;
+        }
+
+        .faq-question i {
+            transition: transform 0.2s ease;
+            color: #6c757d;
+        }
+
+        .faq-question[aria-expanded="true"] i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 1.15rem;
+            font-size: 0.9rem;
+            color: #495057;
+            line-height: 1.7;
+        }
+
+        .faq-answer p {
+            margin: 0.85rem 0;
+        }
+
+        /* ── Print Button ── */
+        .btn-print-guide {
+            background: white;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            border-radius: 6px;
+            font-weight: 500;
+            padding: 0.45rem 1rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-print-guide:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        /* ── Responsive ── */
+        @@media (max-width: 991.98px) {
+            .toc-sidebar {
+                position: static;
+                max-height: none;
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        @@media print {
+            .guide-hero { padding: 1.5rem 0; }
+            .toc-sidebar { display: none; }
+            .guide-section { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            .btn-print-guide { display: none; }
+        }
+    </style>
+}
+
+<!-- Hero Header -->
+<div class="guide-hero">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h1><i class="bi bi-journal-bookmark-fill me-2"></i> ROSRA User Guide</h1>
+                <p class="lead">A complete guide to using the Rapid Own-Source Revenue Analysis tool</p>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+                <span class="badge-version">Version 2.0</span>
+                <button class="btn-print-guide" onclick="window.print()">
+                    <i class="bi bi-printer me-1"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row">
+
+        <!-- Sidebar TOC -->
+        <div class="col-lg-3">
+            <div class="toc-sidebar">
+                <div class="toc-card">
+                    <h6>Table of Contents</h6>
+                    <nav>
+                        <a href="#what-is-rosra" class="toc-link"><i class="bi bi-info-circle"></i> What is ROSRA?</a>
+                        <a href="#getting-started" class="toc-link"><i class="bi bi-rocket-takeoff"></i> Getting Started</a>
+                        <a href="#navigation" class="toc-link"><i class="bi bi-compass"></i> Navigation</a>
+                        <a href="#creating-report" class="toc-link"><i class="bi bi-file-earmark-plus"></i> Creating a Report</a>
+                        <a href="#top-down" class="toc-link"><i class="bi bi-lightning"></i> Top-Down Approach</a>
+                        <a href="#bottom-up" class="toc-link"><i class="bi bi-diagram-3"></i> Bottom-Up Approach</a>
+                        <div class="toc-sub">
+                            <a href="#step1-gap" class="toc-link"><i class="bi bi-1-circle"></i> Gap Analysis</a>
+                            <a href="#step2-prioritize" class="toc-link"><i class="bi bi-2-circle"></i> Prioritization</a>
+                            <a href="#step3-solutions" class="toc-link"><i class="bi bi-3-circle"></i> Solutions</a>
+                            <a href="#step4-recommendations" class="toc-link"><i class="bi bi-4-circle"></i> Recommendations</a>
+                        </div>
+                        <a href="#dashboard" class="toc-link"><i class="bi bi-grid-1x2"></i> Your Dashboard</a>
+                        <a href="#submitting" class="toc-link"><i class="bi bi-send"></i> Submitting Reports</a>
+                        <a href="#review-process" class="toc-link"><i class="bi bi-clipboard-check"></i> Review Process</a>
+                        <a href="#exporting" class="toc-link"><i class="bi bi-download"></i> Exporting & Printing</a>
+                        <a href="#profile" class="toc-link"><i class="bi bi-person-gear"></i> Your Profile</a>
+                        <a href="#languages" class="toc-link"><i class="bi bi-translate"></i> Language Support</a>
+                        <a href="#glossary" class="toc-link"><i class="bi bi-book"></i> Glossary</a>
+                        <a href="#faq" class="toc-link"><i class="bi bi-question-circle"></i> FAQ</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+
+            <!-- 1. What is ROSRA? -->
+            <section id="what-is-rosra" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-info-circle"></i></span>
+                    What is ROSRA?
+                </h2>
+                <p>
+                    <strong>ROSRA (Rapid Own-Source Revenue Analysis)</strong> is a diagnostic and planning tool developed by
+                    <strong>UN-Habitat</strong> to help local governments assess and optimize their own-source revenue (OSR).
+                    OSR is revenue that local governments generate independently &mdash; not from national transfers or grants.
+                </p>
+                <p>ROSRA analyses the following revenue streams:</p>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>Revenue Type</th><th>Examples</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Property Tax</strong></td><td>Taxes levied on land and buildings</td></tr>
+                        <tr><td><strong>Business Licenses</strong></td><td>Operating permits and trade license fees</td></tr>
+                        <tr><td><strong>Short-Term User Charges</strong></td><td>Daily parking fees, market stall fees</td></tr>
+                        <tr><td><strong>Long-Term User Charges</strong></td><td>Monthly leases, rental income</td></tr>
+                        <tr><td><strong>Mixed User Charges</strong></td><td>Combinations of daily and monthly fees</td></tr>
+                        <tr><td><strong>Custom / Generic Streams</strong></td><td>Any locally-specific revenue source (fines, advertising levies, etc.)</td></tr>
+                    </tbody>
+                </table>
+                <p>
+                    The tool helps you identify where revenue is being lost, prioritize which streams to reform first,
+                    select proven solutions, and build an actionable recommendation plan.
+                </p>
+            </section>
+
+            <!-- 2. Getting Started -->
+            <section id="getting-started" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-rocket-takeoff"></i></span>
+                    Getting Started
+                </h2>
+
+                <h3>Creating an Account</h3>
+                <ol>
+                    <li>Navigate to the ROSRA application home page.</li>
+                    <li>Click <strong>Login</strong> in the top navigation bar.</li>
+                    <li>Click the <strong>Register</strong> link on the login page.</li>
+                    <li>Fill in your details:
+                        <ul>
+                            <li><strong>First Name</strong> and <strong>Last Name</strong></li>
+                            <li><strong>Email Address</strong> &mdash; this will be your login username</li>
+                            <li><strong>Organization</strong> (e.g., your municipality or agency)</li>
+                            <li><strong>Phone Number</strong></li>
+                            <li><strong>Password</strong> and confirmation</li>
+                        </ul>
+                    </li>
+                    <li>Click <strong>Register</strong>. You will be automatically logged in.</li>
+                </ol>
+
+                <h3>Logging In</h3>
+                <ol>
+                    <li>Click <strong>Login</strong> in the navigation bar.</li>
+                    <li>Enter your <strong>Email</strong> and <strong>Password</strong>.</li>
+                    <li>Optionally check <strong>Remember Me</strong> to stay logged in.</li>
+                    <li>Click <strong>Login</strong>.</li>
+                </ol>
+
+                <h3>Logging Out</h3>
+                <ol>
+                    <li>Click <strong>My Dashboard</strong> in the top-right dropdown.</li>
+                    <li>Click <strong>Logout</strong>.</li>
+                </ol>
+            </section>
+
+            <!-- 3. Navigation -->
+            <section id="navigation" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-compass"></i></span>
+                    Navigating the Application
+                </h2>
+
+                <h3>Main Navigation Bar</h3>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>Menu</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>ROSRA Logo</strong></td><td>Click to return to the home page</td></tr>
+                        <tr><td><strong>Why ROSRA</strong></td><td>Learn about ROSRA benefits and advantages</td></tr>
+                        <tr><td><strong>How It Works</strong></td><td>Step-by-step overview of the ROSRA methodology</td></tr>
+                        <tr><td><strong>Resources</strong></td><td>Access sample reports, testimonials, and external links</td></tr>
+                        <tr><td><strong>My Dashboard</strong></td><td>Your personal menu &mdash; dashboard, profile, admin (if applicable), and logout</td></tr>
+                        <tr><td><strong>Create New Report</strong></td><td>Quick-access button to start a new analysis</td></tr>
+                        <tr><td><strong>Language Switcher</strong></td><td>Switch between English, French, and Spanish</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>My Dashboard Dropdown</h3>
+                <p>When logged in, the <strong>My Dashboard</strong> dropdown provides access to:</p>
+                <ul>
+                    <li><strong>My Dashboard</strong> &mdash; View and manage all your reports</li>
+                    <li><strong>My Profile</strong> &mdash; Edit personal information and change password</li>
+                    <li><strong>Admin section</strong> (admin users only) &mdash; Dashboard, Manage Users, Data Upload, Create Role</li>
+                    <li><strong>Logout</strong> &mdash; Sign out</li>
+                </ul>
+            </section>
+
+            <!-- 4. Creating a Report -->
+            <section id="creating-report" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-file-earmark-plus"></i></span>
+                    Creating a New Report
+                </h2>
+
+                <h3>Starting a New Report</h3>
+                <ol>
+                    <li>Click <strong>Create New Report</strong> in the navigation bar, or <strong>Start Analysis</strong> on the home page.</li>
+                    <li>You will be taken to the report editor with a blank form.</li>
+                </ol>
+
+                <h3>Report Metadata (Left Sidebar)</h3>
+                <p>The left sidebar is always visible while editing and contains essential report information:</p>
+
+                <h4>Report Title</h4>
+                <p>Enter a descriptive title (e.g., "Nakuru County Revenue Analysis 2025").</p>
+
+                <h4>Location Selection</h4>
+                <ul>
+                    <li><strong>Country</strong> &mdash; Select your country (auto-populates economic indicators)</li>
+                    <li><strong>Region</strong> &mdash; Enter the administrative region</li>
+                    <li><strong>City</strong> &mdash; Enter the municipality or city name</li>
+                    <li><strong>Government Unit Level</strong> &mdash; Optionally specify a sub-city level</li>
+                </ul>
+
+                <h4>Financial Information</h4>
+                <ul>
+                    <li><strong>Currency</strong> &mdash; Auto-populated from country, can be changed</li>
+                    <li><strong>Financial Year</strong> &mdash; The fiscal year being analyzed</li>
+                    <li><strong>Actual OSR</strong> &mdash; Total own-source revenue collected</li>
+                    <li><strong>Budgeted OSR</strong> &mdash; The budgeted revenue target</li>
+                    <li><strong>Population</strong> &mdash; Jurisdiction population</li>
+                    <li><strong>GDP per Capita</strong> &mdash; Auto-populated when available</li>
+                </ul>
+
+                <h4>Government Classification</h4>
+                <ul>
+                    <li><strong>Government Type</strong> (Municipality, County, Metropolitan, etc.)</li>
+                    <li><strong>Income Level</strong> (World Bank income classification)</li>
+                </ul>
+
+                <h4>Quick Actions</h4>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>Button</th><th>Action</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Save</strong></td><td>Save the report to the database</td></tr>
+                        <tr><td><strong>Export</strong></td><td>Download as PDF or Excel</td></tr>
+                        <tr><td><strong>Print</strong></td><td>Open a print-friendly version</td></tr>
+                        <tr><td><strong>View</strong></td><td>Open the report in read-only mode</td></tr>
+                        <tr><td><strong>New</strong></td><td>Clear the form and start a fresh report</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Choosing an Approach</h3>
+                <p>ROSRA offers two analytical approaches. Click the corresponding tab at the top of the editor:</p>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>Approach</th><th>Best For</th><th>Detail Level</th><th>Estimated Time</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Top-Down</strong></td>
+                            <td>Quick estimates, initial assessments</td>
+                            <td>High-level</td>
+                            <td>15&ndash;30 minutes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bottom-Up</strong></td>
+                            <td>Detailed diagnostics, reform planning</td>
+                            <td>Granular, stream-by-stream</td>
+                            <td>1&ndash;3 hours</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 5. Top-Down Approach -->
+            <section id="top-down" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-lightning"></i></span>
+                    Top-Down Approach (Quick Estimate)
+                </h2>
+                <p>
+                    The Top-Down approach provides a rapid OSR potential estimate based on aggregate data and
+                    peer benchmarking against comparable subnational governments.
+                </p>
+
+                <h3>How to Use</h3>
+                <ol>
+                    <li>Navigate to the <strong>Top-Down</strong> tab.</li>
+                    <li>Fill in the <strong>Project Details</strong>:
+                        <ul>
+                            <li>Project Name, Description, and Key Objectives</li>
+                            <li>Start Date and End Date</li>
+                            <li>Estimated Budget</li>
+                        </ul>
+                    </li>
+                    <li>The system automatically calculates OSR potential using your baseline data, GDP per capita, population, and peer SNG benchmarks.</li>
+                    <li>Review the estimated revenue potential and gap summary.</li>
+                </ol>
+
+                <h3>When to Use Top-Down</h3>
+                <ul>
+                    <li>Initial scoping before a detailed study</li>
+                    <li>Briefing senior officials on overall revenue gaps</li>
+                    <li>Comparing your jurisdiction against peer benchmarks</li>
+                    <li>When detailed stream-level data is not yet available</li>
+                </ul>
+            </section>
+
+            <!-- 6. Bottom-Up Approach -->
+            <section id="bottom-up" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-diagram-3"></i></span>
+                    Bottom-Up Approach (Detailed Analysis)
+                </h2>
+                <p>
+                    The Bottom-Up approach follows a structured <strong>4-step pipeline</strong> for comprehensive
+                    revenue diagnostics and reform planning.
+                </p>
+
+                <!-- Step 1 -->
+                <div id="step1-gap" class="step-card">
+                    <h4><span class="step-number">1</span> Gap Analysis (Diagnostic)</h4>
+                    <p>
+                        This is the core diagnostic step. Enter data for each revenue stream to identify where revenue is being lost.
+                        The system automatically calculates revenue gaps.
+                    </p>
+
+                    <h4>Revenue Stream Tabs</h4>
+                    <p>Navigate between sub-tabs for each revenue stream:</p>
+
+                    <table class="guide-table">
+                        <thead>
+                            <tr><th>Tab</th><th>What to Enter</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Property Tax</strong></td>
+                                <td>Registered & non-registered properties, compliant properties, fiscal base, market value, billed amount, outstanding amount, revenue collected</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Business License</strong></td>
+                                <td>Registered businesses, estimated unregistered %, billed amount, outstanding amount, statutory average fee, realistic improvement %</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Short-Term Charges</strong></td>
+                                <td>Number of units, daily rate, collection rate, operating days (e.g., parking, market fees)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Long-Term Charges</strong></td>
+                                <td>Number of units, monthly rate, collection rate (e.g., leases, permits)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mixed Charges</strong></td>
+                                <td>Revenue streams with both daily and monthly components</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Generic Streams</strong></td>
+                                <td>Add custom revenue sources not in the standard categories</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Estimate</strong></td>
+                                <td>Consolidated summary across all streams (auto-calculated)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Understanding Revenue Gaps</h4>
+                    <p>The system calculates four types of gaps:</p>
+                    <div class="gap-cards">
+                        <div class="gap-card coverage">
+                            <h5>Coverage Gap</h5>
+                            <p>Revenue lost because taxable entities are <strong>not registered</strong></p>
+                        </div>
+                        <div class="gap-card compliance">
+                            <h5>Compliance Gap</h5>
+                            <p>Revenue lost because registered entities <strong>do not pay</strong></p>
+                        </div>
+                        <div class="gap-card valuation">
+                            <h5>Valuation Gap</h5>
+                            <p>Revenue lost because assessed values are <strong>below market value</strong> (Property Tax)</p>
+                        </div>
+                        <div class="gap-card liability">
+                            <h5>Liability Gap</h5>
+                            <p>Revenue lost because fee schedules are <strong>below statutory rates</strong> (Licenses)</p>
+                        </div>
+                    </div>
+
+                    <div class="guide-tip">
+                        <i class="bi bi-lightbulb"></i>
+                        <strong>Tip:</strong> The <strong>Total Estimate</strong> tab shows the grand total of all gaps &mdash;
+                        this is the total additional revenue your jurisdiction could potentially collect.
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div id="step2-prioritize" class="step-card">
+                    <h4><span class="step-number">2</span> Prioritization</h4>
+                    <p>After completing the Gap Analysis, rank your revenue streams for reform:</p>
+                    <ol>
+                        <li>Streams are displayed ranked by total gap size (largest first).</li>
+                        <li>Each stream shows the total gap amount and dominant gap type.</li>
+                        <li>Drag and reorder streams to adjust priorities based on:
+                            <ul>
+                                <li>Political feasibility</li>
+                                <li>Implementation cost</li>
+                                <li>Quick-win potential</li>
+                                <li>Institutional capacity</li>
+                            </ul>
+                        </li>
+                        <li>Select which streams to focus your reform efforts on.</li>
+                    </ol>
+                    <div class="guide-tip">
+                        <i class="bi bi-lightbulb"></i>
+                        <strong>Tip:</strong> Focus on 2&ndash;3 streams with the largest gaps and highest feasibility for the greatest impact.
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div id="step3-solutions" class="step-card">
+                    <h4><span class="step-number">3</span> Overview & Solutions Selection</h4>
+                    <p>Connect your diagnostic findings to proven reform interventions:</p>
+                    <ol>
+                        <li>For each prioritized stream, the system shows relevant solutions organized by gap type (Compliance, Coverage, Valuation, Liability).</li>
+                        <li>Solutions are categorized as:
+                            <ul>
+                                <li><strong>Generic</strong> &mdash; applicable to any revenue stream</li>
+                                <li><strong>Property Tax-Specific</strong> &mdash; tailored for property tax reform</li>
+                                <li><strong>Business License-Specific</strong> &mdash; tailored for license reform</li>
+                            </ul>
+                        </li>
+                        <li>Review each solution's description, timeline, and resource requirements.</li>
+                        <li>Click to <strong>select the solutions</strong> you plan to implement.</li>
+                    </ol>
+                </div>
+
+                <!-- Step 4 -->
+                <div id="step4-recommendations" class="step-card">
+                    <h4><span class="step-number">4</span> Recommendations</h4>
+                    <p>Synthesize your analysis into an actionable reform plan:</p>
+
+                    <table class="guide-table">
+                        <thead>
+                            <tr><th>Section</th><th>What to Write</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Problem Statement</strong></td>
+                                <td>Describe the current revenue situation, key challenges, and impact on service delivery</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Root Causes</strong></td>
+                                <td>List underlying causes (e.g., outdated cadastre, weak enforcement, insufficient staffing). Click <em>Add Root Cause</em> for each</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Recommendation Summary</strong></td>
+                                <td>Overall summary of proposed reforms based on selected solutions</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Action Items</strong></td>
+                                <td>Specific tasks with priority (High / Medium / Low), responsible party, and timeline. Click <em>Add Action Item</em> for each</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 7. Dashboard -->
+            <section id="dashboard" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-grid-1x2"></i></span>
+                    Managing Your Reports (Dashboard)
+                </h2>
+
+                <h3>Dashboard Overview</h3>
+                <p>
+                    Your dashboard displays all your reports as cards in a grid layout. Each card shows:
+                </p>
+                <ul>
+                    <li><strong>Report Title</strong> and last updated time</li>
+                    <li><strong>Status Badge</strong> &mdash; color-coded indicator:
+                        <div class="d-flex flex-wrap gap-2 mt-2 mb-2">
+                            <span class="status-example status-draft"><i class="bi bi-circle-fill" style="font-size:6px"></i> Draft</span>
+                            <span class="status-example status-submitted"><i class="bi bi-circle-fill" style="font-size:6px"></i> Submitted</span>
+                            <span class="status-example status-review"><i class="bi bi-circle-fill" style="font-size:6px"></i> Under Review</span>
+                            <span class="status-example status-revision"><i class="bi bi-circle-fill" style="font-size:6px"></i> Needs Revision</span>
+                            <span class="status-example status-validated"><i class="bi bi-circle-fill" style="font-size:6px"></i> Validated</span>
+                        </div>
+                    </li>
+                    <li><strong>Location</strong> with country flag (Country &gt; Region &gt; City)</li>
+                    <li><strong>Financial Year</strong> and <strong>Currency</strong></li>
+                </ul>
+
+                <h3>Report Actions</h3>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>Action</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Open</strong></td><td>Open the report in the editor to view or continue editing</td></tr>
+                        <tr><td><strong>Submit</strong></td><td>Submit a draft report for review (only for Draft status)</td></tr>
+                        <tr><td><strong>Archive</strong></td><td>Move the report to the Archived tab</td></tr>
+                        <tr><td><strong>Delete</strong></td><td>Soft-delete the report (can be restored by admin)</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Search, Filter & Bulk Actions</h3>
+                <ul>
+                    <li><strong>Search bar</strong> &mdash; search by title, country, region, city, project name, or financial year</li>
+                    <li><strong>Active / Archived tabs</strong> &mdash; toggle between active and archived reports</li>
+                    <li><strong>Bulk actions</strong> &mdash; select multiple reports to archive or delete at once</li>
+                    <li><strong>Pagination</strong> &mdash; 12 reports per page</li>
+                </ul>
+            </section>
+
+            <!-- 8. Submitting -->
+            <section id="submitting" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-send"></i></span>
+                    Submitting a Report for Review
+                </h2>
+
+                <h3>Before You Submit</h3>
+                <p>Ensure you have completed:</p>
+                <ul>
+                    <li>All report metadata (country, city, currency, financial year)</li>
+                    <li>At least one revenue stream in the Gap Analysis</li>
+                    <li>Root causes and recommendations (for Full completion level)</li>
+                </ul>
+
+                <h3>How to Submit</h3>
+                <ol>
+                    <li>Go to your <strong>Dashboard</strong>.</li>
+                    <li>Find the report you want to submit.</li>
+                    <li>Click the <strong>Submit</strong> button on the report card.</li>
+                    <li>Confirm the submission in the dialog.</li>
+                    <li>The report status changes to <strong>Submitted</strong>.</li>
+                </ol>
+
+                <h3>Completion Levels</h3>
+                <p>The system assesses your report's completeness automatically:</p>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>Level</th><th>Criteria</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Metadata</strong></td><td>Only location and financial information entered</td></tr>
+                        <tr><td><strong>Partial</strong></td><td>At least one revenue stream has data, but analysis sections incomplete</td></tr>
+                        <tr><td><strong>Full</strong></td><td>Stream data + root causes + recommendations + prioritization all completed</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>After Submission</h3>
+                <ul>
+                    <li>Your report enters the <strong>Submission Queue</strong> for reviewers.</li>
+                    <li>You can <strong>Withdraw</strong> a submitted report before a reviewer claims it.</li>
+                    <li>If a reviewer requests revision, the report returns to your dashboard with a <strong>Needs Revision</strong> status and a message explaining what to change.</li>
+                    <li>Edit the report, then <strong>resubmit</strong>.</li>
+                </ul>
+            </section>
+
+            <!-- 9. Review Process -->
+            <section id="review-process" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-clipboard-check"></i></span>
+                    The Review & Validation Process
+                </h2>
+
+                <h3>Report Lifecycle</h3>
+                <div class="workflow-flow">
+                    <div class="workflow-step active-step">Draft</div>
+                    <i class="bi bi-arrow-right workflow-arrow"></i>
+                    <div class="workflow-step">Submitted</div>
+                    <i class="bi bi-arrow-right workflow-arrow"></i>
+                    <div class="workflow-step">Under Review</div>
+                    <i class="bi bi-arrow-right workflow-arrow"></i>
+                    <div class="workflow-branch">
+                        <div class="workflow-step" style="border-color:#087f5b;color:#087f5b;background:#d3f9d8">Validated</div>
+                        <span style="color:#adb5bd;font-size:0.8rem">or</span>
+                        <div class="workflow-step" style="border-color:#e67700;color:#e67700;background:#fff3bf">Needs Revision</div>
+                    </div>
+                </div>
+
+                <h3>For Reviewers: Submission Queue</h3>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>Tab</th><th>Shows</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Pending</strong></td><td>Reports waiting for a reviewer to claim</td></tr>
+                        <tr><td><strong>My Reviews</strong></td><td>Reports you have claimed and are reviewing</td></tr>
+                        <tr><td><strong>Revision</strong></td><td>Reports sent back to authors for changes</td></tr>
+                        <tr><td><strong>All</strong></td><td>All non-draft reports</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>For Reviewers: How to Review</h3>
+                <ol>
+                    <li>Click a report in the queue to open the <strong>Review Page</strong>.</li>
+                    <li>Review the full report preview, stream completeness indicators, and any previous snapshots.</li>
+                    <li>Click <strong>Claim</strong> to assign the report to yourself.</li>
+                    <li>Add review notes and comments using the notes form.</li>
+                    <li>Make your decision:
+                        <ul>
+                            <li><strong>Validate</strong> &mdash; approve the report (creates a validation snapshot)</li>
+                            <li><strong>Request Revision</strong> &mdash; send back with revision comments</li>
+                            <li><strong>Unclaim</strong> &mdash; release the report back to the queue</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <h3>For Admins: Additional Actions</h3>
+                <ul>
+                    <li><strong>Assign Reviewer</strong> &mdash; assign a specific reviewer to a report</li>
+                    <li><strong>Unlock Validated Report</strong> &mdash; reopen a validated report for further edits</li>
+                </ul>
+            </section>
+
+            <!-- 10. Exporting -->
+            <section id="exporting" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-download"></i></span>
+                    Exporting & Printing Reports
+                </h2>
+
+                <h3>Print Reports</h3>
+                <p>From the report editor sidebar, click <strong>Print</strong>:</p>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>Option</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Print Top-Down</strong></td><td>Quick estimate analysis only</td></tr>
+                        <tr><td><strong>Print Bottom-Up</strong></td><td>Detailed gap analysis and recommendations</td></tr>
+                        <tr><td><strong>Print Full Report</strong></td><td>Complete report with all sections</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Export Reports</h3>
+                <p>Click <strong>Export</strong> in the sidebar to download:</p>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>Format</th><th>Contents</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>PDF</strong></td><td>Formatted document with charts, tables, and analysis text</td></tr>
+                        <tr><td><strong>Excel</strong></td><td>Spreadsheet with data tables for further analysis</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 11. Profile -->
+            <section id="profile" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-person-gear"></i></span>
+                    Managing Your Profile
+                </h2>
+
+                <h3>Editing Profile Information</h3>
+                <p>Navigate to <strong>My Dashboard &gt; My Profile</strong>. You can update:</p>
+                <ul>
+                    <li><strong>First Name</strong> and <strong>Last Name</strong></li>
+                    <li><strong>Organization</strong></li>
+                    <li><strong>Phone Number</strong></li>
+                </ul>
+                <p>Your <strong>email address</strong> cannot be changed (it is your login identifier).</p>
+
+                <h3>Changing Your Password</h3>
+                <ol>
+                    <li>On the Profile page, click <strong>Change Password</strong>.</li>
+                    <li>Enter your <strong>Current Password</strong>, <strong>New Password</strong>, and confirm it.</li>
+                    <li>Click <strong>Change Password</strong>.</li>
+                </ol>
+
+                <h3>Profile Information Display</h3>
+                <p>Your profile page also shows:</p>
+                <ul>
+                    <li>Account created date</li>
+                    <li>Total report count</li>
+                    <li>Assigned roles</li>
+                </ul>
+            </section>
+
+            <!-- 12. Languages -->
+            <section id="languages" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-translate"></i></span>
+                    Language Support
+                </h2>
+                <p>ROSRA is available in three languages:</p>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>Language</th><th>Code</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>English</td><td>en</td></tr>
+                        <tr><td>Fran&ccedil;ais (French)</td><td>fr</td></tr>
+                        <tr><td>Espa&ntilde;ol (Spanish)</td><td>es</td></tr>
+                    </tbody>
+                </table>
+                <p>To switch languages, click the <strong>language switcher</strong> in the navigation bar and select your preferred language. All interface labels, buttons, and system messages are translated. Report content you type remains in the language you enter it in.</p>
+            </section>
+
+            <!-- 14. Glossary -->
+            <section id="glossary" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-book"></i></span>
+                    Glossary of Terms
+                </h2>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>Term</th><th>Definition</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>OSR</strong></td><td>Own-Source Revenue &mdash; revenue generated locally, not from transfers or grants</td></tr>
+                        <tr><td><strong>Gap Analysis</strong></td><td>Diagnostic assessment identifying where revenue is being lost</td></tr>
+                        <tr><td><strong>Coverage Gap</strong></td><td>Revenue lost because taxable entities are not registered</td></tr>
+                        <tr><td><strong>Compliance Gap</strong></td><td>Revenue lost because registered entities do not pay what they owe</td></tr>
+                        <tr><td><strong>Valuation Gap</strong></td><td>Revenue lost because assessed property values are lower than market values</td></tr>
+                        <tr><td><strong>Liability Gap</strong></td><td>Revenue lost because fee schedules are lower than statutory/optimal rates</td></tr>
+                        <tr><td><strong>Functional Gap</strong></td><td>Total revenue gap combining all gap types for a single stream</td></tr>
+                        <tr><td><strong>Top-Down Analysis</strong></td><td>Quick estimation using aggregate data and benchmarks</td></tr>
+                        <tr><td><strong>Bottom-Up Analysis</strong></td><td>Detailed diagnostic analyzing individual revenue streams</td></tr>
+                        <tr><td><strong>SNG</strong></td><td>Subnational Government &mdash; any government below national level (state, county, city)</td></tr>
+                        <tr><td><strong>Peer SNG</strong></td><td>Comparable subnational governments used for benchmarking</td></tr>
+                        <tr><td><strong>Fiscal Cadastre</strong></td><td>Official register of properties for tax assessment</td></tr>
+                        <tr><td><strong>Revenue Stream</strong></td><td>A specific category of revenue (e.g., property tax, business licenses)</td></tr>
+                        <tr><td><strong>Prioritization</strong></td><td>Ranking revenue streams by reform potential and feasibility</td></tr>
+                        <tr><td><strong>Validation</strong></td><td>Formal approval of a report by an authorized reviewer</td></tr>
+                        <tr><td><strong>Snapshot</strong></td><td>A saved copy of the report at a specific point (submission or validation)</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 15. FAQ -->
+            <section id="faq" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-question-circle"></i></span>
+                    Frequently Asked Questions
+                </h2>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="false">
+                        Can I work on a report over multiple sessions?
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq1" class="collapse faq-answer">
+                        <p>Yes. Click <strong>Save</strong> in the left sidebar to save your progress. When you return, open the report from your Dashboard and continue where you left off. Unsaved changes will be lost if you close the browser without saving.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false">
+                        Can I edit a report after submitting it?
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq2" class="collapse faq-answer">
+                        <p>Not directly. You must first <strong>Withdraw</strong> the submission (if a reviewer has not yet claimed it). If a reviewer has claimed it, wait for their decision. If revision is requested, the report returns to your dashboard for editing.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false">
+                        What happens when a reviewer requests revision?
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq3" class="collapse faq-answer">
+                        <p>The report status changes to <strong>Needs Revision</strong> and appears on your dashboard with a message from the reviewer explaining what changes are needed. Edit the report as requested, then click <strong>Submit</strong> again.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq4" aria-expanded="false">
+                        Can I delete a report permanently?
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq4" class="collapse faq-answer">
+                        <p>Regular users can soft-delete reports (move to trash). Only administrators can permanently delete reports from the Deleted Reports page.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq5" aria-expanded="false">
+                        How is the completion level determined?
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq5" class="collapse faq-answer">
+                        <p><strong>Metadata</strong> means only location/financial info is filled. <strong>Partial</strong> means at least one revenue stream has data. <strong>Full</strong> means streams, root causes, recommendations, and prioritization are all completed.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq6" aria-expanded="false">
+                        Can I use both Top-Down and Bottom-Up approaches in the same report?
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq6" class="collapse faq-answer">
+                        <p>Yes. Both approaches exist within the same report. You can fill in the Top-Down quick estimate and also complete the detailed Bottom-Up analysis. Switch between them using the tabs.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq7" aria-expanded="false">
+                        How do I add a revenue stream not in the standard categories?
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq7" class="collapse faq-answer">
+                        <p>Use the <strong>Generic Streams</strong> tab under Step 1: Gap Analysis. Click <strong>Add Stream</strong> to create a custom revenue source with your own labels and data fields.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq8" aria-expanded="false">
+                        Who can review and validate reports?
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq8" class="collapse faq-answer">
+                        <p>Users with the <strong>Reviewer</strong> or <strong>Admin</strong> role can access the Submission Queue, claim reports, add review notes, and validate or request revision.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq9" aria-expanded="false">
+                        How do I export charts and data for presentations?
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq9" class="collapse faq-answer">
+                        <p>Use the <strong>Export</strong> button in the left sidebar. Choose PDF for formatted documents with charts, or Excel for raw data tables. You can also use <strong>Print</strong> for a browser-based print layout.</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Highlight active TOC link on scroll
+        document.addEventListener('DOMContentLoaded', function () {
+            const sections = document.querySelectorAll('.guide-section');
+            const tocLinks = document.querySelectorAll('.toc-link');
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        tocLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                        });
+                    }
+                });
+            }, { rootMargin: '-80px 0px -70% 0px' });
+
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+}

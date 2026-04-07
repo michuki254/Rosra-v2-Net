@@ -1,0 +1,1205 @@
+@{
+    ViewData["Title"] = "Developer Administration Guide";
+}
+
+@section Styles {
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        /* ── Hero ── */
+        .dev-hero {
+            background: #1e293b;
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .dev-hero h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .dev-hero .lead {
+            font-size: 1.05rem;
+            opacity: 0.85;
+            margin-bottom: 0;
+        }
+
+        .dev-hero .badge-dev {
+            background: rgba(99,102,241,0.35);
+            color: #c7d2fe;
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── TOC Sidebar ── */
+        .toc-sidebar {
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .toc-sidebar::-webkit-scrollbar { width: 3px; }
+        .toc-sidebar::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 3px; }
+
+        .toc-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            padding: 1.25rem;
+        }
+
+        .toc-card h6 {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #868e96;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f1f3f5;
+        }
+
+        .toc-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.65rem;
+            border-radius: 6px;
+            color: #495057;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            margin-bottom: 2px;
+        }
+
+        .toc-link:hover, .toc-link.active {
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .toc-link i { font-size: 0.75rem; width: 18px; text-align: center; color: #adb5bd; }
+        .toc-link:hover i, .toc-link.active i { color: #4338ca; }
+
+        /* ── Sections ── */
+        .guide-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .guide-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .guide-section h2 .section-icon {
+            width: 38px;
+            height: 38px;
+            background: #4338ca;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .guide-section h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #334155;
+            margin-top: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .guide-section h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #475569;
+            margin-top: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .guide-section p, .guide-section li {
+            color: #475569;
+            font-size: 0.925rem;
+            line-height: 1.7;
+        }
+
+        .guide-section ol, .guide-section ul { padding-left: 1.25rem; }
+        .guide-section ol li, .guide-section ul li { margin-bottom: 0.4rem; }
+
+        /* ── Tables ── */
+        .guide-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+        }
+
+        .guide-table thead th {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+            padding: 0.7rem 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: left;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .guide-table tbody td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid #f1f3f5;
+            color: #475569;
+            vertical-align: top;
+        }
+
+        .guide-table tbody tr:last-child td { border-bottom: none; }
+        .guide-table tbody tr:hover { background: #f8fafc; }
+
+        /* ── Code Blocks ── */
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin: 0.75rem 0;
+            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.825rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            border: 1px solid #334155;
+        }
+
+        .code-block .kw { color: #c084fc; }
+        .code-block .str { color: #86efac; }
+        .code-block .num { color: #fbbf24; }
+        .code-block .cm { color: #64748b; font-style: italic; }
+        .code-block .fn { color: #67e8f9; }
+        .code-block .type { color: #93c5fd; }
+
+        .code-inline {
+            background: #f1f5f9;
+            color: #6366f1;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        /* ── Callout Boxes ── */
+        .dev-note {
+            background: #eef2ff;
+            border-left: 4px solid #6366f1;
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #4338ca;
+        }
+
+        .dev-note i { margin-right: 0.5rem; }
+
+        .dev-warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #92400e;
+        }
+
+        .dev-warning i { margin-right: 0.5rem; }
+
+        .dev-danger {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #991b1b;
+        }
+
+        .dev-danger i { margin-right: 0.5rem; }
+
+        /* ── File Path Tags ── */
+        .file-path {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin: 0.15rem 0;
+        }
+
+        .file-path i { font-size: 0.7rem; color: #94a3b8; }
+
+        /* ── Permission Grid ── */
+        .perm-category {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .perm-category h5 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+
+        .perm-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+
+        .perm-tag {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 0.2rem 0.55rem;
+            font-size: 0.775rem;
+            color: #475569;
+            font-family: 'Consolas', monospace;
+        }
+
+        /* ── Workflow Diagram ── */
+        .workflow-flow {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1.25rem 0;
+        }
+
+        .wf-step {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.5rem 0.85rem;
+            font-size: 0.825rem;
+            font-weight: 600;
+            color: #475569;
+            text-align: center;
+            background: white;
+        }
+
+        .wf-step.draft { border-color: #94a3b8; color: #64748b; }
+        .wf-step.submitted { border-color: #22c55e; color: #16a34a; background: #f0fdf4; }
+        .wf-step.review { border-color: #3b82f6; color: #2563eb; background: #eff6ff; }
+        .wf-step.revision { border-color: #f59e0b; color: #d97706; background: #fffbeb; }
+        .wf-step.validated { border-color: #10b981; color: #059669; background: #ecfdf5; }
+
+        .wf-arrow { color: #cbd5e1; font-size: 1.1rem; }
+
+        /* ── Route Table ── */
+        .route-method {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            font-family: 'Consolas', monospace;
+        }
+
+        .route-get { background: #dbeafe; color: #1d4ed8; }
+        .route-post { background: #dcfce7; color: #16a34a; }
+
+        /* ── Print ── */
+        .btn-print-guide {
+            background: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.9);
+            border-radius: 6px;
+            font-weight: 500;
+            padding: 0.45rem 1rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-print-guide:hover { background: rgba(255,255,255,0.15); color: white; }
+
+        @@media (max-width: 991.98px) {
+            .toc-sidebar { position: static; max-height: none; margin-bottom: 1.5rem; }
+        }
+
+        @@media print {
+            .dev-hero { padding: 1.5rem 0; }
+            .toc-sidebar { display: none; }
+            .guide-section { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            .btn-print-guide { display: none; }
+            .code-block { background: #f8f9fa; color: #1e293b; border: 1px solid #ccc; }
+        }
+    </style>
+}
+
+<!-- Hero -->
+<div class="dev-hero">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h1><i class="bi bi-terminal me-2"></i> Developer Administration Guide</h1>
+                <p class="lead">Technical reference for admin features, authorization, services, and the review workflow</p>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+                <span class="badge-dev">ROSRA V2</span>
+                <button class="btn-print-guide" onclick="window.print()">
+                    <i class="bi bi-printer me-1"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row">
+
+        <!-- Sidebar TOC -->
+        <div class="col-lg-3">
+            <div class="toc-sidebar">
+                <div class="toc-card">
+                    <h6>Contents</h6>
+                    <nav>
+                        <a href="#architecture" class="toc-link"><i class="bi bi-diagram-2"></i> Architecture</a>
+                        <a href="#auth-system" class="toc-link"><i class="bi bi-shield-check"></i> Authorization</a>
+                        <a href="#admin-controller" class="toc-link"><i class="bi bi-gear"></i> Admin Controller</a>
+                        <a href="#submission-controller" class="toc-link"><i class="bi bi-send-check"></i> Submission Controller</a>
+                        <a href="#services" class="toc-link"><i class="bi bi-box"></i> Services</a>
+                        <a href="#data-models" class="toc-link"><i class="bi bi-database"></i> Data Models</a>
+                        <a href="#permissions" class="toc-link"><i class="bi bi-key"></i> Permissions</a>
+                        <a href="#review-workflow" class="toc-link"><i class="bi bi-arrow-repeat"></i> Review Workflow</a>
+                        <a href="#audit-system" class="toc-link"><i class="bi bi-journal-text"></i> Audit System</a>
+                        <a href="#data-upload" class="toc-link"><i class="bi bi-cloud-upload"></i> Data Upload</a>
+                        <a href="#configuration" class="toc-link"><i class="bi bi-sliders"></i> Configuration</a>
+                        <a href="#file-reference" class="toc-link"><i class="bi bi-folder2-open"></i> File Reference</a>
+                        <a href="#default-credentials" class="toc-link"><i class="bi bi-person-lock"></i> Default Credentials</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+
+            <!-- 1. Architecture Overview -->
+            <section id="architecture" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-diagram-2"></i></span>
+                    Architecture Overview
+                </h2>
+                <p>
+                    ROSRA V2 is an ASP.NET Core 8 MVC application using Entity Framework Core with SQL Server.
+                    The admin and review subsystem is built on ASP.NET Identity with a custom permission layer.
+                </p>
+
+                <h3>Technology Stack</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Component</th><th>Technology</th></tr></thead>
+                    <tbody>
+                        <tr><td>Framework</td><td>.NET 8 / ASP.NET Core MVC</td></tr>
+                        <tr><td>Database</td><td>SQL Server (EF Core with retry-on-failure)</td></tr>
+                        <tr><td>Authentication</td><td>ASP.NET Identity with cookie auth</td></tr>
+                        <tr><td>Authorization</td><td>Role-based + custom permission handler</td></tr>
+                        <tr><td>Session</td><td>In-memory distributed cache (30-min timeout)</td></tr>
+                        <tr><td>PDF Generation</td><td>QuestPDF</td></tr>
+                        <tr><td>Excel Export</td><td>ClosedXML</td></tr>
+                        <tr><td>Localization</td><td>RESX resources (en, fr, es)</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Key Layers</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Layer</th><th>Files</th><th>Responsibility</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Controllers</strong></td>
+                            <td><span class="file-path"><i class="bi bi-file-code"></i> AdminController.cs</span> <span class="file-path"><i class="bi bi-file-code"></i> SubmissionController.cs</span></td>
+                            <td>HTTP routing, request validation, view model assembly</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Services</strong></td>
+                            <td><span class="file-path"><i class="bi bi-file-code"></i> SubmissionService.cs</span> <span class="file-path"><i class="bi bi-file-code"></i> ValidationService.cs</span></td>
+                            <td>Business logic for submission workflow and validation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Authorization</strong></td>
+                            <td><span class="file-path"><i class="bi bi-file-code"></i> PermissionAuthorizationHandler.cs</span></td>
+                            <td>Custom permission checks with 5-minute caching</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data</strong></td>
+                            <td><span class="file-path"><i class="bi bi-file-code"></i> ApplicationDbContext.cs</span> <span class="file-path"><i class="bi bi-file-code"></i> DbInitializer.cs</span></td>
+                            <td>EF Core context with automatic audit logging in SaveChangesAsync</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 2. Authorization System -->
+            <section id="auth-system" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-shield-check"></i></span>
+                    Authorization System
+                </h2>
+                <p>
+                    The app uses a <strong>two-tier authorization model</strong>: Identity roles for coarse access control,
+                    and a custom permission system for granular feature gating.
+                </p>
+
+                <h3>How It Works</h3>
+                <ol>
+                    <li>User authenticates via ASP.NET Identity (cookie-based).</li>
+                    <li>Roles (<code class="code-inline">Admin</code>, <code class="code-inline">User</code>, <code class="code-inline">Reviewer</code>) control top-level access on controllers.</li>
+                    <li>Each role has assigned <strong>Permissions</strong> via the <code class="code-inline">RolePermissions</code> junction table.</li>
+                    <li>The <code class="code-inline">PermissionAuthorizationHandler</code> resolves the user's effective permissions at runtime.</li>
+                    <li>Permissions are <strong>cached in memory for 5 minutes</strong> per user (key: <code class="code-inline">user_permissions_{userId}</code>).</li>
+                </ol>
+
+                <h3>PermissionAuthorizationHandler Flow</h3>
+                <div class="code-block">
+<span class="cm">// Simplified flow</span>
+<span class="kw">1.</span> Check user is authenticated
+<span class="kw">2.</span> Look up cache: <span class="str">"user_permissions_{userId}"</span>
+<span class="kw">3.</span> If not cached:
+   a. Get user roles via UserManager
+   b. Query <span class="type">RolePermissions</span> for all role IDs
+   c. Extract permission name set
+   d. Cache with <span class="num">5-minute</span> TTL
+<span class="kw">4.</span> If required permission in set &rarr; <span class="fn">context.Succeed()</span>
+                </div>
+
+                <h3>Using Permissions on Actions</h3>
+                <div class="code-block">
+<span class="cm">// Role-based (coarse)</span>
+[<span class="type">Authorize</span>(Roles = <span class="str">"Admin"</span>)]
+<span class="kw">public</span> IActionResult Users() { ... }
+
+<span class="cm">// Permission-based (granular)</span>
+[<span class="type">RequirePermission</span>(<span class="str">"ViewReports"</span>)]
+<span class="kw">public</span> IActionResult AllReports() { ... }
+                </div>
+
+                <div class="dev-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Cache Note:</strong> When a user's role permissions change, the old permissions remain active for up to 5 minutes.
+                    To force a refresh, clear the cache key <code class="code-inline">user_permissions_{userId}</code>.
+                </div>
+            </section>
+
+            <!-- 3. Admin Controller -->
+            <section id="admin-controller" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-gear"></i></span>
+                    Admin Controller
+                </h2>
+                <p>
+                    <span class="file-path"><i class="bi bi-file-code"></i> Controllers/AdminController.cs</span>
+                    &mdash; All actions require <code class="code-inline">[Authorize(Roles = "Admin")]</code>.
+                </p>
+
+                <h3>Route Reference</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Method</th><th>Route</th><th>Purpose</th></tr></thead>
+                    <tbody>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Admin/Index</code></td><td>Dashboard with KPIs and paginated report table (25/page)</td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Admin/AllReports</code></td><td>Card-based view of all reports with active/archived tabs (12/page)</td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Admin/DeletedReports</code></td><td>Soft-deleted reports (uses <code class="code-inline">IgnoreQueryFilters()</code>)</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Admin/PermanentlyDeleteReport</code></td><td>Hard-delete from database (irreversible)</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Admin/RestoreReport</code></td><td>Clears <code class="code-inline">IsDeleted</code>, <code class="code-inline">DeletedAt</code>, <code class="code-inline">DeletedByUserId</code></td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Admin/Users</code></td><td>User list with search, role filter, status filter</td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Admin/UserDetails/{id}</code></td><td>Individual user profile with role management</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Admin/ToggleUserStatus</code></td><td>Activate/deactivate user via <code class="code-inline">LockoutEnd</code></td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Admin/AddUserToRole</code></td><td>Assign role + audit log entry</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Admin/RemoveUserFromRole</code></td><td>Unassign role + audit log entry</td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Admin/CreateRole</code></td><td>Role creation form with permission checkboxes</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Admin/CreateRole</code></td><td>Create role + assign permissions via <code class="code-inline">RolePermissions</code></td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Admin/DeleteRole</code></td><td>Delete role (blocked if users assigned or system role)</td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Admin/EditRolePermissions/{id}</code></td><td>Edit permissions for existing role</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Admin/UpdateRolePermissions</code></td><td>Replace all role permissions (delete + re-insert)</td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Admin/AuditLog</code></td><td>Paginated audit trail (50/page) with action/entity filters</td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Admin/DataUpload</code></td><td>CSV upload form</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Admin/UploadPeerSNGData</code></td><td>Parse and import Peer SNG CSV</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Admin/UploadCountryData</code></td><td>Parse and import Country data CSV (16 columns)</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>User Status Logic</h3>
+                <div class="code-block">
+<span class="cm">// Active: not locked or lockout expired</span>
+<span class="kw">bool</span> isActive = !user.LockoutEnabled
+    || user.LockoutEnd == <span class="kw">null</span>
+    || user.LockoutEnd < DateTimeOffset.UtcNow;
+
+<span class="cm">// Deactivate: lock until year 2100</span>
+user.LockoutEnabled = <span class="kw">true</span>;
+user.LockoutEnd = <span class="kw">new</span> DateTimeOffset(<span class="num">2100</span>, <span class="num">1</span>, <span class="num">1</span>, ...);
+
+<span class="cm">// Activate: clear lockout</span>
+user.LockoutEnd = <span class="kw">null</span>;
+user.LockoutEnabled = <span class="kw">false</span>;
+                </div>
+
+                <h3>Role Deletion Guards</h3>
+                <ul>
+                    <li>System roles <code class="code-inline">Admin</code> and <code class="code-inline">User</code> cannot be deleted.</li>
+                    <li>Roles with assigned users cannot be deleted &mdash; remove all users first.</li>
+                </ul>
+            </section>
+
+            <!-- 4. Submission Controller -->
+            <section id="submission-controller" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-send-check"></i></span>
+                    Submission Controller
+                </h2>
+                <p>
+                    <span class="file-path"><i class="bi bi-file-code"></i> Controllers/SubmissionController.cs</span>
+                    &mdash; Base: <code class="code-inline">[Authorize]</code>. Review actions require <code class="code-inline">Admin</code> or <code class="code-inline">Reviewer</code> role.
+                </p>
+
+                <h3>Route Reference</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Method</th><th>Route</th><th>Role</th><th>Purpose</th></tr></thead>
+                    <tbody>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Submission/Submit</code></td><td>User</td><td>Submit report for review (computes completion level, creates snapshot)</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Submission/Withdraw</code></td><td>User</td><td>Withdraw submission (only if status = Submitted)</td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Submission/Queue</code></td><td>Admin, Reviewer</td><td>Review queue with tabs: pending, my-reviews, revision, all</td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Submission/Review/{id}</code></td><td>Admin, Reviewer</td><td>Detailed review page (id = PublicId GUID)</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Submission/Claim</code></td><td>Admin, Reviewer</td><td>Claim report (Submitted &rarr; UnderReview)</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Submission/Unclaim</code></td><td>Admin, Reviewer</td><td>Release report back to queue</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Submission/Validate</code></td><td>Admin, Reviewer</td><td>Approve report + generate PDF + create validation snapshot</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Submission/Reject</code></td><td>Admin, Reviewer</td><td>Send back for revision with reason</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Submission/Unlock</code></td><td>Admin</td><td>Unlock validated report (creates PreEditBackup snapshot)</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Submission/AddNote</code></td><td>Admin, Reviewer</td><td>Add review note (type, stream reference, internal flag)</td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Submission/Notes</code></td><td>Admin, Reviewer</td><td>Fetch all notes for a report (JSON)</td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Submission/Validated</code></td><td>Admin, Reviewer</td><td>Library of approved reports</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Submission/BulkValidate</code></td><td>Admin, Reviewer</td><td>Batch validate multiple reports</td></tr>
+                        <tr><td><span class="route-method route-post">POST</span></td><td><code class="code-inline">/Submission/BulkAssign</code></td><td>Admin</td><td>Batch assign reviewer to multiple reports</td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Submission/Snapshot/{id}</code></td><td>Admin, Reviewer</td><td>View a historical snapshot</td></tr>
+                        <tr><td><span class="route-method route-get">GET</span></td><td><code class="code-inline">/Submission/Artifact/{id}</code></td><td>Admin, Reviewer</td><td>Download or view generated PDF/Excel artifact</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 5. Services -->
+            <section id="services" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-box"></i></span>
+                    Services (Business Logic)
+                </h2>
+                <p>All services are registered as <code class="code-inline">Scoped</code> in <code class="code-inline">Program.cs</code>.</p>
+
+                <h3>SubmissionService</h3>
+                <p><span class="file-path"><i class="bi bi-file-code"></i> Services/SubmissionService.cs</span></p>
+                <table class="guide-table">
+                    <thead><tr><th>Method</th><th>Behavior</th></tr></thead>
+                    <tbody>
+                        <tr><td><code class="code-inline">SubmitForReview(id, userId)</code></td><td>Validates ownership, computes CompletionLevel, sets status to Submitted, creates snapshot</td></tr>
+                        <tr><td><code class="code-inline">WithdrawSubmission(id, userId)</code></td><td>Reverts Submitted &rarr; Draft (only if not yet claimed)</td></tr>
+                        <tr><td><code class="code-inline">ClaimForReview(id, reviewerUserId)</code></td><td>Sets status to UnderReview, assigns ReviewerUserId</td></tr>
+                        <tr><td><code class="code-inline">UnclaimReview(id, reviewerUserId)</code></td><td>Returns to Submitted, clears reviewer assignment</td></tr>
+                        <tr><td><code class="code-inline">AssignReviewer(id, reviewerUserId, adminUserId)</code></td><td>Admin-initiated reviewer assignment</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>Completion Level Algorithm</h4>
+                <div class="code-block">
+<span class="type">Full</span>    = hasAnyStream && hasCauses && hasRecommendations && hasPrioritization
+<span class="type">Partial</span> = hasAnyStream
+<span class="type">Metadata</span>= <span class="cm">// everything else (only title/location/financial data)</span>
+                </div>
+
+                <h3>ValidationService</h3>
+                <p><span class="file-path"><i class="bi bi-file-code"></i> Services/ValidationService.cs</span></p>
+                <table class="guide-table">
+                    <thead><tr><th>Method</th><th>Behavior</th></tr></thead>
+                    <tbody>
+                        <tr><td><code class="code-inline">ValidateReport(id, userId, comment)</code></td><td>Status &rarr; Validated, creates snapshot, generates PDF artifact</td></tr>
+                        <tr><td><code class="code-inline">RejectReport(id, userId, reason)</code></td><td>Status &rarr; NeedsRevision, stores RevisionReason, creates ReviewNote</td></tr>
+                        <tr><td><code class="code-inline">UnlockForRevision(id, adminUserId, reason)</code></td><td>Validated &rarr; NeedsRevision, creates PreEditBackup snapshot</td></tr>
+                        <tr><td><code class="code-inline">BulkValidate(ids[], userId)</code></td><td>Batch validate, returns success/failure counts</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>SnapshotService</h3>
+                <p><span class="file-path"><i class="bi bi-file-code"></i> Services/SnapshotService.cs</span></p>
+                <table class="guide-table">
+                    <thead><tr><th>Method</th><th>Behavior</th></tr></thead>
+                    <tbody>
+                        <tr><td><code class="code-inline">CreateSnapshot(reportId, type, userId)</code></td><td>Serializes full report state to JSON snapshot</td></tr>
+                        <tr><td><code class="code-inline">GetSnapshotsForReport(reportId)</code></td><td>Returns all snapshots ordered by creation date</td></tr>
+                        <tr><td><code class="code-inline">BuildFormViewModelFromReport(report)</code></td><td>Converts report entity to form ViewModel for rendering</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>ArtifactService</h3>
+                <p><span class="file-path"><i class="bi bi-file-code"></i> Services/ArtifactService.cs</span></p>
+                <table class="guide-table">
+                    <thead><tr><th>Method</th><th>Behavior</th></tr></thead>
+                    <tbody>
+                        <tr><td><code class="code-inline">GeneratePdfArtifact(reportId, snapshotId, userId)</code></td><td>Creates PDF using QuestPDF and stores as ReportArtifact</td></tr>
+                        <tr><td><code class="code-inline">GetArtifactStream(artifactId)</code></td><td>Returns file stream, filename, and content type</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 6. Data Models -->
+            <section id="data-models" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-database"></i></span>
+                    Data Models
+                </h2>
+
+                <h3>Permission</h3>
+                <div class="code-block">
+<span class="kw">public class</span> <span class="type">Permission</span>
+{
+    <span class="kw">int</span> Id
+    <span class="kw">string</span> Name           <span class="cm">// e.g., "ViewReports"</span>
+    <span class="kw">string?</span> Description    <span class="cm">// e.g., "Can view all reports"</span>
+    <span class="kw">string</span> Category        <span class="cm">// e.g., "Reports", "User Management"</span>
+    <span class="type">DateTime</span> CreatedAt
+    <span class="type">ICollection</span>&lt;<span class="type">RolePermission</span>&gt; RolePermissions
+}
+                </div>
+
+                <h3>RolePermission (Junction Table)</h3>
+                <div class="code-block">
+<span class="kw">public class</span> <span class="type">RolePermission</span>
+{
+    <span class="kw">int</span> Id
+    <span class="kw">string</span> RoleId         <span class="cm">// FK &rarr; IdentityRole</span>
+    <span class="kw">int</span> PermissionId      <span class="cm">// FK &rarr; Permission</span>
+    <span class="type">DateTime</span> AssignedAt
+}
+<span class="cm">// Unique composite index: (RoleId, PermissionId)</span>
+                </div>
+
+                <h3>AuditLog</h3>
+                <div class="code-block">
+<span class="kw">public class</span> <span class="type">AuditLog</span>
+{
+    <span class="kw">int</span> Id
+    <span class="kw">string?</span> UserId, UserEmail
+    <span class="kw">string</span> Action          <span class="cm">// "RoleAssigned", "UserDeactivated", etc.</span>
+    <span class="kw">string</span> EntityType       <span class="cm">// "User", "RosraReport", "Role"</span>
+    <span class="kw">string?</span> EntityId
+    <span class="type">DateTime</span> Timestamp
+    <span class="kw">string?</span> Details         <span class="cm">// Free text or JSON</span>
+    <span class="kw">string?</span> IpAddress
+    <span class="kw">string?</span> StatusFrom, StatusTo
+    <span class="kw">string?</span> Reason          <span class="cm">// Max 500 chars</span>
+}
+                </div>
+
+                <h3>ReviewNote</h3>
+                <div class="code-block">
+<span class="kw">public class</span> <span class="type">ReviewNote</span>
+{
+    <span class="kw">int</span> Id, ReportId
+    <span class="kw">string</span> AuthorUserId
+    <span class="kw">string</span> Content          <span class="cm">// Max 2000 chars</span>
+    <span class="kw">int</span> NoteType             <span class="cm">// 0=General, 1=CorrectionRequest, 2=ValidationComment, 3=RevisionReason</span>
+    <span class="kw">string?</span> StreamReference  <span class="cm">// e.g., "PropertyTax"</span>
+    <span class="kw">bool</span> IsInternal          <span class="cm">// Hidden from report author</span>
+    <span class="type">DateTime</span> CreatedAt
+}
+                </div>
+
+                <h3>Enums</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Enum</th><th>Values</th></tr></thead>
+                    <tbody>
+                        <tr><td><code class="code-inline">ReportStatus</code></td><td>Draft(0), Submitted(1), UnderReview(2), NeedsRevision(3), Validated(4)</td></tr>
+                        <tr><td><code class="code-inline">CompletionLevel</code></td><td>Metadata(0), Partial(1), Full(2)</td></tr>
+                        <tr><td><code class="code-inline">SnapshotType</code></td><td>Submission(0), Validation(1), PreEditBackup(2)</td></tr>
+                        <tr><td><code class="code-inline">NoteType</code></td><td>General(0), CorrectionRequest(1), ValidationComment(2), RevisionReason(3)</td></tr>
+                        <tr><td><code class="code-inline">ArtifactFileType</code></td><td>PDF(0), Excel(1)</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Database Constraints</h3>
+                <ul>
+                    <li><code class="code-inline">RosraReport</code> has a global query filter excluding <code class="code-inline">IsDeleted = true</code> records. Use <code class="code-inline">IgnoreQueryFilters()</code> to access deleted reports.</li>
+                    <li><code class="code-inline">RosraReport.PublicId</code> has a unique index (GUID used in URLs).</li>
+                    <li><code class="code-inline">ReviewNote</code> cascade-deletes with the parent report.</li>
+                    <li><code class="code-inline">AnalysisSnapshot</code> uses restrict-delete to prevent accidental cascades.</li>
+                    <li><code class="code-inline">ReportArtifact.SnapshotId</code> uses SetNull on delete.</li>
+                </ul>
+            </section>
+
+            <!-- 7. Permissions -->
+            <section id="permissions" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-key"></i></span>
+                    Permissions (36 Total)
+                </h2>
+                <p>Defined in <span class="file-path"><i class="bi bi-file-code"></i> Data/DbInitializer.cs</span> and seeded on startup.</p>
+
+                <div class="perm-category">
+                    <h5>Reports (7)</h5>
+                    <div class="perm-list">
+                        <span class="perm-tag">ViewReports</span>
+                        <span class="perm-tag">CreateReports</span>
+                        <span class="perm-tag">EditReports</span>
+                        <span class="perm-tag">EditAllReports</span>
+                        <span class="perm-tag">DeleteReports</span>
+                        <span class="perm-tag">DeleteAllReports</span>
+                        <span class="perm-tag">ExportReports</span>
+                    </div>
+                </div>
+                <div class="perm-category">
+                    <h5>User Management (6)</h5>
+                    <div class="perm-list">
+                        <span class="perm-tag">ViewUsers</span>
+                        <span class="perm-tag">CreateUsers</span>
+                        <span class="perm-tag">EditUsers</span>
+                        <span class="perm-tag">DeleteUsers</span>
+                        <span class="perm-tag">ManageUserRoles</span>
+                        <span class="perm-tag">ActivateDeactivateUsers</span>
+                    </div>
+                </div>
+                <div class="perm-category">
+                    <h5>Data Management (4)</h5>
+                    <div class="perm-list">
+                        <span class="perm-tag">UploadPeerSNGData</span>
+                        <span class="perm-tag">UploadCountryData</span>
+                        <span class="perm-tag">ViewDataLibrary</span>
+                        <span class="perm-tag">DeleteUploadedData</span>
+                    </div>
+                </div>
+                <div class="perm-category">
+                    <h5>Role Management (5)</h5>
+                    <div class="perm-list">
+                        <span class="perm-tag">ViewRoles</span>
+                        <span class="perm-tag">CreateRoles</span>
+                        <span class="perm-tag">EditRoles</span>
+                        <span class="perm-tag">DeleteRoles</span>
+                        <span class="perm-tag">ManagePermissions</span>
+                    </div>
+                </div>
+                <div class="perm-category">
+                    <h5>Dashboard (3)</h5>
+                    <div class="perm-list">
+                        <span class="perm-tag">ViewDashboard</span>
+                        <span class="perm-tag">ViewAdminDashboard</span>
+                        <span class="perm-tag">ViewAnalytics</span>
+                    </div>
+                </div>
+                <div class="perm-category">
+                    <h5>Assessment Review (11)</h5>
+                    <div class="perm-list">
+                        <span class="perm-tag">SubmitReports</span>
+                        <span class="perm-tag">ReviewReports</span>
+                        <span class="perm-tag">ValidateReports</span>
+                        <span class="perm-tag">UnlockValidatedReports</span>
+                        <span class="perm-tag">AssignReviewers</span>
+                        <span class="perm-tag">ViewReviewNotes</span>
+                        <span class="perm-tag">AddReviewNotes</span>
+                        <span class="perm-tag">ViewAnalysisSnapshots</span>
+                        <span class="perm-tag">AccessReportArtifacts</span>
+                        <span class="perm-tag">BulkValidate</span>
+                        <span class="perm-tag">ReRunCalculations</span>
+                    </div>
+                </div>
+
+                <h3>Default Role Assignments</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Role</th><th>Permissions</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Admin</strong></td><td>All 36 permissions</td></tr>
+                        <tr><td><strong>User</strong></td><td>ViewReports, CreateReports, EditReports, DeleteReports, ExportReports, ViewDashboard, SubmitReports</td></tr>
+                        <tr><td><strong>Reviewer</strong></td><td>User permissions + ReviewReports, ValidateReports, ViewReviewNotes, AddReviewNotes, ViewAnalysisSnapshots, AccessReportArtifacts, BulkValidate, ReRunCalculations</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 8. Review Workflow -->
+            <section id="review-workflow" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-arrow-repeat"></i></span>
+                    Review Workflow
+                </h2>
+
+                <h3>Status Transitions</h3>
+                <div class="workflow-flow">
+                    <div class="wf-step draft">Draft (0)</div>
+                    <i class="bi bi-arrow-right wf-arrow"></i>
+                    <div class="wf-step submitted">Submitted (1)</div>
+                    <i class="bi bi-arrow-right wf-arrow"></i>
+                    <div class="wf-step review">UnderReview (2)</div>
+                    <i class="bi bi-arrow-right wf-arrow"></i>
+                    <div class="wf-step validated">Validated (4)</div>
+                </div>
+                <div class="workflow-flow">
+                    <div class="wf-step review">UnderReview (2)</div>
+                    <i class="bi bi-arrow-right wf-arrow"></i>
+                    <div class="wf-step revision">NeedsRevision (3)</div>
+                    <i class="bi bi-arrow-right wf-arrow"></i>
+                    <div class="wf-step submitted">Submitted (1)</div>
+                    <span style="color:#94a3b8;font-size:0.8rem;margin-left:0.5rem">(user re-submits)</span>
+                </div>
+                <div class="workflow-flow">
+                    <div class="wf-step validated">Validated (4)</div>
+                    <i class="bi bi-arrow-right wf-arrow"></i>
+                    <div class="wf-step revision">NeedsRevision (3)</div>
+                    <span style="color:#94a3b8;font-size:0.8rem;margin-left:0.5rem">(admin unlock only)</span>
+                </div>
+
+                <h3>Snapshot Lifecycle</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Event</th><th>Snapshot Type</th><th>Purpose</th></tr></thead>
+                    <tbody>
+                        <tr><td>User submits report</td><td><code class="code-inline">Submission (0)</code></td><td>Captures state at submission time</td></tr>
+                        <tr><td>Reviewer validates</td><td><code class="code-inline">Validation (1)</code></td><td>Captures approved state</td></tr>
+                        <tr><td>Admin unlocks validated report</td><td><code class="code-inline">PreEditBackup (2)</code></td><td>Backup before changes</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Review Page - Stream Completeness</h3>
+                <p>The review page checks 11 data fields for null/empty to show completeness indicators:</p>
+                <table class="guide-table">
+                    <thead><tr><th>Stream</th><th>Field Checked</th></tr></thead>
+                    <tbody>
+                        <tr><td>Property Tax</td><td><code class="code-inline">PropertyTaxData</code></td></tr>
+                        <tr><td>Business License</td><td><code class="code-inline">LicenseData</code></td></tr>
+                        <tr><td>Short-Term Charges</td><td><code class="code-inline">ShortTermUserChargeData</code></td></tr>
+                        <tr><td>Long-Term Charges</td><td><code class="code-inline">LongTermUserChargeData</code></td></tr>
+                        <tr><td>Mixed Charges</td><td><code class="code-inline">MixedUserChargeData</code></td></tr>
+                        <tr><td>Generic Streams</td><td><code class="code-inline">GenericStreamsData</code></td></tr>
+                        <tr><td>Peer SNG</td><td><code class="code-inline">PeerSNGData</code></td></tr>
+                        <tr><td>Causes</td><td><code class="code-inline">RootCauses</code></td></tr>
+                        <tr><td>Recommendations</td><td><code class="code-inline">RecommendationSummary</code></td></tr>
+                        <tr><td>Prioritization</td><td><code class="code-inline">PrioritizationData</code></td></tr>
+                        <tr><td>Solutions</td><td><code class="code-inline">SelectedSolutionsData</code></td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 9. Audit System -->
+            <section id="audit-system" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-journal-text"></i></span>
+                    Audit System
+                </h2>
+                <p>Audit logging happens at two levels:</p>
+
+                <h3>1. Automatic (SaveChangesAsync Override)</h3>
+                <p><span class="file-path"><i class="bi bi-file-code"></i> Data/ApplicationDbContext.cs</span></p>
+                <p>The <code class="code-inline">SaveChangesAsync()</code> override intercepts all <code class="code-inline">RosraReport</code> changes and creates <code class="code-inline">AuditLog</code> entries:</p>
+                <table class="guide-table">
+                    <thead><tr><th>Entity State</th><th>Action Logged</th></tr></thead>
+                    <tbody>
+                        <tr><td>Added</td><td><code class="code-inline">Created</code></td></tr>
+                        <tr><td>Modified (IsDeleted changed)</td><td><code class="code-inline">Deleted</code> or <code class="code-inline">Restored</code></td></tr>
+                        <tr><td>Modified (Status changed)</td><td><code class="code-inline">StatusChanged</code> with StatusFrom/StatusTo</td></tr>
+                        <tr><td>Modified (other)</td><td><code class="code-inline">Updated</code> with changed property names</td></tr>
+                        <tr><td>Deleted</td><td><code class="code-inline">PermanentlyDeleted</code></td></tr>
+                    </tbody>
+                </table>
+
+                <h3>2. Manual (LogAuditAsync)</h3>
+                <p><span class="file-path"><i class="bi bi-file-code"></i> Controllers/AdminController.cs</span></p>
+                <p>Called explicitly for non-report entities:</p>
+                <div class="code-block">
+<span class="kw">await</span> <span class="fn">LogAuditAsync</span>(
+    action:     <span class="str">"RoleAssigned"</span>,
+    entityType: <span class="str">"User"</span>,
+    entityId:   userId,
+    details:    <span class="str">$"Role '{roleName}' assigned to {email}"</span>,
+    statusFrom: <span class="kw">null</span>,
+    statusTo:   <span class="kw">null</span>,
+    reason:     <span class="kw">null</span>
+);
+                </div>
+
+                <h3>Actions Logged</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Action</th><th>Trigger</th></tr></thead>
+                    <tbody>
+                        <tr><td><code class="code-inline">RoleAssigned</code></td><td>Admin assigns role to user</td></tr>
+                        <tr><td><code class="code-inline">RoleRemoved</code></td><td>Admin removes role from user</td></tr>
+                        <tr><td><code class="code-inline">RoleCreated</code></td><td>Admin creates a new role</td></tr>
+                        <tr><td><code class="code-inline">RoleDeleted</code></td><td>Admin deletes a role</td></tr>
+                        <tr><td><code class="code-inline">UserActivated</code></td><td>Admin toggles user to active</td></tr>
+                        <tr><td><code class="code-inline">UserDeactivated</code></td><td>Admin toggles user to inactive</td></tr>
+                        <tr><td><code class="code-inline">Created</code></td><td>Report saved for the first time</td></tr>
+                        <tr><td><code class="code-inline">Updated</code></td><td>Report modified</td></tr>
+                        <tr><td><code class="code-inline">StatusChanged</code></td><td>Report status transitions (with from/to)</td></tr>
+                        <tr><td><code class="code-inline">Deleted / Restored</code></td><td>Soft-delete toggle</td></tr>
+                        <tr><td><code class="code-inline">PermanentlyDeleted</code></td><td>Hard-delete from trash</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 10. Data Upload -->
+            <section id="data-upload" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-cloud-upload"></i></span>
+                    Data Upload (CSV Import)
+                </h2>
+
+                <h3>Peer SNG Data</h3>
+                <p>Route: <code class="code-inline">POST /Admin/UploadPeerSNGData</code></p>
+                <h4>Expected CSV Format</h4>
+                <div class="code-block">
+SNG,OSR,GCP,Include
+Baringo,<span class="num">321.4</span>,<span class="num">75459</span>,<span class="num">1</span>
+Bomet,<span class="num">198.7</span>,<span class="num">62340</span>,<span class="num">1</span>
+Nairobi,<span class="num">15200.5</span>,<span class="num">498230</span>,<span class="num">0</span>
+                </div>
+                <table class="guide-table">
+                    <thead><tr><th>Column</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td>SNG</td><td>string</td><td>Subnational government name</td></tr>
+                        <tr><td>OSR</td><td>decimal</td><td>Own-source revenue (millions)</td></tr>
+                        <tr><td>GCP</td><td>decimal</td><td>Gross county product / GDP</td></tr>
+                        <tr><td>Include</td><td>bool</td><td>1 or "true" to include in analysis</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Country Data</h3>
+                <p>Route: <code class="code-inline">POST /Admin/UploadCountryData</code></p>
+                <h4>Expected CSV Format (16 Columns)</h4>
+                <table class="guide-table">
+                    <thead><tr><th>#</th><th>Column</th><th>Type</th><th>Required</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>Country</td><td>string</td><td>Yes</td></tr>
+                        <tr><td>2</td><td>CurrencyCode</td><td>string</td><td>Yes</td></tr>
+                        <tr><td>3</td><td>CurrencySymbol</td><td>string</td><td>Yes</td></tr>
+                        <tr><td>4</td><td>SNG_total_revenue_pct_gdp</td><td>decimal</td><td>No</td></tr>
+                        <tr><td>5</td><td>OSR_pct_gdp</td><td>decimal</td><td>No</td></tr>
+                        <tr><td>6</td><td>GDP_nominal_usd</td><td>decimal</td><td>No</td></tr>
+                        <tr><td>7</td><td>Population_total</td><td>long</td><td>No</td></tr>
+                        <tr><td>8</td><td>Government_Type</td><td>string</td><td>No</td></tr>
+                        <tr><td>9</td><td>Income_Level</td><td>string</td><td>No</td></tr>
+                        <tr><td>10-16</td><td>Additional indicators</td><td>decimal</td><td>No</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="dev-note">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Import behavior:</strong> Existing records matching by country name are updated; new records are inserted. The header row is skipped automatically.
+                </div>
+            </section>
+
+            <!-- 11. Configuration -->
+            <section id="configuration" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-sliders"></i></span>
+                    Configuration (Program.cs)
+                </h2>
+                <p><span class="file-path"><i class="bi bi-file-code"></i> Program.cs</span></p>
+
+                <h3>Database</h3>
+                <div class="code-block">
+<span class="cm">// SQL Server with retry-on-failure (5 retries, max 30s delay)</span>
+options.<span class="fn">UseSqlServer</span>(connectionString, sqlOptions =>
+    sqlOptions.<span class="fn">EnableRetryOnFailure</span>(
+        maxRetryCount: <span class="num">5</span>,
+        maxRetryDelay: TimeSpan.FromSeconds(<span class="num">30</span>)));
+                </div>
+
+                <h3>Identity</h3>
+                <div class="code-block">
+builder.Services.<span class="fn">AddDefaultIdentity</span>&lt;<span class="type">ApplicationUser</span>&gt;(options =>
+    options.SignIn.RequireConfirmedAccount = <span class="kw">false</span>)
+    .<span class="fn">AddRoles</span>&lt;<span class="type">IdentityRole</span>&gt;()
+    .<span class="fn">AddEntityFrameworkStores</span>&lt;<span class="type">ApplicationDbContext</span>&gt;();
+                </div>
+
+                <h3>Session</h3>
+                <div class="code-block">
+options.IdleTimeout = TimeSpan.FromMinutes(<span class="num">30</span>);
+options.Cookie.HttpOnly = <span class="kw">true</span>;
+options.Cookie.IsEssential = <span class="kw">true</span>;
+                </div>
+
+                <h3>Rate Limiting</h3>
+                <div class="code-block">
+<span class="cm">// Fixed window: 100 requests/minute per API endpoint</span>
+options.<span class="fn">AddFixedWindowLimiter</span>(<span class="str">"api"</span>, opt => {
+    opt.PermitLimit = <span class="num">100</span>;
+    opt.Window = TimeSpan.FromMinutes(<span class="num">1</span>);
+    opt.QueueLimit = <span class="num">10</span>;
+    opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+});
+                </div>
+
+                <h3>Anti-Forgery</h3>
+                <div class="code-block">
+<span class="cm">// AJAX requests must include this header</span>
+options.HeaderName = <span class="str">"RequestVerificationToken"</span>;
+                </div>
+
+                <h3>Localization</h3>
+                <div class="code-block">
+<span class="kw">var</span> supportedCultures = <span class="kw">new</span>[] { <span class="str">"en"</span>, <span class="str">"fr"</span>, <span class="str">"es"</span> };
+                </div>
+            </section>
+
+            <!-- 12. File Reference -->
+            <section id="file-reference" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-folder2-open"></i></span>
+                    File Reference
+                </h2>
+
+                <h3>Controllers</h3>
+                <ul>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Controllers/AdminController.cs</span></li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Controllers/SubmissionController.cs</span></li>
+                </ul>
+
+                <h3>Services</h3>
+                <ul>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Services/SubmissionService.cs</span></li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Services/ValidationService.cs</span></li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Services/SnapshotService.cs</span></li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Services/ArtifactService.cs</span></li>
+                </ul>
+
+                <h3>Authorization</h3>
+                <ul>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Authorization/PermissionAuthorizationHandler.cs</span></li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Authorization/PermissionRequirement.cs</span></li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Authorization/RequirePermissionAttribute.cs</span></li>
+                </ul>
+
+                <h3>Data Layer</h3>
+                <ul>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Data/ApplicationDbContext.cs</span> &mdash; EF Core context with audit override</li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Data/DbInitializer.cs</span> &mdash; Seeds roles, permissions, admin user, Peer SNG data</li>
+                </ul>
+
+                <h3>Models</h3>
+                <ul>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Models/Permission.cs</span></li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Models/RolePermission.cs</span></li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Models/AuditLog.cs</span></li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Models/ReviewNote.cs</span></li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Models/AnalysisSnapshot.cs</span></li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Models/ReportArtifact.cs</span></li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Models/Enums/ReportEnums.cs</span></li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Models/ViewModels/AdminViewModels.cs</span></li>
+                </ul>
+
+                <h3>Views</h3>
+                <ul>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Views/Admin/Index.cshtml</span> &mdash; Dashboard with KPIs</li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Views/Admin/Users.cshtml</span> &mdash; User list with filters</li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Views/Admin/UserDetails.cshtml</span> &mdash; User profile &amp; role management</li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Views/Admin/CreateRole.cshtml</span> &mdash; Role creation form</li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Views/Admin/EditRolePermissions.cshtml</span> &mdash; Permission editor</li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Views/Admin/AuditLog.cshtml</span> &mdash; Audit trail viewer</li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Views/Admin/DataUpload.cshtml</span> &mdash; CSV upload forms</li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Views/Admin/DeletedReports.cshtml</span> &mdash; Trash management</li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Views/Admin/AllReports.cshtml</span> &mdash; All reports card view</li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Views/Submission/Queue.cshtml</span> &mdash; Review queue</li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Views/Submission/Review.cshtml</span> &mdash; Review page</li>
+                    <li><span class="file-path"><i class="bi bi-file-code"></i> Views/Submission/Validated.cshtml</span> &mdash; Approved reports</li>
+                </ul>
+            </section>
+
+            <!-- 13. Default Credentials -->
+            <section id="default-credentials" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-person-lock"></i></span>
+                    Default Credentials & Seed Data
+                </h2>
+
+                <div class="dev-danger">
+                    <i class="bi bi-exclamation-octagon"></i>
+                    <strong>Security:</strong> Change the default admin password immediately in production environments.
+                </div>
+
+                <h3>Default Admin Account</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Field</th><th>Value</th></tr></thead>
+                    <tbody>
+                        <tr><td>Email</td><td><code class="code-inline">admin@rosra.com</code></td></tr>
+                        <tr><td>Password</td><td><code class="code-inline">Admin@123</code></td></tr>
+                        <tr><td>Roles</td><td>Admin</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Seeded Data</h3>
+                <ul>
+                    <li><strong>3 Roles:</strong> Admin (all 36 permissions), User (7 permissions), Reviewer (15 permissions)</li>
+                    <li><strong>36 Permissions:</strong> Across 6 categories (Reports, User Management, Data Management, Role Management, Dashboard, Assessment Review)</li>
+                    <li><strong>Peer SNG Data:</strong> Kenya counties with OSR and GCP values</li>
+                </ul>
+
+                <h3>DbInitializer Behavior</h3>
+                <ul>
+                    <li>Runs on every application startup via <code class="code-inline">DbInitializer.Initialize(serviceProvider)</code>.</li>
+                    <li>Idempotent &mdash; checks for existing data before inserting.</li>
+                    <li>Creates roles and permissions if they do not exist.</li>
+                    <li>Creates the admin user only if <code class="code-inline">admin@rosra.com</code> does not exist.</li>
+                </ul>
+            </section>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sections = document.querySelectorAll('.guide-section');
+            const tocLinks = document.querySelectorAll('.toc-link');
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        tocLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                        });
+                    }
+                });
+            }, { rootMargin: '-80px 0px -70% 0px' });
+
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+}

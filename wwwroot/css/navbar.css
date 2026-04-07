@@ -170,7 +170,7 @@ header.scrolled .logo-container img {
 
 /* Mega Menu Header */
 .dropdown-menu-header {
-    background: linear-gradient(135deg, var(--unhabitat-dark) 0%, #2d2d4a 100%);
+    background: var(--unhabitat-dark);
     color: white;
     padding: 1rem 1.25rem;
     font-weight: 600;

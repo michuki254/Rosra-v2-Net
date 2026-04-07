@@ -18,7 +18,7 @@
 }
 
 .card-header {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    background: #f8f9fa;
     border-bottom: 2px solid #e9ecef;
     padding: 1.25rem 1.5rem;
     font-weight: 600;
@@ -85,13 +85,13 @@
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #6c63ff 0%, #5a52d5 100%);
+    background: #6c63ff;
     color: white;
     box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #5a52d5 0%, #4942b8 100%);
+    background: #5a52d5;
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(108, 99, 255, 0.4);
 }
@@ -125,7 +125,7 @@ hr {
 
 /* Revenue Statistics */
 .revenue-stat {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    background: #f8f9fa;
     border: 1px solid #e9ecef;
     border-radius: 12px;
     padding: 1.25rem !important;
@@ -182,19 +182,19 @@ hr {
 }
 
 .gap-indicator.registration {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: #f093fb;
 }
 
 .gap-indicator.compliance {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    background: #4facfe;
 }
 
 .gap-indicator.assessment {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    background: #fa709a;
 }
 
 .gap-indicator.combined {
-    background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+    background: #30cfd0;
 }
 
 .gap-content {
@@ -322,7 +322,7 @@ canvas {
 
 /* Gradient Backgrounds */
 .bg-gradient-light {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+    background: #f8f9fa !important;
 }
 
 /* Shadow Effects */
@@ -391,7 +391,7 @@ canvas {
 }
 
 .modal-header {
-    background: linear-gradient(135deg, #6c63ff 0%, #5a52d5 100%);
+    background: #6c63ff;
     color: white;
     border: none;
     padding: 1.5rem;
@@ -510,7 +510,7 @@ textarea:focus {
 }
 
 .progress-bar {
-    background: linear-gradient(135deg, #6c63ff 0%, #5a52d5 100%);
+    background: #6c63ff;
     transition: width 0.3s ease;
 }
 

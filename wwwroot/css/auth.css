@@ -1,7 +1,7 @@
 /* Custom styles for authentication pages */
 
 .auth-container {
-    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    background: #6a11cb;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -19,7 +19,7 @@
 }
 
 .auth-card .card-header {
-    background: linear-gradient(to right, #4e73df, #224abe);
+    background: #4e73df;
     padding: 1.5rem;
     border-bottom: none;
 }
@@ -50,7 +50,7 @@
 }
 
 .auth-card .btn-primary {
-    background: linear-gradient(to right, #4e73df, #224abe);
+    background: #4e73df;
     border: none;
     border-radius: 0.5rem;
     padding: 0.75rem 1.5rem;

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RosraApp.Models;
 
@@ -19,6 +20,23 @@ public class HomeController : Controller
     }
 
     public IActionResult Privacy()
+    {
+        return View();
+    }
+
+    public IActionResult JobAid()
+    {
+        return View();
+    }
+
+    [Authorize(Roles = "Admin")]
+    public IActionResult AdminGuide()
+    {
+        return View();
+    }
+
+    [Authorize(Roles = "Admin")]
+    public IActionResult DevGuide()
     {
         return View();
     }
