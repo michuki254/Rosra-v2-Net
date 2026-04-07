@@ -333,6 +333,21 @@
         .recommendations-container .solution-detail-card { font-size: 0.8rem !important; }
         .recommendations-container h3, .recommendations-container h4 { font-size: 0.95rem !important; }
 
+        /* ── Page break rules (global for Playwright PDF + browser print) ── */
+        .print-section, .card, .matrix-container { break-inside: avoid; page-break-inside: avoid; }
+        .print-section-title { break-after: avoid; page-break-after: avoid; }
+        .report-content-header { break-inside: avoid; break-after: avoid; page-break-inside: avoid; }
+        .print-footer { break-inside: avoid; page-break-inside: avoid; }
+        h4, h5 { break-after: avoid; page-break-after: avoid; }
+        img, svg, canvas { break-inside: avoid; page-break-inside: avoid; }
+        table, .table { break-inside: avoid; page-break-inside: avoid; }
+        .chart-container, .chart-wrapper { break-inside: avoid; page-break-inside: avoid; }
+        .kpi-row, .kpi-grid { break-inside: avoid; page-break-inside: avoid; }
+        .gap-analysis-section, .stream-section { break-inside: avoid; page-break-inside: avoid; }
+        .prioritization-module .col-md-6 .card { break-inside: avoid; page-break-inside: avoid; }
+        .solution-card { break-inside: avoid; page-break-inside: avoid; }
+        .recommendations-summary { break-inside: avoid; page-break-inside: avoid; }
+
         .print-btn-wrapper { display: block; }
         @@page {
             size: portrait;
@@ -351,23 +366,8 @@
                 border-radius: 0;
                 box-shadow: none;
             }
-            .report-content { padding: 15px; }
-            /* Cover fits one portrait page */
             .cover-page { min-height: 0; height: 100vh; }
-
             .report-content { padding: 10px; }
-            /* Prevent content from being cut across pages */
-            .print-section, .card, .matrix-container { break-inside: avoid; }
-            .print-section-title { break-after: avoid; }
-            .report-content-header { break-inside: avoid; break-after: avoid; }
-            .print-footer { break-inside: avoid; }
-            h4, h5 { break-after: avoid; }
-            img, svg, canvas { break-inside: avoid; }
-            table, .table { break-inside: avoid; }
-            canvas { break-inside: avoid; }
-            .prioritization-module .col-md-6 .card { break-inside: avoid; }
-            .solution-card { break-inside: avoid; }
-            .recommendations-summary { break-inside: avoid; }
         }
     </style>
 </head>

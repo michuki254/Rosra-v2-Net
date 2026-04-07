@@ -29,6 +29,7 @@ namespace RosraApp.Controllers
         private readonly IStringLocalizer<RosraApp.RosraResources> _localizer;
         private readonly ReportExportService _pdfExportService;
         private readonly ExcelExportService _excelExportService;
+        private readonly HtmlToPdfService _htmlToPdfService;
         private readonly IMemoryCache _cache;
 
         // JSON serialization options to ensure consistent property naming
@@ -46,6 +47,7 @@ namespace RosraApp.Controllers
             IStringLocalizer<RosraApp.RosraResources> localizer,
             ReportExportService pdfExportService,
             ExcelExportService excelExportService,
+            HtmlToPdfService htmlToPdfService,
             IMemoryCache cache)
         {
             _context = context;
@@ -54,6 +56,7 @@ namespace RosraApp.Controllers
             _localizer = localizer;
             _pdfExportService = pdfExportService;
             _excelExportService = excelExportService;
+            _htmlToPdfService = htmlToPdfService;
             _cache = cache;
         }
 
@@ -681,6 +684,7 @@ namespace RosraApp.Controllers
                         return Json(new { success = false, message = "Report is locked" });
 
                     MapFormDataToReport(existing, formData, DynamicCategoriesJson);
+                    existing.CompletionLevel = (int)Services.SubmissionService.ComputeCompletionLevel(existing);
                     existing.LastModifiedByUserId = currentUser.Id;
                     _context.Update(existing);
                     await _context.SaveChangesAsync();
@@ -764,7 +768,7 @@ namespace RosraApp.Controllers
         /// </summary>
         private RosraReport CreateReportFromFormData(RosraFormViewModel formData, string? dynamicCategoriesJson, string userId)
         {
-            return new RosraReport
+            var report = new RosraReport
             {
                 Title = formData.Title ?? "ROSRA Report",
                 Country = formData.Country,
@@ -808,6 +812,10 @@ namespace RosraApp.Controllers
                 UserId = userId,
                 Status = (int)Models.Enums.ReportStatus.Draft
             };
+
+            // Compute completion level on creation
+            report.CompletionLevel = (int)Services.SubmissionService.ComputeCompletionLevel(report);
+            return report;
         }
 
         [HttpGet]
@@ -1253,35 +1261,105 @@ namespace RosraApp.Controllers
         }
 
         /// <summary>
-        /// Print-optimized Top-Down Analysis page (opens in new tab, user prints to PDF)
+        /// Generates a PDF from the Top-Down print view and returns it as a file download.
+        /// Headless Chromium navigates to the actual print page, so all CSS/images/charts render properly.
         /// </summary>
         [HttpGet]
-        public IActionResult PrintTopDown()
+        public async Task<IActionResult> PrintTopDown()
         {
             var data = GetFormDataFromSession();
-            if (data == null) return RedirectToAction("Index");
+            if (data == null)
+                return Json(new { success = false, message = "No analysis data found. Please fill in the form first." });
+
+            try
+            {
+                var pdfBytes = await _htmlToPdfService.RenderUrlToPdf("/Rosra/PrintTopDownView", HttpContext);
+                var filename = $"ROSRA_TopDown_{data.Country ?? "Analysis"}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+                return File(pdfBytes, "application/pdf", filename);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating Top-Down PDF");
+                return Json(new { success = false, message = "Failed to generate PDF. Please try again." });
+            }
+        }
+
+        /// <summary>
+        /// Internal HTML view for Playwright to navigate to (not exposed to users).
+        /// </summary>
+        [HttpGet]
+        public IActionResult PrintTopDownView()
+        {
+            var data = GetFormDataFromSession();
+            if (data == null) return NotFound();
             return View("PrintTopDown", data);
         }
 
         /// <summary>
-        /// Print-optimized Full Report page (Top-Down + Bottom-Up combined)
+        /// Generates a PDF from the Full Report print view and returns it as a file download.
         /// </summary>
         [HttpGet]
-        public IActionResult PrintFullReport()
+        public async Task<IActionResult> PrintFullReport()
         {
             var data = GetFormDataFromSession();
-            if (data == null) return RedirectToAction("Index");
+            if (data == null)
+                return Json(new { success = false, message = "No analysis data found. Please fill in the form first." });
+
+            try
+            {
+                var pdfBytes = await _htmlToPdfService.RenderUrlToPdf("/Rosra/PrintFullReportView", HttpContext);
+                var filename = $"ROSRA_FullReport_{data.Country ?? "Analysis"}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+                return File(pdfBytes, "application/pdf", filename);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating Full Report PDF");
+                return Json(new { success = false, message = "Failed to generate PDF. Please try again." });
+            }
+        }
+
+        /// <summary>
+        /// Internal HTML view for Playwright to navigate to.
+        /// </summary>
+        [HttpGet]
+        public IActionResult PrintFullReportView()
+        {
+            var data = GetFormDataFromSession();
+            if (data == null) return NotFound();
             return View("PrintFullReport", data);
         }
 
         /// <summary>
-        /// Print-optimized Bottom-Up Analysis page (opens in new tab, user prints to PDF)
+        /// Generates a PDF from the Bottom-Up print view and returns it as a file download.
         /// </summary>
         [HttpGet]
-        public IActionResult PrintBottomUp()
+        public async Task<IActionResult> PrintBottomUp()
         {
             var data = GetFormDataFromSession();
-            if (data == null) return RedirectToAction("Index");
+            if (data == null)
+                return Json(new { success = false, message = "No analysis data found. Please fill in the form first." });
+
+            try
+            {
+                var pdfBytes = await _htmlToPdfService.RenderUrlToPdf("/Rosra/PrintBottomUpView", HttpContext);
+                var filename = $"ROSRA_BottomUp_{data.Country ?? "Analysis"}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+                return File(pdfBytes, "application/pdf", filename);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating Bottom-Up PDF");
+                return Json(new { success = false, message = "Failed to generate PDF. Please try again." });
+            }
+        }
+
+        /// <summary>
+        /// Internal HTML view for Playwright to navigate to.
+        /// </summary>
+        [HttpGet]
+        public IActionResult PrintBottomUpView()
+        {
+            var data = GetFormDataFromSession();
+            if (data == null) return NotFound();
             return View("PrintBottomUp", data);
         }
 

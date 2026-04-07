@@ -200,8 +200,32 @@ namespace RosraApp.Controllers
                 return Json(new { success = false, message = "Report not found in trash" });
             }
 
+            // Delete child records before removing report (FK Restrict would throw otherwise)
+            var artifacts = await _context.ReportArtifacts.Where(a => a.ReportId == id).ToListAsync();
+            foreach (var artifact in artifacts)
+            {
+                if (!string.IsNullOrEmpty(artifact.FilePath) && System.IO.File.Exists(artifact.FilePath))
+                {
+                    try { System.IO.File.Delete(artifact.FilePath); } catch { /* best-effort file cleanup */ }
+                }
+            }
+            _context.ReportArtifacts.RemoveRange(artifacts);
+
+            var snapshots = await _context.AnalysisSnapshots.Where(s => s.ReportId == id).ToListAsync();
+            _context.AnalysisSnapshots.RemoveRange(snapshots);
+
+            var notes = await _context.ReviewNotes.Where(n => n.ReportId == id).ToListAsync();
+            _context.ReviewNotes.RemoveRange(notes);
+
             _context.RosraReports.Remove(report);
             await _context.SaveChangesAsync();
+
+            // Clean up empty artifact directory
+            var artifactsDir = Path.Combine(Directory.GetCurrentDirectory(), "App_Data", "artifacts", id.ToString());
+            if (Directory.Exists(artifactsDir) && !Directory.EnumerateFileSystemEntries(artifactsDir).Any())
+            {
+                try { Directory.Delete(artifactsDir); } catch { }
+            }
 
             return Json(new { success = true, message = "Report permanently deleted" });
         }

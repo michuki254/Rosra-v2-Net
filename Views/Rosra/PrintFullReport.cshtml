@@ -482,8 +482,30 @@
         .recommendations-container .solution-detail-card { font-size: 0.8rem !important; }
         .recommendations-container h3, .recommendations-container h4 { font-size: 0.95rem !important; }
 
-        /* ── Page break helper ── */
-        .page-break { page-break-before: always; }
+        /* ── Page break helpers (applied globally for Playwright PDF + browser print) ── */
+        .page-break { page-break-before: always; break-before: page; }
+
+        /* Prevent sections from splitting across pages */
+        .card, .input-card, .compact-card { break-inside: avoid; page-break-inside: avoid; }
+        .module2-section { break-inside: avoid; page-break-inside: avoid; }
+        .print-section, .matrix-container { break-inside: avoid; page-break-inside: avoid; }
+        .print-section-title { break-after: avoid; page-break-after: avoid; }
+        .report-content-header { break-inside: avoid; break-after: avoid; page-break-inside: avoid; }
+        .print-footer { break-inside: avoid; page-break-inside: avoid; }
+        .frontier-header, .module2-header { break-after: avoid; page-break-after: avoid; }
+        h4, h5 { break-after: avoid; page-break-after: avoid; }
+        img, svg, canvas { break-inside: avoid; page-break-inside: avoid; }
+        table, .table { break-inside: avoid; page-break-inside: avoid; }
+        .prioritization-module .col-md-6 .card { break-inside: avoid; page-break-inside: avoid; }
+        .solution-card { break-inside: avoid; page-break-inside: avoid; }
+        .recommendations-summary { break-inside: avoid; page-break-inside: avoid; }
+        .gap-analysis-section { break-inside: avoid; page-break-inside: avoid; }
+        .stream-section { break-inside: avoid; page-break-inside: avoid; }
+        .kpi-row, .kpi-grid { break-inside: avoid; page-break-inside: avoid; }
+        .chart-container, .chart-wrapper { break-inside: avoid; page-break-inside: avoid; }
+
+        /* Force page breaks before major report sections */
+        .section-page-break { break-before: page; page-break-before: always; }
 
         .print-btn-wrapper { display: block; }
         @@page {
@@ -503,28 +525,8 @@
                 border-radius: 0;
                 box-shadow: none;
             }
-            /* Cover fits one portrait page */
             .cover-page { min-height: 0; height: 100vh; }
-
             .report-content { padding: 10px; }
-            /* Prevent content from being cut across pages */
-            .card { break-inside: avoid; }
-            .input-card { break-inside: avoid; }
-            .compact-card { break-inside: avoid; }
-            .module2-section { break-inside: avoid; }
-            .print-section, .matrix-container { break-inside: avoid; }
-            .print-section-title { break-after: avoid; }
-            .report-content-header { break-inside: avoid; break-after: avoid; }
-            .print-footer { break-inside: avoid; }
-            /* Keep headers with their content */
-            .frontier-header { break-after: avoid; }
-            .module2-header { break-after: avoid; }
-            h4, h5 { break-after: avoid; }
-            img, svg, canvas { break-inside: avoid; }
-            table, .table { break-inside: avoid; }
-            .prioritization-module .col-md-6 .card { break-inside: avoid; }
-            .solution-card { break-inside: avoid; }
-            .recommendations-summary { break-inside: avoid; }
         }
     </style>
 </head>

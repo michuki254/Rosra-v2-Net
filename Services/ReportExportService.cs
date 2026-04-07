@@ -706,6 +706,57 @@ namespace RosraApp.Services
         /// Generates a standalone PDF for the Top-Down Analysis section only,
         /// designed to match the frontend card/metric layout.
         /// </summary>
+        public byte[] GenerateBottomUpPdf(RosraFormViewModel model)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+            _currencySymbol = model.CurrencySymbol ?? "$";
+            _chartImages = ParseChartImages(model.ChartImagesData);
+
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(40);
+                    page.DefaultTextStyle(x => x.FontSize(10));
+
+                    page.Header().Element(c => ComposeHeader(c, model, "Bottom-Up Gap Analysis Report"));
+
+                    page.Content().PaddingTop(20).Column(column =>
+                    {
+                        // Executive Summary
+                        column.Item().Element(c => ComposeExecutiveSummary(c, model));
+                        column.Item().PaddingVertical(15);
+
+                        // Gap Analysis Per Stream
+                        column.Item().Element(c => ComposeGapAnalysis(c, model));
+                        column.Item().PaddingVertical(15);
+
+                        // Prioritization Results
+                        if (!string.IsNullOrEmpty(model.PrioritizationData))
+                        {
+                            column.Item().Element(c => ComposePrioritization(c, model));
+                            column.Item().PaddingVertical(15);
+                        }
+
+                        // Selected Solutions
+                        if (!string.IsNullOrEmpty(model.SelectedSolutionsData))
+                        {
+                            column.Item().Element(c => ComposeSelectedSolutions(c, model));
+                            column.Item().PaddingVertical(15);
+                        }
+
+                        // Recommendations
+                        column.Item().Element(c => ComposeRecommendations(c, model));
+                    });
+
+                    page.Footer().Element(ComposeFooter);
+                });
+            });
+
+            return document.GeneratePdf();
+        }
+
         public byte[] GenerateTopDownPdf(RosraFormViewModel model)
         {
             QuestPDF.Settings.License = LicenseType.Community;

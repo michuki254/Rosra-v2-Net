@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "Rosra";
     bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+    bool isSampleData = isViewMode && Model.TabContentModel.Id == 0;
 }
 
 @section Styles {
@@ -693,13 +694,33 @@
                             <span>@RosraLocalizer["Sidebar_Export"]</span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><button type="button" class="dropdown-item" id="exportPdfBtn"><i class="bi bi-file-pdf text-danger me-2"></i>@RosraLocalizer["Sidebar_ExportPdf"]</button></li>
-                            <li><button type="button" class="dropdown-item" id="exportExcelBtn"><i class="bi bi-file-earmark-excel text-success me-2"></i>@RosraLocalizer["Sidebar_ExportExcel"]</button></li>
+                            <li><button type="button" class="dropdown-item" id="printTopDownBtn"><i class="bi bi-file-pdf text-primary me-2"></i>Top-Down Analysis (PDF)</button></li>
+                            <li><button type="button" class="dropdown-item" id="printBottomUpBtn"><i class="bi bi-file-pdf text-success me-2"></i>Bottom-Up Analysis (PDF)</button></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><button type="button" class="dropdown-item" id="printTopDownBtn"><i class="bi bi-bar-chart text-primary me-2"></i>@RosraLocalizer["Sidebar_TopDownPrint"]</button></li>
-                            <li><button type="button" class="dropdown-item" id="printBottomUpBtn"><i class="bi bi-layers text-success me-2"></i>@RosraLocalizer["Sidebar_BottomUpPrint"]</button></li>
+                            <li><button type="button" class="dropdown-item" id="printFullReportBtn"><i class="bi bi-file-pdf text-danger me-2"></i>Full Report (PDF)</button></li>
+                        </ul>
+                    </div>
+                }
+                else if (isSampleData)
+                {
+                    <!-- Sample Data Banner -->
+                    <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.5rem; text-align: center;">
+                        <i class="bi bi-info-circle" style="color: #d97706;"></i>
+                        <span style="font-size: 0.8rem; color: #92400e; font-weight: 500;">Sample Report — Explore the tool with demo data</span>
+                    </div>
+                    <a asp-controller="Rosra" asp-action="NewReport" class="sidebar-btn sidebar-btn-primary">
+                        <i class="bi bi-plus-lg me-1"></i>
+                        <span>@RosraLocalizer["Sidebar_NewReport"]</span>
+                    </a>
+                    <div class="sidebar-dropdown dropdown">
+                        <button type="button" class="sidebar-btn sidebar-btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>@RosraLocalizer["Sidebar_Export"]</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><button type="button" class="dropdown-item" id="printTopDownBtn"><i class="bi bi-file-pdf text-primary me-2"></i>Top-Down Analysis (PDF)</button></li>
+                            <li><button type="button" class="dropdown-item" id="printBottomUpBtn"><i class="bi bi-file-pdf text-success me-2"></i>Bottom-Up Analysis (PDF)</button></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><button type="button" class="dropdown-item" id="printFullReportBtn"><i class="bi bi-file-earmark-text text-info me-2"></i>@RosraLocalizer["Sidebar_FullReportPrint"]</button></li>
+                            <li><button type="button" class="dropdown-item" id="printFullReportBtn"><i class="bi bi-file-pdf text-danger me-2"></i>Full Report (PDF)</button></li>
                         </ul>
                     </div>
                 }
@@ -1468,38 +1489,90 @@
                 document.getElementById('rosraForm').action = '@Url.Action("ExportExcel", "Rosra")';
                 document.getElementById('rosraForm').submit();
             });
-            // Helper: save session, then open print page with auto-print
-            function openPrintPage(printUrl) {
+            // Helper: show/update toast notification
+            function showPdfToast(message, type) {
+                var existing = document.getElementById('pdfToast');
+                if (existing) existing.remove();
+
+                var bgColor = type === 'loading' ? '#3b82f6' : type === 'success' ? '#10b981' : '#ef4444';
+                var icon = type === 'loading' ? 'bi-hourglass-split' : type === 'success' ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
+
+                var toast = document.createElement('div');
+                toast.id = 'pdfToast';
+                toast.innerHTML = '<i class="bi ' + icon + ' me-2"></i>' + message;
+                toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:' + bgColor + ';color:#fff;padding:12px 20px;border-radius:8px;font-size:0.875rem;font-weight:500;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:flex;align-items:center;';
+                document.body.appendChild(toast);
+
+                if (type !== 'loading') {
+                    setTimeout(function() { toast.style.opacity = '0'; setTimeout(function() { toast.remove(); }, 300); }, 4000);
+                }
+            }
+
+            // Helper: save session data, then fetch PDF and trigger download
+            function downloadPdf(pdfUrl, label) {
                 if (typeof collectTabDataFromLocalStorage === 'function') collectTabDataFromLocalStorage();
+                showPdfToast('Generating ' + label + ' PDF...', 'loading');
+
+                // Save form data to session first, then fetch the PDF
                 $.ajax({
                     url: '@Url.Action("AutoSaveReport", "Rosra")',
                     type: 'POST',
                     data: $("#rosraForm").serialize(),
-                    success: function(r) {
-                        if (r.success && r.reportId && parseInt($("#reportId").val()) === 0) {
-                            $("#reportId").val(r.reportId);
+                    complete: function(xhr) {
+                        if (xhr.responseJSON && xhr.responseJSON.success && xhr.responseJSON.reportId) {
+                            if (parseInt($("#reportId").val()) === 0) {
+                                $("#reportId").val(xhr.responseJSON.reportId);
+                            }
                         }
-                        window.open(printUrl + '?autoPrint=true', '_blank');
-                    },
-                    error: function() {
-                        window.open(printUrl + '?autoPrint=true', '_blank');
+
+                        // Now fetch the PDF from the server
+                        fetch(pdfUrl).then(function(response) {
+                            var contentType = response.headers.get('content-type') || '';
+                            if (response.ok && contentType.includes('application/pdf')) {
+                                var disposition = response.headers.get('content-disposition');
+                                var filename = label.replace(/\s+/g, '_') + '.pdf';
+                                if (disposition) {
+                                    var match = disposition.match(/filename[^;=\n]*=["']?([^"';\n]*)["']?/);
+                                    if (match && match[1]) filename = decodeURIComponent(match[1]);
+                                }
+                                return response.blob().then(function(blob) {
+                                    var url = window.URL.createObjectURL(blob);
+                                    var a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = filename;
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    a.remove();
+                                    window.URL.revokeObjectURL(url);
+                                    showPdfToast(label + ' PDF downloaded successfully', 'success');
+                                });
+                            } else if (contentType.includes('application/json')) {
+                                return response.json().then(function(data) {
+                                    showPdfToast(data.message || 'Failed to generate PDF', 'error');
+                                });
+                            } else {
+                                showPdfToast('No analysis data. Please fill in the form first.', 'error');
+                            }
+                        }).catch(function() {
+                            showPdfToast('Failed to generate ' + label + ' PDF. Please try again.', 'error');
+                        });
                     }
                 });
             }
 
-            // Print Top-Down
+            // Download Top-Down PDF
             $("#printTopDownBtn").click(function() {
-                openPrintPage('@Url.Action("PrintTopDown", "Rosra")');
+                downloadPdf('@Url.Action("PrintTopDown", "Rosra")', 'Top-Down Analysis');
             });
 
-            // Print Bottom-Up
+            // Download Bottom-Up PDF
             $("#printBottomUpBtn").click(function() {
-                openPrintPage('@Url.Action("PrintBottomUp", "Rosra")');
+                downloadPdf('@Url.Action("PrintBottomUp", "Rosra")', 'Bottom-Up Analysis');
             });
 
-            // Print Full Report
+            // Download Full Report PDF
             $("#printFullReportBtn").click(function() {
-                openPrintPage('@Url.Action("PrintFullReport", "Rosra")');
+                downloadPdf('@Url.Action("PrintFullReport", "Rosra")', 'Full Report');
             });
         });
 

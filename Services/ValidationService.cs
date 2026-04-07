@@ -30,6 +30,10 @@ namespace RosraApp.Services
             if (report.Status != (int)ReportStatus.UnderReview)
                 return (false, "Only reports under review can be validated");
 
+            // Separation of duties: reviewer cannot validate their own report
+            if (report.UserId == reviewerUserId)
+                return (false, "You cannot validate your own report");
+
             report.Status = (int)ReportStatus.Validated;
             report.ValidatedAt = DateTime.UtcNow;
             report.ValidatedByUserId = reviewerUserId;
@@ -74,6 +78,10 @@ namespace RosraApp.Services
 
             if (report.Status != (int)ReportStatus.UnderReview)
                 return (false, "Only reports under review can be sent back for revision");
+
+            // Separation of duties: reviewer cannot reject their own report
+            if (report.UserId == reviewerUserId)
+                return (false, "You cannot review your own report");
 
             report.Status = (int)ReportStatus.NeedsRevision;
             report.RevisionReason = reason;

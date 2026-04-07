@@ -318,6 +318,45 @@ namespace RosraApp.Controllers
             return Json(result);
         }
 
+        /// <summary>
+        /// Allows report owners to view non-internal review notes on their own reports.
+        /// </summary>
+        public async Task<IActionResult> MyNotes(int reportId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Json(new { success = false, message = "Not authenticated" });
+
+            var report = await _context.RosraReports.FindAsync(reportId);
+            if (report == null) return Json(new { success = false, message = "Report not found" });
+
+            // Only the report owner can access this endpoint
+            if (report.UserId != user.Id)
+                return Json(new { success = false, message = "Access denied" });
+
+            // Return only non-internal notes (visible to the user)
+            var notes = await _context.ReviewNotes
+                .Where(n => n.ReportId == reportId && !n.IsInternal)
+                .OrderByDescending(n => n.CreatedAt)
+                .ToListAsync();
+
+            var authorIds = notes.Select(n => n.AuthorUserId).Distinct().ToList();
+            var authors = await _userManager.Users
+                .Where(u => authorIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => $"{u.FirstName} {u.LastName}");
+
+            var result = notes.Select(n => new
+            {
+                id = n.Id,
+                author = authors.GetValueOrDefault(n.AuthorUserId, "Reviewer"),
+                content = n.Content,
+                noteType = n.NoteType,
+                streamReference = n.StreamReference,
+                createdAt = n.CreatedAt.ToString("dd MMM yyyy HH:mm")
+            });
+
+            return Json(result);
+        }
+
         // --- Validated Library ---
 
         [Authorize(Roles = "Admin,Reviewer")]

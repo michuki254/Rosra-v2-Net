@@ -28,9 +28,13 @@ namespace RosraApp.Services
             if (report.Status != (int)ReportStatus.Draft && report.Status != (int)ReportStatus.NeedsRevision)
                 return (false, "Only draft or revised reports can be submitted");
 
-            // Compute completion level
+            // Compute completion level and enforce minimum
             report.CompletionLevel = (int)ComputeCompletionLevel(report);
+            if (report.CompletionLevel == (int)CompletionLevel.Metadata)
+                return (false, "Cannot submit: at least one revenue stream must have data. Please complete a gap analysis tab before submitting.");
+
             report.Status = (int)ReportStatus.Submitted;
+            report.SubmissionVersion += 1;
             report.SubmittedAt = DateTime.UtcNow;
             report.LastModifiedByUserId = userId;
 
@@ -70,6 +74,10 @@ namespace RosraApp.Services
 
             if (report.Status != (int)ReportStatus.Submitted)
                 return (false, "Only submitted reports can be claimed for review");
+
+            // Separation of duties: cannot review your own report
+            if (report.UserId == reviewerUserId)
+                return (false, "You cannot review your own report");
 
             report.Status = (int)ReportStatus.UnderReview;
             report.ReviewerUserId = reviewerUserId;

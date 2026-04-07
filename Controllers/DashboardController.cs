@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RosraApp.Data;
 using RosraApp.Models;
+using RosraApp.Models.Enums;
 using RosraApp.Models.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -146,6 +147,13 @@ namespace RosraApp.Controllers
                 return Json(new { success = false, message = "You don't have permission to delete this report" });
             }
 
+            // Block deletion of reports in active review
+            var status = (ReportStatus)report.Status;
+            if (status == ReportStatus.Submitted || status == ReportStatus.UnderReview)
+            {
+                return Json(new { success = false, message = "Cannot delete a report that is submitted or under review. Please withdraw it first." });
+            }
+
             try
             {
                 // Soft delete — mark as deleted instead of removing
@@ -225,6 +233,13 @@ namespace RosraApp.Controllers
                 return Json(new { success = false, message = "You don't have permission to archive this report" });
             }
 
+            // Block archiving reports in active review
+            var archiveStatus = (ReportStatus)report.Status;
+            if (!report.IsArchived && (archiveStatus == ReportStatus.Submitted || archiveStatus == ReportStatus.UnderReview))
+            {
+                return Json(new { success = false, message = "Cannot archive a report that is submitted or under review. Please withdraw it first." });
+            }
+
             try
             {
                 report.IsArchived = !report.IsArchived;
@@ -260,7 +275,12 @@ namespace RosraApp.Controllers
                 return Json(new { success = false, message = "No reports found" });
             }
 
-            foreach (var report in reports)
+            // Filter out reports in active review
+            var activeStatuses = new[] { (int)ReportStatus.Submitted, (int)ReportStatus.UnderReview };
+            var blocked = reports.Where(r => activeStatuses.Contains(r.Status)).ToList();
+            var deletable = reports.Where(r => !activeStatuses.Contains(r.Status)).ToList();
+
+            foreach (var report in deletable)
             {
                 report.IsDeleted = true;
                 report.DeletedAt = DateTime.UtcNow;
@@ -269,7 +289,12 @@ namespace RosraApp.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return Json(new { success = true, message = $"{reports.Count} report(s) moved to trash" });
+
+            var msg = $"{deletable.Count} report(s) moved to trash";
+            if (blocked.Any())
+                msg += $". {blocked.Count} report(s) skipped (submitted or under review — withdraw first).";
+
+            return Json(new { success = true, message = msg });
         }
 
         [HttpPost]

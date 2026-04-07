@@ -808,6 +808,9 @@ namespace RosraApp.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int>("SubmissionVersion")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("SubmittedAt")
                         .HasColumnType("datetime2");
 

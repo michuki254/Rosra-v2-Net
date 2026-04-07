@@ -404,6 +404,18 @@
         .collapse { display: block !important; }
         [data-bs-toggle] { cursor: default !important; }
 
+        /* ── Page break rules (global for Playwright PDF + browser print) ── */
+        .card, .input-card, .compact-card { break-inside: avoid; page-break-inside: avoid; }
+        .module2-section { break-inside: avoid; page-break-inside: avoid; }
+        .report-content-header { break-inside: avoid; break-after: avoid; page-break-inside: avoid; }
+        .print-footer { break-inside: avoid; page-break-inside: avoid; }
+        .frontier-header, .module2-header { break-after: avoid; page-break-after: avoid; }
+        h4, h5 { break-after: avoid; page-break-after: avoid; }
+        img, svg, canvas { break-inside: avoid; page-break-inside: avoid; }
+        table, .table { break-inside: avoid; page-break-inside: avoid; }
+        .chart-container, .chart-wrapper { break-inside: avoid; page-break-inside: avoid; }
+        .kpi-row, .kpi-grid { break-inside: avoid; page-break-inside: avoid; }
+
         .print-btn-wrapper { display: block; }
         @@page {
             size: portrait;
@@ -422,22 +434,8 @@
                 border-radius: 0;
                 box-shadow: none;
             }
-            /* Cover fits one portrait page */
             .cover-page { min-height: 0; height: 100vh; }
-
             .report-content { padding: 15px; }
-            /* Prevent content from being cut across pages */
-            .card { break-inside: avoid; }
-            .input-card { break-inside: avoid; }
-            .compact-card { break-inside: avoid; }
-            .module2-section { break-inside: avoid; }
-            .report-content-header { break-inside: avoid; break-after: avoid; }
-            .print-footer { break-inside: avoid; }
-            /* Keep headers with their content */
-            .frontier-header { break-after: avoid; }
-            .module2-header { break-after: avoid; }
-            h4, h5 { break-after: avoid; }
-            img, svg, canvas { break-inside: avoid; }
         }
     </style>
 </head>

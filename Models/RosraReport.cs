@@ -102,6 +102,7 @@ namespace RosraApp.Models
         // Assessment Review & Validation Workflow
         public int Status { get; set; } = 0; // ReportStatus enum: Draft=0
         public int CompletionLevel { get; set; } = 0; // CompletionLevel enum: Metadata=0
+        public int SubmissionVersion { get; set; } = 0; // Incremented each time report is submitted
         public DateTime? SubmittedAt { get; set; }
         public DateTime? ValidatedAt { get; set; }
         public string? ValidatedByUserId { get; set; }

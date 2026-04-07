@@ -10,7 +10,9 @@ using RosraApp.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions =>
         sqlOptions.EnableRetryOnFailure(
@@ -69,6 +71,7 @@ builder.Services.AddScoped<RosraApp.Services.ExcelExportService>();
 // Register assessment review services
 builder.Services.AddScoped<RosraApp.Services.SnapshotService>();
 builder.Services.AddScoped<RosraApp.Services.ArtifactService>();
+builder.Services.AddScoped<RosraApp.Services.HtmlToPdfService>();
 builder.Services.AddScoped<RosraApp.Services.SubmissionService>();
 builder.Services.AddScoped<RosraApp.Services.ValidationService>();
 
@@ -130,7 +133,11 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.UseHttpsRedirection();
+// Only redirect to HTTPS in development; Railway handles SSL at the proxy level
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseStaticFiles();
 
 app.UseRouting();
