@@ -73,6 +73,8 @@ builder.Services.AddScoped<RosraApp.Services.SnapshotService>();
 builder.Services.AddScoped<RosraApp.Services.ArtifactService>();
 builder.Services.AddScoped<RosraApp.Services.HtmlToPdfService>();
 builder.Services.AddScoped<RosraApp.Services.IEmailService, RosraApp.Services.EmailService>();
+builder.Services.AddSingleton<RosraApp.Services.DataRetentionService>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<RosraApp.Services.DataRetentionService>());
 builder.Services.AddScoped<RosraApp.Services.SubmissionService>();
 builder.Services.AddScoped<RosraApp.Services.ValidationService>();
 

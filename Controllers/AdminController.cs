@@ -640,7 +640,24 @@ namespace RosraApp.Controllers
                 }
 
                 await _context.SaveChangesAsync();
-                return Json(new { success = true, message = $"Successfully imported {importedCount} PeerSNG records" });
+
+                // Log upload history
+                var lastVersion = await _context.DataUploadHistory
+                    .Where(h => h.DatasetType == "PeerSNG")
+                    .OrderByDescending(h => h.Version).Select(h => h.Version).FirstOrDefaultAsync();
+                var uploadUser = await _userManager.GetUserAsync(User);
+                _context.DataUploadHistory.Add(new DataUploadHistory
+                {
+                    DatasetType = "PeerSNG",
+                    RecordCount = importedCount,
+                    Version = lastVersion + 1,
+                    FileName = file.FileName,
+                    UploadedByUserId = uploadUser?.Id,
+                    UploadedByEmail = uploadUser?.Email
+                });
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = $"Successfully imported {importedCount} PeerSNG records (v{lastVersion + 1})" });
             }
             catch (Exception ex)
             {
@@ -712,7 +729,24 @@ namespace RosraApp.Controllers
                 }
 
                 await _context.SaveChangesAsync();
-                return Json(new { success = true, message = $"Successfully imported {importedCount} Country records" });
+
+                // Log upload history
+                var lastCdVersion = await _context.DataUploadHistory
+                    .Where(h => h.DatasetType == "CountryData")
+                    .OrderByDescending(h => h.Version).Select(h => h.Version).FirstOrDefaultAsync();
+                var cdUser = await _userManager.GetUserAsync(User);
+                _context.DataUploadHistory.Add(new DataUploadHistory
+                {
+                    DatasetType = "CountryData",
+                    RecordCount = importedCount,
+                    Version = lastCdVersion + 1,
+                    FileName = file.FileName,
+                    UploadedByUserId = cdUser?.Id,
+                    UploadedByEmail = cdUser?.Email
+                });
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = $"Successfully imported {importedCount} Country records (v{lastCdVersion + 1})" });
             }
             catch (Exception ex)
             {
@@ -1470,6 +1504,118 @@ namespace RosraApp.Controllers
             if (previews.TryGetValue(type, out var html))
                 return Content(html, "text/html");
             return NotFound();
+        }
+
+        // ══════════════════════════════════════════════════
+        //  DATA RETENTION
+        // ══════════════════════════════════════════════════
+
+        /// <summary>
+        /// Export all report data as an Excel backup file for admin download.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> BackupData()
+        {
+            try
+            {
+                var reports = await _context.RosraReports.IgnoreQueryFilters().Include(r => r.User).ToListAsync();
+                var auditLogs = await _context.AuditLogs.OrderByDescending(a => a.Timestamp).Take(1000).ToListAsync();
+
+                using var workbook = new XLWorkbook();
+
+                // Sheet 1: Reports
+                var ws1 = workbook.Worksheets.Add("Reports");
+                var rHeaders = new[] { "ID","PublicId","Title","Country","Region","City","Year","Currency","ActualOSR","BudgetedOSR","Population","GdpPerCapita","Status","CompletionLevel","Version","Author","Email","Created","Submitted","Validated","IsDeleted","IsArchived" };
+                for (int i = 0; i < rHeaders.Length; i++) { ws1.Cell(1, i + 1).Value = rHeaders[i]; ws1.Cell(1, i + 1).Style.Font.Bold = true; ws1.Cell(1, i + 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#00689D"); ws1.Cell(1, i + 1).Style.Font.FontColor = XLColor.White; }
+                int row = 2;
+                foreach (var r in reports)
+                {
+                    int c = 1;
+                    ws1.Cell(row, c++).Value = r.Id;
+                    ws1.Cell(row, c++).Value = r.PublicId.ToString();
+                    ws1.Cell(row, c++).Value = r.Title ?? "";
+                    ws1.Cell(row, c++).Value = r.Country ?? "";
+                    ws1.Cell(row, c++).Value = r.Region ?? "";
+                    ws1.Cell(row, c++).Value = r.City ?? "";
+                    ws1.Cell(row, c++).Value = r.FinancialYear ?? "";
+                    ws1.Cell(row, c++).Value = r.Currency ?? "";
+                    ws1.Cell(row, c).Value = r.ActualOsr ?? 0; ws1.Cell(row, c++).Style.NumberFormat.Format = "#,##0";
+                    ws1.Cell(row, c).Value = r.BudgetedOsr ?? 0; ws1.Cell(row, c++).Style.NumberFormat.Format = "#,##0";
+                    ws1.Cell(row, c).Value = r.Population ?? 0; ws1.Cell(row, c++).Style.NumberFormat.Format = "#,##0";
+                    ws1.Cell(row, c).Value = r.GdpPerCapita ?? 0; ws1.Cell(row, c++).Style.NumberFormat.Format = "#,##0";
+                    ws1.Cell(row, c++).Value = ((ReportStatus)r.Status).ToString();
+                    ws1.Cell(row, c++).Value = ((Models.Enums.CompletionLevel)r.CompletionLevel).ToString();
+                    ws1.Cell(row, c++).Value = r.SubmissionVersion;
+                    ws1.Cell(row, c++).Value = r.User != null ? $"{r.User.FirstName} {r.User.LastName}" : "";
+                    ws1.Cell(row, c++).Value = r.User?.Email ?? "";
+                    ws1.Cell(row, c++).Value = r.CreatedAt.ToString("yyyy-MM-dd HH:mm");
+                    ws1.Cell(row, c++).Value = r.SubmittedAt?.ToString("yyyy-MM-dd HH:mm") ?? "";
+                    ws1.Cell(row, c++).Value = r.ValidatedAt?.ToString("yyyy-MM-dd HH:mm") ?? "";
+                    ws1.Cell(row, c++).Value = r.IsDeleted ? "Yes" : "No";
+                    ws1.Cell(row, c++).Value = r.IsArchived ? "Yes" : "No";
+                    row++;
+                }
+                ws1.Columns().AdjustToContents();
+
+                // Sheet 2: Audit Log
+                var ws2 = workbook.Worksheets.Add("Audit Log");
+                var aHeaders = new[] { "Timestamp","User","Action","Entity","EntityId","StatusFrom","StatusTo","Details" };
+                for (int i = 0; i < aHeaders.Length; i++) { ws2.Cell(1, i + 1).Value = aHeaders[i]; ws2.Cell(1, i + 1).Style.Font.Bold = true; ws2.Cell(1, i + 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#F59E0B"); ws2.Cell(1, i + 1).Style.Font.FontColor = XLColor.White; }
+                row = 2;
+                foreach (var a in auditLogs)
+                {
+                    ws2.Cell(row, 1).Value = a.Timestamp.ToString("yyyy-MM-dd HH:mm:ss");
+                    ws2.Cell(row, 2).Value = a.UserEmail ?? "";
+                    ws2.Cell(row, 3).Value = a.Action ?? "";
+                    ws2.Cell(row, 4).Value = a.EntityType ?? "";
+                    ws2.Cell(row, 5).Value = a.EntityId ?? "";
+                    ws2.Cell(row, 6).Value = a.StatusFrom ?? "";
+                    ws2.Cell(row, 7).Value = a.StatusTo ?? "";
+                    ws2.Cell(row, 8).Value = a.Details ?? "";
+                    row++;
+                }
+                ws2.Columns().AdjustToContents();
+
+                // Sheet 3: Upload History
+                var ws3 = workbook.Worksheets.Add("Upload History");
+                var uploads = await _context.DataUploadHistory.OrderByDescending(h => h.UploadedAt).ToListAsync();
+                var uHeaders = new[] { "Dataset","Version","Records","File","UploadedBy","UploadedAt" };
+                for (int i = 0; i < uHeaders.Length; i++) { ws3.Cell(1, i + 1).Value = uHeaders[i]; ws3.Cell(1, i + 1).Style.Font.Bold = true; ws3.Cell(1, i + 1).Style.Fill.BackgroundColor = XLColor.FromHtml("#10B981"); ws3.Cell(1, i + 1).Style.Font.FontColor = XLColor.White; }
+                row = 2;
+                foreach (var u in uploads)
+                {
+                    ws3.Cell(row, 1).Value = u.DatasetType;
+                    ws3.Cell(row, 2).Value = $"v{u.Version}";
+                    ws3.Cell(row, 3).Value = u.RecordCount;
+                    ws3.Cell(row, 4).Value = u.FileName ?? "";
+                    ws3.Cell(row, 5).Value = u.UploadedByEmail ?? "";
+                    ws3.Cell(row, 6).Value = u.UploadedAt.ToString("yyyy-MM-dd HH:mm");
+                    row++;
+                }
+                ws3.Columns().AdjustToContents();
+
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                var filename = $"ROSRA_Backup_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+                return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Backup failed: {ex.Message}" });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PurgeExpiredRecords()
+        {
+            var service = HttpContext.RequestServices.GetRequiredService<DataRetentionService>();
+            var result = await service.PurgeExpiredRecords();
+            return Json(new
+            {
+                success = true,
+                message = $"Purged {result.PurgedReports} reports, {result.PurgedSnapshots} snapshots, {result.PurgedArtifacts} artifacts, {result.PurgedNotes} notes"
+            });
         }
     }
 }

@@ -39,6 +39,15 @@ namespace RosraApp.Services
             if (report.CompletionLevel == (int)CompletionLevel.Metadata)
                 return (false, "Cannot submit: at least one revenue stream must have data. Please complete a gap analysis tab before submitting.");
 
+            // Server-side validation of computed values
+            var warnings = ValidateComputedValues(report);
+            if (warnings.Count > 0)
+            {
+                // Log warnings but don't block submission — data integrity issues are flagged, not blocking
+                foreach (var w in warnings)
+                    System.Diagnostics.Debug.WriteLine($"[ROSRA Validation] Report {reportId}: {w}");
+            }
+
             report.Status = (int)ReportStatus.Submitted;
             report.SubmissionVersion += 1;
             report.SubmittedAt = DateTime.UtcNow;
@@ -163,6 +172,76 @@ namespace RosraApp.Services
                 return Models.Enums.CompletionLevel.Partial;
 
             return Models.Enums.CompletionLevel.Metadata;
+        }
+
+        /// <summary>
+        /// Validates client-computed gap analysis values for consistency.
+        /// Returns a list of warnings (does not block submission).
+        /// </summary>
+        private static List<string> ValidateComputedValues(RosraReport report)
+        {
+            var warnings = new List<string>();
+            var jsonOpts = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            // Validate Business License
+            if (!string.IsNullOrEmpty(report.LicenseData))
+            {
+                try
+                {
+                    var bl = System.Text.Json.JsonSerializer.Deserialize<Models.ViewModels.GapAnalysisLicenseViewModel>(report.LicenseData, jsonOpts);
+                    if (bl != null)
+                    {
+                        if (bl.BilledAmount.HasValue && bl.OutstandingAmount.HasValue && bl.OutstandingAmount > bl.BilledAmount)
+                            warnings.Add("Business License: Outstanding amount exceeds billed amount");
+                        if (bl.RevenueToDate.HasValue && bl.BilledAmount.HasValue && bl.RevenueToDate > bl.BilledAmount)
+                            warnings.Add("Business License: Revenue to date exceeds billed amount");
+                    }
+                }
+                catch { }
+            }
+
+            // Validate Property Tax
+            if (!string.IsNullOrEmpty(report.PropertyTaxData))
+            {
+                try
+                {
+                    var pt = System.Text.Json.JsonSerializer.Deserialize<Models.ViewModels.GapAnalysisPropertyTaxViewModel>(report.PropertyTaxData, jsonOpts);
+                    if (pt != null)
+                    {
+                        if (pt.BilledAmount.HasValue && pt.OutstandingAmount.HasValue && pt.OutstandingAmount > pt.BilledAmount)
+                            warnings.Add("Property Tax: Outstanding amount exceeds billed amount");
+                        if (pt.RevenueToDate.HasValue && pt.BilledAmount.HasValue && pt.RevenueToDate > pt.BilledAmount)
+                            warnings.Add("Property Tax: Revenue to date exceeds billed amount");
+                    }
+                }
+                catch { }
+            }
+
+            // Validate Generic Streams
+            if (!string.IsNullOrEmpty(report.GenericStreamsData))
+            {
+                try
+                {
+                    var streams = System.Text.Json.JsonSerializer.Deserialize<List<Models.ViewModels.GenericStreamViewModel>>(report.GenericStreamsData, jsonOpts);
+                    if (streams != null)
+                    {
+                        foreach (var s in streams)
+                        {
+                            if (s.BilledAmount.HasValue && s.OutstandingAmount.HasValue && s.OutstandingAmount > s.BilledAmount)
+                                warnings.Add($"Stream '{s.StreamName}': Outstanding exceeds billed");
+                            if (s.TotalPotentialRevenue.HasValue && s.RevenueToDate.HasValue && s.TotalPotentialRevenue < s.RevenueToDate)
+                                warnings.Add($"Stream '{s.StreamName}': Potential revenue is less than current revenue");
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            // Validate financial totals
+            if (report.ActualOsr.HasValue && report.BudgetedOsr.HasValue && report.ActualOsr > report.BudgetedOsr * 2)
+                warnings.Add("Actual OSR is more than 2x the budgeted OSR — please verify");
+
+            return warnings;
         }
 
         private async Task NotifyReviewersAsync(RosraReport report)
