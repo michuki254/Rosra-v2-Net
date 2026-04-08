@@ -1447,7 +1447,7 @@ namespace RosraApp.Controllers
             settings.SmtpUsername = smtpUsername;
             // Only update password if a new one was provided
             if (!string.IsNullOrEmpty(smtpPassword) && smtpPassword != "••••••••")
-                settings.SmtpPassword = smtpPassword;
+                settings.SmtpPassword = _emailService.EncryptPassword(smtpPassword);
             settings.UseSsl = useSsl;
             settings.SenderEmail = senderEmail;
             settings.SenderDisplayName = senderDisplayName;

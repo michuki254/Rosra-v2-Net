@@ -51,7 +51,11 @@ namespace RosraApp.Models.ViewModels
 
     public class CreateRoleViewModel
     {
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(50, MinimumLength = 2)]
         public string? RoleName { get; set; }
+
+        [System.ComponentModel.DataAnnotations.StringLength(500)]
         public string? Description { get; set; }
         public List<RoleInfoViewModel> ExistingRoles { get; set; } = new();
         public List<PermissionCategoryViewModel> PermissionCategories { get; set; } = new();

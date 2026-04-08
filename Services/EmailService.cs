@@ -1,5 +1,6 @@
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using MimeKit;
 using RosraApp.Data;
@@ -20,6 +21,8 @@ namespace RosraApp.Services
         Task<EmailSettings?> GetSettingsAsync();
         Task SaveSettingsAsync(EmailSettings settings);
         bool IsNotificationEnabled(EmailSettings settings, NotificationType type);
+        string EncryptPassword(string plainText);
+        string DecryptPassword(string encrypted);
     }
 
     public class EmailService : IEmailService
@@ -28,17 +31,32 @@ namespace RosraApp.Services
         private readonly IConfiguration _config;
         private readonly ILogger<EmailService> _logger;
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IDataProtector _protector;
 
         public EmailService(
             ApplicationDbContext context,
             IConfiguration config,
             ILogger<EmailService> logger,
-            IServiceScopeFactory scopeFactory)
+            IServiceScopeFactory scopeFactory,
+            IDataProtectionProvider dataProtectionProvider)
         {
             _context = context;
             _config = config;
             _logger = logger;
             _scopeFactory = scopeFactory;
+            _protector = dataProtectionProvider.CreateProtector("RosraApp.SmtpCredentials");
+        }
+
+        public string EncryptPassword(string plainText)
+        {
+            if (string.IsNullOrEmpty(plainText)) return plainText;
+            try { return _protector.Protect(plainText); } catch { return plainText; }
+        }
+
+        public string DecryptPassword(string encrypted)
+        {
+            if (string.IsNullOrEmpty(encrypted)) return encrypted;
+            try { return _protector.Unprotect(encrypted); } catch { return encrypted; /* fallback: treat as plaintext */ }
         }
 
         public async Task<EmailSettings?> GetSettingsAsync()
@@ -88,7 +106,7 @@ namespace RosraApp.Services
 
             var password = Environment.GetEnvironmentVariable("SMTP_PASSWORD")
                 ?? _config["EmailSettings:SmtpPassword"]
-                ?? dbSettings?.SmtpPassword;
+                ?? (dbSettings?.SmtpPassword != null ? DecryptPassword(dbSettings.SmtpPassword) : null);
 
             var sslStr = Environment.GetEnvironmentVariable("SMTP_USE_SSL");
             var useSsl = sslStr != null ? bool.TryParse(sslStr, out var ssl) && ssl : dbSettings?.UseSsl ?? true;
