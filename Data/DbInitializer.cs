@@ -102,6 +102,10 @@ namespace RosraApp.Data
                         logger.LogInformation("User acmichuki@gmail.com not found. Please register this account first.");
                     }
 
+                    // Create UN admin users
+                    await EnsureAdminUser(userManager, logger, "lennart.fleck@un.org", "Lennart", "Fleck");
+                    await EnsureAdminUser(userManager, logger, "omar.moraleslopez@un.org", "Omar", "Morales Lopez");
+
                     // Seed currency data into DB_Countries (if missing)
                     logger.LogInformation("Seeding currency data for DB_Countries");
                     await SeedCurrencyData(context, logger);
@@ -401,6 +405,38 @@ namespace RosraApp.Data
             await context.SaveChangesAsync();
 
             logger.LogInformation($"Seeded {peersSNG.Count} Kenya counties into PeersSNG table");
+        }
+
+        private static async Task EnsureAdminUser(UserManager<ApplicationUser> userManager, ILogger logger, string email, string firstName, string lastName)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                user = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email,
+                    EmailConfirmed = true,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    CreatedAt = DateTime.UtcNow
+                };
+                var result = await userManager.CreateAsync(user, "Admin@123");
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, "Admin");
+                    logger.LogInformation($"Created admin user: {email}");
+                }
+                else
+                {
+                    logger.LogError($"Failed to create {email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
+            }
+            else if (!await userManager.IsInRoleAsync(user, "Admin"))
+            {
+                await userManager.AddToRoleAsync(user, "Admin");
+                logger.LogInformation($"Added {email} to Admin role");
+            }
         }
 
         private static async Task SeedEmailSettings(ApplicationDbContext context, ILogger logger)

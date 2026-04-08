@@ -168,7 +168,6 @@
                         <label><input type="checkbox" data-col="col-streams" checked /> Streams</label>
 
                         <div class="group-label">Workflow</div>
-                        <label><input type="checkbox" data-col="col-causes" checked /> Causes</label>
                         <label><input type="checkbox" data-col="col-recommendations" checked /> Recommendations</label>
                         <label><input type="checkbox" data-col="col-prioritization" checked /> Prioritization</label>
                         <label><input type="checkbox" data-col="col-solutions" checked /> Solutions</label>
@@ -224,7 +223,6 @@
                         <th class="col-status">Status</th>
                         <th class="col-comp">Completion</th>
                         <th class="col-streams">Streams</th>
-                        <th class="col-causes">Causes</th>
                         <th class="col-recommendations">Recommendations</th>
                         <th class="col-prioritization">Prioritization</th>
                         <th class="col-solutions">Solutions</th>
@@ -288,10 +286,6 @@
                                 {
                                     <button type="button" class="expand-btn" data-target="detail-@r.Id" title="Expand stream details" style="background:none;border:none;color:#3B82F6;cursor:pointer;font-size:0.75rem;padding:0 0 0 4px;"><i class="bi bi-chevron-down"></i></button>
                                 }
-                            </td>
-                            <td class="col-causes" style="white-space:nowrap;">
-                                <span class="stream-dot @(r.HasCauses?"active":"inactive")"></span>
-                                @if(r.HasCauses){ <button type="button" class="expand-btn" data-target="causes-@r.Id" style="background:none;border:none;color:#EF4444;cursor:pointer;font-size:0.7rem;padding:0 2px;"><i class="bi bi-chevron-down"></i></button> }
                             </td>
                             <td class="col-recommendations" style="white-space:nowrap;">
                                 <span class="stream-dot @(r.HasRecommendations?"active":"inactive")"></span>
@@ -373,23 +367,6 @@
                                             }
                                         </tbody>
                                     </table>
-                                </td>
-                            </tr>
-                        }
-                        @* ── Causes detail row ── *@
-                        @if (r.HasCauses)
-                        {
-                            <tr id="causes-@r.Id" style="display:none;">
-                                <td colspan="30" style="padding:0.5rem 1rem 0.75rem 2.5rem; background:#FEF2F2; border-bottom:2px solid #FECACA;">
-                                    <div style="font-size:0.6875rem; font-weight:700; color:#EF4444; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;"><i class="bi bi-exclamation-circle me-1"></i>Problem Statement & Root Causes</div>
-                                    <div style="font-size:0.75rem; color:#374151; line-height:1.5; background:#fff; border-radius:6px; padding:0.5rem 0.75rem; border:1px solid #fecaca; margin-bottom:0.5rem;">@r.ProblemStatement</div>
-                                    @if (r.RootCauses.Any())
-                                    {
-                                        <div style="font-size:0.625rem; font-weight:600; color:#991B1B; margin-bottom:0.2rem;">ROOT CAUSES</div>
-                                        <ul style="margin:0; padding-left:1.25rem; font-size:0.7rem; color:#374151;">
-                                            @foreach (var cause in r.RootCauses) { <li style="margin-bottom:2px;">@cause</li> }
-                                        </ul>
-                                    }
                                 </td>
                             </tr>
                         }
