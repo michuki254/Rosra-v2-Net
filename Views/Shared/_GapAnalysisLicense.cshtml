@@ -601,6 +601,16 @@
             });
         }
 
+        // Default values for Business License (must be defined before any calculateBusinessLicenseGaps calls)
+        const DEFAULTS = {
+            registeredBusinesses: 451,
+            estimatedUnregisteredPercent: 3,
+            billedAmount: 233073733,
+            outstandingAmount: 55623018,
+            statutoryAverageBilled: 680500,
+            realisticImprovementPercent: 15
+        };
+
         // Subscribe to AppContext currency changes
         if (window.AppContext) {
             window.AppContext.subscribe('currencySymbol', function(newSymbol) {
@@ -781,16 +791,6 @@
             if (isNaN(value) || value === null) return '0.00%';
             return value.toFixed(2) + '%';
         }
-
-        // Default values for Business License (from spec)
-        const DEFAULTS = {
-            registeredBusinesses: 451,
-            estimatedUnregisteredPercent: 3,
-            billedAmount: 233073733,
-            outstandingAmount: 55623018,
-            statutoryAverageBilled: 680500,
-            realisticImprovementPercent: 15
-        };
 
         function calculateBusinessLicenseGaps() {
             // Get input values (6 user inputs) with defaults

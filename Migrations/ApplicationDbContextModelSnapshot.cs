@@ -867,6 +867,9 @@ namespace RosraApp.Migrations
                     b.Property<string>("LastModifiedByUserId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("LastViewedByOwnerAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LicenseData")
                         .HasColumnType("nvarchar(max)");
 

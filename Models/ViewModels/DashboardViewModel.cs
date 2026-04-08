@@ -53,6 +53,9 @@ namespace RosraApp.Models.ViewModels
         // Peer SNG Data for Within-Country OSR Frontier analysis
         public string? PeerSNGData { get; set; }
 
+        // Unread activity indicator
+        public bool HasNewActivity { get; set; }
+
         // Helper method to convert from RosraReport to RosraReportViewModel
         public static RosraReportViewModel FromRosraReport(RosraReport report)
         {
@@ -88,7 +91,10 @@ namespace RosraApp.Models.ViewModels
                 GovUnitLevel3 = report.GovUnitLevel3,
                 FinalUnitLevel = report.FinalUnitLevel,
                 FinancialYear = report.FinancialYear,
-                PeerSNGData = report.PeerSNGData
+                PeerSNGData = report.PeerSNGData,
+                HasNewActivity = report.UpdatedAt.HasValue &&
+                    (!report.LastViewedByOwnerAt.HasValue || report.UpdatedAt > report.LastViewedByOwnerAt) &&
+                    report.Status != (int)Models.Enums.ReportStatus.Draft
             };
         }
     }

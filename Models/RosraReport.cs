@@ -119,6 +119,9 @@ namespace RosraApp.Models
         public bool IsArchived { get; set; } = false;
         public DateTime? ArchivedAt { get; set; }
 
+        // Activity tracking (for unread badges)
+        public DateTime? LastViewedByOwnerAt { get; set; }
+
         // Concurrency Token
         [Timestamp]
         public byte[]? RowVersion { get; set; }

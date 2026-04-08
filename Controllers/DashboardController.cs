@@ -122,6 +122,13 @@ namespace RosraApp.Controllers
                 return Forbid();
             }
 
+            // Mark as viewed by owner
+            if (report.UserId == user.Id)
+            {
+                report.LastViewedByOwnerAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+            }
+
             // Redirect to Rosra controller with view mode
             return RedirectToAction("View", "Rosra", new { id = report.PublicId });
         }

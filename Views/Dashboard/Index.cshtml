@@ -428,7 +428,11 @@
             @foreach (var report in Model.Reports)
             {
                 <div class="col-lg-4 col-md-6 report-card" data-report-id="@report.Id">
-                    <div class="card h-100">
+                    <div class="card h-100" style="position:relative;">
+                        @if (report.HasNewActivity)
+                        {
+                            <span style="position:absolute; top:10px; right:10px; width:10px; height:10px; border-radius:50%; background:#3B82F6; box-shadow:0 0 0 3px rgba(59,130,246,0.2); z-index:1;" title="New activity"></span>
+                        }
                         <div class="card-body">
                             <!-- Card header row -->
                             <div class="card-header-row">
@@ -511,6 +515,16 @@
                             {
                                 <div class="alert alert-warning py-1 px-2 mb-2" style="font-size: 0.8125rem;">
                                     <i class="bi bi-exclamation-triangle me-1"></i> <strong>Revision requested:</strong> @report.RevisionReason
+                                </div>
+                            }
+                            @if (reportStatus == RosraApp.Models.Enums.ReportStatus.NeedsRevision || reportStatus == RosraApp.Models.Enums.ReportStatus.Validated)
+                            {
+                                <button type="button" class="btn btn-sm view-feedback-btn" data-report-id="@report.Id"
+                                    style="font-size:0.7rem; color:#3B82F6; background:none; border:none; padding:0 0 4px; cursor:pointer;">
+                                    <i class="bi bi-chat-dots me-1"></i>View reviewer feedback
+                                </button>
+                                <div class="feedback-panel" id="feedback-@report.Id" style="display:none; background:#f8fafc; border-radius:6px; padding:8px 10px; margin-bottom:8px; font-size:0.75rem; max-height:200px; overflow-y:auto;">
+                                    <div class="feedback-loading" style="color:#6A6A6A; text-align:center;"><i class="bi bi-hourglass-split"></i> Loading...</div>
                                 </div>
                             }
 
@@ -645,6 +659,46 @@
 @section Scripts {
     <script>
         $(document).ready(function() {
+            // View feedback toggle
+            $('.view-feedback-btn').click(function() {
+                var reportId = $(this).data('report-id');
+                var panel = $('#feedback-' + reportId);
+                if (panel.is(':visible')) {
+                    panel.slideUp(200);
+                    return;
+                }
+                panel.slideDown(200);
+                var loading = panel.find('.feedback-loading');
+                if (loading.length) {
+                    $.get('/Submission/MyNotes?reportId=' + reportId, function(notes) {
+                        if (notes.success === false) {
+                            panel.html('<div style="color:#6A6A6A; text-align:center;">No feedback available</div>');
+                            return;
+                        }
+                        if (!notes.length) {
+                            panel.html('<div style="color:#6A6A6A; text-align:center;">No reviewer notes yet</div>');
+                            return;
+                        }
+                        var html = '';
+                        notes.forEach(function(n) {
+                            var typeColors = { '0':'#3B82F6', '1':'#EF4444', '2':'#10B981', '3':'#F59E0B' };
+                            var typeNames = { '0':'General', '1':'Correction', '2':'Validation', '3':'Revision' };
+                            var color = typeColors[n.noteType] || '#6A6A6A';
+                            var typeName = typeNames[n.noteType] || 'Note';
+                            html += '<div style="padding:6px 0; border-bottom:1px solid #eee;">';
+                            html += '<div style="display:flex; justify-content:space-between; margin-bottom:2px;">';
+                            html += '<span style="font-weight:600; color:#222;">' + n.author + '</span>';
+                            html += '<span style="color:#6A6A6A; font-size:0.65rem;">' + n.createdAt + '</span>';
+                            html += '</div>';
+                            html += '<span style="display:inline-block; padding:1px 6px; border-radius:4px; font-size:0.6rem; font-weight:600; background:' + color + '20; color:' + color + '; margin-bottom:3px;">' + typeName + '</span>';
+                            html += '<div style="color:#374151; line-height:1.4;">' + n.content + '</div>';
+                            html += '</div>';
+                        });
+                        panel.html(html);
+                    });
+                }
+            });
+
             // Refresh button functionality
             $('#refreshBtn').click(function() {
                 location.reload();
