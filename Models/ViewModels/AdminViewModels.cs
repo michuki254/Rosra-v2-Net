@@ -157,6 +157,19 @@ namespace RosraApp.Models.ViewModels
         public bool HasGeneric { get; set; }
         public bool HasPeerSNG { get; set; }
 
+        // Workflow section flags
+        public bool HasPrioritization { get; set; }
+        public bool HasSolutions { get; set; }
+        public bool HasCauses { get; set; }
+        public bool HasRecommendations { get; set; }
+
+        // Workflow detail data
+        public string? ProblemStatement { get; set; }
+        public List<string> RootCauses { get; set; } = new();
+        public string? RecommendationSummary { get; set; }
+        public List<PrioritizationItem> PrioritizationItems { get; set; } = new();
+        public List<SolutionItem> SolutionItems { get; set; } = new();
+
         // Gap Analysis: Property Tax
         public decimal PtRevenue { get; set; }
         public decimal PtBilled { get; set; }
@@ -193,5 +206,21 @@ namespace RosraApp.Models.ViewModels
         public decimal CoverageGap { get; set; }
         public decimal LiabilityGap { get; set; }
         public decimal TotalPotentialRevenue { get; set; }
+    }
+
+    public class PrioritizationItem
+    {
+        public int Rank { get; set; }
+        public string StreamName { get; set; } = "";
+        public decimal TotalGap { get; set; }
+        public decimal SharePercent { get; set; }
+    }
+
+    public class SolutionItem
+    {
+        public string Title { get; set; } = "";
+        public string Stream { get; set; } = "";
+        public string GapType { get; set; } = "";
+        public string Timeline { get; set; } = "";
     }
 }

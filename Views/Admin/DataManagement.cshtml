@@ -167,6 +167,12 @@
                         <label><input type="checkbox" data-col="col-version" /> Version</label>
                         <label><input type="checkbox" data-col="col-streams" checked /> Streams</label>
 
+                        <div class="group-label">Workflow</div>
+                        <label><input type="checkbox" data-col="col-causes" checked /> Causes</label>
+                        <label><input type="checkbox" data-col="col-recommendations" checked /> Recommendations</label>
+                        <label><input type="checkbox" data-col="col-prioritization" checked /> Prioritization</label>
+                        <label><input type="checkbox" data-col="col-solutions" checked /> Solutions</label>
+
                         <div class="group-label">Financial</div>
                         <label><input type="checkbox" data-col="col-osr" checked /> Actual OSR</label>
                         <label><input type="checkbox" data-col="col-budgeted" /> Budgeted OSR</label>
@@ -218,6 +224,10 @@
                         <th class="col-status">Status</th>
                         <th class="col-comp">Completion</th>
                         <th class="col-streams">Streams</th>
+                        <th class="col-causes">Causes</th>
+                        <th class="col-recommendations">Recommendations</th>
+                        <th class="col-prioritization">Prioritization</th>
+                        <th class="col-solutions">Solutions</th>
                         <th class="col-osr">Actual OSR</th>
                         <th class="col-budgeted" style="display:none;">Budgeted OSR</th>
                         <th class="col-pop" style="display:none;">Population</th>
@@ -278,6 +288,22 @@
                                 {
                                     <button type="button" class="expand-btn" data-target="detail-@r.Id" title="Expand stream details" style="background:none;border:none;color:#3B82F6;cursor:pointer;font-size:0.75rem;padding:0 0 0 4px;"><i class="bi bi-chevron-down"></i></button>
                                 }
+                            </td>
+                            <td class="col-causes" style="white-space:nowrap;">
+                                <span class="stream-dot @(r.HasCauses?"active":"inactive")"></span>
+                                @if(r.HasCauses){ <button type="button" class="expand-btn" data-target="causes-@r.Id" style="background:none;border:none;color:#EF4444;cursor:pointer;font-size:0.7rem;padding:0 2px;"><i class="bi bi-chevron-down"></i></button> }
+                            </td>
+                            <td class="col-recommendations" style="white-space:nowrap;">
+                                <span class="stream-dot @(r.HasRecommendations?"active":"inactive")"></span>
+                                @if(r.HasRecommendations){ <button type="button" class="expand-btn" data-target="recs-@r.Id" style="background:none;border:none;color:#10B981;cursor:pointer;font-size:0.7rem;padding:0 2px;"><i class="bi bi-chevron-down"></i></button> }
+                            </td>
+                            <td class="col-prioritization" style="white-space:nowrap;">
+                                <span class="stream-dot @(r.HasPrioritization?"active":"inactive")"></span>
+                                @if(r.HasPrioritization && r.PrioritizationItems.Any()){ <button type="button" class="expand-btn" data-target="prio-@r.Id" style="background:none;border:none;color:#F59E0B;cursor:pointer;font-size:0.7rem;padding:0 2px;"><i class="bi bi-chevron-down"></i></button> }
+                            </td>
+                            <td class="col-solutions" style="white-space:nowrap;">
+                                <span class="stream-dot @(r.HasSolutions?"active":"inactive")"></span>
+                                @if(r.HasSolutions && r.SolutionItems.Any()){ <button type="button" class="expand-btn" data-target="sols-@r.Id" style="background:none;border:none;color:#8B5CF6;cursor:pointer;font-size:0.7rem;padding:0 2px;"><i class="bi bi-chevron-down"></i></button> }
                             </td>
                             <td class="col-osr num-cell">@cs@r.ActualOsr.ToString("N0")</td>
                             <td class="col-budgeted num-cell" style="display:none;">@cs@r.BudgetedOsr.ToString("N0")</td>
@@ -343,6 +369,89 @@
                                                     <td style="padding:0.3rem 0.5rem; text-align:right;">@(s.ComplianceGap != 0 ? cs+s.ComplianceGap.ToString("N0") : "—")</td>
                                                     <td style="padding:0.3rem 0.5rem; text-align:right;">@(s.CoverageGap != 0 ? cs+s.CoverageGap.ToString("N0") : "—")</td>
                                                     <td style="padding:0.3rem 0.5rem; text-align:right; font-weight:600;">@(s.TotalPotentialRevenue != 0 ? cs+s.TotalPotentialRevenue.ToString("N0") : "—")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        }
+                        @* ── Causes detail row ── *@
+                        @if (r.HasCauses)
+                        {
+                            <tr id="causes-@r.Id" style="display:none;">
+                                <td colspan="30" style="padding:0.5rem 1rem 0.75rem 2.5rem; background:#FEF2F2; border-bottom:2px solid #FECACA;">
+                                    <div style="font-size:0.6875rem; font-weight:700; color:#EF4444; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;"><i class="bi bi-exclamation-circle me-1"></i>Problem Statement & Root Causes</div>
+                                    <div style="font-size:0.75rem; color:#374151; line-height:1.5; background:#fff; border-radius:6px; padding:0.5rem 0.75rem; border:1px solid #fecaca; margin-bottom:0.5rem;">@r.ProblemStatement</div>
+                                    @if (r.RootCauses.Any())
+                                    {
+                                        <div style="font-size:0.625rem; font-weight:600; color:#991B1B; margin-bottom:0.2rem;">ROOT CAUSES</div>
+                                        <ul style="margin:0; padding-left:1.25rem; font-size:0.7rem; color:#374151;">
+                                            @foreach (var cause in r.RootCauses) { <li style="margin-bottom:2px;">@cause</li> }
+                                        </ul>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        @* ── Recommendations detail row ── *@
+                        @if (r.HasRecommendations)
+                        {
+                            <tr id="recs-@r.Id" style="display:none;">
+                                <td colspan="30" style="padding:0.5rem 1rem 0.75rem 2.5rem; background:#ECFDF5; border-bottom:2px solid #A7F3D0;">
+                                    <div style="font-size:0.6875rem; font-weight:700; color:#10B981; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;"><i class="bi bi-lightbulb me-1"></i>Recommendations</div>
+                                    <div style="font-size:0.75rem; color:#374151; line-height:1.5; background:#fff; border-radius:6px; padding:0.5rem 0.75rem; border:1px solid #a7f3d0;">@r.RecommendationSummary</div>
+                                </td>
+                            </tr>
+                        }
+                        @* ── Prioritization detail row ── *@
+                        @if (r.HasPrioritization && r.PrioritizationItems.Any())
+                        {
+                            <tr id="prio-@r.Id" style="display:none;">
+                                <td colspan="30" style="padding:0.5rem 1rem 0.75rem 2.5rem; background:#FFFBEB; border-bottom:2px solid #FDE68A;">
+                                    <div style="font-size:0.6875rem; font-weight:700; color:#F59E0B; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;"><i class="bi bi-bar-chart-steps me-1"></i>Prioritization (@r.PrioritizationItems.Count streams)</div>
+                                    <table style="width:100%; max-width:500px; font-size:0.75rem; border-collapse:collapse;">
+                                        <thead><tr style="background:#FEF3C7;">
+                                            <th style="padding:0.3rem 0.5rem; text-align:left; font-weight:600; color:#92400E; font-size:0.625rem;">#</th>
+                                            <th style="padding:0.3rem 0.5rem; text-align:left; font-weight:600; color:#92400E; font-size:0.625rem;">Stream</th>
+                                            <th style="padding:0.3rem 0.5rem; text-align:right; font-weight:600; color:#92400E; font-size:0.625rem;">Gap</th>
+                                            <th style="padding:0.3rem 0.5rem; text-align:right; font-weight:600; color:#92400E; font-size:0.625rem;">Share</th>
+                                        </tr></thead>
+                                        <tbody>
+                                            @foreach (var p in r.PrioritizationItems)
+                                            {
+                                                <tr style="border-bottom:1px solid #fef3c7;">
+                                                    <td style="padding:0.25rem 0.5rem; color:#92400E; font-weight:600;">@p.Rank</td>
+                                                    <td style="padding:0.25rem 0.5rem;">@p.StreamName</td>
+                                                    <td style="padding:0.25rem 0.5rem; text-align:right;">@cs@p.TotalGap.ToString("N0")</td>
+                                                    <td style="padding:0.25rem 0.5rem; text-align:right;">@p.SharePercent.ToString("N1")%</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        }
+                        @* ── Solutions detail row ── *@
+                        @if (r.HasSolutions && r.SolutionItems.Any())
+                        {
+                            <tr id="sols-@r.Id" style="display:none;">
+                                <td colspan="30" style="padding:0.5rem 1rem 0.75rem 2.5rem; background:#F5F3FF; border-bottom:2px solid #DDD6FE;">
+                                    <div style="font-size:0.6875rem; font-weight:700; color:#8B5CF6; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;"><i class="bi bi-check2-square me-1"></i>Selected Solutions (@r.SolutionItems.Count)</div>
+                                    <table style="width:100%; max-width:700px; font-size:0.75rem; border-collapse:collapse;">
+                                        <thead><tr style="background:#EDE9FE;">
+                                            <th style="padding:0.3rem 0.5rem; text-align:left; font-weight:600; color:#5B21B6; font-size:0.625rem;">Solution</th>
+                                            <th style="padding:0.3rem 0.5rem; text-align:left; font-weight:600; color:#5B21B6; font-size:0.625rem;">Stream</th>
+                                            <th style="padding:0.3rem 0.5rem; text-align:left; font-weight:600; color:#5B21B6; font-size:0.625rem;">Gap Type</th>
+                                            <th style="padding:0.3rem 0.5rem; text-align:left; font-weight:600; color:#5B21B6; font-size:0.625rem;">Timeline</th>
+                                        </tr></thead>
+                                        <tbody>
+                                            @foreach (var s in r.SolutionItems)
+                                            {
+                                                <tr style="border-bottom:1px solid #ede9fe;">
+                                                    <td style="padding:0.25rem 0.5rem; font-weight:500;">@s.Title</td>
+                                                    <td style="padding:0.25rem 0.5rem;">@s.Stream</td>
+                                                    <td style="padding:0.25rem 0.5rem;">@s.GapType</td>
+                                                    <td style="padding:0.25rem 0.5rem;">@s.Timeline</td>
                                                 </tr>
                                             }
                                         </tbody>

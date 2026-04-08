@@ -936,6 +936,10 @@ namespace RosraApp.Controllers
                     HasMixed = !string.IsNullOrEmpty(r.MixedUserChargeData),
                     HasGeneric = !string.IsNullOrEmpty(r.GenericStreamsData),
                     HasPeerSNG = !string.IsNullOrEmpty(r.PeerSNGData),
+                    HasPrioritization = !string.IsNullOrEmpty(r.PrioritizationData),
+                    HasSolutions = !string.IsNullOrEmpty(r.SelectedSolutionsData),
+                    HasCauses = !string.IsNullOrEmpty(r.ProblemStatement),
+                    HasRecommendations = !string.IsNullOrEmpty(r.RecommendationSummary),
                 };
 
                 // Parse Property Tax data
@@ -1012,6 +1016,72 @@ namespace RosraApp.Controllers
                                     CoverageGap = s.CoverageGap ?? 0,
                                     LiabilityGap = s.LiabilityGap ?? 0,
                                     TotalPotentialRevenue = s.TotalPotentialRevenue ?? 0,
+                                });
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
+                // Parse workflow data
+                item.ProblemStatement = r.ProblemStatement;
+                item.RecommendationSummary = r.RecommendationSummary;
+
+                if (!string.IsNullOrEmpty(r.RootCauses))
+                {
+                    try { item.RootCauses = System.Text.Json.JsonSerializer.Deserialize<List<string>>(r.RootCauses, jsonOpts) ?? new(); } catch { }
+                }
+
+                if (!string.IsNullOrEmpty(r.PrioritizationData))
+                {
+                    try
+                    {
+                        var priDoc = System.Text.Json.JsonDocument.Parse(r.PrioritizationData);
+                        if (priDoc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+                        {
+                            int rank = 1;
+                            foreach (var el in priDoc.RootElement.EnumerateArray())
+                            {
+                                item.PrioritizationItems.Add(new PrioritizationItem
+                                {
+                                    Rank = rank++,
+                                    StreamName = el.TryGetProperty("streamName", out var sn) ? sn.GetString() ?? "" :
+                                                 el.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "",
+                                    TotalGap = el.TryGetProperty("totalGap", out var tg) ? tg.TryGetDecimal(out var tgv) ? tgv : 0 : 0,
+                                    SharePercent = el.TryGetProperty("sharePercent", out var sp) ? sp.TryGetDecimal(out var spv) ? spv : 0 :
+                                                   el.TryGetProperty("share", out var sh) ? sh.TryGetDecimal(out var shv) ? shv : 0 : 0,
+                                });
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
+                if (!string.IsNullOrEmpty(r.SelectedSolutionsData))
+                {
+                    try
+                    {
+                        var solDoc = System.Text.Json.JsonDocument.Parse(r.SelectedSolutionsData);
+                        // Try "selectedSolutions" sub-key or root array
+                        System.Text.Json.JsonElement solArray;
+                        if (solDoc.RootElement.TryGetProperty("selectedSolutions", out solArray) && solArray.ValueKind == System.Text.Json.JsonValueKind.Array)
+                        { }
+                        else if (solDoc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+                        { solArray = solDoc.RootElement; }
+                        else { solArray = default; }
+
+                        if (solArray.ValueKind == System.Text.Json.JsonValueKind.Array)
+                        {
+                            foreach (var el in solArray.EnumerateArray())
+                            {
+                                item.SolutionItems.Add(new SolutionItem
+                                {
+                                    Title = el.TryGetProperty("title", out var t) ? t.GetString() ?? "" :
+                                            el.TryGetProperty("name", out var nm) ? nm.GetString() ?? "" : "",
+                                    Stream = el.TryGetProperty("stream", out var s) ? s.GetString() ?? "" :
+                                             el.TryGetProperty("revenueStream", out var rs) ? rs.GetString() ?? "" : "",
+                                    GapType = el.TryGetProperty("gapType", out var g) ? g.GetString() ?? "" : "",
+                                    Timeline = el.TryGetProperty("timeline", out var tl) ? tl.GetString() ?? "" : "",
                                 });
                             }
                         }
