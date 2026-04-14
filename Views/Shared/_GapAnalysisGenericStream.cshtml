@@ -9,8 +9,8 @@
 <!-- Include Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 
-<div class="generic-stream-gap-analysis" data-stream-index="@streamIndex" id="@(streamId)-container">
-    <!-- Stream Header with Name Editor and Delete Button -->
+<div class="generic-stream-gap-analysis" data-stream-index="@streamIndex" data-subgroup="@(Model.Subgroup ?? "")" data-subtype="@(Model.Subtype ?? "")" id="@(streamId)-container">
+    <!-- Stream Header with Name Editor, Classification Badge, and Delete Button -->
     <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
         <div class="d-flex align-items-center gap-3">
             <i class="bi bi-bar-chart-line fs-4 text-primary"></i>
@@ -21,6 +21,12 @@
                        style="font-size: 1.25rem; background: transparent; width: auto; min-width: 250px;"
                        @(isViewMode ? "readonly" : "")>
                 <small class="text-muted ms-2">@Localizer["ClickToEditStreamName"]</small>
+                @if (!string.IsNullOrEmpty(Model.Subgroup))
+                {
+                    var badgeColor = Model.Subgroup switch { "A" => "#2196F3", "B" => "#FF9800", "C" => "#4CAF50", _ => "#666" };
+                    var badgeText = Model.Subgroup switch { "A" => "Business Licences & Permits", "B" => "Service Fees & Billed Charges", "C" => "Daily / Point-of-Collection", _ => "Unclassified" };
+                    <span class="badge ms-2" style="background-color: @badgeColor; font-size: 0.75rem;">@badgeText</span>
+                }
             </div>
         </div>
         @if (!isViewMode)
@@ -35,6 +41,10 @@
     <!-- Hidden fields for stream identification -->
     <input type="hidden" name="GenericStreams[@streamIndex].StreamIndex" value="@streamIndex" />
     <input type="hidden" name="GenericStreams[@streamIndex].StreamId" value="@streamId" />
+    <!-- Stream classification fields -->
+    <input type="hidden" name="GenericStreams[@streamIndex].Subgroup" value="@(Model.Subgroup ?? "")" />
+    <input type="hidden" name="GenericStreams[@streamIndex].Subtype" value="@(Model.Subtype ?? "")" />
+    <input type="hidden" name="GenericStreams[@streamIndex].LocalStreamName" value="@(Model.LocalStreamName ?? Model.StreamName)" />
 
     <div class="row">
         <!-- Left Column - Data Input Section -->
@@ -650,8 +660,6 @@
             return currencySymbol + ' ' + (value / 1000000000).toFixed(1) + 'B';
         } else if (value >= 1000000) {
             return currencySymbol + ' ' + (value / 1000000).toFixed(1) + 'M';
-        } else if (value >= 1000) {
-            return currencySymbol + ' ' + (value / 1000).toFixed(1) + 'K';
         }
         return currencySymbol + ' ' + formatCurrency(value);
     }
@@ -659,8 +667,6 @@
     function formatUnitCount(value) {
         if (value >= 1000000) {
             return (value / 1000000).toFixed(1) + 'M';
-        } else if (value >= 1000) {
-            return (value / 1000).toFixed(1) + 'K';
         }
         return Math.round(value).toLocaleString();
     }

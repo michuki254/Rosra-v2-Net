@@ -292,7 +292,7 @@
                                             <i class="bi bi-upload"></i> Upload
                                         </button>
                                     </div>
-                                    <small class="text-muted">CSV format: SNG,OSR,GCP (one row per subnational government)</small>
+                                    <small class="text-muted">CSV format: SNG,OSR,GCP,Population,Include (one row per subnational government)</small>
                                 </div>
 
                                 <!-- Manual Entry Option -->
@@ -378,7 +378,7 @@
                                     <div class="metric-row result">
                                         <span class="metric-label bold">
                                             @Localizer["Metric_Benchmark"]
-                                            <button type="button" class="formula-tooltip-btn" data-formula="Frontier_Multiplier × Subnational_GDP_per_capita">
+                                            <button type="button" class="formula-tooltip-btn" data-formula="Frontier_Multiplier × Subnational_GDP">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -387,11 +387,39 @@
                                     <div class="metric-row gap">
                                         <span class="metric-label gap-label">
                                             @Localizer["Metric_Gap"]
-                                            <button type="button" class="formula-tooltip-btn" data-formula="Frontier_Benchmark - Current_OSR_per_capita">
+                                            <button type="button" class="formula-tooltip-btn" data-formula="Frontier_Benchmark - Current_OSR">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
                                         <span class="metric-value gap-value" id="m2OSRGapTop" style="font-size: 0.9rem;">-</span>
+                                    </div>
+                                    <!-- Per Capita Diagnostics (secondary) -->
+                                    <div class="metric-row" style="border-top: 1px dashed #dee2e6; margin-top: 4px; padding-top: 4px;">
+                                        <span class="metric-label" style="font-size: 0.8rem; color: #6c757d;">
+                                            @Localizer["Metric_OSRPerCapita"]
+                                            <button type="button" class="formula-tooltip-btn" data-formula="OSR / Population">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        </span>
+                                        <span class="metric-value" id="m2OSRPerCapitaTop" style="font-size: 0.8rem; color: #6c757d;">-</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label" style="font-size: 0.8rem; color: #6c757d;">
+                                            @Localizer["Metric_PotentialOSRPerCapita"]
+                                            <button type="button" class="formula-tooltip-btn" data-formula="OSR_Potential / Population">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        </span>
+                                        <span class="metric-value" id="m2PotentialOSRPerCapitaTop" style="font-size: 0.8rem; color: #6c757d;">-</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span class="metric-label" style="font-size: 0.8rem; color: #6c757d;">
+                                            @Localizer["Metric_PerCapitaGap"]
+                                            <button type="button" class="formula-tooltip-btn" data-formula="Frontier_OSR_Per_Capita - Actual_OSR_Per_Capita">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        </span>
+                                        <span class="metric-value" id="m2PerCapitaGapTop" style="font-size: 0.8rem; color: #6c757d;">-</span>
                                     </div>
                                     <div class="metric-row with-bar">
                                         <span class="metric-label accent">
@@ -3829,6 +3857,11 @@
                     document.getElementById('m2OSRGapTop').textContent = formatCurrency(metrics.osrGap);
                     document.getElementById('m2PerformanceIndexTop').textContent = (metrics.performanceIndex / 100).toFixed(6);
 
+                    // Per capita diagnostics
+                    document.getElementById('m2OSRPerCapitaTop').textContent = formatCurrency(metrics.osrPerCapita);
+                    document.getElementById('m2PotentialOSRPerCapitaTop').textContent = formatCurrency(metrics.potentialOSRPerCapita);
+                    document.getElementById('m2PerCapitaGapTop').textContent = formatCurrency(metrics.perCapitaGap);
+
                     // Update performance bar (performanceIndex is already a percentage from the API)
                     const performanceBar = document.getElementById('m2PerformanceBarTop');
                     const performancePercent = Math.min(metrics.performanceIndex, 100);
@@ -4008,10 +4041,10 @@
                                     if (context.datasetIndex === 0) {
                                         const peerIndex = context.dataIndex;
                                         const peerName = otherPeers[peerIndex]?.name || 'Peer';
-                                        return `${peerName}: GDP per capita ${point.x.toLocaleString()}, OSR per capita ${point.y.toLocaleString()}`;
+                                        return `${peerName}: GDP ${point.x.toLocaleString()}, OSR ${point.y.toLocaleString()}`;
                                     }
                                     // For selected SNG
-                                    return `${selectedSng}: GDP per capita ${point.x.toLocaleString()}, OSR per capita ${point.y.toLocaleString()}`;
+                                    return `${selectedSng}: GDP ${point.x.toLocaleString()}, OSR ${point.y.toLocaleString()}`;
                                 }
                             }
                         },
@@ -4023,7 +4056,7 @@
                         x: {
                             title: {
                                 display: true,
-                                text: 'Subnational GDP per capita (economic base)',
+                                text: 'Subnational GDP (economic base)',
                                 font: { size: 12, weight: 'bold' }
                             },
                             ticks: {
@@ -4034,10 +4067,6 @@
                                 callback: function(value) {
                                     if (value >= 1000000000) return (value / 1000000000).toFixed(1) + 'B';
                                     if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
-                                    if (value >= 1000) {
-                                        var k = value / 1000;
-                                        return (k % 1 === 0) ? k.toFixed(0) + 'K' : k.toFixed(1) + 'K';
-                                    }
                                     return value.toLocaleString();
                                 }
                             },
@@ -4048,7 +4077,7 @@
                         y: {
                             title: {
                                 display: true,
-                                text: 'Own-Source Revenues (OSR) per capita',
+                                text: 'Own-Source Revenues (OSR)',
                                 font: { size: 12, weight: 'bold' }
                             },
                             ticks: {
@@ -4059,10 +4088,6 @@
                                 callback: function(value) {
                                     if (value >= 1000000000) return (value / 1000000000).toFixed(1) + 'B';
                                     if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
-                                    if (value >= 1000) {
-                                        var k = value / 1000;
-                                        return (k % 1 === 0) ? k.toFixed(0) + 'K' : k.toFixed(1) + 'K';
-                                    }
                                     return value.toLocaleString();
                                 }
                             },
@@ -4087,7 +4112,6 @@
                 function formatValue(value) {
                     if (value >= 1000000000) return (value / 1000000000).toFixed(2) + 'B';
                     if (value >= 1000000) return (value / 1000000).toFixed(2) + 'M';
-                    if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
                     return value.toLocaleString(undefined, { maximumFractionDigits: 0 });
                 }
 
@@ -4129,7 +4153,7 @@
             actualVsPotentialChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Current OSR per capita', 'Frontier benchmark per capita', 'Gap to frontier benchmark'],
+                    labels: ['Current OSR', 'Frontier benchmark (OSR potential)', 'Gap to frontier benchmark'],
                     datasets: [{
                         data: [actualOSR, osrPotential, osrGap],
                         backgroundColor: ['#00b2e3', '#0095c0', '#FD9D24'],
@@ -4165,11 +4189,7 @@
                                 callback: function(value) {
                                     if (value >= 1000000000) return (value / 1000000000).toFixed(1) + 'B';
                                     if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
-                                    if (value >= 1000) {
-                                        var k = value / 1000;
-                                        return (k % 1 === 0) ? k.toFixed(0) + 'K' : k.toFixed(1) + 'K';
-                                    }
-                                    return value;
+                                    return value.toLocaleString();
                                 }
                             },
                             grid: { color: '#e9ecef' },

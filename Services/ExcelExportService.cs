@@ -143,13 +143,16 @@ namespace RosraApp.Services
 
                 if (data.TryGetProperty("analysisResults", out var results))
                 {
-                    AddExcelMetricRow(ws, ref row, "Own Source Revenues (OSRs) per capita", results, "actualOSR", true);
-                    AddExcelMetricRow(ws, ref row, "Subnational GDP per capita", results, "subnationalGDP", true);
+                    AddExcelMetricRow(ws, ref row, "Own Source Revenues (OSR)", results, "actualOSR", true);
+                    AddExcelMetricRow(ws, ref row, "Subnational GDP", results, "subnationalGDP", true);
                     AddExcelMetricRow(ws, ref row, "Peer frontier multiplier", results, "frontierMultiplier", false);
                     AddExcelMetricRow(ws, ref row, "Subject multiplier", results, "subjectMultiplier", false);
-                    AddExcelMetricRow(ws, ref row, "Frontier benchmark per capita", results, "osrPotential", true);
+                    AddExcelMetricRow(ws, ref row, "Frontier benchmark (OSR potential)", results, "osrPotential", true);
                     AddExcelMetricRow(ws, ref row, "Gap to frontier benchmark", results, "osrGap", true);
                     AddExcelMetricRow(ws, ref row, "Performance Index", results, "performanceIndex", false);
+                    AddExcelMetricRow(ws, ref row, "OSR per capita", results, "osrPerCapita", true);
+                    AddExcelMetricRow(ws, ref row, "Frontier-implied OSR per capita", results, "potentialOSRPerCapita", true);
+                    AddExcelMetricRow(ws, ref row, "Per capita gap to frontier", results, "perCapitaGap", true);
                 }
 
                 // Cross-Country Fiscal Analysis
@@ -225,10 +228,16 @@ namespace RosraApp.Services
             AddGapSheet(workbook, model.BusinessLicenseDisplayName ?? "Business License",
                 model.License.RevenueToDate ?? 0, model.License.OutstandingAmount ?? 0, 0, 0, 0, 0);
 
-            // Generic Streams
+            // Generic Streams (non-property revenue)
             foreach (var stream in model.GenericStreams ?? new List<GenericStreamViewModel>())
             {
-                AddGapSheet(workbook, stream.StreamName ?? "Stream",
+                var streamLabel = stream.StreamName ?? "Stream";
+                if (!string.IsNullOrEmpty(stream.Subgroup))
+                {
+                    var sgLabel = stream.Subgroup switch { "A" => "Licences", "B" => "Svc Fees", "C" => "Daily", _ => "" };
+                    if (!string.IsNullOrEmpty(sgLabel)) streamLabel = $"{streamLabel} ({sgLabel})";
+                }
+                AddGapSheet(workbook, streamLabel,
                     stream.RevenueToDate ?? 0, stream.ComplianceGap ?? 0, stream.CoverageGap ?? 0,
                     stream.LiabilityGap ?? 0, stream.MixedGapCompliance ?? 0, stream.MixedGapCoverage ?? 0);
             }
@@ -330,8 +339,9 @@ namespace RosraApp.Services
 
                 int row = 3;
                 ws.Cell(row, 1).Value = "ID"; ws.Cell(row, 2).Value = "Solution";
-                ws.Cell(row, 3).Value = "Revenue Stream"; ws.Cell(row, 4).Value = "Gap Type"; ws.Cell(row, 5).Value = "Timeline";
-                StyleHeader(ws, row, 5);
+                ws.Cell(row, 3).Value = "Revenue Stream"; ws.Cell(row, 4).Value = "Gap Type";
+                ws.Cell(row, 5).Value = "Stream Type"; ws.Cell(row, 6).Value = "Timeline";
+                StyleHeader(ws, row, 6);
                 row++;
 
                 if (data.TryGetProperty("selectedSolutions", out var solutions) && solutions.ValueKind == JsonValueKind.Array)
@@ -342,7 +352,15 @@ namespace RosraApp.Services
                         ws.Cell(row, 2).Value = sol.TryGetProperty("title", out var t) ? t.GetString() ?? "" : "";
                         ws.Cell(row, 3).Value = sol.TryGetProperty("streamName", out var sn) ? sn.GetString() ?? "" : "";
                         ws.Cell(row, 4).Value = sol.TryGetProperty("gapType", out var gt) ? gt.GetString() ?? "" : "";
-                        ws.Cell(row, 5).Value = sol.TryGetProperty("timeline", out var tl) ? tl.GetString() ?? "" : "";
+                        var subgroup = sol.TryGetProperty("subgroup", out var sg) ? sg.GetString() ?? "" : "";
+                        ws.Cell(row, 5).Value = subgroup switch
+                        {
+                            "A" => "Business Licences & Permits",
+                            "B" => "Service Fees & Billed Charges",
+                            "C" => "Daily / Point-of-Collection",
+                            _ => sol.TryGetProperty("streamName", out var sn2) && sn2.GetString() == "Property Tax" ? "Property Tax" : ""
+                        };
+                        ws.Cell(row, 6).Value = sol.TryGetProperty("timeline", out var tl) ? tl.GetString() ?? "" : "";
                         row++;
                     }
                 }

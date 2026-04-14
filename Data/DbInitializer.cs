@@ -118,6 +118,11 @@ namespace RosraApp.Data
                     logger.LogInformation("Seeding country administrative divisions");
                     await SeedCountryStates(context, logger);
 
+                    // Seed Solution Cards from JS data files into database
+                    logger.LogInformation("Seeding solution cards");
+                    var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+                    await Services.SolutionCardSeeder.SeedFromJsFiles(context, logger, env.WebRootPath);
+
                     logger.LogInformation("Database initialization completed successfully");
                 }
                 catch (Exception ex)
@@ -247,7 +252,12 @@ namespace RosraApp.Data
                 ("ViewAnalysisSnapshots", "Can view analysis snapshots", "Assessment Review"),
                 ("AccessReportArtifacts", "Can access generated PDF/Excel artifacts", "Assessment Review"),
                 ("BulkValidate", "Can bulk validate multiple reports", "Assessment Review"),
-                ("ReRunCalculations", "Can re-run calculations on reports", "Assessment Review")
+                ("ReRunCalculations", "Can re-run calculations on reports", "Assessment Review"),
+                // Solution Card Management permissions
+                ("ManageSolutionCards", "Can create, edit, and delete solution cards", "Solution Management"),
+                ("ViewSolutionLibrary", "Can view the solution card library", "Solution Management"),
+                ("ImportExportCards", "Can import and export solution card data", "Solution Management"),
+                ("ViewAnalyticsDashboard", "Can view admin analytics dashboards", "Analytics")
             };
 
             var existingNames = await context.Permissions.Select(p => p.Name).ToListAsync();
@@ -350,55 +360,57 @@ namespace RosraApp.Data
                 return;
             }
 
+            // OSR and GCP stored as full KES values (not millions)
+            // Population: KNBS 2025 projections (direct where available, estimated* from 2023 base × 3.5% national growth)
             var peersSNG = new List<PeerSNG>
             {
-                new PeerSNG { SNG = "Baringo", OSR = 321.4m, GCP = 75459m, Include = true },
-                new PeerSNG { SNG = "Bomet", OSR = 196.8m, GCP = 151153m, Include = true },
-                new PeerSNG { SNG = "Bungoma", OSR = 670.5m, GCP = 205542m, Include = true },
-                new PeerSNG { SNG = "Busia", OSR = 205.9m, GCP = 88731m, Include = true },
-                new PeerSNG { SNG = "Elgeyo/Marakwet", OSR = 105.9m, GCP = 117229m, Include = true },
-                new PeerSNG { SNG = "Embu", OSR = 236.7m, GCP = 149912m, Include = true },
-                new PeerSNG { SNG = "Garissa", OSR = 75.4m, GCP = 58634m, Include = true },
-                new PeerSNG { SNG = "Homa Bay", OSR = 166m, GCP = 120751m, Include = true },
-                new PeerSNG { SNG = "Isiolo", OSR = 125.1m, GCP = 26555m, Include = true },
-                new PeerSNG { SNG = "Kajiado", OSR = 544.5m, GCP = 150709m, Include = true },
-                new PeerSNG { SNG = "Kakamega", OSR = 639.8m, GCP = 214365m, Include = true },
-                new PeerSNG { SNG = "Kericho", OSR = 405.5m, GCP = 163543m, Include = true },
-                new PeerSNG { SNG = "Kiambu", OSR = 2192.1m, GCP = 554515m, Include = true },
-                new PeerSNG { SNG = "Kilifi", OSR = 685.5m, GCP = 199953m, Include = true },
-                new PeerSNG { SNG = "Kirinyaga", OSR = 312.9m, GCP = 123709m, Include = true },
-                new PeerSNG { SNG = "Kisii", OSR = 472.9m, GCP = 198192m, Include = true },
-                new PeerSNG { SNG = "Kisumu", OSR = 728.3m, GCP = 247324m, Include = true },
-                new PeerSNG { SNG = "Kitui", OSR = 244.4m, GCP = 154345m, Include = true },
-                new PeerSNG { SNG = "Kwale", OSR = 349.5m, GCP = 119001m, Include = true },
-                new PeerSNG { SNG = "Laikipia", OSR = 549.7m, GCP = 94639m, Include = true },
-                new PeerSNG { SNG = "Lamu", OSR = 89.6m, GCP = 32747m, Include = true },
-                new PeerSNG { SNG = "Machakos", OSR = 1075.9m, GCP = 309164m, Include = true },
-                new PeerSNG { SNG = "Makueni", OSR = 259.5m, GCP = 110207m, Include = true },
-                new PeerSNG { SNG = "Mandera", OSR = 78m, GCP = 56964m, Include = true },
-                new PeerSNG { SNG = "Marsabit", OSR = 81.8m, GCP = 60486m, Include = true },
-                new PeerSNG { SNG = "Meru", OSR = 551.3m, GCP = 329977m, Include = true },
-                new PeerSNG { SNG = "Migori", OSR = 292.8m, GCP = 120639m, Include = true },
-                new PeerSNG { SNG = "Mombasa", OSR = 3271.2m, GCP = 468749m, Include = true },
-                new PeerSNG { SNG = "Murang'a", OSR = 567.8m, GCP = 200539m, Include = true },
-                new PeerSNG { SNG = "Nairobi", OSR = 6733.3m, GCP = 2682701m, Include = false },
-                new PeerSNG { SNG = "Nakuru", OSR = 1511.6m, GCP = 483938m, Include = true },
-                new PeerSNG { SNG = "Nandi", OSR = 217m, GCP = 149117m, Include = true },
-                new PeerSNG { SNG = "Narok", OSR = 2310.9m, GCP = 165462m, Include = true },
-                new PeerSNG { SNG = "Nyamira", OSR = 133.1m, GCP = 116992m, Include = true },
-                new PeerSNG { SNG = "Nyandarua", OSR = 307.5m, GCP = 149707m, Include = true },
-                new PeerSNG { SNG = "Nyeri", OSR = 659.2m, GCP = 209626m, Include = true },
-                new PeerSNG { SNG = "Samburu", OSR = 192.6m, GCP = 29090m, Include = true },
-                new PeerSNG { SNG = "Siaya", OSR = 213.1m, GCP = 103899m, Include = true },
-                new PeerSNG { SNG = "Taita/Taveta", OSR = 216m, GCP = 63592m, Include = true },
-                new PeerSNG { SNG = "Tana River", OSR = 55.5m, GCP = 29460m, Include = true },
-                new PeerSNG { SNG = "Tharaka-Nithi", OSR = 190.4m, GCP = 61461m, Include = true },
-                new PeerSNG { SNG = "Trans Nzoia", OSR = 320.7m, GCP = 165700m, Include = true },
-                new PeerSNG { SNG = "Turkana", OSR = 157.2m, GCP = 107450m, Include = true },
-                new PeerSNG { SNG = "Uasin Gishu", OSR = 791.8m, GCP = 227871m, Include = true },
-                new PeerSNG { SNG = "Vihiga", OSR = 132.8m, GCP = 83773m, Include = true },
-                new PeerSNG { SNG = "Wajir", OSR = 58m, GCP = 49159m, Include = true },
-                new PeerSNG { SNG = "West Pokot", OSR = 90.7m, GCP = 79417m, Include = true }
+                new PeerSNG { SNG = "Baringo", OSR = 313351637m, GCP = 75459000000m, Population = 759000, Include = true },
+                new PeerSNG { SNG = "Bomet", OSR = 242395023m, GCP = 151153000000m, Population = 973000, Include = true },
+                new PeerSNG { SNG = "Bungoma", OSR = 379716358m, GCP = 205542000000m, Population = 2073000, Include = true },
+                new PeerSNG { SNG = "Busia", OSR = 201772364m, GCP = 88731000000m, Population = 1003000, Include = true },
+                new PeerSNG { SNG = "Elgeyo/Marakwet", OSR = 217350490m, GCP = 117229000000m, Population = 509000, Include = true },
+                new PeerSNG { SNG = "Embu", OSR = 383178337m, GCP = 149912000000m, Population = 671000, Include = true },
+                new PeerSNG { SNG = "Garissa", OSR = 81361298m, GCP = 58634000000m, Population = 960000, Include = true },
+                new PeerSNG { SNG = "Homa Bay", OSR = 491496550m, GCP = 120751000000m, Population = 1275000, Include = true },
+                new PeerSNG { SNG = "Isiolo", OSR = 151805623m, GCP = 26555000000m, Population = 330000, Include = true },
+                new PeerSNG { SNG = "Kajiado", OSR = 875281130m, GCP = 150709000000m, Population = 1313000, Include = true },
+                new PeerSNG { SNG = "Kakamega", OSR = 1309679900m, GCP = 214365000000m, Population = 2073000, Include = true },
+                new PeerSNG { SNG = "Kericho", OSR = 501354545m, GCP = 163543000000m, Population = 988000, Include = true },
+                new PeerSNG { SNG = "Kiambu", OSR = 2424634382m, GCP = 554515000000m, Population = 2754000, Include = true },
+                new PeerSNG { SNG = "Kilifi", OSR = 661686660m, GCP = 199953000000m, Population = 1737000, Include = true },
+                new PeerSNG { SNG = "Kirinyaga", OSR = 399321046m, GCP = 123709000000m, Population = 676000, Include = true },
+                new PeerSNG { SNG = "Kisii", OSR = 413988597m, GCP = 198192000000m, Population = 1370000, Include = true },
+                new PeerSNG { SNG = "Kisumu", OSR = 731449033m, GCP = 247324000000m, Population = 1292000, Include = true },
+                new PeerSNG { SNG = "Kitui", OSR = 464354467m, GCP = 154345000000m, Population = 1273000, Include = true },
+                new PeerSNG { SNG = "Kwale", OSR = 392952872m, GCP = 119001000000m, Population = 978000, Include = true },
+                new PeerSNG { SNG = "Laikipia", OSR = 504274788m, GCP = 94639000000m, Population = 583000, Include = true },
+                new PeerSNG { SNG = "Lamu", OSR = 156907612m, GCP = 32747000000m, Population = 176000, Include = true },
+                new PeerSNG { SNG = "Machakos", OSR = 1429791260m, GCP = 309164000000m, Population = 1518000, Include = true },
+                new PeerSNG { SNG = "Makueni", OSR = 418752940m, GCP = 110207000000m, Population = 1079000, Include = true },
+                new PeerSNG { SNG = "Mandera", OSR = 122528934m, GCP = 56964000000m, Population = 993000, Include = true },
+                new PeerSNG { SNG = "Marsabit", OSR = 58565723m, GCP = 60486000000m, Population = 539000, Include = true },
+                new PeerSNG { SNG = "Meru", OSR = 418801954m, GCP = 329977000000m, Population = 1666000, Include = true },
+                new PeerSNG { SNG = "Migori", OSR = 406364909m, GCP = 120639000000m, Population = 1277000, Include = true },
+                new PeerSNG { SNG = "Mombasa", OSR = 3998628848m, GCP = 468749000000m, Population = 1368000, Include = true },
+                new PeerSNG { SNG = "Murang'a", OSR = 534416925m, GCP = 200539000000m, Population = 1151000, Include = true },
+                new PeerSNG { SNG = "Nairobi", OSR = 10237263780m, GCP = 2682701000000m, Population = 4906000, Include = false },
+                new PeerSNG { SNG = "Nakuru", OSR = 1611062682m, GCP = 483938000000m, Population = 2445000, Include = true },
+                new PeerSNG { SNG = "Nandi", OSR = 200737628m, GCP = 149117000000m, Population = 985000, Include = true },
+                new PeerSNG { SNG = "Narok", OSR = 3061007640m, GCP = 165462000000m, Population = 1355000, Include = true },
+                new PeerSNG { SNG = "Nyamira", OSR = 113484901m, GCP = 116992000000m, Population = 681000, Include = true },
+                new PeerSNG { SNG = "Nyandarua", OSR = 505913306m, GCP = 149707000000m, Population = 720000, Include = true },
+                new PeerSNG { SNG = "Nyeri", OSR = 610656883m, GCP = 209626000000m, Population = 865000, Include = true },
+                new PeerSNG { SNG = "Samburu", OSR = 226516961m, GCP = 29090000000m, Population = 367000, Include = true },
+                new PeerSNG { SNG = "Siaya", OSR = 402229607m, GCP = 103899000000m, Population = 1097000, Include = true },
+                new PeerSNG { SNG = "Taita/Taveta", OSR = 265254255m, GCP = 63592000000m, Population = 373000, Include = true },
+                new PeerSNG { SNG = "Tana River", OSR = 59173171m, GCP = 29460000000m, Population = 370000, Include = true },
+                new PeerSNG { SNG = "Tharaka-Nithi", OSR = 164200787m, GCP = 61461000000m, Population = 425000, Include = true },
+                new PeerSNG { SNG = "Trans Nzoia", OSR = 267760051m, GCP = 165700000000m, Population = 1106000, Include = true },
+                new PeerSNG { SNG = "Turkana", OSR = 177717811m, GCP = 107450000000m, Population = 1059000, Include = true },
+                new PeerSNG { SNG = "Uasin Gishu", OSR = 936606563m, GCP = 227871000000m, Population = 1301000, Include = true },
+                new PeerSNG { SNG = "Vihiga", OSR = 108347382m, GCP = 83773000000m, Population = 636000, Include = true },
+                new PeerSNG { SNG = "Wajir", OSR = 46746101m, GCP = 49159000000m, Population = 901000, Include = true },
+                new PeerSNG { SNG = "West Pokot", OSR = 128195210m, GCP = 79417000000m, Population = 706000, Include = true }
             };
 
             await context.Peers_SNG.AddRangeAsync(peersSNG);

@@ -214,6 +214,15 @@
                 const timelineClass = solution.timeline === '<1 year' ? 'quick' :
                                       solution.timeline === '1-3 years' ? 'medium' : 'long';
 
+                // Get overview text — new format uses whatThisOptionDoes or whyThisMatters, old uses whatThisSolves
+                const ov = fullSolution.overview || {};
+                const fd = fullSolution.fullDetails || {};
+                const overviewText = ov.whatThisOptionDoes || ov.whatThisSolves || fd.whyThisMatters || '';
+
+                // Difficulty/sensitivity badges
+                const diffBadge = fullSolution.deliveryDifficulty ? '<span class="badge bg-light text-dark border ms-1" style="font-size:0.65rem;">' + escapeForTemplate(fullSolution.deliveryDifficulty) + '</span>' : '';
+                const polBadge = fullSolution.politicalSensitivity ? '<span class="badge bg-light text-dark border ms-1" style="font-size:0.65rem;">Pol: ' + escapeForTemplate(fullSolution.politicalSensitivity) + '</span>' : '';
+
                 return `
                     <div class="solution-card" data-solution-id="${solution.solutionId}">
                         <div class="solution-card-header" onclick="RecommendationsModule.toggleSolution('${solution.solutionId}')">
@@ -222,6 +231,7 @@
                                 <div class="solution-title">${fullSolution.title}</div>
                                 <div class="solution-meta">
                                     <span class="timeline-badge ${timelineClass}">${solution.timeline}</span>
+                                    ${diffBadge}${polBadge}
                                     <span>${solution.streamName} | ${solution.gapType}</span>
                                 </div>
                             </div>
@@ -230,7 +240,7 @@
                             </button>
                         </div>
                         <div class="solution-overview">
-                            ${escapeForTemplate(fullSolution.overview?.whatThisSolves || (fullSolution.howItWorks ? fullSolution.howItWorks.substring(0, 300) + '...' : ''))}
+                            ${escapeForTemplate(overviewText)}
                         </div>
                         <div class="solution-details" id="details-${solution.solutionId}">
                             ${renderDetailSections(fullSolution)}
@@ -256,58 +266,137 @@
                     .replace(/\${/g, '\\${');
             }
 
-            // Render detail sections for a solution
+            // Helper: render list or string content for detail sections
+            function renderListOrText(val) {
+                if (!val) return '';
+                if (Array.isArray(val)) return '<ul>' + val.map(item => '<li>' + escapeForTemplate(item) + '</li>').join('') + '</ul>';
+                return '<p>' + escapeForTemplate(val).replace(/\n/g, '<br>') + '</p>';
+            }
+
+            // Render detail sections for a solution (supports old and new card formats)
             function renderDetailSections(solution) {
                 let html = '';
+                const fd = solution.fullDetails || {};
 
-                // Legal Essentials
-                if (solution.legalEssentials && solution.legalEssentials.length > 0) {
+                // New format: Why This Card Matters
+                const whyMatters = fd.whyThisMatters;
+                if (whyMatters) {
                     html += '<div class="detail-section">';
-                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="fas fa-gavel"></i> Legal Essentials</span></div>';
-                    html += '<div class="detail-section-content"><ul>';
-                    html += solution.legalEssentials.map(item => '<li>' + escapeForTemplate(item) + '</li>').join('');
-                    html += '</ul></div></div>';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-lightbulb"></i> Why This Card Matters</span></div>';
+                    html += '<div class="detail-section-content">' + renderListOrText(whyMatters) + '</div></div>';
                 }
 
-                // How It Works
-                if (solution.howItWorks) {
+                // New format: When This Is a Strong Fit
+                const whenFit = fd.whenStrongFit;
+                if (whenFit && whenFit.length > 0) {
                     html += '<div class="detail-section">';
-                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="fas fa-cogs"></i> How It Works</span></div>';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-check-circle"></i> When This Is a Strong Fit</span></div>';
+                    html += '<div class="detail-section-content">' + renderListOrText(whenFit) + '</div></div>';
+                }
+
+                // New format: What to Line Up First
+                const lineUp = fd.whatToLineUpFirst;
+                if (lineUp && lineUp.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-list-check"></i> What to Line Up First</span></div>';
+                    html += '<div class="detail-section-content">' + renderListOrText(lineUp) + '</div></div>';
+                }
+
+                // New format: Design Choices to Settle Early
+                const design = fd.designChoices;
+                if (design && design.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-gear"></i> Design Choices to Settle Early</span></div>';
+                    html += '<div class="detail-section-content">' + renderListOrText(design) + '</div></div>';
+                }
+
+                // New format: Practical Implementation Path (3 phases)
+                const path = fd.practicalPath;
+                if (path) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-signpost-split"></i> Practical Implementation Path</span></div>';
+                    html += '<div class="detail-section-content">';
+                    if (path.first90Days && path.first90Days.length > 0) {
+                        html += '<strong>First 90 days</strong>' + renderListOrText(path.first90Days);
+                    }
+                    if (path.sixTo12Months && path.sixTo12Months.length > 0) {
+                        html += '<strong>6 to 12 months</strong>' + renderListOrText(path.sixTo12Months);
+                    }
+                    if (path.twelveToTwentyFourMonths && path.twelveToTwentyFourMonths.length > 0) {
+                        html += '<strong>12 to 24 months and beyond</strong>' + renderListOrText(path.twelveToTwentyFourMonths);
+                    }
+                    html += '</div></div>';
+                }
+
+                // New format: Legal and Institutional Points
+                const legal = fd.legalInstitutional || solution.legalEssentials;
+                if (legal && legal.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-building"></i> Legal and Institutional Points</span></div>';
+                    html += '<div class="detail-section-content">' + renderListOrText(legal) + '</div></div>';
+                }
+
+                // New format: Capacity, Systems, and Partnership Needs
+                const capacity = fd.capacitySystemsPartnerships || solution.administrativeEssentials;
+                if (capacity && capacity.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-people"></i> Capacity, Systems, and Partnership Needs</span></div>';
+                    html += '<div class="detail-section-content">' + renderListOrText(capacity) + '</div></div>';
+                }
+
+                // New format: Main Risks and Practical Safeguards
+                const risks = fd.risksAndSafeguards || solution.whenNotApplicable;
+                if (risks && risks.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-exclamation-triangle"></i> Main Risks and Practical Safeguards</span></div>';
+                    html += '<div class="detail-section-content">' + renderListOrText(risks) + '</div></div>';
+                }
+
+                // New format: What to Monitor
+                const monitor = fd.whatToMonitor;
+                if (monitor && monitor.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-graph-up"></i> What to Monitor</span></div>';
+                    html += '<div class="detail-section-content">' + renderListOrText(monitor) + '</div></div>';
+                }
+
+                // New format: How This Card Connects to Other Cards
+                const connections = fd.connectionsToOtherCards;
+                if (connections && connections.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-diagram-3"></i> How This Connects to Other Cards</span></div>';
+                    html += '<div class="detail-section-content">' + renderListOrText(connections) + '</div></div>';
+                }
+
+                // New format: Questions to Settle Before Launch
+                const questions = fd.questionsBeforeLaunch;
+                if (questions && questions.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-question-circle"></i> Questions to Settle Before Launch</span></div>';
+                    html += '<div class="detail-section-content">' + renderListOrText(questions) + '</div></div>';
+                }
+
+                // Legacy fallback: How It Works (old format)
+                if (!whyMatters && solution.howItWorks) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-gear"></i> How It Works</span></div>';
                     html += '<div class="detail-section-content"><p>' + escapeForTemplate(solution.howItWorks).replace(/\n/g, '<br>') + '</p></div>';
                     html += '</div>';
                 }
 
-                // Implementation Milestones
-                if (solution.implementationMilestones && solution.implementationMilestones.length > 0) {
+                // Legacy fallback: Implementation Milestones (old format)
+                if (!path && solution.implementationMilestones && solution.implementationMilestones.length > 0) {
                     html += '<div class="detail-section">';
-                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="fas fa-tasks"></i> Implementation Milestones</span></div>';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-list-task"></i> Implementation Milestones</span></div>';
                     html += '<div class="detail-section-content">';
                     html += solution.implementationMilestones.map((item, index) => '<div class="milestone-item"><span class="milestone-number">' + (index + 1) + '</span><span class="milestone-text">' + escapeForTemplate(item) + '</span></div>').join('');
                     html += '</div></div>';
                 }
 
-                // Administrative Essentials
-                if (solution.administrativeEssentials && solution.administrativeEssentials.length > 0) {
-                    html += '<div class="detail-section">';
-                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="fas fa-users-cog"></i> Administrative Essentials</span></div>';
-                    html += '<div class="detail-section-content"><ul>';
-                    html += solution.administrativeEssentials.map(item => '<li>' + escapeForTemplate(item) + '</li>').join('');
-                    html += '</ul></div></div>';
-                }
-
-                // When Not Applicable
-                if (solution.whenNotApplicable && solution.whenNotApplicable.length > 0) {
-                    html += '<div class="detail-section">';
-                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="fas fa-exclamation-triangle"></i> When It May Not Be Applicable</span></div>';
-                    html += '<div class="detail-section-content"><ul>';
-                    html += solution.whenNotApplicable.map(item => '<li>' + escapeForTemplate(item) + '</li>').join('');
-                    html += '</ul></div></div>';
-                }
-
-                // Case Notes
+                // Legacy fallback: Case Notes (old format)
                 if (solution.caseNotes) {
                     html += '<div class="detail-section">';
-                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="fas fa-book-open"></i> Case Notes & Resources</span></div>';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-book"></i> Case Notes</span></div>';
                     html += '<div class="detail-section-content"><div class="case-notes">' + escapeForTemplate(solution.caseNotes) + '</div></div>';
                     html += '</div>';
                 }
@@ -417,6 +506,53 @@
                 `;
             }
 
+            // Extract milestones from a solution (handles old and new card formats)
+            // Returns array of { label: string, phase: string|null, items: string[] }
+            function extractMilestoneGroups(fullSolution) {
+                const fd = fullSolution?.fullDetails || {};
+                const groups = [];
+
+                // New PT format: practicalPath with 3 phases
+                if (fd.practicalPath) {
+                    const path = fd.practicalPath;
+                    if (path.first90Days && path.first90Days.length > 0) {
+                        groups.push({ phase: 'First 90 days', items: path.first90Days });
+                    }
+                    if (path.sixTo12Months && path.sixTo12Months.length > 0) {
+                        groups.push({ phase: '6 to 12 months', items: path.sixTo12Months });
+                    }
+                    if (path.twelveToTwentyFourMonths && path.twelveToTwentyFourMonths.length > 0) {
+                        groups.push({ phase: '12 to 24 months+', items: path.twelveToTwentyFourMonths });
+                    }
+                }
+
+                // NP format: implementationPath or implementationMilestones (flat arrays in fullDetails)
+                if (groups.length === 0 && fd.implementationPath && fd.implementationPath.length > 0) {
+                    groups.push({ phase: null, items: fd.implementationPath });
+                }
+                if (groups.length === 0 && fd.implementationMilestones && fd.implementationMilestones.length > 0) {
+                    groups.push({ phase: null, items: fd.implementationMilestones });
+                }
+
+                // Legacy format: implementationMilestones directly on the solution object
+                if (groups.length === 0 && fullSolution?.implementationMilestones && fullSolution.implementationMilestones.length > 0) {
+                    groups.push({ phase: null, items: fullSolution.implementationMilestones });
+                }
+
+                return groups;
+            }
+
+            // Flatten milestone groups into a single indexed list for progress tracking
+            function flattenMilestones(groups) {
+                const flat = [];
+                groups.forEach(g => {
+                    g.items.forEach(item => {
+                        flat.push({ text: item, phase: g.phase });
+                    });
+                });
+                return flat;
+            }
+
             // Render progress view
             function renderProgressView() {
                 const container = document.getElementById('progressContent');
@@ -430,11 +566,16 @@
 
                 selectedSolutions.forEach(solution => {
                     const fullSolution = getCompleteSolution(solution.solutionId);
-                    const milestones = fullSolution?.implementationMilestones || [];
+                    const milestoneGroups = extractMilestoneGroups(fullSolution);
+                    const flatMilestones = flattenMilestones(milestoneGroups);
                     const solutionProgress = progressData[solution.solutionId] || {};
 
                     const completedCount = Object.values(solutionProgress).filter(v => v === 'completed').length;
-                    const percentage = milestones.length > 0 ? Math.round((completedCount / milestones.length) * 100) : 0;
+                    const totalCount = flatMilestones.length;
+                    const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+                    // Determine progress bar color based on percentage
+                    const barColor = percentage === 100 ? '#28a745' : percentage >= 50 ? '#007bff' : '#ffc107';
 
                     html += `
                         <div class="progress-solution">
@@ -443,28 +584,53 @@
                                 <span class="progress-percentage">${percentage}%</span>
                             </div>
                             <div class="progress-bar-container">
-                                <div class="progress-bar-fill" style="width: ${percentage}%"></div>
+                                <div class="progress-bar-fill" style="width: ${percentage}%; background-color: ${barColor}"></div>
                             </div>
                             <div class="progress-milestones">
-                                ${milestones.map((milestone, index) => {
-                                    const status = solutionProgress[index] || 'not-started';
-                                    return `
-                                        <div class="progress-milestone ${status === 'completed' ? 'completed' : ''}">
-                                            <div class="progress-milestone-check ${status === 'completed' ? 'completed' : ''}"
-                                                 onclick="RecommendationsModule.toggleMilestone('${solution.solutionId}', ${index})">
-                                                ${status === 'completed' ? '<i class="fas fa-check"></i>' : ''}
-                                            </div>
-                                            <span class="progress-milestone-text">${milestone}</span>
-                                            <select class="progress-milestone-status ${status}"
-                                                    onchange="RecommendationsModule.updateMilestoneStatus('${solution.solutionId}', ${index}, this.value)">
-                                                <option value="not-started" ${status === 'not-started' ? 'selected' : ''}>Not Started</option>
-                                                <option value="in-progress" ${status === 'in-progress' ? 'selected' : ''}>In Progress</option>
-                                                <option value="completed" ${status === 'completed' ? 'selected' : ''}>Completed</option>
-                                                <option value="blocked" ${status === 'blocked' ? 'selected' : ''}>Blocked</option>
-                                            </select>
-                                        </div>
-                                    `;
-                                }).join('')}
+                    `;
+
+                    // Render milestones with phase headers
+                    let milestoneIndex = 0;
+                    milestoneGroups.forEach(group => {
+                        // Show phase header if phased (practicalPath)
+                        if (group.phase) {
+                            const phaseIcon = group.phase.includes('90') ? 'bi-lightning' :
+                                              group.phase.includes('6 to') ? 'bi-calendar-event' : 'bi-calendar-range';
+                            html += `
+                                <div class="progress-phase-header" style="margin-top: 0.75rem; margin-bottom: 0.25rem; padding: 0.35rem 0.5rem; background: #f0f4f8; border-radius: 4px; font-weight: 600; font-size: 0.8rem; color: #495057;">
+                                    <i class="bi ${phaseIcon} me-1"></i>${group.phase}
+                                </div>
+                            `;
+                        }
+
+                        group.items.forEach(milestoneText => {
+                            const idx = milestoneIndex;
+                            const status = solutionProgress[idx] || 'not-started';
+                            html += `
+                                <div class="progress-milestone ${status === 'completed' ? 'completed' : ''}">
+                                    <div class="progress-milestone-check ${status === 'completed' ? 'completed' : ''}"
+                                         onclick="RecommendationsModule.toggleMilestone('${solution.solutionId}', ${idx})">
+                                        ${status === 'completed' ? '<i class="fas fa-check"></i>' : ''}
+                                    </div>
+                                    <span class="progress-milestone-text">${escapeForTemplate(milestoneText)}</span>
+                                    <select class="progress-milestone-status ${status}"
+                                            onchange="RecommendationsModule.updateMilestoneStatus('${solution.solutionId}', ${idx}, this.value)">
+                                        <option value="not-started" ${status === 'not-started' ? 'selected' : ''}>Not Started</option>
+                                        <option value="in-progress" ${status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                                        <option value="completed" ${status === 'completed' ? 'selected' : ''}>Completed</option>
+                                        <option value="blocked" ${status === 'blocked' ? 'selected' : ''}>Blocked</option>
+                                    </select>
+                                </div>
+                            `;
+                            milestoneIndex++;
+                        });
+                    });
+
+                    if (flatMilestones.length === 0) {
+                        html += '<p class="text-muted small ms-3">No implementation milestones defined for this card.</p>';
+                    }
+
+                    html += `
                             </div>
                         </div>
                     `;
@@ -509,10 +675,24 @@
             function exportProgress() {
                 const data = {
                     exportDate: new Date().toISOString(),
-                    solutions: selectedSolutions.map(s => ({
-                        ...s,
-                        progress: progressData[s.solutionId] || {}
-                    }))
+                    solutions: selectedSolutions.map(s => {
+                        const fullSolution = getCompleteSolution(s.solutionId);
+                        const milestoneGroups = extractMilestoneGroups(fullSolution);
+                        const flatMilestones = flattenMilestones(milestoneGroups);
+                        const solProgress = progressData[s.solutionId] || {};
+
+                        return {
+                            ...s,
+                            title: fullSolution?.title || s.title,
+                            milestones: flatMilestones.map((m, idx) => ({
+                                index: idx,
+                                phase: m.phase || null,
+                                text: m.text,
+                                status: solProgress[idx] || 'not-started'
+                            })),
+                            progress: solProgress
+                        };
+                    })
                 };
 
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });

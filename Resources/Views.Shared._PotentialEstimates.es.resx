@@ -60,16 +60,19 @@
   <data name="SelectSng" xml:space="preserve"><value>Seleccione un gobierno subnacional...</value></data>
   <data name="SelectSngForAnalysis" xml:space="preserve"><value>Seleccione un gobierno subnacional para ver el análisis de frontera IPP</value></data>
   <data name="HierarchyNote" xml:space="preserve"><value>Los ejemplos son solo ilustrativos y pueden variar según el país. Complete el formulario hasta la unidad gubernamental para la cual se realiza el análisis ROSRA.</value></data>
-  <data name="Metric_OSR" xml:space="preserve"><value>Ingresos propios (IPP) per cápita</value></data>
-  <data name="Metric_GDP" xml:space="preserve"><value>PIB subnacional per cápita</value></data>
-  <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Multiplicador de frontera (prom. top 20% IPP/PIB per cápita)</value></data>
+  <data name="Metric_OSR" xml:space="preserve"><value>Ingresos propios (IPP)</value></data>
+  <data name="Metric_GDP" xml:space="preserve"><value>PIB subnacional</value></data>
+  <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Multiplicador de frontera (prom. top 20% IPP/PIB)</value></data>
   <data name="Metric_SubjectMultiplier" xml:space="preserve"><value>Multiplicador del sujeto</value></data>
-  <data name="Metric_Benchmark" xml:space="preserve"><value>Referencia de frontera per cápita</value></data>
+  <data name="Metric_Benchmark" xml:space="preserve"><value>Referencia de frontera (potencial IPP)</value></data>
   <data name="Metric_Gap" xml:space="preserve"><value>Brecha respecto a la referencia</value></data>
   <data name="Metric_Performance" xml:space="preserve"><value>Índice de desempeño</value></data>
   <data name="Metric_PrimaryAnalysis" xml:space="preserve"><value>Análisis principal</value></data>
-  <data name="Chart_ScatterTitle" xml:space="preserve"><value>Comparación del multiplicador IPP/PIB per cápita</value></data>
-  <data name="Chart_BarTitle" xml:space="preserve"><value>IPP actual vs referencia de frontera per cápita</value></data>
+  <data name="Metric_OSRPerCapita" xml:space="preserve"><value>IPP per cápita</value></data>
+  <data name="Metric_PotentialOSRPerCapita" xml:space="preserve"><value>IPP per cápita implícito de la frontera</value></data>
+  <data name="Metric_PerCapitaGap" xml:space="preserve"><value>Brecha per cápita respecto a la frontera</value></data>
+  <data name="Chart_ScatterTitle" xml:space="preserve"><value>Comparación del multiplicador IPP/PIB</value></data>
+  <data name="Chart_BarTitle" xml:space="preserve"><value>IPP actual vs referencia de frontera</value></data>
   <data name="Result_Header" xml:space="preserve"><value>Resultado de la frontera IPP intrapaís (GNS pares):</value></data>
   <data name="Result_Placeholder" xml:space="preserve"><value>Seleccione un gobierno subnacional para ver el resultado del análisis.</value></data>
   <data name="CrossCountry_Title" xml:space="preserve"><value>Opcional: Análisis fiscal internacional</value></data>

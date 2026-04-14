@@ -275,24 +275,29 @@ namespace RosraApp.Services
                                 });
                             }
 
-                            AddRow("Own Source Revenues (OSRs) per capita", "actualOSR");
-                            AddRow("Subnational GDP per capita", "subnationalGDP");
-                            AddRow("Peer frontier multiplier (Top-20% avg OSR/GDP per capita)", "frontierMultiplier", Colors.Blue.Lighten5);
+                            AddRow("Own Source Revenues (OSR)", "actualOSR");
+                            AddRow("Subnational GDP", "subnationalGDP");
+                            AddRow("Peer frontier multiplier (Top-20% avg OSR/GDP)", "frontierMultiplier", Colors.Blue.Lighten5);
                             AddRow("Subject multiplier", "subjectMultiplier");
-                            AddRow("Frontier benchmark per capita", "osrPotential", Colors.Blue.Lighten4, bold: true);
+                            AddRow("Frontier benchmark (OSR potential)", "osrPotential", Colors.Blue.Lighten4, bold: true);
                             AddRow("Gap to frontier benchmark", "osrGap", Colors.Orange.Lighten4, bold: true, isGap: true);
                             AddRow("Performance Index", "performanceIndex", Colors.Teal.Lighten4);
+
+                            // Per capita diagnostics
+                            AddRow("OSR per capita", "osrPerCapita", Colors.Grey.Lighten4);
+                            AddRow("Frontier-implied OSR per capita", "potentialOSRPerCapita", Colors.Grey.Lighten4);
+                            AddRow("Per capita gap to frontier", "perCapitaGap", Colors.Grey.Lighten4);
                         });
                     }
 
-                    // Scatter chart — OSR/GDP per capita Multiplier Comparison
-                    column.Item().PaddingTop(15).Text("OSR/GDP per capita Multiplier Comparison")
+                    // Scatter chart — OSR/GDP Multiplier Comparison
+                    column.Item().PaddingTop(15).Text("OSR/GDP Multiplier Comparison")
                         .FontSize(11).Bold().FontColor("#333");
                     column.Item().PaddingTop(5).Element(c => EmbedChart(c, "peerSngChartTop",
                         "Peer SNG scatter chart — visit the Top-Down tab to generate this chart"));
 
-                    // Bar chart — Current OSR vs Frontier Benchmark per capita
-                    column.Item().PaddingTop(15).Text("Current OSR vs Frontier Benchmark per capita")
+                    // Bar chart — Current OSR vs Frontier Benchmark
+                    column.Item().PaddingTop(15).Text("Current OSR vs Frontier Benchmark")
                         .FontSize(11).Bold().FontColor("#333");
                     column.Item().PaddingTop(5).Element(c => EmbedChart(c, "actualVsPotentialChart",
                         "Actual vs Benchmark bar chart — visit the Top-Down tab to generate this chart"));
@@ -439,12 +444,26 @@ namespace RosraApp.Services
                     row.RelativeItem().Element(c => EmbedChart(c, "blGapBreakdownChart", ""));
                 });
 
-                // Generic Streams
+                // Generic Streams (non-property revenue)
                 int streamIndex = 0;
                 foreach (var stream in model.GenericStreams ?? new List<GenericStreamViewModel>())
                 {
+                    // Include subgroup classification in stream label if available
+                    var streamLabel = stream.StreamName ?? "Revenue Stream";
+                    if (!string.IsNullOrEmpty(stream.Subgroup))
+                    {
+                        var subgroupLabel = stream.Subgroup switch
+                        {
+                            "A" => "Business Licences & Permits",
+                            "B" => "Service Fees & Billed Charges",
+                            "C" => "Daily / Point-of-Collection",
+                            _ => ""
+                        };
+                        if (!string.IsNullOrEmpty(subgroupLabel))
+                            streamLabel = $"{streamLabel} ({subgroupLabel})";
+                    }
                     column.Item().PaddingTop(15).Element(c => ComposeStreamGapTable(c,
-                        stream.StreamName ?? "Revenue Stream",
+                        streamLabel,
                         stream.RevenueToDate ?? 0,
                         stream.ComplianceGap ?? 0,
                         stream.CoverageGap ?? 0,
@@ -602,12 +621,14 @@ namespace RosraApp.Services
                                 cols.ConstantColumn(60);
                                 cols.RelativeColumn(2);
                                 cols.RelativeColumn(1);
-                                cols.RelativeColumn(1);
+                                cols.ConstantColumn(60);
+                                cols.ConstantColumn(70);
                             });
 
                             table.Cell().Background(Colors.Blue.Lighten4).Text("ID").Bold().FontSize(9);
                             table.Cell().Background(Colors.Blue.Lighten4).Text("Solution").Bold().FontSize(9);
                             table.Cell().Background(Colors.Blue.Lighten4).Text("Stream / Gap").Bold().FontSize(9);
+                            table.Cell().Background(Colors.Blue.Lighten4).Text("Type").Bold().FontSize(9);
                             table.Cell().Background(Colors.Blue.Lighten4).Text("Timeline").Bold().FontSize(9);
 
                             foreach (var sol in solutions.EnumerateArray())
@@ -617,10 +638,19 @@ namespace RosraApp.Services
                                 var stream = sol.TryGetProperty("streamName", out var sn) ? sn.GetString() ?? "" : "";
                                 var gap = sol.TryGetProperty("gapType", out var gt) ? gt.GetString() ?? "" : "";
                                 var timeline = sol.TryGetProperty("timeline", out var tl) ? tl.GetString() ?? "" : "";
+                                var subgroup = sol.TryGetProperty("subgroup", out var sg) ? sg.GetString() ?? "" : "";
+                                var typeLabel = subgroup switch
+                                {
+                                    "A" => "Licences",
+                                    "B" => "Service Fees",
+                                    "C" => "Daily",
+                                    _ => stream == "Property Tax" ? "Prop. Tax" : ""
+                                };
 
                                 table.Cell().Text(id).FontSize(8);
                                 table.Cell().Text(title).FontSize(8);
                                 table.Cell().Text($"{stream} / {gap}").FontSize(8);
+                                table.Cell().Text(typeLabel).FontSize(8);
                                 table.Cell().Text(timeline).FontSize(8);
                                 count++;
                             }

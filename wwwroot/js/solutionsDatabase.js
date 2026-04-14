@@ -6,8 +6,12 @@
  * - solutionsData-PT-Compliance.js
  * - solutionsData-PT-Coverage.js
  * - solutionsData-PT-Valuation.js
- * - solutionsData-BL.js
- * - solutionsData-Generic.js
+ * - solutionsData-NP-A.js (Business licences and recurrent operating permits)
+ * - solutionsData-NP-B.js (Service fees and billed use charges)
+ * - solutionsData-NP-C.js (Daily or point-of-collection charges)
+ * - solutionsData-BL.js (legacy, kept for backward compatibility)
+ * - solutionsData-Generic.js (legacy, kept for backward compatibility)
+ * - streamClassification.js
  */
 (function(window) {
     'use strict';
@@ -17,6 +21,10 @@
         ...(window.SolutionsDataPTCompliance || []),
         ...(window.SolutionsDataPTCoverage || []),
         ...(window.SolutionsDataPTValuation || []),
+        ...(window.SolutionsDataNP_A || []),
+        ...(window.SolutionsDataNP_B || []),
+        ...(window.SolutionsDataNP_C || []),
+        // Legacy arrays kept for backward compat with old saved reports
         ...(window.SolutionsDataBL || []),
         ...(window.SolutionsDataGeneric || [])
     ];
@@ -26,6 +34,19 @@
     ALL_SOLUTIONS.forEach(s => {
         SOLUTIONS_BY_ID[s.solutionId] = s;
     });
+
+    // Legacy ID mapping: old IDs -> new IDs for backward compatibility
+    const LEGACY_ID_MAP = {
+        'BL-COM-01': 'NP-A-COM-01',
+        'BL-COM-02': 'NP-A-COM-02',
+        'BL-COM-03': 'NP-A-COM-03',
+        'BL-COV-01': 'NP-A-COV-01',
+        'BL-COV-02': 'NP-A-COV-02',
+        'BL-COV-03': 'NP-A-COV-03',
+        'BL-LIA-01': 'NP-A-LIA-01',
+        'BL-LIA-02': 'NP-A-LIA-02',
+        'BL-LIA-03': 'NP-A-LIA-03'
+    };
 
     // Public API
     const SolutionsDatabase = {
@@ -38,37 +59,79 @@
         },
 
         /**
-         * Get solutions by stream
-         * @param {string} stream - Stream name (e.g., 'Property Tax', 'Business License')
+         * Get solutions by stream, with subgroup-aware filtering for non-property streams
+         * @param {string} stream - Stream name (e.g., 'Property Tax', 'Business License', or custom name)
+         * @param {string} [subgroup] - Non-property subgroup code ('A', 'B', or 'C')
          * @returns {Array} Solutions for the stream
          */
-        getSolutionsByStream: function(stream) {
+        getSolutionsByStream: function(stream, subgroup) {
             if (stream === 'Property Tax') {
                 return [
                     ...(window.SolutionsDataPTCompliance || []),
                     ...(window.SolutionsDataPTCoverage || []),
                     ...(window.SolutionsDataPTValuation || [])
                 ];
-            } else if (stream === 'Business License') {
-                return [...(window.SolutionsDataBL || [])];
-            } else {
-                // Return generic solutions for other streams, adapted with stream name
-                return (window.SolutionsDataGeneric || []).map(s => ({
+            }
+
+            // For non-property streams, use subgroup to select the right card set
+            if (subgroup) {
+                return this.getSolutionsBySubgroup(subgroup).map(s => ({
                     ...s,
-                    stream: stream,
-                    solutionId: s.solutionId.replace('GEN', this.getStreamPrefix(stream))
+                    stream: stream
                 }));
+            }
+
+            // Legacy fallback: Business License without subgroup
+            if (stream === 'Business License') {
+                // Try new subgroup A first, fall back to legacy BL data
+                const npA = window.SolutionsDataNP_A || [];
+                if (npA.length > 0) {
+                    return npA.map(s => ({ ...s, stream: stream }));
+                }
+                return [...(window.SolutionsDataBL || [])];
+            }
+
+            // No subgroup provided for a non-property stream — return empty
+            // The UI should enforce classification before showing cards
+            return [];
+        },
+
+        /**
+         * Get solutions by subgroup
+         * @param {string} subgroup - Subgroup code ('A', 'B', or 'C')
+         * @returns {Array} Solutions for the subgroup
+         */
+        getSolutionsBySubgroup: function(subgroup) {
+            switch (subgroup) {
+                case 'A': return [...(window.SolutionsDataNP_A || [])];
+                case 'B': return [...(window.SolutionsDataNP_B || [])];
+                case 'C': return [...(window.SolutionsDataNP_C || [])];
+                default: return [];
             }
         },
 
         /**
-         * Get solutions by stream and gap type
-         * @param {string} stream - Stream name
-         * @param {string} gap - Gap type (Compliance, Coverage, Valuation, Liability)
+         * Get solutions by subgroup and gap type
+         * @param {string} subgroup - Subgroup code ('A', 'B', or 'C')
+         * @param {string} gap - Gap type (Coverage, Liability, Compliance)
          * @returns {Array} Solutions matching criteria
          */
-        getSolutionsByStreamAndGap: function(stream, gap) {
-            const gapLower = gap.toLowerCase();
+        getSolutionsBySubgroupAndGap: function(subgroup, gap) {
+            const gapLower = gap.toLowerCase().replace(' application', '');
+            return this.getSolutionsBySubgroup(subgroup).filter(s =>
+                s.gap.toLowerCase().replace(' application', '') === gapLower
+            );
+        },
+
+        /**
+         * Get solutions by stream and gap type, with optional subgroup for non-property
+         * @param {string} stream - Stream name
+         * @param {string} gap - Gap type (Compliance, Coverage, Valuation, Liability)
+         * @param {string} [subgroup] - Non-property subgroup code
+         * @returns {Array} Solutions matching criteria
+         */
+        getSolutionsByStreamAndGap: function(stream, gap, subgroup) {
+            const gapLower = gap.toLowerCase().replace(' application', '');
 
             if (stream === 'Property Tax') {
                 switch(gapLower) {
@@ -81,39 +144,65 @@
                     default:
                         return [];
                 }
-            } else if (stream === 'Business License') {
+            }
+
+            // Non-property: use subgroup-aware filtering
+            if (subgroup) {
+                return this.getSolutionsBySubgroupAndGap(subgroup, gap).map(s => ({
+                    ...s,
+                    stream: stream
+                }));
+            }
+
+            // Legacy fallback for Business License
+            if (stream === 'Business License') {
+                const npA = window.SolutionsDataNP_A || [];
+                if (npA.length > 0) {
+                    return npA.filter(s => s.gap.toLowerCase().replace(' application', '') === gapLower)
+                        .map(s => ({ ...s, stream: stream }));
+                }
                 return (window.SolutionsDataBL || []).filter(s =>
                     s.gap.toLowerCase() === gapLower
                 );
-            } else {
-                // Generic solutions for other streams
-                return (window.SolutionsDataGeneric || [])
-                    .filter(s => s.gap.toLowerCase() === gapLower)
-                    .map(s => ({
-                        ...s,
-                        stream: stream,
-                        solutionId: s.solutionId.replace('GEN', this.getStreamPrefix(stream))
-                    }));
             }
+
+            return [];
         },
 
         /**
-         * Get a specific solution by ID
+         * Get a specific solution by ID, with legacy ID resolution
          * @param {string} solutionId - Solution ID (e.g., 'PT-COM-01')
          * @returns {Object|null} Solution or null if not found
          */
         getSolutionById: function(solutionId) {
-            return SOLUTIONS_BY_ID[solutionId] || null;
+            // Try direct lookup first
+            let solution = SOLUTIONS_BY_ID[solutionId];
+            if (solution) return solution;
+
+            // Try legacy ID mapping
+            const newId = LEGACY_ID_MAP[solutionId];
+            if (newId) {
+                return SOLUTIONS_BY_ID[newId] || null;
+            }
+
+            // Try pattern-based legacy resolution (e.g., GEN-COM-01 -> generic)
+            if (solutionId && solutionId.startsWith('GEN-')) {
+                // Legacy generic IDs — no direct mapping, return null
+                return null;
+            }
+
+            return null;
         },
 
         /**
          * Get solution count by stream and gap
          * @param {string} stream - Stream name
          * @param {string} gap - Gap type
+         * @param {string} [subgroup] - Non-property subgroup code
          * @returns {number} Count of solutions
          */
-        getSolutionCount: function(stream, gap) {
-            return this.getSolutionsByStreamAndGap(stream, gap).length;
+        getSolutionCount: function(stream, gap, subgroup) {
+            return this.getSolutionsByStreamAndGap(stream, gap, subgroup).length;
         },
 
         /**
@@ -132,25 +221,20 @@
         /**
          * Get stream prefix for solution IDs
          * @param {string} stream - Stream name
-         * @returns {string} Prefix (e.g., 'PT', 'BL', 'UF')
+         * @returns {string} Prefix
          */
         getStreamPrefix: function(stream) {
             const prefixes = {
                 'Property Tax': 'PT',
-                'Business License': 'BL',
-                'User Fees': 'UF',
-                'Parking Fees': 'PK',
-                'Market Fees': 'MK',
-                'Advertisement': 'AD',
-                'Building Permits': 'BP'
+                'Business License': 'BL'
             };
-            return prefixes[stream] || 'GEN';
+            return prefixes[stream] || 'NP';
         },
 
         /**
          * Search solutions by text query
          * @param {string} query - Search query
-         * @param {Object} filters - Optional filters {stream, gap, timeline, category}
+         * @param {Object} filters - Optional filters {stream, gap, timeline, category, subgroup}
          * @returns {Array} Matching solutions
          */
         searchSolutions: function(query, filters = {}) {
@@ -171,6 +255,9 @@
             if (filters.category) {
                 results = results.filter(s => s.category === filters.category);
             }
+            if (filters.subgroup) {
+                results = results.filter(s => s.subgroup === filters.subgroup);
+            }
 
             // Apply text search
             if (queryLower) {
@@ -178,8 +265,9 @@
                     s.title.toLowerCase().includes(queryLower) ||
                     s.shortTitle.toLowerCase().includes(queryLower) ||
                     s.solutionId.toLowerCase().includes(queryLower) ||
-                    (s.overview?.whatThisSolves || '').toLowerCase().includes(queryLower) ||
-                    (s.overview?.whatYouDo || '').toLowerCase().includes(queryLower)
+                    (s.overview?.whatThisOptionDoes || '').toLowerCase().includes(queryLower) ||
+                    (s.overview?.mainPurpose || '').toLowerCase().includes(queryLower) ||
+                    (s.fullDetails?.whyThisMatters || '').toLowerCase().includes(queryLower)
                 );
             }
 
@@ -266,6 +354,10 @@
          * @returns {Object} Statistics about the database
          */
         getStatistics: function() {
+            const npA = window.SolutionsDataNP_A || [];
+            const npB = window.SolutionsDataNP_B || [];
+            const npC = window.SolutionsDataNP_C || [];
+
             return {
                 total: ALL_SOLUTIONS.length,
                 byStream: {
@@ -277,14 +369,23 @@
                         coverage: (window.SolutionsDataPTCoverage || []).length,
                         valuation: (window.SolutionsDataPTValuation || []).length
                     },
-                    'Business License': {
-                        total: (window.SolutionsDataBL || []).length,
-                        compliance: (window.SolutionsDataBL || []).filter(s => s.gap === 'Compliance').length,
-                        coverage: (window.SolutionsDataBL || []).filter(s => s.gap === 'Coverage').length,
-                        liability: (window.SolutionsDataBL || []).filter(s => s.gap === 'Liability').length
+                    'Non-Property A': {
+                        total: npA.length,
+                        compliance: npA.filter(s => s.gap === 'Compliance').length,
+                        coverage: npA.filter(s => s.gap === 'Coverage').length,
+                        liability: npA.filter(s => s.gap === 'Liability').length
                     },
-                    'Generic': {
-                        total: (window.SolutionsDataGeneric || []).length
+                    'Non-Property B': {
+                        total: npB.length,
+                        compliance: npB.filter(s => s.gap === 'Compliance').length,
+                        coverage: npB.filter(s => s.gap === 'Coverage').length,
+                        liability: npB.filter(s => s.gap === 'Liability').length
+                    },
+                    'Non-Property C': {
+                        total: npC.length,
+                        compliance: npC.filter(s => s.gap === 'Compliance').length,
+                        coverage: npC.filter(s => s.gap === 'Coverage').length,
+                        liability: npC.filter(s => s.gap === 'Liability').length
                     }
                 },
                 byTimeline: {
@@ -323,31 +424,21 @@
             if (!basicSolution) return null;
 
             return {
-                legalEssentials: [
-                    'Review existing legal framework for authority to implement',
-                    'Identify any regulatory changes needed',
-                    'Ensure compliance with data protection requirements'
-                ],
-                howItWorks: basicSolution.overview?.whatYouDo || 'Implementation details to be determined based on local context.',
-                implementationMilestones: [
-                    'Assess current state and gaps',
-                    'Design implementation approach',
-                    'Secure necessary approvals and resources',
-                    'Pilot in selected area',
-                    'Roll out citywide with monitoring'
-                ],
-                administrativeEssentials: [
-                    'Assign dedicated staff or team',
-                    'Establish operating procedures',
-                    'Create monitoring and reporting framework'
-                ],
-                whenNotApplicable: [
-                    'Local context does not support this approach',
-                    'Resources or capacity are insufficient',
-                    'Legal framework does not permit'
-                ],
-                caseNotes: 'Adapt implementation to local context. Success depends on political support, adequate resources, and sustained commitment.',
-                resources: []
+                whyThisMatters: basicSolution.overview?.whatThisOptionDoes || 'Implementation details to be determined based on local context.',
+                whenStrongFit: basicSolution.overview?.mostUsefulWhen || ['Context-dependent — assess local conditions'],
+                whatToLineUpFirst: ['Assess current state and gaps', 'Identify necessary approvals and resources'],
+                designChoices: ['Adapt implementation approach to local context'],
+                practicalPath: {
+                    first90Days: ['Assess current state and design approach'],
+                    sixTo12Months: ['Pilot in selected area and refine'],
+                    twelveToTwentyFourMonths: ['Scale based on pilot results']
+                },
+                legalInstitutional: ['Review existing legal framework for authority to implement'],
+                capacitySystemsPartnerships: ['Assign dedicated staff or team', 'Establish operating procedures'],
+                risksAndSafeguards: ['Adapt to local context', 'Monitor implementation closely'],
+                whatToMonitor: ['Implementation progress against plan', 'Early results and adjustment needs'],
+                connectionsToOtherCards: [],
+                questionsBeforeLaunch: ['Is the city ready for this reform?', 'What resources are available?']
             };
         }
     };

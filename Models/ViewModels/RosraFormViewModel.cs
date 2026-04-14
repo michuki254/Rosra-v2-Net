@@ -326,6 +326,11 @@ namespace RosraApp.Models.ViewModels
         public string StreamName { get; set; } = "New Stream";
         public string AnalysisYear { get; set; } = DateTime.Now.Year.ToString();
 
+        // Stream Classification (non-property subgroup system)
+        public string? Subgroup { get; set; }        // "A" = Business licences, "B" = Service fees, "C" = Daily/point-of-collection
+        public string? Subtype { get; set; }         // Specific revenue type within subgroup
+        public string? LocalStreamName { get; set; } // Municipality's own name for the stream
+
         // User Input Fields (6 inputs per spec)
         public int? RegisteredUnits { get; set; }
         public decimal? EstimatedUnregisteredPercent { get; set; }

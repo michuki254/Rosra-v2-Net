@@ -23,16 +23,21 @@ public class PeerSNG
     public string SNG { get; set; } = string.Empty;
 
     /// <summary>
-    /// Own Source Revenue
+    /// Own Source Revenue (full KES value)
     /// </summary>
-    [Column(TypeName = "decimal(18, 2)")]
+    [Column(TypeName = "decimal(28, 2)")]
     public decimal OSR { get; set; }
 
     /// <summary>
-    /// Gross County Product
+    /// Gross County Product (full KES value)
     /// </summary>
-    [Column(TypeName = "decimal(18, 2)")]
+    [Column(TypeName = "decimal(28, 2)")]
     public decimal GCP { get; set; }
+
+    /// <summary>
+    /// Population (KNBS projection)
+    /// </summary>
+    public long Population { get; set; }
 
     /// <summary>
     /// Include flag (1 = include, 0 = exclude)
@@ -40,7 +45,7 @@ public class PeerSNG
     public bool Include { get; set; }
 
     /// <summary>
-    /// Calculated: OSR / GCP
+    /// Calculated: OSR / GCP (fiscal effort ratio)
     /// </summary>
     [NotMapped]
     public decimal? Mult => GCP != 0 ? OSR / GCP : null;
@@ -50,4 +55,10 @@ public class PeerSNG
     /// </summary>
     [NotMapped]
     public decimal? ValidMult => Include && Mult.HasValue && Mult.Value > 0 ? Mult.Value : null;
+
+    /// <summary>
+    /// Calculated: OSR per capita (OSR / Population)
+    /// </summary>
+    [NotMapped]
+    public decimal? OSRPerCapita => Population > 0 ? OSR / Population : null;
 }

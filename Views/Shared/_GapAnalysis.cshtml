@@ -597,9 +597,14 @@
                 @for (int i = 0; i < Model.GenericStreams.Count; i++)
                 {
                     var stream = Model.GenericStreams[i];
-                    <button type="button" class="gap-tab-btn" onclick="showTab('stream@(i)')" data-tab="stream@(i)" id="stream@(i)-btn">
+                    <button type="button" class="gap-tab-btn" onclick="showTab('stream@(i)')" data-tab="stream@(i)" id="stream@(i)-btn" data-subgroup="@(stream.Subgroup ?? "")" data-subtype="@(stream.Subtype ?? "")">
                         <i class="bi bi-bar-chart-line"></i>
                         <span class="stream-name-label">@stream.StreamName</span>
+                        @if (!string.IsNullOrEmpty(stream.Subgroup))
+                        {
+                            var tabBadgeColor = stream.Subgroup switch { "A" => "#2196F3", "B" => "#FF9800", "C" => "#4CAF50", _ => "#666" };
+                            <span class="badge ms-1" style="background-color:@tabBadgeColor; font-size: 0.6rem; vertical-align: middle;">@stream.Subgroup</span>
+                        }
                         @if (!isViewMode)
                         {
                             <span class="close-tab" onclick="event.stopPropagation(); deleteStream(@i);" title="@Localizer["RemoveStream_Tooltip"]">&times;</span>
@@ -648,47 +653,58 @@
     </div>
 </div>
 
-<!-- Add Stream Modal -->
+<!-- Add Stream Modal (Two-Step: Templates → Classification + Name) -->
 <div class="modal fade stream-name-modal" id="addStreamModal" tabindex="-1" aria-labelledby="addStreamModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addStreamModalLabel">
-                    <i class="bi bi-plus-circle me-2"></i>@Localizer["AddStreamModal_Title"]
+                    <i class="bi bi-plus-circle me-2"></i>Add Non-Property Revenue Stream
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label for="newStreamName" class="form-label">@Localizer["AddStreamModal_StreamName"]</label>
-                    <input type="text" class="form-control" id="newStreamName" placeholder="@Localizer["AddStreamModal_Placeholder"]">
-                    <small class="text-muted">@Localizer["AddStreamModal_Helper"]</small>
+                <!-- Step 1: Quick Templates -->
+                <div id="addStreamStep1">
+                    <p class="text-muted mb-3">Choose a template to get started, or select "Other" to classify manually.</p>
+                    <div class="row g-3" id="quickTemplateGrid">
+                        <!-- Templates rendered by JS from StreamClassification.QUICK_TEMPLATES -->
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">@Localizer["AddStreamModal_QuickTemplates"]</label>
-                    <div class="d-flex flex-wrap gap-2">
-                        <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="Parking Fees">
-                            <i class="bi bi-p-circle"></i> @Localizer["Template_ParkingFees"]
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="Market Stall Fees">
-                            <i class="bi bi-shop"></i> @Localizer["Template_MarketStallFees"]
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="Advertising Permits">
-                            <i class="bi bi-megaphone"></i> @Localizer["Template_AdvertisingPermits"]
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="User Fees">
-                            <i class="bi bi-people"></i> @Localizer["Template_UserFees"]
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm stream-template-btn" data-name="Building Permits">
-                            <i class="bi bi-building"></i> @Localizer["Template_BuildingPermits"]
-                        </button>
+
+                <!-- Step 2: Classification + Name -->
+                <div id="addStreamStep2" style="display: none;">
+                    <div class="mb-3">
+                        <label for="newStreamSubgroup" class="form-label fw-bold">Which type of non-property revenue stream are you analysing? <span class="text-danger">*</span></label>
+                        <small class="text-muted d-block mb-2">Choose the option that best reflects how this revenue is billed or collected.</small>
+                        <select class="form-select" id="newStreamSubgroup" onchange="onSubgroupChange()">
+                            <option value="">-- Select stream type --</option>
+                            <option value="A">Business licences and recurrent operating permits</option>
+                            <option value="B">Service fees and billed use charges</option>
+                            <option value="C">Daily or point-of-collection charges</option>
+                        </select>
+                        <small class="text-muted mt-1 d-block">Classify by how the revenue is administered, not only by its local name. A billed waste fee would fall under service fees, while a daily market ticket would fall under daily charges.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newStreamSubtype" class="form-label">Which specific revenue type best matches this stream?</label>
+                        <select class="form-select" id="newStreamSubtype">
+                            <option value="">-- Select specific type (optional) --</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newStreamName" class="form-label fw-bold">Local name of this revenue stream <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="newStreamName" placeholder="e.g., Waste Management User Charge">
+                        <small class="text-muted">Enter the name your municipality uses for this revenue stream.</small>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@SharedLocalizer["Common_Cancel"]</button>
-                <button type="button" class="btn btn-primary" onclick="addNewStream()">
-                    <i class="bi bi-plus-circle me-1"></i>@Localizer["AddStream"]
+                <button type="button" class="btn btn-outline-secondary" id="addStreamBackBtn" style="display: none;" onclick="showAddStreamStep1()">
+                    <i class="bi bi-arrow-left me-1"></i>Back
+                </button>
+                <button type="button" class="btn btn-primary" id="addStreamCreateBtn" style="display: none;" onclick="addNewStream()">
+                    <i class="bi bi-plus-circle me-1"></i>Create Stream
                 </button>
             </div>
         </div>
@@ -844,16 +860,109 @@
 
     // Open Add Stream Modal
     function openAddStreamModal() {
+        // Reset modal to Step 1
+        showAddStreamStep1();
         document.getElementById('newStreamName').value = '';
+        document.getElementById('newStreamSubgroup').value = '';
+        document.getElementById('newStreamSubtype').innerHTML = '<option value="">-- Select specific type (optional) --</option>';
         const modal = new bootstrap.Modal(document.getElementById('addStreamModal'));
         modal.show();
     }
 
-    // Add New Stream
+    // Render quick template grid on Step 1
+    function renderQuickTemplateGrid() {
+        const grid = document.getElementById('quickTemplateGrid');
+        if (!grid || typeof StreamClassification === 'undefined') return;
+        grid.innerHTML = '';
+        StreamClassification.QUICK_TEMPLATES.forEach(function(tpl) {
+            const subgroupInfo = tpl.subgroup ? StreamClassification.getSubgroup(tpl.subgroup) : null;
+            const badgeColor = subgroupInfo ? subgroupInfo.color : '#666';
+            const badgeLabel = subgroupInfo ? subgroupInfo.shortLabel : 'Manual classification';
+            const col = document.createElement('div');
+            col.className = 'col-sm-6 col-md-4';
+            col.innerHTML = `
+                <div class="card h-100 template-card" style="cursor:pointer; border: 2px solid transparent; transition: border-color 0.2s;"
+                     onclick="selectQuickTemplate('${tpl.id}')"
+                     onmouseenter="this.style.borderColor='${badgeColor}'"
+                     onmouseleave="this.style.borderColor='transparent'">
+                    <div class="card-body text-center p-3">
+                        <i class="bi ${tpl.icon} fs-2 d-block mb-2" style="color:${badgeColor}"></i>
+                        <h6 class="card-title mb-1">${escapeHtml(tpl.name)}</h6>
+                        <small class="text-muted">${escapeHtml(tpl.description)}</small>
+                        ${tpl.subgroup ? '<div class="mt-2"><span class="badge" style="background-color:' + badgeColor + '; font-size: 0.7rem;">' + escapeHtml(badgeLabel) + '</span></div>' : ''}
+                    </div>
+                </div>
+            `;
+            grid.appendChild(col);
+        });
+    }
+
+    // Select a quick template → prefill and go to Step 2
+    function selectQuickTemplate(templateId) {
+        if (typeof StreamClassification === 'undefined') return;
+        const tpl = StreamClassification.getTemplate(templateId);
+        if (!tpl) return;
+
+        // Prefill classification fields
+        document.getElementById('newStreamSubgroup').value = tpl.subgroup || '';
+        document.getElementById('newStreamName').value = tpl.defaultStreamName || '';
+
+        // Populate subtypes for the selected subgroup
+        onSubgroupChange();
+
+        // Set subtype if template has one
+        if (tpl.subtype) {
+            document.getElementById('newStreamSubtype').value = tpl.subtype;
+        }
+
+        showAddStreamStep2();
+    }
+
+    // Show Step 1 (templates)
+    function showAddStreamStep1() {
+        document.getElementById('addStreamStep1').style.display = '';
+        document.getElementById('addStreamStep2').style.display = 'none';
+        document.getElementById('addStreamBackBtn').style.display = 'none';
+        document.getElementById('addStreamCreateBtn').style.display = 'none';
+        renderQuickTemplateGrid();
+    }
+
+    // Show Step 2 (classification + name)
+    function showAddStreamStep2() {
+        document.getElementById('addStreamStep1').style.display = 'none';
+        document.getElementById('addStreamStep2').style.display = '';
+        document.getElementById('addStreamBackBtn').style.display = '';
+        document.getElementById('addStreamCreateBtn').style.display = '';
+    }
+
+    // Handle subgroup dropdown change → populate subtypes
+    function onSubgroupChange() {
+        const subgroup = document.getElementById('newStreamSubgroup').value;
+        const subtypeSelect = document.getElementById('newStreamSubtype');
+        subtypeSelect.innerHTML = '<option value="">-- Select specific type (optional) --</option>';
+        if (subgroup && typeof StreamClassification !== 'undefined') {
+            const subtypes = StreamClassification.getSubtypesForSubgroup(subgroup);
+            subtypes.forEach(function(st) {
+                const opt = document.createElement('option');
+                opt.value = st;
+                opt.textContent = st;
+                subtypeSelect.appendChild(opt);
+            });
+        }
+    }
+
+    // Add New Stream (from Step 2)
     function addNewStream() {
         const streamName = document.getElementById('newStreamName').value.trim();
+        const subgroup = document.getElementById('newStreamSubgroup').value;
+        const subtype = document.getElementById('newStreamSubtype').value;
+
+        if (!subgroup) {
+            alert('Please select a stream type (subgroup) before creating the stream.');
+            return;
+        }
         if (!streamName) {
-            alert('Please enter a stream name');
+            alert('Please enter a stream name.');
             return;
         }
 
@@ -861,16 +970,20 @@
         const streamId = 'stream' + streamIndex;
         const currencySymbol = window.AppContext ? window.AppContext.get('currencySymbol') : '@currencySymbol';
 
-        // Create tab button
+        // Create tab button with subgroup badge
         const tabButton = document.createElement('button');
         tabButton.type = 'button';
         tabButton.className = 'gap-tab-btn';
         tabButton.setAttribute('onclick', `showTab('${streamId}')`);
         tabButton.setAttribute('data-tab', streamId);
+        tabButton.setAttribute('data-subgroup', subgroup);
+        tabButton.setAttribute('data-subtype', subtype);
         tabButton.id = streamId + '-btn';
+        const subgroupColor = typeof StreamClassification !== 'undefined' ? StreamClassification.getSubgroupColor(subgroup) : '#666';
         tabButton.innerHTML = `
             <i class="bi bi-bar-chart-line"></i>
             <span class="stream-name-label">${escapeHtml(streamName)}</span>
+            <span class="badge ms-1" style="background-color:${subgroupColor}; font-size: 0.6rem; vertical-align: middle;">${escapeHtml(subgroup)}</span>
             <span class="close-tab" onclick="event.stopPropagation(); deleteStream(${streamIndex});" title="Remove stream">&times;</span>
         `;
 
@@ -878,12 +991,12 @@
         const dynamicContainer = document.getElementById('dynamicStreamTabs');
         dynamicContainer.appendChild(tabButton);
 
-        // Create tab content (we'll need to load the partial via AJAX or create it dynamically)
+        // Create tab content
         const tabContent = document.createElement('div');
         tabContent.id = streamId + '-tab';
         tabContent.className = 'revenue-tab';
         tabContent.style.display = 'none';
-        tabContent.innerHTML = createGenericStreamHtml(streamIndex, streamName, currencySymbol);
+        tabContent.innerHTML = createGenericStreamHtml(streamIndex, streamName, currencySymbol, subgroup, subtype);
 
         document.getElementById('dynamicStreamContents').appendChild(tabContent);
 
@@ -964,10 +1077,16 @@
     }
 
     // Create generic stream HTML (matching Property Tax design)
-    function createGenericStreamHtml(streamIndex, streamName, currencySymbol) {
+    function createGenericStreamHtml(streamIndex, streamName, currencySymbol, subgroup, subtype) {
         const streamId = 'stream' + streamIndex;
+        subgroup = subgroup || '';
+        subtype = subtype || '';
+        const subgroupLabel = (typeof StreamClassification !== 'undefined' && subgroup) ? StreamClassification.getSubgroupShortLabel(subgroup) : '';
+        const subgroupColor = (typeof StreamClassification !== 'undefined' && subgroup) ? StreamClassification.getSubgroupColor(subgroup) : '#666';
+        const unitExamples = (typeof StreamClassification !== 'undefined' && subgroup) ? StreamClassification.getUnitExamples(subgroup) : 'units';
+        const subgroupBadge = subgroupLabel ? `<span class="badge ms-2" style="background-color:${subgroupColor}; font-size: 0.75rem;">${escapeHtml(subgroupLabel)}</span>` : '';
         return `
-            <div class="generic-stream-gap-analysis" data-stream-index="${streamIndex}" id="${streamId}-container">
+            <div class="generic-stream-gap-analysis" data-stream-index="${streamIndex}" data-subgroup="${subgroup}" data-subtype="${subtype}" id="${streamId}-container">
                 <!-- Stream Header -->
                 <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
                     <div class="d-flex align-items-center gap-3">
@@ -978,6 +1097,7 @@
                                    value="${escapeHtml(streamName)}" placeholder="Enter stream name..."
                                    style="font-size: 1.25rem; background: transparent; width: auto; min-width: 250px;">
                             <small class="text-muted ms-2">Click to edit stream name</small>
+                            ${subgroupBadge}
                         </div>
                     </div>
                     <button type="button" class="btn btn-outline-danger btn-sm delete-stream-btn"
@@ -988,6 +1108,9 @@
 
                 <input type="hidden" name="GenericStreams[${streamIndex}].StreamIndex" value="${streamIndex}" />
                 <input type="hidden" name="GenericStreams[${streamIndex}].StreamId" value="${streamId}" />
+                <input type="hidden" name="GenericStreams[${streamIndex}].Subgroup" value="${subgroup}" />
+                <input type="hidden" name="GenericStreams[${streamIndex}].Subtype" value="${escapeHtml(subtype)}" />
+                <input type="hidden" name="GenericStreams[${streamIndex}].LocalStreamName" value="${escapeHtml(streamName)}" />
 
                 <div class="row">
                     <!-- Left Column - Data Input Section (col-lg-4) -->
@@ -1288,13 +1411,11 @@
         function formatCompact(value) {
             if (value >= 1000000000) return currencySymbol + ' ' + (value / 1000000000).toFixed(1) + 'B';
             if (value >= 1000000) return currencySymbol + ' ' + (value / 1000000).toFixed(1) + 'M';
-            if (value >= 1000) return currencySymbol + ' ' + (value / 1000).toFixed(1) + 'K';
             return currencySymbol + ' ' + formatCurrency(value);
         }
 
         function formatUnitCount(value) {
             if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
-            if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
             return Math.round(value).toLocaleString();
         }
 

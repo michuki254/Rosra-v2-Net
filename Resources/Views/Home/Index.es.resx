@@ -23,7 +23,7 @@
   <data name="Featured_WhatIsRosra_Desc" xml:space="preserve"><value>Una herramienta cuantitativa de toma de decisiones basada en evidencia, dirigida a profesionales de finanzas locales en ciudades en desarrollo.</value></data>
   <data name="Featured_LearnMore" xml:space="preserve"><value>+ MAS INFORMACION</value></data>
   <data name="Featured_DataPrivacy" xml:space="preserve"><value>PRIVACIDAD DE DATOS</value></data>
-  <data name="Featured_DataPrivacy_Desc" xml:space="preserve"><value>Todos los datos ingresados en el ROSRA son completamente confidenciales y solo visibles para el gobierno local correspondiente.</value></data>
+  <data name="Featured_DataPrivacy_Desc" xml:space="preserve"><value>Todos los datos ingresados en el ROSRA son completamente confidenciales y solo visibles para el gobierno local correspondiente y ONU-Habitat.</value></data>
 
   <!-- What is ROSRA Section -->
   <data name="WhatIsRosra_Title" xml:space="preserve"><value>Que es el ROSRA?</value></data>

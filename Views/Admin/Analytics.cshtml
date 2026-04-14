@@ -1,0 +1,203 @@
+@{
+    ViewData["Title"] = "Analytics Dashboard";
+
+    var reportsByStatus = ViewBag.ReportsByStatus as dynamic;
+    var reportsByCountry = ViewBag.ReportsByCountry as dynamic;
+    var cardsByStream = ViewBag.CardsByStream as dynamic;
+    var cardsByGap = ViewBag.CardsByGap as dynamic;
+    var cardsByTimeline = ViewBag.CardsByTimeline as dynamic;
+    var topSelectedCards = ViewBag.TopSelectedCards as dynamic;
+}
+
+<style>
+    .analytics-container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .analytics-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .analytics-header h2 { color: #00689D; margin: 0; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .kpi-card { background: #fff; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-left: 4px solid #00689D; text-align: center; }
+    .kpi-card .kpi-value { font-size: 2rem; font-weight: 700; color: #333; }
+    .kpi-card .kpi-label { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+    .kpi-card.green { border-left-color: #28a745; }
+    .kpi-card.orange { border-left-color: #FF9800; }
+    .kpi-card.purple { border-left-color: #9C27B0; }
+    .kpi-card.blue { border-left-color: #2196F3; }
+    .chart-section { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+    .chart-card { background: #fff; border-radius: 10px; padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .chart-card h5 { color: #333; margin-bottom: 1rem; font-size: 1rem; }
+    .stat-bar { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid #f0f0f0; }
+    .stat-bar:last-child { border-bottom: none; }
+    .stat-bar .bar-label { flex: 0 0 140px; font-size: 0.85rem; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .stat-bar .bar-fill { flex: 1; height: 20px; background: #e9ecef; border-radius: 4px; overflow: hidden; }
+    .stat-bar .bar-fill-inner { height: 100%; border-radius: 4px; transition: width 0.5s; }
+    .stat-bar .bar-count { flex: 0 0 40px; text-align: right; font-weight: 600; font-size: 0.85rem; color: #333; }
+    .top-cards-list { list-style: none; padding: 0; margin: 0; }
+    .top-cards-list li { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0; }
+    .top-cards-list li:last-child { border-bottom: none; }
+    .top-cards-list .card-id { font-weight: 600; color: #00689D; font-size: 0.85rem; }
+    .top-cards-list .card-count { background: #e3f2fd; color: #1565c0; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+    @@media (max-width: 768px) { .chart-section { grid-template-columns: 1fr; } }
+</style>
+
+<div class="analytics-container">
+    <div class="analytics-header">
+        <h2><i class="bi bi-graph-up me-2"></i>Analytics Dashboard</h2>
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Dashboard
+        </a>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-value">@ViewBag.TotalReports</div>
+            <div class="kpi-label">Total Reports</div>
+        </div>
+        <div class="kpi-card green">
+            <div class="kpi-value">@ViewBag.TotalUsers</div>
+            <div class="kpi-label">Total Users</div>
+        </div>
+        <div class="kpi-card blue">
+            <div class="kpi-value">@ViewBag.ActiveUsers</div>
+            <div class="kpi-label">Active Users</div>
+        </div>
+        <div class="kpi-card purple">
+            <div class="kpi-value">@ViewBag.TotalCards</div>
+            <div class="kpi-label">Solution Cards</div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="chart-section">
+        <!-- Reports by Status -->
+        <div class="chart-card">
+            <h5><i class="bi bi-pie-chart me-2"></i>Reports by Status</h5>
+            @if (reportsByStatus != null)
+            {
+                var statusColors = new Dictionary<string, string> { { "Draft", "#6c757d" }, { "Submitted", "#007bff" }, { "UnderReview", "#ffc107" }, { "NeedsRevision", "#fd7e14" }, { "Validated", "#28a745" } };
+                var maxStatus = 1;
+                foreach (var s in reportsByStatus) { if (s.Count > maxStatus) maxStatus = s.Count; }
+                foreach (var status in reportsByStatus)
+                {
+                    var color = statusColors.ContainsKey((string)status.Status) ? statusColors[(string)status.Status] : "#999";
+                    var pct = (int)((double)status.Count / maxStatus * 100);
+                    <div class="stat-bar">
+                        <span class="bar-label">@status.Status</span>
+                        <div class="bar-fill"><div class="bar-fill-inner" style="width:@(pct)%; background-color:@color;"></div></div>
+                        <span class="bar-count">@status.Count</span>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Reports by Country (Top 15) -->
+        <div class="chart-card">
+            <h5><i class="bi bi-globe me-2"></i>Top Countries</h5>
+            @if (reportsByCountry != null)
+            {
+                var maxCountry = 1;
+                foreach (var c in reportsByCountry) { if (c.Count > maxCountry) maxCountry = c.Count; }
+                foreach (var country in reportsByCountry)
+                {
+                    var pct = (int)((double)country.Count / maxCountry * 100);
+                    <div class="stat-bar">
+                        <span class="bar-label" title="@country.Country">@country.Country</span>
+                        <div class="bar-fill"><div class="bar-fill-inner" style="width:@(pct)%; background-color:#00689D;"></div></div>
+                        <span class="bar-count">@country.Count</span>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted small">No data available.</p>
+            }
+        </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="chart-section">
+        <!-- Cards by Gap -->
+        <div class="chart-card">
+            <h5><i class="bi bi-layers me-2"></i>Solution Cards by Gap Type</h5>
+            @if (cardsByGap != null)
+            {
+                var gapColors = new Dictionary<string, string> { { "Compliance", "#F44336" }, { "Coverage", "#FF9800" }, { "Valuation", "#2196F3" }, { "Liability", "#9C27B0" } };
+                var maxGap = 1;
+                foreach (var g in cardsByGap) { if (g.Count > maxGap) maxGap = g.Count; }
+                foreach (var gap in cardsByGap)
+                {
+                    var color = gapColors.ContainsKey((string)gap.Gap) ? gapColors[(string)gap.Gap] : "#999";
+                    var pct = (int)((double)gap.Count / maxGap * 100);
+                    <div class="stat-bar">
+                        <span class="bar-label">@gap.Gap</span>
+                        <div class="bar-fill"><div class="bar-fill-inner" style="width:@(pct)%; background-color:@color;"></div></div>
+                        <span class="bar-count">@gap.Count</span>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Top Selected Solution Cards -->
+        <div class="chart-card">
+            <h5><i class="bi bi-trophy me-2"></i>Most Selected Solution Cards</h5>
+            @if (topSelectedCards != null && ((IEnumerable<dynamic>)topSelectedCards).Any())
+            {
+                <ol class="top-cards-list">
+                    @foreach (var card in topSelectedCards)
+                    {
+                        <li>
+                            <span class="card-id">@card.SolutionId</span>
+                            <span class="card-count">@card.Count reports</span>
+                        </li>
+                    }
+                </ol>
+            }
+            else
+            {
+                <p class="text-muted small">No solution selections found across reports.</p>
+            }
+        </div>
+    </div>
+
+    <!-- Charts Row 3 -->
+    <div class="chart-section">
+        <!-- Cards by Timeline -->
+        <div class="chart-card">
+            <h5><i class="bi bi-clock me-2"></i>Solution Cards by Timeline</h5>
+            @if (cardsByTimeline != null)
+            {
+                var timeColors = new Dictionary<string, string> { { "<1 year", "#28a745" }, { "1-3 years", "#ffc107" }, { "2-4 years", "#fd7e14" }, { "3+ years", "#dc3545" } };
+                var maxTime = 1;
+                foreach (var t in cardsByTimeline) { if (t.Count > maxTime) maxTime = t.Count; }
+                foreach (var tl in cardsByTimeline)
+                {
+                    var color = timeColors.ContainsKey((string)tl.Timeline) ? timeColors[(string)tl.Timeline] : "#999";
+                    var pct = (int)((double)tl.Count / maxTime * 100);
+                    <div class="stat-bar">
+                        <span class="bar-label">@tl.Timeline</span>
+                        <div class="bar-fill"><div class="bar-fill-inner" style="width:@(pct)%; background-color:@color;"></div></div>
+                        <span class="bar-count">@tl.Count</span>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Cards by Stream -->
+        <div class="chart-card">
+            <h5><i class="bi bi-collection me-2"></i>Solution Cards by Stream</h5>
+            @if (cardsByStream != null)
+            {
+                var maxStream = 1;
+                foreach (var s in cardsByStream) { if (s.Count > maxStream) maxStream = s.Count; }
+                foreach (var stream in cardsByStream)
+                {
+                    var pct = (int)((double)stream.Count / maxStream * 100);
+                    <div class="stat-bar">
+                        <span class="bar-label">@stream.Stream</span>
+                        <div class="bar-fill"><div class="bar-fill-inner" style="width:@(pct)%; background-color:#00689D;"></div></div>
+                        <span class="bar-count">@stream.Count</span>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

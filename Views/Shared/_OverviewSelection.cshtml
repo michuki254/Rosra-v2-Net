@@ -728,8 +728,12 @@
 <script src="~/js/solutionsData-PT-Compliance.js" asp-append-version="true"></script>
 <script src="~/js/solutionsData-PT-Coverage.js" asp-append-version="true"></script>
 <script src="~/js/solutionsData-PT-Valuation.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-NP-A.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-NP-B.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-NP-C.js" asp-append-version="true"></script>
 <script src="~/js/solutionsData-BL.js" asp-append-version="true"></script>
 <script src="~/js/solutionsData-Generic.js" asp-append-version="true"></script>
+<script src="~/js/streamClassification.js" asp-append-version="true"></script>
 <!-- Core Solutions Database API -->
 <script src="~/js/solutionsDatabase.js" asp-append-version="true"></script>
 <script>
@@ -810,31 +814,15 @@
             const priorityData = getPrioritizationData();
 
             selections.selected.forEach(solutionId => {
-                // Parse solution ID to get stream/gap info (e.g., PT-COM-01)
-                const parts = solutionId.split('-');
-                const streamPrefix = parts[0];
-                const gapCode = parts[1];
-
                 // Get full solution from database
                 let solution = null;
                 if (typeof SolutionsDatabase !== 'undefined') {
                     solution = SolutionsDatabase.getSolutionById(solutionId);
                 }
 
-                // Find stream and gap info from prioritization data
-                let streamInfo = null;
-                let gapInfo = null;
-
-                const streamMap = {
-                    'PT': 'Property Tax',
-                    'BL': 'Business License',
-                    'UF': 'User Fees',
-                    'PK': 'Parking Fees',
-                    'MK': 'Market Fees',
-                    'AD': 'Advertisement',
-                    'BP': 'Building Permits'
-                };
-
+                // Parse solution ID to determine stream/gap
+                // New formats: PT-COM-01, PT-COV-01, NP-A-COV-01, NP-B-LIA-01
+                // Legacy: BL-COM-01, GEN-COM-01
                 const gapMap = {
                     'COM': 'Compliance',
                     'COV': 'Coverage',
@@ -842,14 +830,36 @@
                     'LIA': 'Liability'
                 };
 
-                const streamName = streamMap[streamPrefix] || solution?.stream || 'Unknown';
-                const gapType = gapMap[gapCode] || solution?.gap || 'Unknown';
+                let streamName = solution?.stream || 'Unknown';
+                let gapType = solution?.gap || 'Unknown';
+                let subgroup = solution?.subgroup || null;
+
+                // If solution not found in DB, parse the ID
+                if (!solution) {
+                    const parts = solutionId.split('-');
+                    if (parts[0] === 'PT') {
+                        streamName = 'Property Tax';
+                        gapType = gapMap[parts[1]] || 'Unknown';
+                    } else if (parts[0] === 'NP' && parts.length >= 3) {
+                        subgroup = parts[1]; // A, B, or C
+                        gapType = gapMap[parts[2]] || 'Unknown';
+                    } else if (parts[0] === 'BL') {
+                        streamName = 'Business License';
+                        gapType = gapMap[parts[1]] || 'Unknown';
+                        subgroup = 'A';
+                    }
+                }
+
+                // For NP cards, find the actual stream name from prioritization data
+                if (subgroup && streamName === 'Non-Property') {
+                    // Try to find the matching stream from prioritization data
+                    const matchingStream = priorityData.find(s => s.subgroup === subgroup);
+                    if (matchingStream) streamName = matchingStream.name;
+                }
 
                 // Find rank and priority from prioritization data
-                streamInfo = priorityData.find(s => s.name === streamName);
-                if (streamInfo) {
-                    gapInfo = streamInfo.gaps.find(g => g.type === gapType);
-                }
+                let streamInfo = priorityData.find(s => s.name === streamName);
+                let gapInfo = streamInfo ? streamInfo.gaps.find(g => g.type === gapType) : null;
 
                 selectedSolutions.push({
                     solutionId: solutionId,
@@ -858,7 +868,8 @@
                     gapType: gapType,
                     gapPriority: gapInfo?.priority || 999,
                     timeline: solution?.timeline || '1-3 years',
-                    title: solution?.title || solution?.shortTitle || solutionId
+                    title: solution?.title || solution?.shortTitle || solutionId,
+                    subgroup: subgroup || ''
                 });
             });
 
@@ -894,38 +905,49 @@
                     rank: s.finalRank || (idx + 1),
                     name: s.name,
                     type: s.type,
+                    subgroup: s.subgroup || getSubgroupFromDOM(s.name),
                     gaps: getGapsForStream(s)
                 }));
             }
         }
 
-        // Fallback to default test data if no streams
+        // If no streams found, show a message instead of hardcoded test data
         if (streams.length === 0) {
-            streams = [
-                {
-                    rank: 1,
-                    name: 'Property Tax',
-                    type: 'property-tax',
-                    gaps: [
-                        { priority: 1, type: 'Compliance', amount: 123880968 },
-                        { priority: 2, type: 'Coverage', amount: 20050682 },
-                        { priority: 3, type: 'Valuation', amount: 85209032 }
-                    ]
-                },
-                {
-                    rank: 2,
-                    name: 'Business License',
-                    type: 'business-license',
-                    gaps: [
-                        { priority: 1, type: 'Compliance', amount: 55623018 },
-                        { priority: 2, type: 'Liability', amount: 8431774 },
-                        { priority: 3, type: 'Coverage', amount: 6992212 }
-                    ]
-                }
-            ];
+            const container = document.getElementById('solutionsContainer');
+            if (container) {
+                container.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="bi bi-exclamation-circle fs-1 text-muted d-block mb-3"></i>
+                        <h5 class="text-muted">No gap analysis data found</h5>
+                        <p class="text-muted">Please complete the Gap Analysis and Prioritisation tabs first, then return here to select solution cards.</p>
+                    </div>
+                `;
+            }
         }
 
         return streams;
+    }
+
+    // Try to find the subgroup from the DOM for a non-property stream
+    function getSubgroupFromDOM(streamName) {
+        // Look for hidden subgroup inputs in generic stream containers
+        const containers = document.querySelectorAll('.generic-stream-gap-analysis');
+        for (const c of containers) {
+            const nameInput = c.querySelector('input[name$=".StreamName"]');
+            if (nameInput && nameInput.value === streamName) {
+                const sgInput = c.querySelector('input[name$=".Subgroup"]');
+                return sgInput ? sgInput.value : null;
+            }
+        }
+        // Also check tab buttons for data-subgroup
+        const tabs = document.querySelectorAll('.gap-tab-btn[data-subgroup]');
+        for (const tab of tabs) {
+            const label = tab.querySelector('.stream-name-label');
+            if (label && label.textContent === streamName) {
+                return tab.getAttribute('data-subgroup') || null;
+            }
+        }
+        return null;
     }
 
     // Extract gaps from a stream object
@@ -998,11 +1020,81 @@
         rank: '@Html.Raw(Localizer["JS_Rank"].Value)'
     };
 
-    // Render a single solution card
+    // Helper: render array or string content for card sections
+    function renderCardContent(val) {
+        if (!val) return '';
+        if (Array.isArray(val)) return '<ul class="mb-0 ps-3">' + val.map(v => '<li>' + v + '</li>').join('') + '</ul>';
+        return val;
+    }
+
+    // Render a single solution card (supports both old and new card formats)
     function renderSolutionCard(solution) {
         const isSelected = selections.selected.has(solution.solutionId);
         const isSkipped = selections.skipped.has(solution.solutionId);
         const cardClass = isSelected ? 'selected' : (isSkipped ? 'skipped' : '');
+        const safeId = solution.solutionId.replace(/[^a-zA-Z0-9]/g, '');
+        const ov = solution.overview || {};
+
+        // New format fields (fall back to old field names)
+        const whatItDoes = ov.whatThisOptionDoes || ov.whatThisSolves || ov.mainPurpose || '';
+        const whenUseful = renderCardContent(ov.mostUsefulWhen || ov.whenThisFitsBest || ov.whenStrongFit || '');
+        const notBestFirst = renderCardContent(ov.usuallyNotBestFirstMove || '');
+        const worksAlongside = renderCardContent(ov.oftenWorksBestAlongside || '');
+
+        // Build collapsible sections
+        let sections = '';
+        if (whatItDoes) {
+            sections += `
+                <div class="solution-section">
+                    <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${safeId}-what">
+                        <span><i class="bi bi-lightbulb me-2"></i>What this option does</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="collapse show" id="${safeId}-what">
+                        <div class="solution-section-content">${whatItDoes}</div>
+                    </div>
+                </div>`;
+        }
+        if (whenUseful) {
+            sections += `
+                <div class="solution-section">
+                    <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${safeId}-when">
+                        <span><i class="bi bi-calendar-check me-2"></i>Most useful when</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="collapse" id="${safeId}-when">
+                        <div class="solution-section-content">${whenUseful}</div>
+                    </div>
+                </div>`;
+        }
+        if (notBestFirst) {
+            sections += `
+                <div class="solution-section">
+                    <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${safeId}-notfirst">
+                        <span><i class="bi bi-exclamation-triangle me-2"></i>Usually not the best first move when</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="collapse" id="${safeId}-notfirst">
+                        <div class="solution-section-content">${notBestFirst}</div>
+                    </div>
+                </div>`;
+        }
+        if (worksAlongside) {
+            sections += `
+                <div class="solution-section">
+                    <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${safeId}-alongside">
+                        <span><i class="bi bi-link-45deg me-2"></i>Often works best alongside</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="collapse" id="${safeId}-alongside">
+                        <div class="solution-section-content">${worksAlongside}</div>
+                    </div>
+                </div>`;
+        }
+
+        // Difficulty and sensitivity badges
+        const diffBadge = solution.deliveryDifficulty ? `<span class="badge bg-light text-dark border" style="font-size:0.65rem;">${solution.deliveryDifficulty}</span>` : '';
+        const polBadge = solution.politicalSensitivity ? `<span class="badge bg-light text-dark border" style="font-size:0.65rem;">Pol: ${solution.politicalSensitivity}</span>` : '';
 
         return `
             <div class="solution-card ${cardClass}" data-solution-id="${solution.solutionId}" data-timeline="${solution.timeline}">
@@ -1012,46 +1104,14 @@
                         ${isSelected ? '<span class="badge bg-success">' + _t.selected + '</span>' : ''}
                         ${isSkipped ? '<span class="badge bg-secondary">' + _t.skipped + '</span>' : ''}
                     </div>
-                    <span class="badge ${getTimelineBadgeClass(solution.timeline)}">${solution.timeline}</span>
+                    <div class="d-flex align-items-center gap-1">
+                        ${diffBadge}${polBadge}
+                        <span class="badge ${getTimelineBadgeClass(solution.timeline)}">${solution.timeline}</span>
+                    </div>
                 </div>
                 <div class="solution-title">${solution.title}</div>
                 <div class="solution-content">
-                    <div class="solution-section">
-                        <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-what">
-                            <span><i class="bi bi-lightbulb me-2"></i>${_t.whatThisSolves}</span>
-                            <i class="bi bi-chevron-down"></i>
-                        </div>
-                        <div class="collapse show" id="${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-what">
-                            <div class="solution-section-content">${solution.overview.whatThisSolves}</div>
-                        </div>
-                    </div>
-                    <div class="solution-section">
-                        <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-do">
-                            <span><i class="bi bi-gear me-2"></i>${_t.whatYouDo}</span>
-                            <i class="bi bi-chevron-down"></i>
-                        </div>
-                        <div class="collapse" id="${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-do">
-                            <div class="solution-section-content">${solution.overview.whatYouDo}</div>
-                        </div>
-                    </div>
-                    <div class="solution-section">
-                        <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-when">
-                            <span><i class="bi bi-calendar-check me-2"></i>${_t.whenFitsBest}</span>
-                            <i class="bi bi-chevron-down"></i>
-                        </div>
-                        <div class="collapse" id="${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-when">
-                            <div class="solution-section-content">${solution.overview.whenThisFitsBest}</div>
-                        </div>
-                    </div>
-                    <div class="solution-section">
-                        <div class="solution-section-header" data-bs-toggle="collapse" data-bs-target="#${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-min">
-                            <span><i class="bi bi-check2-square me-2"></i>${_t.minimumEnablers}</span>
-                            <i class="bi bi-chevron-down"></i>
-                        </div>
-                        <div class="collapse" id="${solution.solutionId.replace(/[^a-zA-Z0-9]/g, '')}-min">
-                            <div class="solution-section-content">${solution.overview.minimumEnablers}</div>
-                        </div>
-                    </div>
+                    ${sections}
                 </div>
                 <div class="solution-actions">
                     ${isSelected || isSkipped ? `
@@ -1106,16 +1166,19 @@
 
     // Render a stream section
     function renderStreamSection(stream) {
+        const subgroupBadge = (stream.subgroup && typeof StreamClassification !== 'undefined')
+            ? `<span class="badge ms-2" style="background-color:${StreamClassification.getSubgroupColor(stream.subgroup)}; font-size: 0.7rem;">${StreamClassification.getSubgroupShortLabel(stream.subgroup)}</span>`
+            : '';
         let html = `
-            <div class="stream-section" data-stream="${stream.name}">
+            <div class="stream-section" data-stream="${stream.name}" data-subgroup="${stream.subgroup || ''}">
                 <div class="stream-header">
-                    <h5><i class="bi bi-bar-chart-line me-2"></i>${stream.name}</h5>
+                    <h5><i class="bi bi-bar-chart-line me-2"></i>${stream.name}${subgroupBadge}</h5>
                     <span class="stream-rank">${_t.rank} #${stream.rank}</span>
                 </div>
         `;
 
         stream.gaps.forEach(gap => {
-            const solutions = SolutionsDatabase.getSolutionsByStreamAndGap(stream.name, gap.type);
+            const solutions = SolutionsDatabase.getSolutionsByStreamAndGap(stream.name, gap.type, stream.subgroup);
             if (solutions.length > 0) {
                 html += renderGapSection(stream.name, gap, solutions);
             }
@@ -1227,7 +1290,7 @@
 
         let html = '';
         streams.forEach(stream => {
-            const streamSolutions = SolutionsDatabase.getSolutionsByStream(stream.name);
+            const streamSolutions = SolutionsDatabase.getSolutionsByStream(stream.name, stream.subgroup);
             const selectedInStream = streamSolutions.filter(s => selections.selected.has(s.solutionId));
 
             if (selectedInStream.length > 0) {
@@ -1235,7 +1298,7 @@
                 html += `<div class="summary-stream-name">${stream.name}</div>`;
 
                 stream.gaps.forEach(gap => {
-                    const gapSolutions = SolutionsDatabase.getSolutionsByStreamAndGap(stream.name, gap.type);
+                    const gapSolutions = SolutionsDatabase.getSolutionsByStreamAndGap(stream.name, gap.type, stream.subgroup);
                     const selectedInGap = gapSolutions.filter(s => selections.selected.has(s.solutionId));
                     const gapColor = SolutionsDatabase.getGapColor(gap.type);
 

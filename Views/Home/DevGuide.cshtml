@@ -982,17 +982,18 @@ user.LockoutEnabled = <span class="kw">false</span>;
                 <p>Route: <code class="code-inline">POST /Admin/UploadPeerSNGData</code></p>
                 <h4>Expected CSV Format</h4>
                 <div class="code-block">
-SNG,OSR,GCP,Include
-Baringo,<span class="num">321.4</span>,<span class="num">75459</span>,<span class="num">1</span>
-Bomet,<span class="num">198.7</span>,<span class="num">62340</span>,<span class="num">1</span>
-Nairobi,<span class="num">15200.5</span>,<span class="num">498230</span>,<span class="num">0</span>
+SNG,OSR,GCP,Population,Include
+Baringo,<span class="num">313351637</span>,<span class="num">75459000000</span>,<span class="num">759000</span>,<span class="num">1</span>
+Bomet,<span class="num">242395023</span>,<span class="num">151153000000</span>,<span class="num">973000</span>,<span class="num">1</span>
+Nairobi,<span class="num">10237263780</span>,<span class="num">2682701000000</span>,<span class="num">4906000</span>,<span class="num">1</span>
                 </div>
                 <table class="guide-table">
                     <thead><tr><th>Column</th><th>Type</th><th>Description</th></tr></thead>
                     <tbody>
                         <tr><td>SNG</td><td>string</td><td>Subnational government name</td></tr>
-                        <tr><td>OSR</td><td>decimal</td><td>Own-source revenue (millions)</td></tr>
-                        <tr><td>GCP</td><td>decimal</td><td>Gross county product / GDP</td></tr>
+                        <tr><td>OSR</td><td>decimal</td><td>Own-source revenue (full currency value)</td></tr>
+                        <tr><td>GCP</td><td>decimal</td><td>Gross county product / GDP (full currency value)</td></tr>
+                        <tr><td>Population</td><td>long</td><td>Population (KNBS projection)</td></tr>
                         <tr><td>Include</td><td>bool</td><td>1 or "true" to include in analysis</td></tr>
                     </tbody>
                 </table>

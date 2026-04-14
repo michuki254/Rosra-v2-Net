@@ -61,16 +61,19 @@
   <data name="SelectSngForAnalysis" xml:space="preserve"><value>Select a subnational government to view the OSR frontier analysis</value></data>
 
   <!-- Frontier Metrics -->
-  <data name="Metric_OSR" xml:space="preserve"><value>Own Source Revenues (OSRs) per capita</value></data>
-  <data name="Metric_GDP" xml:space="preserve"><value>Subnational GDP per capita</value></data>
-  <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Peer frontier multiplier (Top-20% avg OSR/GDP per capita)</value></data>
+  <data name="Metric_OSR" xml:space="preserve"><value>Own Source Revenues (OSR)</value></data>
+  <data name="Metric_GDP" xml:space="preserve"><value>Subnational GDP</value></data>
+  <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Peer frontier multiplier (Top-20% avg OSR/GDP)</value></data>
   <data name="Metric_SubjectMultiplier" xml:space="preserve"><value>Subject multiplier</value></data>
-  <data name="Metric_Benchmark" xml:space="preserve"><value>Frontier benchmark per capita</value></data>
+  <data name="Metric_Benchmark" xml:space="preserve"><value>Frontier benchmark (OSR potential)</value></data>
   <data name="Metric_Gap" xml:space="preserve"><value>Gap to frontier benchmark</value></data>
   <data name="Metric_Performance" xml:space="preserve"><value>Performance Index</value></data>
   <data name="Metric_PrimaryAnalysis" xml:space="preserve"><value>Primary Analysis</value></data>
-  <data name="Chart_ScatterTitle" xml:space="preserve"><value>OSR/GDP per capita Multiplier Comparison</value></data>
-  <data name="Chart_BarTitle" xml:space="preserve"><value>Current OSR vs Frontier Benchmark per capita</value></data>
+  <data name="Metric_OSRPerCapita" xml:space="preserve"><value>OSR per capita</value></data>
+  <data name="Metric_PotentialOSRPerCapita" xml:space="preserve"><value>Frontier-implied OSR per capita</value></data>
+  <data name="Metric_PerCapitaGap" xml:space="preserve"><value>Per capita gap to frontier</value></data>
+  <data name="Chart_ScatterTitle" xml:space="preserve"><value>OSR/GDP Multiplier Comparison</value></data>
+  <data name="Chart_BarTitle" xml:space="preserve"><value>Current OSR vs Frontier Benchmark</value></data>
   <data name="Result_Header" xml:space="preserve"><value>Within-Country OSR Frontier (Peer SNGs) Result:</value></data>
   <data name="Result_Placeholder" xml:space="preserve"><value>Select a subnational government to view the analysis result.</value></data>
   <data name="CrossCountry_Title" xml:space="preserve"><value>Optional: Cross-Country Fiscal Analysis</value></data>

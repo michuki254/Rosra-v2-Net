@@ -25,6 +25,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<EmailSettings> EmailSettings { get; set; } = null!;
     public DbSet<EmailLog> EmailLogs { get; set; } = null!;
     public DbSet<DataUploadHistory> DataUploadHistory { get; set; } = null!;
+    public DbSet<SolutionCard> SolutionCards { get; set; } = null!;
+    public DbSet<SolutionCardHistory> SolutionCardHistory { get; set; } = null!;
+    public DbSet<SystemSetting> SystemSettings { get; set; } = null!;
+    public DbSet<CardSet> CardSets { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -57,6 +61,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .WithMany(r => r.Snapshots)
             .HasForeignKey(s => s.ReportId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // SolutionCard: unique index on SolutionId + soft-delete filter
+        builder.Entity<SolutionCard>()
+            .HasIndex(sc => sc.SolutionId)
+            .IsUnique();
+
+        builder.Entity<SolutionCard>()
+            .HasQueryFilter(sc => !sc.IsDeleted);
+
+        // SolutionCardHistory FK
+        builder.Entity<SolutionCardHistory>()
+            .HasOne(h => h.SolutionCard)
+            .WithMany()
+            .HasForeignKey(h => h.SolutionCardId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // ReportArtifact FKs — Restrict to avoid cascade cycles
         builder.Entity<ReportArtifact>()

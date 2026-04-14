@@ -135,11 +135,11 @@ $(document).ready(function () {
         html += '<div class="card">';
         html += '<div class="card-header cyan">Within-Country OSR Frontier (Peer SNGs) <span class="badge">Primary Analysis</span></div>';
         html += '<div class="card-body">';
-        html += '<div class="metric-row"><span class="metric-label">Own Source Revenues (OSRs) per capita</span><span class="metric-value">' + actualOSR + '</span></div>';
-        html += '<div class="metric-row"><span class="metric-label">Subnational GDP per capita</span><span class="metric-value">' + subnationalGDP + '</span></div>';
-        html += '<div class="metric-row blue"><span class="metric-label"><strong>Peer frontier multiplier</strong> (Top-20% avg OSR/GDP per capita)</span><span class="metric-value"><strong>' + frontierMult + '</strong></span></div>';
+        html += '<div class="metric-row"><span class="metric-label">Own Source Revenues (OSR)</span><span class="metric-value">' + actualOSR + '</span></div>';
+        html += '<div class="metric-row"><span class="metric-label">Subnational GDP</span><span class="metric-value">' + subnationalGDP + '</span></div>';
+        html += '<div class="metric-row blue"><span class="metric-label"><strong>Peer frontier multiplier</strong> (Top-20% avg OSR/GDP)</span><span class="metric-value"><strong>' + frontierMult + '</strong></span></div>';
         html += '<div class="metric-row"><span class="metric-label">Subject multiplier</span><span class="metric-value">' + subjectMult + '</span></div>';
-        html += '<div class="metric-row light-blue"><span class="metric-label"><strong>Frontier benchmark per capita</strong></span><span class="metric-value"><strong>' + osrPotential + '</strong></span></div>';
+        html += '<div class="metric-row light-blue"><span class="metric-label"><strong>Frontier benchmark (OSR potential)</strong></span><span class="metric-value"><strong>' + osrPotential + '</strong></span></div>';
         html += '<div class="metric-row highlight"><span class="metric-label"><strong>Gap to frontier benchmark</strong></span><span class="metric-value gap-value">' + osrGap + '</span></div>';
         html += '<div class="metric-row teal"><span class="metric-label"><strong>Performance Index</strong></span><span class="metric-value"><strong>' + perfIndex + '</strong></span></div>';
         html += '</div></div>';

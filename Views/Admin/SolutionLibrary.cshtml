@@ -1,0 +1,857 @@
+@model List<RosraApp.Models.SolutionCard>
+@{
+    ViewData["Title"] = "Solution Card Library";
+
+    var search = ViewBag.Search as string;
+    var stream = ViewBag.Stream as string;
+    var gap = ViewBag.Gap as string;
+    var subgroup = ViewBag.Subgroup as string;
+    var timeline = ViewBag.Timeline as string;
+    var status = ViewBag.Status as string;
+
+    int currentPage = (int)(ViewBag.CurrentPage ?? 1);
+    int pageSize = (int)(ViewBag.PageSize ?? 20);
+    int totalPages = (int)(ViewBag.TotalPages ?? 1);
+    int totalCount = (int)(ViewBag.TotalCount ?? 0);
+
+    int totalCards = (int)(ViewBag.TotalCards ?? 0);
+    int totalActive = (int)(ViewBag.TotalActive ?? 0);
+    int totalInactive = (int)(ViewBag.TotalInactive ?? 0);
+    int totalDeleted = (int)(ViewBag.TotalDeleted ?? 0);
+
+    int rangeStart = totalCount > 0 ? (currentPage - 1) * pageSize + 1 : 0;
+    int rangeEnd = Math.Min(currentPage * pageSize, totalCount);
+
+    bool hasFilters = !string.IsNullOrEmpty(search) || !string.IsNullOrEmpty(stream) ||
+                      !string.IsNullOrEmpty(gap) || !string.IsNullOrEmpty(subgroup) ||
+                      !string.IsNullOrEmpty(timeline) || (!string.IsNullOrEmpty(status) && status != "active");
+}
+
+@section Styles {
+<style>
+    body { background: #f8f9fa; }
+
+    /* ── Header ── */
+    .page-header {
+        background: #fff; border-radius: 12px; padding: 1.5rem 2rem;
+        box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1); margin-bottom: 1.5rem;
+    }
+    .page-header h1 { color: #222; font-weight: 700; font-size: 1.6rem; margin-bottom: 0.25rem; }
+    .page-header p { color: #6A6A6A; font-size: 0.875rem; margin-bottom: 0; }
+    .header-icon {
+        width: 44px; height: 44px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
+    }
+    .btn-back {
+        background: #fff; border: 1px solid #dee2e6; border-radius: 8px; color: #222;
+        font-size: 0.8125rem; font-weight: 500; padding: 0.45rem 1rem;
+        box-shadow: 0 1px 4px -1px rgba(0,0,0,0.06); transition: all 0.2s; text-decoration: none;
+    }
+    .btn-back:hover { color: #3B82F6; box-shadow: 0 4px 12px -4px rgba(0,0,0,0.12); }
+    .header-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+    .btn-add {
+        background: #00689D; color: #fff; border: none; border-radius: 8px;
+        padding: 0.45rem 1.1rem; font-size: 0.8125rem; font-weight: 600;
+        box-shadow: 0 2px 8px -2px rgba(0,104,157,0.3); transition: all 0.2s;
+        display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;
+    }
+    .btn-add:hover { background: #005580; color: #fff; }
+    .btn-export-json {
+        background: #10B981; color: #fff; border: none; border-radius: 8px;
+        padding: 0.45rem 1.1rem; font-size: 0.8125rem; font-weight: 600;
+        display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;
+        box-shadow: 0 2px 8px -2px rgba(16,185,129,0.25); transition: all 0.2s;
+    }
+    .btn-export-json:hover { background: #059669; color: #fff; }
+    .btn-import {
+        background: #fff; color: #8B5CF6; border: 1px solid #DDD6FE; border-radius: 8px;
+        padding: 0.45rem 1.1rem; font-size: 0.8125rem; font-weight: 600;
+        display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-import:hover { background: #F5F3FF; border-color: #8B5CF6; }
+
+    /* ── KPI Cards ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+    .kpi-card {
+        background: #fff; border-radius: 10px; padding: 1rem 1.125rem;
+        box-shadow: 0 1px 8px -2px rgba(0,0,0,0.08); border-left: 4px solid;
+        transition: all 0.2s; cursor: pointer; text-decoration: none; display: block;
+    }
+    .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px -4px rgba(0,0,0,0.12); }
+    .kpi-card.selected { outline: 2px solid; outline-offset: -2px; }
+    .kpi-value { font-size: 1.6rem; font-weight: 700; line-height: 1; }
+    .kpi-label { font-size: 0.6875rem; color: #6A6A6A; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 0.2rem; }
+
+    /* ── Filter Panel ── */
+    .filter-panel {
+        background: #fff; border-radius: 12px; padding: 1.25rem 1.5rem;
+        box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1); margin-bottom: 1.5rem;
+    }
+    .filter-title {
+        font-size: 0.8125rem; font-weight: 600; color: #222;
+        margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .filter-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: end; }
+    .filter-group { flex: 1; min-width: 150px; }
+    .filter-group label {
+        font-size: 0.6875rem; color: #6A6A6A; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem; display: block;
+    }
+    .filter-group select, .filter-group input[type="text"] {
+        width: 100%; background: #F7F7F7; border: 1px solid #DDD; border-radius: 8px;
+        padding: 0.45rem 0.75rem; font-size: 0.8125rem; color: #222;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .filter-group select:focus, .filter-group input[type="text"]:focus {
+        background: #fff; border-color: #00689D; outline: none;
+        box-shadow: 0 0 0 3px rgba(0,104,157,0.1);
+    }
+    .filter-actions { display: flex; gap: 0.5rem; align-items: end; padding-bottom: 1px; }
+    .btn-filter {
+        background: #00689D; color: #fff; border: none; border-radius: 8px;
+        padding: 0.45rem 1rem; font-size: 0.8125rem; font-weight: 500; cursor: pointer; white-space: nowrap;
+    }
+    .btn-filter:hover { background: #005580; color: #fff; }
+    .btn-clear {
+        background: #fff; color: #EF4444; border: 1px solid #FECACA; border-radius: 8px;
+        padding: 0.45rem 1rem; font-size: 0.8125rem; font-weight: 500; cursor: pointer;
+        white-space: nowrap; text-decoration: none;
+    }
+    .btn-clear:hover { background: #FEF2F2; color: #EF4444; }
+
+    /* ── Table Card ── */
+    .table-card {
+        background: #fff; border-radius: 12px;
+        box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1); overflow: hidden;
+    }
+    .table-toolbar {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0.875rem 1.5rem; border-bottom: 1px solid #F7F7F7; flex-wrap: wrap; gap: 0.75rem;
+    }
+    .table-toolbar-left { display: flex; align-items: center; gap: 0.75rem; }
+    .section-icon {
+        width: 32px; height: 32px; border-radius: 8px;
+        display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.875rem;
+    }
+    .table-toolbar h5 { color: #222; font-weight: 600; margin: 0; font-size: 1rem; }
+    .table-toolbar h5 small { color: #6A6A6A !important; }
+    .result-count { font-size: 0.8125rem; color: #6A6A6A; }
+    .result-count strong { color: #222; }
+
+    .table-scroll { overflow-x: auto; max-height: 65vh; overflow-y: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+    .data-table thead th {
+        background: #F7F7F7; color: #6A6A6A; font-weight: 600; font-size: 0.6875rem;
+        text-transform: uppercase; letter-spacing: 0.5px; padding: 0.7rem 0.75rem;
+        position: sticky; top: 0; z-index: 1; white-space: nowrap; border-bottom: 2px solid #eee;
+    }
+    .data-table tbody td {
+        padding: 0.6rem 0.75rem; vertical-align: middle;
+        border-bottom: 1px solid #F7F7F7; color: #222; white-space: nowrap;
+    }
+    .data-table tbody tr { transition: background 0.15s; }
+    .data-table tbody tr:hover { background: #FAFAFA; }
+
+    /* Row border based on gap type */
+    .data-table tbody tr.gap-compliance { border-left: 4px solid #EF4444; }
+    .data-table tbody tr.gap-coverage { border-left: 4px solid #F59E0B; }
+    .data-table tbody tr.gap-valuation { border-left: 4px solid #3B82F6; }
+    .data-table tbody tr.gap-liability { border-left: 4px solid #8B5CF6; }
+
+    .title-cell { max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ── Status Badges ── */
+    .status-badge {
+        display: inline-flex; align-items: center; gap: 0.375rem;
+        padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+    }
+    .status-badge i { font-size: 0.4375rem; }
+    .status-badge.active { background: #D1FAE5; color: #065F46; }
+    .status-badge.inactive { background: #F3F4F6; color: #6B7280; }
+    .status-badge.deleted { background: #FEE2E2; color: #991B1B; }
+
+    .stream-badge {
+        display: inline-flex; padding: 0.15rem 0.45rem; border-radius: 5px;
+        font-size: 0.6875rem; font-weight: 600;
+    }
+    .stream-pt { background: #FEF3C7; color: #92400E; }
+    .stream-np { background: #DBEAFE; color: #1E40AF; }
+
+    .gap-badge { display: inline-flex; padding: 0.15rem 0.45rem; border-radius: 5px; font-size: 0.6875rem; font-weight: 600; }
+    .gap-badge.compliance { background: #FEE2E2; color: #991B1B; }
+    .gap-badge.coverage { background: #FEF3C7; color: #92400E; }
+    .gap-badge.valuation { background: #DBEAFE; color: #1E40AF; }
+    .gap-badge.liability { background: #EDE9FE; color: #5B21B6; }
+
+    .difficulty-badge { display: inline-flex; padding: 0.15rem: 0.45rem; border-radius: 5px; font-size: 0.6875rem; font-weight: 500; }
+
+    /* ── Action Buttons ── */
+    .btn-action {
+        background: #fff; border: none; padding: 0.35rem 0.55rem; border-radius: 8px;
+        box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s; font-size: 0.8125rem;
+        cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    }
+    .btn-action:hover { box-shadow: 0 2px 8px -2px rgba(0,0,0,0.15); }
+    .btn-action.edit { color: #00689D; text-decoration: none; }
+    .btn-action.edit:hover { color: #005580; }
+    .btn-action.toggle-on { color: #10B981; }
+    .btn-action.toggle-on:hover { color: #059669; }
+    .btn-action.toggle-off { color: #6B7280; }
+    .btn-action.toggle-off:hover { color: #4B5563; }
+    .btn-action.delete { color: #EF4444; }
+    .btn-action.delete:hover { color: #DC2626; }
+    .btn-action.restore { color: #8B5CF6; }
+    .btn-action.restore:hover { color: #7C3AED; }
+    .btn-action.history { color: #6B7280; text-decoration: none; }
+    .btn-action.history:hover { color: #4B5563; }
+
+    /* ── Pagination ── */
+    .table-footer {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0.875rem 1.5rem; border-top: 1px solid #F7F7F7;
+    }
+    .pagination { margin: 0; }
+    .pagination .page-link {
+        border: none; border-radius: 8px; color: #6A6A6A;
+        padding: 0.45rem 0.8rem; font-size: 0.8125rem;
+    }
+    .pagination .page-item.active .page-link {
+        background: #00689D; color: #fff;
+        box-shadow: 0 2px 8px -2px rgba(0,104,157,0.3);
+    }
+    .pagination .page-link:hover { background: #F7F7F7; }
+
+    /* ── Modals ── */
+    .modal-content {
+        border: none !important; border-radius: 12px !important;
+        box-shadow: 0 20px 60px -12px rgba(0,0,0,0.25) !important; overflow: hidden;
+    }
+
+    /* ── Toast ── */
+    .success-toast {
+        position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+        background: #10B981; color: #fff; padding: 12px 20px; border-radius: 10px;
+        font-size: 0.875rem; font-weight: 500;
+        box-shadow: 0 8px 24px -4px rgba(16,185,129,0.3);
+        display: flex; align-items: center; gap: 0.5rem;
+        animation: slideUp 0.3s ease-out;
+    }
+    .error-toast {
+        position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+        background: #EF4444; color: #fff; padding: 12px 20px; border-radius: 10px;
+        font-size: 0.875rem; font-weight: 500;
+        box-shadow: 0 8px 24px -4px rgba(239,68,68,0.3);
+        display: flex; align-items: center; gap: 0.5rem;
+        animation: slideUp 0.3s ease-out;
+    }
+    @@keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Empty State ── */
+    .empty-state {
+        text-align: center; padding: 3rem 1rem;
+    }
+    .empty-state-icon {
+        width: 64px; height: 64px; border-radius: 16px; background: #F7F7F7;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 1.75rem; color: #6A6A6A; margin-bottom: 1rem;
+    }
+    .empty-state p { color: #6A6A6A; font-size: 0.9375rem; margin: 0; }
+
+    @@media (max-width: 768px) {
+        .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .filter-row { flex-direction: column; }
+        .filter-group { min-width: 100%; }
+        .header-actions { width: 100%; justify-content: flex-end; }
+    }
+</style>
+}
+
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="header-icon" style="background: #E0F2FE; color: #00689D;">
+                <i class="bi bi-card-checklist"></i>
+            </div>
+            <div>
+                <h1>Solution Card Library</h1>
+                <p>Manage ROSRA solution cards across all revenue streams and gap types</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a asp-action="CreateSolutionCard" class="btn-add">
+                <i class="bi bi-plus-lg"></i> Add New Card
+            </a>
+            <a asp-action="ExportSolutionCards" class="btn-export-json">
+                <i class="bi bi-download"></i> Export All (JSON)
+            </a>
+            <button type="button" class="btn-import" data-bs-toggle="modal" data-bs-target="#importModal">
+                <i class="bi bi-upload"></i> Import Cards
+            </button>
+            <a asp-action="Index" class="btn-back">
+                <i class="bi bi-arrow-left me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <a asp-action="SolutionLibrary" asp-route-status=""
+           class="kpi-card @(string.IsNullOrEmpty(status) ? "selected" : "")"
+           style="border-color:#00689D; @(string.IsNullOrEmpty(status) ? "outline-color:#00689D;" : "")">
+            <div class="kpi-value" style="color:#00689D;">@totalCards</div>
+            <div class="kpi-label">Total Cards</div>
+        </a>
+        <a asp-action="SolutionLibrary" asp-route-status="active"
+           asp-route-search="@search" asp-route-stream="@stream" asp-route-gap="@gap"
+           asp-route-subgroup="@subgroup" asp-route-timeline="@timeline"
+           class="kpi-card @(status == "active" ? "selected" : "")"
+           style="border-color:#10B981; @(status == "active" ? "outline-color:#10B981;" : "")">
+            <div class="kpi-value" style="color:#10B981;">@totalActive</div>
+            <div class="kpi-label">Active</div>
+        </a>
+        <a asp-action="SolutionLibrary" asp-route-status="inactive"
+           asp-route-search="@search" asp-route-stream="@stream" asp-route-gap="@gap"
+           asp-route-subgroup="@subgroup" asp-route-timeline="@timeline"
+           class="kpi-card @(status == "inactive" ? "selected" : "")"
+           style="border-color:#6B7280; @(status == "inactive" ? "outline-color:#6B7280;" : "")">
+            <div class="kpi-value" style="color:#6B7280;">@totalInactive</div>
+            <div class="kpi-label">Inactive</div>
+        </a>
+        <a asp-action="SolutionLibrary" asp-route-status="deleted"
+           asp-route-search="@search" asp-route-stream="@stream" asp-route-gap="@gap"
+           asp-route-subgroup="@subgroup" asp-route-timeline="@timeline"
+           class="kpi-card @(status == "deleted" ? "selected" : "")"
+           style="border-color:#EF4444; @(status == "deleted" ? "outline-color:#EF4444;" : "")">
+            <div class="kpi-value" style="color:#EF4444;">@totalDeleted</div>
+            <div class="kpi-label">Deleted</div>
+        </a>
+    </div>
+
+    <!-- Filter Panel -->
+    <form id="filterForm" method="get" asp-action="SolutionLibrary">
+        <div class="filter-panel">
+            <div class="filter-title"><i class="bi bi-funnel"></i> Filters</div>
+            <div class="filter-row">
+                <div class="filter-group" style="min-width:200px;">
+                    <label>Search</label>
+                    <input type="text" name="search" value="@search" placeholder="Title, Solution ID..." />
+                </div>
+                <div class="filter-group">
+                    <label>Stream</label>
+                    <select name="stream">
+                        <option value="">All</option>
+                        <option value="Property Tax" selected="@(stream == "Property Tax")">Property Tax</option>
+                        <option value="Non-Property" selected="@(stream == "Non-Property")">Non-Property</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Gap</label>
+                    <select name="gap">
+                        <option value="">All</option>
+                        <option value="Coverage" selected="@(gap == "Coverage")">Coverage</option>
+                        <option value="Compliance" selected="@(gap == "Compliance")">Compliance</option>
+                        <option value="Valuation" selected="@(gap == "Valuation")">Valuation</option>
+                        <option value="Liability" selected="@(gap == "Liability")">Liability</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Subgroup</label>
+                    <select name="subgroup">
+                        <option value="">All</option>
+                        <option value="A" selected="@(subgroup == "A")">A - Business Licences</option>
+                        <option value="B" selected="@(subgroup == "B")">B - Service Fees</option>
+                        <option value="C" selected="@(subgroup == "C")">C - Daily Charges</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Timeline</label>
+                    <select name="timeline">
+                        <option value="">All</option>
+                        <option value="<1 year" selected="@(timeline == "<1 year")">&lt;1 year</option>
+                        <option value="1-3 years" selected="@(timeline == "1-3 years")">1-3 years</option>
+                        <option value="2-4 years" selected="@(timeline == "2-4 years")">2-4 years</option>
+                        <option value="3+ years" selected="@(timeline == "3+ years")">3+ years</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select name="status">
+                        <option value="" selected="@(string.IsNullOrEmpty(status))">All (non-deleted)</option>
+                        <option value="active" selected="@(status == "active")">Active</option>
+                        <option value="inactive" selected="@(status == "inactive")">Inactive</option>
+                        <option value="deleted" selected="@(status == "deleted")">Deleted</option>
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn-filter"><i class="bi bi-search me-1"></i> Filter</button>
+                    @if (hasFilters)
+                    {
+                        <a asp-action="SolutionLibrary" class="btn-clear"><i class="bi bi-x-lg me-1"></i> Clear</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Cards Table -->
+    <div class="table-card">
+        <div class="table-toolbar">
+            <div class="table-toolbar-left">
+                <div class="section-icon" style="background:#00689D;"><i class="bi bi-card-checklist"></i></div>
+                <h5>Solution Cards <small class="fw-normal ms-2">(<strong>@rangeStart</strong>-<strong>@rangeEnd</strong> of <strong>@totalCount</strong> cards)</small></h5>
+            </div>
+        </div>
+
+        <div class="table-scroll">
+            <table class="data-table" id="cardsTable">
+                <thead>
+                    <tr>
+                        <th>Solution ID</th>
+                        <th>Title</th>
+                        <th>Stream</th>
+                        <th>Gap</th>
+                        <th>Subgroup</th>
+                        <th>Timeline</th>
+                        <th>Difficulty</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        @foreach (var card in Model)
+                        {
+                            var gapClass = card.Gap?.ToLower() switch {
+                                "compliance" => "gap-compliance",
+                                "coverage" => "gap-coverage",
+                                "valuation" => "gap-valuation",
+                                "liability" => "gap-liability",
+                                _ => ""
+                            };
+                            var gapBadgeClass = card.Gap?.ToLower() switch {
+                                "compliance" => "compliance",
+                                "coverage" => "coverage",
+                                "valuation" => "valuation",
+                                "liability" => "liability",
+                                _ => ""
+                            };
+                            var streamBadgeClass = card.StreamType == "property-based" ? "stream-pt" : "stream-np";
+                            var statusClass = card.IsDeleted ? "deleted" : (card.IsActive ? "active" : "inactive");
+                            var statusLabel = card.IsDeleted ? "Deleted" : (card.IsActive ? "Active" : "Inactive");
+
+                            var diffColor = card.DeliveryDifficulty?.ToLower() switch {
+                                "low" => "background:#D1FAE5; color:#065F46;",
+                                "medium" => "background:#FEF3C7; color:#92400E;",
+                                "high" => "background:#FEE2E2; color:#991B1B;",
+                                _ => "background:#F3F4F6; color:#6B7280;"
+                            };
+
+                            <tr class="@gapClass" data-card-id="@card.Id">
+                                <td>
+                                    <span style="font-weight:600; font-family:monospace; font-size:0.8125rem; color:#00689D;">@card.SolutionId</span>
+                                </td>
+                                <td class="title-cell" title="@card.Title" style="white-space:normal; min-width:200px;">
+                                    <span style="font-weight:500;">@card.Title</span>
+                                    @if (!string.IsNullOrEmpty(card.ShortTitle))
+                                    {
+                                        <br /><span style="font-size:0.6875rem; color:#6A6A6A;">@card.ShortTitle</span>
+                                    }
+                                </td>
+                                <td><span class="stream-badge @streamBadgeClass">@card.Stream</span></td>
+                                <td><span class="gap-badge @gapBadgeClass">@card.Gap</span></td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(card.Subgroup))
+                                    {
+                                        <span style="font-weight:500;">@card.Subgroup</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:#ccc;">—</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(card.Timeline))
+                                    {
+                                        <span style="font-size:0.75rem;">@card.Timeline</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:#ccc;">—</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(card.DeliveryDifficulty))
+                                    {
+                                        <span style="display:inline-flex; padding:0.15rem 0.45rem; border-radius:5px; font-size:0.6875rem; font-weight:600; @diffColor">@card.DeliveryDifficulty</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:#ccc;">—</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="status-badge @statusClass">
+                                        <i class="bi bi-circle-fill"></i>
+                                        @statusLabel
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a asp-action="EditSolutionCard" asp-route-id="@card.Id"
+                                           class="btn-action edit" title="Edit card">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+                                        @if (!card.IsDeleted)
+                                        {
+                                            <button type="button"
+                                                    class="btn-action @(card.IsActive ? "toggle-on" : "toggle-off") toggle-btn"
+                                                    data-id="@card.Id" data-active="@(card.IsActive ? "true" : "false")"
+                                                    data-title="@card.SolutionId"
+                                                    title="@(card.IsActive ? "Deactivate" : "Activate")">
+                                                <i class="bi bi-@(card.IsActive ? "toggle-on" : "toggle-off")"></i>
+                                            </button>
+                                            <button type="button"
+                                                    class="btn-action delete delete-btn"
+                                                    data-id="@card.Id" data-title="@card.SolutionId"
+                                                    title="Delete card">
+                                                <i class="bi bi-trash3"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button"
+                                                    class="btn-action restore restore-btn"
+                                                    data-id="@card.Id" data-title="@card.SolutionId"
+                                                    title="Restore card">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            </button>
+                                        }
+
+                                        <a asp-action="SolutionCardHistory" asp-route-id="@card.Id"
+                                           class="btn-action history" title="View history">
+                                            <i class="bi bi-clock-history"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="py-0">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">
+                                        <i class="bi bi-card-checklist"></i>
+                                    </div>
+                                    <p>No solution cards match the current filters</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (totalPages > 1)
+        {
+            <div class="table-footer">
+                <span class="result-count">
+                    Showing <strong>@rangeStart</strong>-<strong>@rangeEnd</strong> of <strong>@totalCount</strong> cards
+                </span>
+                <nav>
+                    <ul class="pagination">
+                        @if (currentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("SolutionLibrary", new { page = currentPage - 1, search, stream, gap, subgroup, timeline, status })">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                        }
+                        @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("SolutionLibrary", new { page = i, search, stream, gap, subgroup, timeline, status })">@i</a>
+                            </li>
+                        }
+                        @if (currentPage < totalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("SolutionLibrary", new { page = currentPage + 1, search, stream, gap, subgroup, timeline, status })">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#222; color:#fff; padding:1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-trash3 me-2"></i>Delete Solution Card</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <p style="color:#6A6A6A; margin:0;">
+                    Are you sure you want to delete card <strong id="deleteCardTitle"></strong>?
+                    This is a soft delete and the card can be restored later.
+                </p>
+                <input type="hidden" id="deleteCardId" />
+            </div>
+            <div class="modal-footer" style="border:none; background:#F7F7F7; padding:1rem 1.5rem;">
+                <button class="btn" style="background:#fff; color:#222; border:none; border-radius:8px; box-shadow:0 1px 4px -1px rgba(0,0,0,0.1); font-weight:500;" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn" id="confirmDeleteBtn" style="background:#EF4444; color:#fff; border:none; border-radius:8px; font-weight:600; box-shadow:0 4px 12px -2px rgba(239,68,68,0.25);">
+                    <i class="bi bi-trash3 me-1"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#222; color:#fff; padding:1.25rem 1.5rem;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-upload me-2"></i>Import Solution Cards</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;">
+                <p style="color:#6A6A6A; font-size:0.875rem; margin-bottom:1rem;">
+                    Upload a JSON file containing solution card data. Cards with duplicate Solution IDs will be skipped.
+                </p>
+                <div style="border:2px dashed #DDD; border-radius:10px; padding:1.5rem; text-align:center; background:#FAFAFA;">
+                    <i class="bi bi-file-earmark-code" style="font-size:2rem; color:#8B5CF6; display:block; margin-bottom:0.5rem;"></i>
+                    <input type="file" id="importFile" accept=".json" class="form-control form-control-sm" style="max-width:300px; margin:0 auto;" />
+                    <p style="font-size:0.75rem; color:#6A6A6A; margin:0.5rem 0 0;">Accepts .json files only</p>
+                </div>
+                <div id="importProgress" style="display:none; margin-top:1rem;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                        <span style="font-size:0.8125rem; color:#6A6A6A;">Importing cards...</span>
+                    </div>
+                </div>
+                <div id="importResult" style="display:none; margin-top:1rem; padding:0.75rem; border-radius:8px; font-size:0.8125rem;"></div>
+            </div>
+            <div class="modal-footer" style="border:none; background:#F7F7F7; padding:1rem 1.5rem;">
+                <button class="btn" style="background:#fff; color:#222; border:none; border-radius:8px; box-shadow:0 1px 4px -1px rgba(0,0,0,0.1); font-weight:500;" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn" id="confirmImportBtn" style="background:#8B5CF6; color:#fff; border:none; border-radius:8px; font-weight:600; box-shadow:0 4px 12px -2px rgba(139,92,246,0.25);">
+                    <i class="bi bi-upload me-1"></i> Import
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast container for TempData messages -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="serverToast" class="success-toast">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>@TempData["SuccessMessage"]</span>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div id="serverToast" class="error-toast">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>@TempData["ErrorMessage"]</span>
+    </div>
+}
+
+<!-- Dynamic toast (for JS actions) -->
+<div id="dynamicToast" style="display:none;"></div>
+
+@section Scripts {
+    @Html.AntiForgeryToken()
+    <script>
+        $(document).ready(function () {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            // ── Auto-dismiss server toast after 3 seconds ──
+            var serverToast = document.getElementById('serverToast');
+            if (serverToast) {
+                setTimeout(function () {
+                    serverToast.style.transition = 'opacity 0.3s, transform 0.3s';
+                    serverToast.style.opacity = '0';
+                    serverToast.style.transform = 'translateY(20px)';
+                    setTimeout(function () { serverToast.remove(); }, 300);
+                }, 3000);
+            }
+
+            // ── Show dynamic toast ──
+            function showToast(message, type) {
+                var existing = document.querySelectorAll('.success-toast, .error-toast');
+                existing.forEach(function (el) { el.remove(); });
+
+                var cls = type === 'success' ? 'success-toast' : 'error-toast';
+                var icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
+                var toast = $('<div class="' + cls + '"><i class="bi ' + icon + '"></i><span>' + message + '</span></div>');
+                $('body').append(toast);
+
+                setTimeout(function () {
+                    toast.css({ transition: 'opacity 0.3s, transform 0.3s', opacity: 0, transform: 'translateY(20px)' });
+                    setTimeout(function () { toast.remove(); }, 300);
+                }, 3000);
+            }
+
+            // ── Toggle Active/Inactive ──
+            $('.toggle-btn').click(function () {
+                var btn = $(this);
+                var cardId = btn.data('id');
+                var cardTitle = btn.data('title');
+                var isActive = btn.data('active') === 'true' || btn.data('active') === true;
+
+                $.ajax({
+                    url: '@Url.Action("ToggleSolutionCardActive", "Admin")',
+                    type: 'POST',
+                    data: { id: cardId, __RequestVerificationToken: token },
+                    success: function (r) {
+                        if (r.success) {
+                            showToast(cardTitle + ' has been ' + (isActive ? 'deactivated' : 'activated'), 'success');
+                            // Update row in place
+                            var row = $('tr[data-card-id="' + cardId + '"]');
+                            var badge = row.find('.status-badge');
+                            if (isActive) {
+                                badge.removeClass('active').addClass('inactive').html('<i class="bi bi-circle-fill"></i> Inactive');
+                                btn.removeClass('toggle-on').addClass('toggle-off').data('active', 'false').attr('title', 'Activate');
+                                btn.html('<i class="bi bi-toggle-off"></i>');
+                            } else {
+                                badge.removeClass('inactive').addClass('active').html('<i class="bi bi-circle-fill"></i> Active');
+                                btn.removeClass('toggle-off').addClass('toggle-on').data('active', 'true').attr('title', 'Deactivate');
+                                btn.html('<i class="bi bi-toggle-on"></i>');
+                            }
+                        } else {
+                            showToast(r.message || 'Failed to toggle card status', 'error');
+                        }
+                    },
+                    error: function () {
+                        showToast('An error occurred while toggling card status', 'error');
+                    }
+                });
+            });
+
+            // ── Delete: show modal ──
+            $('.delete-btn').click(function () {
+                var cardId = $(this).data('id');
+                var cardTitle = $(this).data('title');
+                $('#deleteCardId').val(cardId);
+                $('#deleteCardTitle').text(cardTitle);
+                new bootstrap.Modal(document.getElementById('deleteModal')).show();
+            });
+
+            // ── Delete: confirm ──
+            $('#confirmDeleteBtn').click(function () {
+                var cardId = $('#deleteCardId').val();
+
+                $.ajax({
+                    url: '@Url.Action("DeleteSolutionCard", "Admin")',
+                    type: 'POST',
+                    data: { id: cardId, __RequestVerificationToken: token },
+                    success: function (r) {
+                        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+                        if (r.success) {
+                            showToast('Card deleted successfully', 'success');
+                            setTimeout(function () { location.reload(); }, 800);
+                        } else {
+                            showToast(r.message || 'Failed to delete card', 'error');
+                        }
+                    },
+                    error: function () {
+                        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+                        showToast('An error occurred while deleting the card', 'error');
+                    }
+                });
+            });
+
+            // ── Restore ──
+            $('.restore-btn').click(function () {
+                var btn = $(this);
+                var cardId = btn.data('id');
+                var cardTitle = btn.data('title');
+
+                $.ajax({
+                    url: '@Url.Action("RestoreSolutionCard", "Admin")',
+                    type: 'POST',
+                    data: { id: cardId, __RequestVerificationToken: token },
+                    success: function (r) {
+                        if (r.success) {
+                            showToast(cardTitle + ' has been restored', 'success');
+                            setTimeout(function () { location.reload(); }, 800);
+                        } else {
+                            showToast(r.message || 'Failed to restore card', 'error');
+                        }
+                    },
+                    error: function () {
+                        showToast('An error occurred while restoring the card', 'error');
+                    }
+                });
+            });
+
+            // ── Import ──
+            $('#confirmImportBtn').click(function () {
+                var fileInput = document.getElementById('importFile');
+                if (!fileInput.files.length) {
+                    showToast('Please select a JSON file to import', 'error');
+                    return;
+                }
+
+                var formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                formData.append('__RequestVerificationToken', token);
+
+                $('#importProgress').show();
+                $('#importResult').hide();
+                $('#confirmImportBtn').prop('disabled', true);
+
+                $.ajax({
+                    url: '@Url.Action("ImportSolutionCards", "Admin")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (r) {
+                        $('#importProgress').hide();
+                        $('#confirmImportBtn').prop('disabled', false);
+
+                        if (r.success) {
+                            $('#importResult')
+                                .css({ background: '#D1FAE5', color: '#065F46' })
+                                .html('<i class="bi bi-check-circle-fill me-1"></i> ' + r.message)
+                                .show();
+                            setTimeout(function () { location.reload(); }, 1500);
+                        } else {
+                            $('#importResult')
+                                .css({ background: '#FEE2E2', color: '#991B1B' })
+                                .html('<i class="bi bi-exclamation-triangle-fill me-1"></i> ' + (r.message || 'Import failed'))
+                                .show();
+                        }
+                    },
+                    error: function () {
+                        $('#importProgress').hide();
+                        $('#confirmImportBtn').prop('disabled', false);
+                        $('#importResult')
+                            .css({ background: '#FEE2E2', color: '#991B1B' })
+                            .html('<i class="bi bi-exclamation-triangle-fill me-1"></i> An error occurred during import')
+                            .show();
+                    }
+                });
+            });
+        });
+    </script>
+}

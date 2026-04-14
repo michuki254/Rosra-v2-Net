@@ -1,0 +1,93 @@
+@model List<RosraApp.Models.SolutionCardHistory>
+@{
+    ViewData["Title"] = "Card Version History";
+
+    var card = ViewBag.Card as RosraApp.Models.SolutionCard;
+}
+
+<style>
+    .history-container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .history-header h2 { color: #00689D; margin: 0; }
+    .card-info { background: #f8f9fa; border-radius: 8px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #00689D; }
+    .card-info h5 { margin: 0 0 0.25rem; color: #333; }
+    .card-info .meta { font-size: 0.85rem; color: #666; }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before { content: ''; position: absolute; left: 0.75rem; top: 0; bottom: 0; width: 2px; background: #dee2e6; }
+    .timeline-item { position: relative; padding-bottom: 1.5rem; }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-dot { position: absolute; left: -1.6rem; top: 0.25rem; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; }
+    .timeline-dot.created { background: #28a745; }
+    .timeline-dot.updated { background: #007bff; }
+    .timeline-dot.deleted { background: #dc3545; }
+    .timeline-dot.restored { background: #ffc107; }
+    .timeline-content { background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 1rem 1.25rem; }
+    .timeline-content .change-type { font-weight: 600; text-transform: capitalize; }
+    .timeline-content .change-type.created { color: #28a745; }
+    .timeline-content .change-type.updated { color: #007bff; }
+    .timeline-content .change-type.deleted { color: #dc3545; }
+    .timeline-content .change-type.restored { color: #ffc107; }
+    .timeline-meta { font-size: 0.8rem; color: #888; margin-top: 0.25rem; }
+    .previous-data { margin-top: 0.75rem; padding: 0.75rem; background: #f8f9fa; border-radius: 4px; font-size: 0.8rem; max-height: 200px; overflow-y: auto; }
+    .previous-data pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
+</style>
+
+<div class="history-container">
+    <div class="history-header">
+        <h2><i class="bi bi-clock-history me-2"></i>Version History</h2>
+        <a href="@Url.Action("SolutionLibrary")" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Back to Library
+        </a>
+    </div>
+
+    @if (card != null)
+    {
+        <div class="card-info">
+            <h5>@card.SolutionId: @card.Title</h5>
+            <div class="meta">
+                @card.Stream | @card.Gap
+                @if (!string.IsNullOrEmpty(card.Subgroup)) { <text>| Subgroup @card.Subgroup</text> }
+                | @card.Timeline
+                | @(card.IsActive ? "Active" : "Inactive")
+                @if (card.IsDeleted) { <text>| <span class="text-danger">Deleted</span></text> }
+            </div>
+        </div>
+    }
+
+    @if (Model.Count == 0)
+    {
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-clock-history fs-1 d-block mb-2"></i>
+            <p>No history entries found for this card.</p>
+        </div>
+    }
+    else
+    {
+        <div class="timeline">
+            @foreach (var entry in Model)
+            {
+                var dotClass = entry.ChangeType.ToLower();
+                <div class="timeline-item">
+                    <div class="timeline-dot @dotClass"></div>
+                    <div class="timeline-content">
+                        <span class="change-type @dotClass">@entry.ChangeType</span>
+                        <div class="timeline-meta">
+                            @entry.ChangedAt.ToString("yyyy-MM-dd HH:mm:ss UTC")
+                            @if (entry.ChangedBy != null)
+                            {
+                                <text>by @entry.ChangedBy.Email</text>
+                            }
+                        </div>
+                        @if (!string.IsNullOrEmpty(entry.PreviousData))
+                        {
+                            <div class="previous-data">
+                                <strong class="d-block mb-1">Previous State:</strong>
+                                <pre>@entry.PreviousData</pre>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

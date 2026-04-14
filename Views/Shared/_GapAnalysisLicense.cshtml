@@ -1008,8 +1008,6 @@
                     return currencySymbol + ' ' + (v / 1000000000).toFixed(1) + 'B';
                 } else if (v >= 1000000) {
                     return currencySymbol + ' ' + (v / 1000000).toFixed(1) + 'M';
-                } else if (v >= 1000) {
-                    return currencySymbol + ' ' + (v / 1000).toFixed(1) + 'K';
                 }
                 return currencySymbol + ' ' + formatCurrency(v);
             }

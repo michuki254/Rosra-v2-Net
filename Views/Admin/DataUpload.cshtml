@@ -787,11 +787,11 @@
 
         // Download CSV Template Functions
         function downloadPeerTemplate() {
-            const csvContent = "SNG,OSR,GCP,Include\n" +
-                               "Nairobi,6733.3,2682701,0\n" +
-                               "Mombasa,3271.2,468749,1\n" +
-                               "Kisumu,728.3,247324,1\n" +
-                               "Nakuru,1511.6,483938,1";
+            const csvContent = "SNG,OSR,GCP,Population,Include\n" +
+                               "Nairobi,10237263780,2682701000000,4906000,1\n" +
+                               "Mombasa,3998628848,468749000000,1368000,1\n" +
+                               "Kisumu,731449033,247324000000,1292000,1\n" +
+                               "Nakuru,1611062682,483938000000,2445000,1";
 
             downloadCSV(csvContent, 'PeerSNG_Template.csv');
         }

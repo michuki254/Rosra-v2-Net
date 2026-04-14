@@ -60,16 +60,19 @@
   <data name="SelectSng" xml:space="preserve"><value>Sélectionnez un gouvernement sous-national...</value></data>
   <data name="SelectSngForAnalysis" xml:space="preserve"><value>Sélectionnez un gouvernement sous-national pour voir l'analyse de la frontière RPP</value></data>
   <data name="HierarchyNote" xml:space="preserve"><value>Les exemples sont fournis à titre indicatif et peuvent varier selon les pays. Remplissez le formulaire jusqu'à l'unité gouvernementale pour laquelle l'analyse ROSRA est menée.</value></data>
-  <data name="Metric_OSR" xml:space="preserve"><value>Recettes propres (RPP) par habitant</value></data>
-  <data name="Metric_GDP" xml:space="preserve"><value>PIB sous-national par habitant</value></data>
-  <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Multiplicateur de frontière (moy. top 20% RPP/PIB par habitant)</value></data>
+  <data name="Metric_OSR" xml:space="preserve"><value>Recettes propres (RPP)</value></data>
+  <data name="Metric_GDP" xml:space="preserve"><value>PIB sous-national</value></data>
+  <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Multiplicateur de frontière (moy. top 20% RPP/PIB)</value></data>
   <data name="Metric_SubjectMultiplier" xml:space="preserve"><value>Multiplicateur du sujet</value></data>
-  <data name="Metric_Benchmark" xml:space="preserve"><value>Référence de frontière par habitant</value></data>
+  <data name="Metric_Benchmark" xml:space="preserve"><value>Référence de frontière (potentiel RPP)</value></data>
   <data name="Metric_Gap" xml:space="preserve"><value>Écart par rapport à la référence</value></data>
   <data name="Metric_Performance" xml:space="preserve"><value>Indice de performance</value></data>
   <data name="Metric_PrimaryAnalysis" xml:space="preserve"><value>Analyse principale</value></data>
-  <data name="Chart_ScatterTitle" xml:space="preserve"><value>Comparaison du multiplicateur RPP/PIB par habitant</value></data>
-  <data name="Chart_BarTitle" xml:space="preserve"><value>RPP actuel vs référence de frontière par habitant</value></data>
+  <data name="Metric_OSRPerCapita" xml:space="preserve"><value>RPP par habitant</value></data>
+  <data name="Metric_PotentialOSRPerCapita" xml:space="preserve"><value>RPP par habitant implicite de la frontière</value></data>
+  <data name="Metric_PerCapitaGap" xml:space="preserve"><value>Écart par habitant par rapport à la frontière</value></data>
+  <data name="Chart_ScatterTitle" xml:space="preserve"><value>Comparaison du multiplicateur RPP/PIB</value></data>
+  <data name="Chart_BarTitle" xml:space="preserve"><value>RPP actuel vs référence de frontière</value></data>
   <data name="Result_Header" xml:space="preserve"><value>Résultat de la frontière RPP intra-pays (GNS pairs) :</value></data>
   <data name="Result_Placeholder" xml:space="preserve"><value>Sélectionnez un gouvernement sous-national pour voir le résultat de l'analyse.</value></data>
   <data name="CrossCountry_Title" xml:space="preserve"><value>Facultatif : Analyse fiscale internationale</value></data>

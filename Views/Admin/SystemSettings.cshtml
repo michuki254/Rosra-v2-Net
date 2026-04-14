@@ -1,0 +1,117 @@
+@model List<RosraApp.Models.SystemSetting>
+@{
+    ViewData["Title"] = "System Settings";
+
+}
+
+<style>
+    .settings-container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+    .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .settings-header h2 { color: #00689D; margin: 0; }
+    .setting-card { background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; transition: box-shadow 0.2s; }
+    .setting-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .setting-key { font-weight: 600; color: #333; font-size: 0.95rem; }
+    .setting-desc { font-size: 0.8rem; color: #888; margin-top: 0.25rem; }
+    .setting-input { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
+    .setting-input input { max-width: 200px; }
+    .setting-input .btn { white-space: nowrap; }
+    .setting-updated { font-size: 0.75rem; color: #aaa; margin-top: 0.25rem; }
+    .add-setting { border: 2px dashed #dee2e6; border-radius: 8px; padding: 1.25rem; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+    .add-setting:hover { border-color: #00689D; }
+</style>
+
+<div class="settings-container">
+    <div class="settings-header">
+        <h2><i class="bi bi-gear me-2"></i>System Settings</h2>
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Dashboard
+        </a>
+    </div>
+
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        These settings control system-wide thresholds and parameters. Changes take effect immediately for new analyses.
+    </div>
+
+    <div id="settingsContainer">
+        @if (Model != null && Model.Count > 0)
+        {
+            @foreach (var setting in Model)
+            {
+                <div class="setting-card" data-key="@setting.Key">
+                    <div class="setting-key">@setting.Key</div>
+                    @if (!string.IsNullOrEmpty(setting.Description))
+                    {
+                        <div class="setting-desc">@setting.Description</div>
+                    }
+                    <div class="setting-input">
+                        <input type="text" class="form-control form-control-sm" id="val-@setting.Key" value="@setting.Value" />
+                        <button class="btn btn-sm btn-primary" onclick="saveSetting('@setting.Key')">
+                            <i class="bi bi-check-lg me-1"></i>Save
+                        </button>
+                    </div>
+                    <div class="setting-updated">Last updated: @setting.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="text-muted text-center py-3">No settings configured yet.</div>
+        }
+    </div>
+
+    <div class="add-setting mt-3" onclick="showAddForm()">
+        <i class="bi bi-plus-circle me-2"></i>Add New Setting
+    </div>
+
+    <div id="addForm" style="display:none;" class="setting-card mt-3">
+        <h6>Add New Setting</h6>
+        <div class="row g-2">
+            <div class="col-md-4">
+                <input type="text" class="form-control form-control-sm" id="newKey" placeholder="Setting key" />
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control form-control-sm" id="newValue" placeholder="Value" />
+            </div>
+            <div class="col-md-4">
+                <input type="text" class="form-control form-control-sm" id="newDesc" placeholder="Description" />
+            </div>
+            <div class="col-md-1">
+                <button class="btn btn-sm btn-success" onclick="addSetting()"><i class="bi bi-plus-lg"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+<script>
+    function showAddForm() { document.getElementById('addForm').style.display = ''; }
+
+    function saveSetting(key) {
+        var val = document.getElementById('val-' + key).value;
+        fetch('@Url.Action("UpdateSystemSetting")', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value },
+            body: JSON.stringify({ key: key, value: val })
+        }).then(r => r.json()).then(d => {
+            if (d.success) alert('Setting saved.');
+            else alert('Error: ' + d.message);
+        });
+    }
+
+    function addSetting() {
+        var key = document.getElementById('newKey').value.trim();
+        var val = document.getElementById('newValue').value.trim();
+        var desc = document.getElementById('newDesc').value.trim();
+        if (!key) { alert('Key is required.'); return; }
+        fetch('@Url.Action("UpdateSystemSetting")', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value },
+            body: JSON.stringify({ key: key, value: val, description: desc })
+        }).then(r => r.json()).then(d => {
+            if (d.success) location.reload();
+            else alert('Error: ' + d.message);
+        });
+    }
+</script>

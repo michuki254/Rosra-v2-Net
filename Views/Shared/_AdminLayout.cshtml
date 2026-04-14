@@ -1,0 +1,410 @@
+@using Microsoft.AspNetCore.Identity
+@using System.Globalization
+@inject SignInManager<RosraApp.Models.ApplicationUser> SignInManager
+@inject UserManager<RosraApp.Models.ApplicationUser> UserManager
+<!DOCTYPE html>
+<html lang="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ROSRA Admin</title>
+    <link rel="icon" type="image/png" href="~/images/LogoFavicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+    @await RenderSectionAsync("Styles", required: false)
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 72px;
+            --header-height: 60px;
+            --un-blue: #00689D;
+            --un-blue-light: rgba(0,104,157,0.06);
+            --un-blue-dark: #004d73;
+            --text-primary: #333;
+            --text-secondary: #6c757d;
+            --text-muted: #adb5bd;
+            --border-color: #e9ecef;
+            --bg-sidebar: #fff;
+            --bg-body: #f5f7fa;
+            --bg-hover: #f8f9fa;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --purple: #7c3aed;
+            --orange: #ea580c;
+            --teal: #0d9488;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', sans-serif; background: var(--bg-body); color: var(--text-primary); overflow-x: hidden; }
+
+        /* ===== SIDEBAR ===== */
+        .admin-sidebar {
+            position: fixed; top: 0; left: 0; bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column;
+            z-index: 1040;
+            transition: width 0.3s ease, transform 0.3s ease;
+        }
+        .admin-sidebar.collapsed { width: var(--sidebar-collapsed); }
+        .admin-sidebar .sidebar-brand {
+            height: var(--header-height); display: flex; align-items: center; justify-content: space-between;
+            padding: 0 16px; border-bottom: 1px solid var(--border-color); flex-shrink: 0;
+        }
+        .admin-sidebar .sidebar-brand img { height: 32px; transition: opacity 0.2s; }
+        .admin-sidebar .sidebar-brand .brand-text { font-weight: 700; font-size: 1rem; color: var(--un-blue); margin-left: 10px; white-space: nowrap; }
+        .admin-sidebar.collapsed .brand-text { display: none; }
+        .admin-sidebar .sidebar-toggle {
+            background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 4px; border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .admin-sidebar .sidebar-toggle:hover { background: var(--bg-hover); }
+
+        /* Search */
+        .sidebar-search { padding: 12px 16px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+        .sidebar-search input {
+            width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 0.8rem; background: #f8f9fa; outline: none; transition: border-color 0.2s;
+        }
+        .sidebar-search input:focus { border-color: var(--un-blue); box-shadow: 0 0 0 3px rgba(0,104,157,0.1); }
+        .admin-sidebar.collapsed .sidebar-search { display: none; }
+
+        /* Nav */
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 0; }
+        .sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+
+        .nav-section-label {
+            padding: 16px 16px 6px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--text-muted); white-space: nowrap; overflow: hidden;
+        }
+        .admin-sidebar.collapsed .nav-section-label { text-align: center; font-size: 0; }
+        .admin-sidebar.collapsed .nav-section-label::after { content: '•'; font-size: 0.8rem; }
+
+        /* Nav items */
+        .nav-item-admin {
+            display: flex; align-items: center; padding: 9px 16px; margin: 1px 8px; border-radius: 8px;
+            color: var(--text-primary); text-decoration: none; font-size: 0.85rem; font-weight: 400;
+            transition: all 0.2s; position: relative; cursor: pointer; border-left: 3px solid transparent;
+        }
+        .nav-item-admin:hover { background: var(--bg-hover); color: var(--text-primary); text-decoration: none; }
+        .nav-item-admin.active { background: var(--un-blue); color: #fff !important; border-left-color: transparent; box-shadow: 0 2px 8px rgba(0,104,157,0.25); }
+        .nav-item-admin .nav-icon { width: 20px; height: 20px; margin-right: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+        .nav-item-admin .nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .nav-item-admin .nav-badge {
+            margin-left: auto; padding: 2px 7px; border-radius: 10px; font-size: 0.65rem; font-weight: 700; color: #fff; min-width: 20px; text-align: center;
+        }
+        .admin-sidebar.collapsed .nav-label { display: none; }
+        .admin-sidebar.collapsed .nav-badge { display: none; }
+        .admin-sidebar.collapsed .nav-item-admin { justify-content: center; padding: 10px; margin: 1px 8px; }
+        .admin-sidebar.collapsed .nav-item-admin .nav-icon { margin-right: 0; }
+
+        /* Collapsible parent */
+        .nav-parent .nav-chevron { margin-left: auto; transition: transform 0.2s; font-size: 0.7rem; }
+        .nav-parent.expanded .nav-chevron { transform: rotate(180deg); }
+        .nav-children { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .nav-children.open { max-height: 500px; }
+        .nav-children .nav-item-admin { padding-left: 48px; font-size: 0.8rem; }
+        .admin-sidebar.collapsed .nav-children { display: none; }
+        .admin-sidebar.collapsed .nav-chevron { display: none; }
+
+        /* Section color indicators */
+        .nav-parent.expanded { border-left-color: var(--section-color, var(--un-blue)); }
+        .nav-parent.expanded .nav-label { color: var(--section-color, var(--un-blue)); font-weight: 500; }
+
+        /* Tooltip on collapsed */
+        .nav-item-admin .nav-tooltip {
+            display: none; position: absolute; left: calc(var(--sidebar-collapsed) - 8px); top: 50%; transform: translateY(-50%);
+            padding: 5px 10px; background: #333; color: #fff; font-size: 0.75rem; border-radius: 6px;
+            white-space: nowrap; z-index: 1050; pointer-events: none;
+        }
+        .admin-sidebar.collapsed .nav-item-admin:hover .nav-tooltip { display: block; }
+
+        /* Quick actions */
+        .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border-color); flex-shrink: 0; }
+        .sidebar-footer .quick-action {
+            display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px;
+            font-size: 0.8rem; font-weight: 500; color: #fff; text-decoration: none; margin-bottom: 4px; transition: opacity 0.2s;
+        }
+        .sidebar-footer .quick-action:hover { opacity: 0.85; text-decoration: none; color: #fff; }
+        .admin-sidebar.collapsed .sidebar-footer .quick-action span { display: none; }
+        .admin-sidebar.collapsed .sidebar-footer .quick-action { justify-content: center; padding: 8px; }
+
+        /* ===== HEADER ===== */
+        .admin-header {
+            position: fixed; top: 0; right: 0;
+            left: var(--sidebar-width); height: var(--header-height);
+            background: #fff; border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px; z-index: 1030; transition: left 0.3s ease;
+        }
+        .admin-sidebar.collapsed ~ .admin-header { left: var(--sidebar-collapsed); }
+        .admin-header .page-title { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
+        .admin-header .header-actions { display: flex; align-items: center; gap: 12px; }
+        .admin-header .header-btn {
+            background: none; border: none; color: var(--text-secondary); padding: 6px 8px; border-radius: 8px;
+            cursor: pointer; transition: background 0.2s; position: relative;
+        }
+        .admin-header .header-btn:hover { background: var(--bg-hover); }
+        .admin-header .user-info { display: flex; align-items: center; gap: 8px; }
+        .admin-header .user-avatar {
+            width: 34px; height: 34px; border-radius: 50%; background: var(--un-blue); color: #fff;
+            display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600;
+        }
+        .admin-header .user-name { font-size: 0.85rem; font-weight: 500; }
+        .admin-header .user-role { font-size: 0.7rem; color: var(--text-muted); }
+
+        /* ===== MAIN CONTENT ===== */
+        .admin-main {
+            margin-left: var(--sidebar-width); margin-top: var(--header-height);
+            padding: 24px; min-height: calc(100vh - var(--header-height));
+            transition: margin-left 0.3s ease;
+        }
+        .admin-sidebar.collapsed ~ .admin-main { margin-left: var(--sidebar-collapsed); }
+        /* Fix header to also shift */
+        .admin-sidebar.collapsed ~ .admin-header { left: var(--sidebar-collapsed); }
+
+        /* ===== MOBILE ===== */
+        .mobile-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1035; }
+        .mobile-menu-btn { display: none; }
+        @@media (max-width: 991px) {
+            .admin-sidebar { transform: translateX(-100%); width: var(--sidebar-width) !important; }
+            .admin-sidebar.mobile-open { transform: translateX(0); }
+            .mobile-backdrop.show { display: block; }
+            .admin-header { left: 0 !important; }
+            .admin-main { margin-left: 0 !important; }
+            .mobile-menu-btn { display: flex; align-items: center; justify-content: center; background: none; border: none; color: var(--text-primary); font-size: 1.3rem; cursor: pointer; padding: 4px; border-radius: 6px; }
+            .mobile-menu-btn:hover { background: var(--bg-hover); }
+        }
+    </style>
+</head>
+<body>
+    @{
+        var user = await UserManager.GetUserAsync(User);
+        var userName = user?.FirstName ?? user?.Email ?? "Admin";
+        var userInitials = userName.Length >= 2 ? userName.Substring(0, 2).ToUpper() : "AD";
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    }
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <!-- Brand -->
+        <div class="sidebar-brand">
+            <div class="d-flex align-items-center">
+                <img src="~/images/LogoFavicon.png" alt="ROSRA" />
+                <span class="brand-text">ROSRA Admin</span>
+            </div>
+            <button class="sidebar-toggle d-none d-lg-block" onclick="toggleSidebar()" title="Toggle sidebar">
+                <i class="bi bi-layout-sidebar-inset" id="toggleIcon"></i>
+            </button>
+            <button class="sidebar-toggle d-lg-none" onclick="closeMobileMenu()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="sidebar-search">
+            <input type="text" id="navSearch" placeholder="Search menu..." oninput="filterNav(this.value)" />
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav" id="sidebarNav">
+            <!-- Overview -->
+            <div class="nav-section-label">Overview</div>
+            <a href="@Url.Action("Index", "Admin")" class="nav-item-admin @(currentAction == "Index" ? "active" : "")" data-label="Dashboard">
+                <span class="nav-icon"><i class="bi bi-grid-1x2"></i></span>
+                <span class="nav-label">Dashboard</span>
+                <span class="nav-tooltip">Dashboard</span>
+            </a>
+            <a href="@Url.Action("Analytics", "Admin")" class="nav-item-admin @(currentAction == "Analytics" ? "active" : "")" data-label="Analytics">
+                <span class="nav-icon"><i class="bi bi-graph-up"></i></span>
+                <span class="nav-label">Analytics</span>
+                <span class="nav-tooltip">Analytics</span>
+            </a>
+
+            <!-- Report Management -->
+            <div class="nav-section-label">Reports</div>
+            <a href="@Url.Action("AllReports", "Admin")" class="nav-item-admin @(currentAction == "AllReports" ? "active" : "")" data-label="All Reports">
+                <span class="nav-icon"><i class="bi bi-file-earmark-text"></i></span>
+                <span class="nav-label">All Reports</span>
+                <span class="nav-tooltip">All Reports</span>
+            </a>
+            <a href="@Url.Action("DeletedReports", "Admin")" class="nav-item-admin @(currentAction == "DeletedReports" ? "active" : "")" data-label="Deleted Reports">
+                <span class="nav-icon"><i class="bi bi-trash3"></i></span>
+                <span class="nav-label">Deleted Reports</span>
+                <span class="nav-tooltip">Deleted Reports</span>
+            </a>
+            <a href="@Url.Action("DataManagement", "Admin")" class="nav-item-admin @(currentAction == "DataManagement" ? "active" : "")" data-label="Data Management">
+                <span class="nav-icon"><i class="bi bi-database"></i></span>
+                <span class="nav-label">Data Management</span>
+                <span class="nav-tooltip">Data Management</span>
+            </a>
+
+            <!-- Solution Cards -->
+            <div class="nav-section-label">Solution Cards</div>
+            <div class="nav-item-admin nav-parent @(currentAction == "SolutionLibrary" || currentAction == "CreateSolutionCard" || currentAction == "EditSolutionCard" ? "expanded" : "")"
+                 style="--section-color: var(--purple);" onclick="toggleNavParent(this)" data-label="Card Library">
+                <span class="nav-icon"><i class="bi bi-layers"></i></span>
+                <span class="nav-label">Card Library</span>
+                <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
+                <span class="nav-tooltip">Card Library</span>
+            </div>
+            <div class="nav-children @(currentAction == "SolutionLibrary" || currentAction == "CreateSolutionCard" || currentAction == "EditSolutionCard" ? "open" : "")">
+                <a href="@Url.Action("SolutionLibrary", "Admin")" class="nav-item-admin @(currentAction == "SolutionLibrary" ? "active" : "")" data-label="Browse Cards">
+                    <span class="nav-label">Browse Cards</span>
+                </a>
+                <a href="@Url.Action("CreateSolutionCard", "Admin")" class="nav-item-admin @(currentAction == "CreateSolutionCard" ? "active" : "")" data-label="Create New Card">
+                    <span class="nav-label">Create New Card</span>
+                </a>
+                <a href="@Url.Action("ExportSolutionCards", "Admin")" class="nav-item-admin" data-label="Export Cards">
+                    <span class="nav-label">Export Cards (JSON)</span>
+                </a>
+            </div>
+
+            <!-- Users & Access -->
+            <div class="nav-section-label">Users & Access</div>
+            <a href="@Url.Action("Users", "Admin")" class="nav-item-admin @(currentAction == "Users" ? "active" : "")" data-label="Manage Users">
+                <span class="nav-icon"><i class="bi bi-people"></i></span>
+                <span class="nav-label">Manage Users</span>
+                <span class="nav-tooltip">Manage Users</span>
+            </a>
+            <a href="@Url.Action("CreateRole", "Admin")" class="nav-item-admin @(currentAction == "CreateRole" ? "active" : "")" data-label="Roles & Permissions">
+                <span class="nav-icon"><i class="bi bi-shield-lock"></i></span>
+                <span class="nav-label">Roles & Permissions</span>
+                <span class="nav-tooltip">Roles & Permissions</span>
+            </a>
+            <a href="@Url.Action("AuditLog", "Admin")" class="nav-item-admin @(currentAction == "AuditLog" ? "active" : "")" data-label="Audit Log">
+                <span class="nav-icon"><i class="bi bi-journal-text"></i></span>
+                <span class="nav-label">Audit Log</span>
+                <span class="nav-tooltip">Audit Log</span>
+            </a>
+
+            <!-- Configuration -->
+            <div class="nav-section-label">Configuration</div>
+            <a href="@Url.Action("DataUpload", "Admin")" class="nav-item-admin @(currentAction == "DataUpload" ? "active" : "")" data-label="Data Upload">
+                <span class="nav-icon"><i class="bi bi-cloud-upload"></i></span>
+                <span class="nav-label">Data Upload</span>
+                <span class="nav-tooltip">Data Upload</span>
+            </a>
+            <a href="@Url.Action("EmailSettings", "Admin")" class="nav-item-admin @(currentAction == "EmailSettings" ? "active" : "")" data-label="Email Settings">
+                <span class="nav-icon"><i class="bi bi-envelope-at"></i></span>
+                <span class="nav-label">Email Settings</span>
+                <span class="nav-tooltip">Email Settings</span>
+            </a>
+            <a href="@Url.Action("SystemSettings", "Admin")" class="nav-item-admin @(currentAction == "SystemSettings" ? "active" : "")" data-label="System Settings">
+                <span class="nav-icon"><i class="bi bi-gear"></i></span>
+                <span class="nav-label">System Settings</span>
+                <span class="nav-tooltip">System Settings</span>
+            </a>
+        </nav>
+
+        <!-- Quick Actions -->
+        <div class="sidebar-footer">
+            <a href="@Url.Action("Index", "Rosra")" class="quick-action" style="background: var(--un-blue);">
+                <i class="bi bi-plus-circle"></i>
+                <span>New Report</span>
+            </a>
+            <a href="@Url.Action("Index", "Home")" class="quick-action" style="background: var(--text-secondary);">
+                <i class="bi bi-box-arrow-left"></i>
+                <span>Back to Site</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Mobile backdrop -->
+    <div class="mobile-backdrop" id="mobileBackdrop" onclick="closeMobileMenu()"></div>
+
+    <!-- Header -->
+    <header class="admin-header" id="adminHeader">
+        <div class="d-flex align-items-center gap-3">
+            <button class="mobile-menu-btn" onclick="openMobileMenu()">
+                <i class="bi bi-list"></i>
+            </button>
+            <span class="page-title">@ViewData["Title"]</span>
+        </div>
+        <div class="header-actions">
+            <a href="@Url.Action("Index", "Home")" class="header-btn" title="View Site">
+                <i class="bi bi-globe2"></i>
+            </a>
+            <div class="user-info">
+                <div>
+                    <div class="user-name">@userName</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+                <div class="user-avatar">@userInitials</div>
+            </div>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                <button type="submit" class="header-btn" title="Sign out"><i class="bi bi-box-arrow-right"></i></button>
+            </form>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main" id="adminMain">
+        @RenderBody()
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar toggle (desktop)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('adminSidebar');
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('adminSidebarCollapsed', sidebar.classList.contains('collapsed'));
+        }
+
+        // Restore sidebar state
+        if (localStorage.getItem('adminSidebarCollapsed') === 'true') {
+            document.getElementById('adminSidebar').classList.add('collapsed');
+        }
+
+        // Mobile menu
+        function openMobileMenu() {
+            document.getElementById('adminSidebar').classList.add('mobile-open');
+            document.getElementById('mobileBackdrop').classList.add('show');
+        }
+        function closeMobileMenu() {
+            document.getElementById('adminSidebar').classList.remove('mobile-open');
+            document.getElementById('mobileBackdrop').classList.remove('show');
+        }
+
+        // Collapsible nav parents
+        function toggleNavParent(el) {
+            el.classList.toggle('expanded');
+            const children = el.nextElementSibling;
+            if (children && children.classList.contains('nav-children')) {
+                children.classList.toggle('open');
+            }
+        }
+
+        // Search/filter nav items
+        function filterNav(query) {
+            const q = query.toLowerCase();
+            document.querySelectorAll('.nav-item-admin, .nav-section-label').forEach(el => {
+                const label = (el.getAttribute('data-label') || el.textContent || '').toLowerCase();
+                if (!q || label.includes(q)) {
+                    el.style.display = '';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+            // Show children containers if any child matches
+            document.querySelectorAll('.nav-children').forEach(container => {
+                const hasVisible = Array.from(container.querySelectorAll('.nav-item-admin')).some(c => c.style.display !== 'none');
+                container.style.display = hasVisible ? '' : 'none';
+                const parent = container.previousElementSibling;
+                if (parent && parent.classList.contains('nav-parent')) {
+                    parent.style.display = hasVisible ? '' : (q ? 'none' : '');
+                }
+            });
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

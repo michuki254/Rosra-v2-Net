@@ -1,0 +1,815 @@
+@model RosraApp.Models.SolutionCard
+
+@{
+    bool isEdit = ViewBag.IsEdit == true;
+    ViewData["Title"] = isEdit ? $"Edit Solution Card: {Model.SolutionId}" : "Create Solution Card";
+}
+
+@section Styles {
+    <style>
+        body { background: #f8f9fa; }
+
+        /* ── Header ── */
+        .page-header {
+            background: white; border-radius: 12px; padding: 1.75rem 2rem;
+            margin-bottom: 1.75rem; box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1);
+        }
+        .header-icon {
+            width: 44px; height: 44px; border-radius: 10px; background: #00689D;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white; box-shadow: 0 6px 12px -2px rgba(0,104,157,0.25); flex-shrink: 0;
+        }
+        .page-header h1 { color: #222222; font-weight: 700; font-size: 1.75rem; margin-bottom: 0.25rem; }
+        .page-header p { color: #6A6A6A; font-size: 0.9375rem; margin: 0; }
+        .btn-back {
+            background: white; border: none; color: #222222; border-radius: 10px;
+            font-weight: 500; padding: 0.5rem 1rem; font-size: 0.875rem;
+            box-shadow: 0 1px 6px -1px rgba(0,0,0,0.08); transition: all 0.2s; text-decoration: none;
+        }
+        .btn-back:hover { color: #00689D; box-shadow: 0 4px 16px -4px rgba(0,0,0,0.15); }
+
+        /* ── Alerts ── */
+        .alert-biz {
+            border: none; border-radius: 10px; padding: 0.875rem 1.25rem;
+            margin-bottom: 1.25rem; font-size: 0.875rem; font-weight: 500;
+        }
+        .alert-biz.success { background: #D1FAE5; color: #065F46; }
+        .alert-biz.error { background: #FEE2E2; color: #991B1B; }
+
+        /* ── Section Cards ── */
+        .section-card {
+            background: white; border-radius: 12px;
+            box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1); margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .section-card-header {
+            background: #00689D; color: white; padding: 1rem 1.5rem;
+            display: flex; align-items: center; gap: 0.625rem;
+        }
+        .section-card-header i { font-size: 1.1rem; }
+        .section-card-header h5 { color: white; font-weight: 600; margin: 0; font-size: 1rem; }
+        .section-card-body { padding: 1.75rem; }
+
+        /* ── Form Inputs ── */
+        .form-label-biz { font-weight: 600; color: #222222; margin-bottom: 0.375rem; font-size: 0.875rem; }
+        .input-biz {
+            background: #F7F7F7; border: 1px solid #DDDDDD; border-radius: 8px;
+            padding: 0.625rem 1rem; font-size: 0.9375rem; transition: all 0.2s; width: 100%;
+        }
+        .input-biz:focus { background: white; border-color: #00689D; box-shadow: 0 0 0 3px rgba(0,104,157,0.1); outline: none; }
+        select.input-biz { cursor: pointer; }
+        textarea.input-biz { resize: vertical; min-height: 80px; }
+        textarea.input-biz.large { min-height: 140px; }
+
+        .form-check-input:checked { background-color: #00689D; border-color: #00689D; }
+        .form-check-input:focus { box-shadow: 0 0 0 3px rgba(0,104,157,0.15); }
+
+        /* ── Auto-filled / Read-only field ── */
+        .input-auto {
+            background: #EDF5FA; border: 1px solid #B8D4E5; border-radius: 8px;
+            padding: 0.625rem 1rem; font-size: 0.9375rem; color: #00689D; font-weight: 500;
+        }
+
+        /* ── Dynamic List Widget ── */
+        .dynamic-list { margin-top: 0.25rem; }
+        .dynamic-list-items { display: flex; flex-direction: column; gap: 0.5rem; }
+        .dynamic-list-row {
+            display: flex; gap: 0.5rem; align-items: center;
+        }
+        .dynamic-list-row input {
+            flex: 1; background: #F7F7F7; border: 1px solid #DDDDDD; border-radius: 8px;
+            padding: 0.5rem 0.75rem; font-size: 0.875rem; transition: all 0.2s;
+        }
+        .dynamic-list-row input:focus { background: white; border-color: #00689D; box-shadow: 0 0 0 3px rgba(0,104,157,0.1); outline: none; }
+        .btn-remove-item {
+            background: none; border: none; color: #DC3545; font-size: 1rem;
+            padding: 0.375rem; border-radius: 6px; transition: all 0.15s; flex-shrink: 0;
+            line-height: 1; cursor: pointer;
+        }
+        .btn-remove-item:hover { background: #FEE2E2; color: #991B1B; }
+        .btn-add-item {
+            background: #EDF5FA; border: 1px dashed #00689D; color: #00689D;
+            border-radius: 8px; padding: 0.4rem 0.75rem; font-size: 0.8125rem; font-weight: 500;
+            cursor: pointer; transition: all 0.15s; margin-top: 0.5rem; display: inline-flex;
+            align-items: center; gap: 0.375rem;
+        }
+        .btn-add-item:hover { background: #D6EAF4; border-style: solid; }
+
+        /* ── Sub-section header ── */
+        .subsection-header {
+            font-weight: 600; color: #00689D; font-size: 0.9375rem;
+            border-bottom: 2px solid #EDF5FA; padding-bottom: 0.5rem;
+            margin-bottom: 1rem; margin-top: 1.5rem;
+        }
+        .subsection-header i { margin-right: 0.375rem; }
+
+        /* ── Edit info bar ── */
+        .edit-info {
+            background: #FFF8E1; border: 1px solid #FFE082; border-radius: 8px;
+            padding: 0.625rem 1rem; font-size: 0.8125rem; color: #6D5C00;
+            margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;
+        }
+
+        /* ── Footer Buttons ── */
+        .btn-save {
+            background: #00689D; color: white; border: none; border-radius: 10px;
+            padding: 0.625rem 2rem; font-weight: 600; font-size: 0.9375rem;
+            box-shadow: 0 4px 12px -2px rgba(0,104,157,0.25); transition: all 0.2s;
+        }
+        .btn-save:hover { background: #005580; color: white; transform: translateY(-1px); box-shadow: 0 6px 16px -2px rgba(0,104,157,0.35); }
+        .btn-cancel {
+            background: white; color: #6A6A6A; border: none; border-radius: 10px;
+            padding: 0.625rem 1.5rem; font-weight: 500; text-decoration: none;
+            box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s;
+            display: inline-flex; align-items: center;
+        }
+        .btn-cancel:hover { color: #222222; box-shadow: 0 2px 8px -2px rgba(0,0,0,0.12); }
+
+        /* ── Validation ── */
+        .field-validation-error { color: #DC3545; font-size: 0.8125rem; }
+        .input-validation-error { border-color: #DC3545 !important; }
+
+        /* ── Collapsible section toggle ── */
+        .section-toggle {
+            cursor: pointer; user-select: none;
+        }
+        .section-toggle .collapse-icon { transition: transform 0.2s; }
+        .section-toggle.collapsed .collapse-icon { transform: rotate(-90deg); }
+
+        /* ── Subgroup row visibility ── */
+        .subgroup-row { transition: all 0.2s; }
+        .subgroup-row.d-none { display: none !important; }
+    </style>
+}
+
+<div class="container py-4" style="max-width: 960px;">
+
+    <!-- Header -->
+    <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="header-icon">
+                <i class="bi bi-@(isEdit ? "pencil-square" : "plus-card")"></i>
+            </div>
+            <div>
+                <h1>@(isEdit ? $"Edit Solution Card" : "Create Solution Card")</h1>
+                <p>@(isEdit ? $"Editing card {Model.SolutionId}" : "Add a new solution card to the library")</p>
+            </div>
+        </div>
+        <a asp-action="SolutionLibrary" class="btn-back">
+            <i class="bi bi-arrow-left me-1"></i> Back to Library
+        </a>
+    </div>
+
+    <!-- Alerts -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert-biz success"><i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]</div>
+    }
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+    {
+        <div class="alert-biz error">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <div asp-validation-summary="All" class="mb-0 d-inline"></div>
+        </div>
+    }
+
+    <!-- Edit info bar -->
+    @if (isEdit && Model.UpdatedAt != null)
+    {
+        <div class="edit-info">
+            <i class="bi bi-clock-history"></i>
+            Last updated: @Model.UpdatedAt.Value.ToString("dd MMM yyyy HH:mm") UTC
+            @if (Model.UpdatedBy != null)
+            {
+                <span>by @Model.UpdatedBy.Email</span>
+            }
+        </div>
+    }
+    else if (isEdit)
+    {
+        <div class="edit-info">
+            <i class="bi bi-clock-history"></i>
+            Created: @Model.CreatedAt.ToString("dd MMM yyyy HH:mm") UTC
+            @if (Model.CreatedBy != null)
+            {
+                <span>by @Model.CreatedBy.Email</span>
+            }
+        </div>
+    }
+
+    <form id="solutionCardForm" method="post"
+          asp-action="@(isEdit ? "EditSolutionCard" : "CreateSolutionCard")"
+          asp-route-id="@(isEdit ? Model.Id : (int?)null)">
+        @Html.AntiForgeryToken()
+
+        <!-- Hidden fields for JSON data -->
+        <input type="hidden" name="overviewJson" id="overviewJson" />
+        <input type="hidden" name="fullDetailsJson" id="fullDetailsJson" />
+        @if (isEdit)
+        {
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedAt" />
+            <input type="hidden" asp-for="CreatedByUserId" />
+        }
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- SECTION 1: Card Metadata                               -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <div class="section-card">
+            <div class="section-card-header">
+                <i class="bi bi-card-heading"></i>
+                <h5>Card Metadata</h5>
+            </div>
+            <div class="section-card-body">
+
+                <div class="row g-3">
+                    <!-- Solution ID -->
+                    <div class="col-md-6">
+                        <label class="form-label-biz" for="SolutionId">
+                            Solution ID <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="SolutionId" class="form-control input-biz" id="SolutionId"
+                               placeholder="e.g., PT-COV-14 or NP-A-COM-04" required />
+                        <span asp-validation-for="SolutionId" class="field-validation-error"></span>
+                    </div>
+
+                    <!-- Stream -->
+                    <div class="col-md-6">
+                        <label class="form-label-biz" for="Stream">
+                            Stream <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="Stream" class="form-control input-biz" id="Stream" required>
+                            <option value="">-- Select Stream --</option>
+                            <option value="Property Tax" selected="@(Model.Stream == "Property Tax")">Property Tax</option>
+                            <option value="Non-Property" selected="@(Model.Stream == "Non-Property")">Non-Property</option>
+                        </select>
+                        <span asp-validation-for="Stream" class="field-validation-error"></span>
+                    </div>
+
+                    <!-- Stream Type (auto-filled) -->
+                    <div class="col-md-6">
+                        <label class="form-label-biz" for="StreamType">Stream Type</label>
+                        <input asp-for="StreamType" class="form-control input-auto" id="StreamType" readonly
+                               placeholder="Auto-filled from Stream" />
+                    </div>
+
+                    <!-- Subgroup (only for Non-Property) -->
+                    <div class="col-md-6 subgroup-row @(Model.Stream != "Non-Property" ? "d-none" : "")">
+                        <label class="form-label-biz" for="Subgroup">Subgroup</label>
+                        <select asp-for="Subgroup" class="form-control input-biz" id="Subgroup">
+                            <option value="">-- Select Subgroup --</option>
+                            <option value="A" selected="@(Model.Subgroup == "A")">A</option>
+                            <option value="B" selected="@(Model.Subgroup == "B")">B</option>
+                            <option value="C" selected="@(Model.Subgroup == "C")">C</option>
+                        </select>
+                    </div>
+
+                    <!-- Gap -->
+                    <div class="col-md-6">
+                        <label class="form-label-biz" for="Gap">
+                            Gap <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="Gap" class="form-control input-biz" id="Gap" required>
+                            <option value="">-- Select Gap --</option>
+                            <option value="Coverage" selected="@(Model.Gap == "Coverage")">Coverage</option>
+                            <option value="Compliance" selected="@(Model.Gap == "Compliance")">Compliance</option>
+                            <option value="Valuation" selected="@(Model.Gap == "Valuation")">Valuation</option>
+                            <option value="Liability" selected="@(Model.Gap == "Liability")">Liability</option>
+                        </select>
+                        <span asp-validation-for="Gap" class="field-validation-error"></span>
+                    </div>
+
+                    <!-- Title -->
+                    <div class="col-12">
+                        <label class="form-label-biz" for="Title">
+                            Title <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Title" class="form-control input-biz" id="Title"
+                               placeholder="Full descriptive title for this solution card" required />
+                        <span asp-validation-for="Title" class="field-validation-error"></span>
+                    </div>
+
+                    <!-- Short Title -->
+                    <div class="col-md-6">
+                        <label class="form-label-biz" for="ShortTitle">Short Title</label>
+                        <input asp-for="ShortTitle" class="form-control input-biz" id="ShortTitle"
+                               placeholder="Brief display title" />
+                    </div>
+
+                    <!-- Timeline -->
+                    <div class="col-md-6">
+                        <label class="form-label-biz" for="Timeline">Timeline</label>
+                        <select asp-for="Timeline" class="form-control input-biz" id="Timeline">
+                            <option value="">-- Select Timeline --</option>
+                            <option value="<1 year" selected="@(Model.Timeline == "<1 year")">&lt;1 year</option>
+                            <option value="1-3 years" selected="@(Model.Timeline == "1-3 years")">1-3 years</option>
+                            <option value="2-4 years" selected="@(Model.Timeline == "2-4 years")">2-4 years</option>
+                            <option value="3+ years" selected="@(Model.Timeline == "3+ years")">3+ years</option>
+                        </select>
+                    </div>
+
+                    <!-- Delivery Difficulty -->
+                    <div class="col-md-6">
+                        <label class="form-label-biz" for="DeliveryDifficulty">Delivery Difficulty</label>
+                        <select asp-for="DeliveryDifficulty" class="form-control input-biz" id="DeliveryDifficulty">
+                            <option value="">-- Select Difficulty --</option>
+                            <option value="Low" selected="@(Model.DeliveryDifficulty == "Low")">Low</option>
+                            <option value="Low-Medium" selected="@(Model.DeliveryDifficulty == "Low-Medium")">Low-Medium</option>
+                            <option value="Medium" selected="@(Model.DeliveryDifficulty == "Medium")">Medium</option>
+                            <option value="Medium-High" selected="@(Model.DeliveryDifficulty == "Medium-High")">Medium-High</option>
+                            <option value="High" selected="@(Model.DeliveryDifficulty == "High")">High</option>
+                        </select>
+                    </div>
+
+                    <!-- Political Sensitivity -->
+                    <div class="col-md-6">
+                        <label class="form-label-biz" for="PoliticalSensitivity">Political Sensitivity</label>
+                        <select asp-for="PoliticalSensitivity" class="form-control input-biz" id="PoliticalSensitivity">
+                            <option value="">-- Select Sensitivity --</option>
+                            <option value="Low" selected="@(Model.PoliticalSensitivity == "Low")">Low</option>
+                            <option value="Low-Medium" selected="@(Model.PoliticalSensitivity == "Low-Medium")">Low-Medium</option>
+                            <option value="Medium" selected="@(Model.PoliticalSensitivity == "Medium")">Medium</option>
+                            <option value="Medium-High" selected="@(Model.PoliticalSensitivity == "Medium-High")">Medium-High</option>
+                            <option value="High" selected="@(Model.PoliticalSensitivity == "High")">High</option>
+                        </select>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="col-md-6">
+                        <label class="form-label-biz" for="Category">Category</label>
+                        <input asp-for="Category" class="form-control input-biz" id="Category"
+                               placeholder='e.g., "Registration", "Billing", "Enforcement"' />
+                    </div>
+
+                    <!-- Sort Order -->
+                    <div class="col-md-3">
+                        <label class="form-label-biz" for="SortOrder">Sort Order</label>
+                        <input asp-for="SortOrder" type="number" class="form-control input-biz" id="SortOrder"
+                               min="0" step="1" />
+                    </div>
+
+                    <!-- Active -->
+                    <div class="col-md-3 d-flex align-items-end pb-1">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" id="IsActive" style="width:2.5rem; height:1.25rem;" />
+                            <label class="form-label-biz ms-2 mb-0" for="IsActive" style="cursor:pointer;">Active</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- SECTION 2: Overview Content                            -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <div class="section-card">
+            <div class="section-card-header" style="background: #0D7C3F;">
+                <i class="bi bi-file-earmark-richtext"></i>
+                <h5>Overview Content</h5>
+            </div>
+            <div class="section-card-body">
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label-biz">Main Purpose</label>
+                        <textarea class="form-control input-biz" id="ov_mainPurpose" rows="3"
+                                  placeholder="The main purpose of this solution card..."></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-biz">Best Starting Point</label>
+                        <textarea class="form-control input-biz" id="ov_bestStartingPoint" rows="3"
+                                  placeholder="Where is the best place to start?"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-biz">First Visible Result</label>
+                        <textarea class="form-control input-biz" id="ov_firstVisibleResult" rows="3"
+                                  placeholder="What is the first visible result?"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-biz">Leadership Decision</label>
+                        <textarea class="form-control input-biz" id="ov_leadershipDecision" rows="3"
+                                  placeholder="Key leadership decision required..."></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-biz">Likely Lead Owner</label>
+                        <textarea class="form-control input-biz" id="ov_likelyLeadOwner" rows="3"
+                                  placeholder="Who is likely to own this?"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label-biz">What This Option Does</label>
+                        <textarea class="form-control input-biz" id="ov_whatThisOptionDoes" rows="3"
+                                  placeholder="Describe what this option does..."></textarea>
+                    </div>
+
+                    <!-- Dynamic lists -->
+                    <div class="col-12">
+                        <label class="form-label-biz">Most Useful When</label>
+                        <div class="dynamic-list" data-field="ov_mostUsefulWhen">
+                            <div class="dynamic-list-items"></div>
+                            <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                                <i class="bi bi-plus-circle"></i> Add item
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label-biz">Usually Not Best First Move When</label>
+                        <div class="dynamic-list" data-field="ov_usuallyNotBestFirstMoveWhen">
+                            <div class="dynamic-list-items"></div>
+                            <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                                <i class="bi bi-plus-circle"></i> Add item
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label-biz">What Full Card Would Plan</label>
+                        <textarea class="form-control input-biz" id="ov_whatFullCardWouldPlan" rows="3"
+                                  placeholder="What the full card would plan..."></textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label-biz">Often Works Best Alongside</label>
+                        <div class="dynamic-list" data-field="ov_oftenWorksBestAlongside">
+                            <div class="dynamic-list-items"></div>
+                            <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                                <i class="bi bi-plus-circle"></i> Add item
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label-biz">Political Note</label>
+                        <textarea class="form-control input-biz" id="ov_politicalNote" rows="3"
+                                  placeholder="Any political considerations..."></textarea>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- SECTION 3: Full Details                                -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <div class="section-card">
+            <div class="section-card-header" style="background: #8B5CF6;">
+                <i class="bi bi-journal-text"></i>
+                <h5>Full Details</h5>
+            </div>
+            <div class="section-card-body">
+
+                <!-- Why This Card Matters -->
+                <div class="mb-3">
+                    <label class="form-label-biz">Why This Card Matters</label>
+                    <textarea class="form-control input-biz large" id="fd_whyThisCardMatters" rows="5"
+                              placeholder="Explain why this card matters..."></textarea>
+                </div>
+
+                <!-- Dynamic lists -->
+                <div class="mb-3">
+                    <label class="form-label-biz">When This Is a Strong Fit</label>
+                    <div class="dynamic-list" data-field="fd_whenThisIsAStrongFit">
+                        <div class="dynamic-list-items"></div>
+                        <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                            <i class="bi bi-plus-circle"></i> Add item
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-biz">What to Line Up First</label>
+                    <div class="dynamic-list" data-field="fd_whatToLineUpFirst">
+                        <div class="dynamic-list-items"></div>
+                        <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                            <i class="bi bi-plus-circle"></i> Add item
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-biz">Design Choices to Settle Early</label>
+                    <div class="dynamic-list" data-field="fd_designChoicesToSettleEarly">
+                        <div class="dynamic-list-items"></div>
+                        <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                            <i class="bi bi-plus-circle"></i> Add item
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Practical Implementation Path (sub-sections) -->
+                <div class="subsection-header">
+                    <i class="bi bi-signpost-split"></i> Practical Implementation Path
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-biz">First 90 Days</label>
+                    <div class="dynamic-list" data-field="fd_first90Days">
+                        <div class="dynamic-list-items"></div>
+                        <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                            <i class="bi bi-plus-circle"></i> Add item
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-biz">6 to 12 Months</label>
+                    <div class="dynamic-list" data-field="fd_sixToTwelveMonths">
+                        <div class="dynamic-list-items"></div>
+                        <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                            <i class="bi bi-plus-circle"></i> Add item
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-biz">12 to 24 Months+</label>
+                    <div class="dynamic-list" data-field="fd_twelveToTwentyFourMonths">
+                        <div class="dynamic-list-items"></div>
+                        <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                            <i class="bi bi-plus-circle"></i> Add item
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remaining dynamic lists -->
+                <div class="subsection-header" style="margin-top: 2rem;">
+                    <i class="bi bi-list-check"></i> Additional Details
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-biz">Legal and Institutional Points</label>
+                    <div class="dynamic-list" data-field="fd_legalAndInstitutionalPoints">
+                        <div class="dynamic-list-items"></div>
+                        <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                            <i class="bi bi-plus-circle"></i> Add item
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-biz">Capacity, Systems, and Partnership Needs</label>
+                    <div class="dynamic-list" data-field="fd_capacitySystemsPartnershipNeeds">
+                        <div class="dynamic-list-items"></div>
+                        <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                            <i class="bi bi-plus-circle"></i> Add item
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-biz">Main Risks and Practical Safeguards</label>
+                    <div class="dynamic-list" data-field="fd_mainRisksAndPracticalSafeguards">
+                        <div class="dynamic-list-items"></div>
+                        <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                            <i class="bi bi-plus-circle"></i> Add item
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-biz">What to Monitor</label>
+                    <div class="dynamic-list" data-field="fd_whatToMonitor">
+                        <div class="dynamic-list-items"></div>
+                        <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                            <i class="bi bi-plus-circle"></i> Add item
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-biz">Connections to Other Cards</label>
+                    <div class="dynamic-list" data-field="fd_connectionsToOtherCards">
+                        <div class="dynamic-list-items"></div>
+                        <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                            <i class="bi bi-plus-circle"></i> Add item
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-biz">Questions to Settle Before Launch</label>
+                    <div class="dynamic-list" data-field="fd_questionsToSettleBeforeLaunch">
+                        <div class="dynamic-list-items"></div>
+                        <button type="button" class="btn-add-item" onclick="addListItem(this.closest('.dynamic-list'))">
+                            <i class="bi bi-plus-circle"></i> Add item
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- Footer: Save / Cancel                                  -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <div class="d-flex gap-3 justify-content-between align-items-center mt-2 mb-5">
+            <a asp-action="SolutionLibrary" class="btn-cancel">
+                <i class="bi bi-x-lg me-1"></i> Cancel
+            </a>
+            <button type="submit" class="btn-save" id="btnSave">
+                <i class="bi bi-check-lg me-2"></i> @(isEdit ? "Save Changes" : "Create Card")
+            </button>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ─── Configuration ───────────────────────────────────────
+            var isEdit = @(isEdit ? "true" : "false");
+            var rawOverviewData = @Html.Raw(Model.OverviewData != null ? $"'{Model.OverviewData.Replace("'", "\\'").Replace("\n", "\\n").Replace("\r", "")}'" : "null");
+            var rawFullDetailsData = @Html.Raw(Model.FullDetailsData != null ? $"'{Model.FullDetailsData.Replace("'", "\\'").Replace("\n", "\\n").Replace("\r", "")}'" : "null");
+
+            // ─── Stream / StreamType / Subgroup logic ────────────────
+            var streamSelect = document.getElementById('Stream');
+            var streamTypeInput = document.getElementById('StreamType');
+            var subgroupRow = document.querySelector('.subgroup-row');
+            var subgroupSelect = document.getElementById('Subgroup');
+
+            function updateStreamDependents() {
+                var val = streamSelect.value;
+                if (val === 'Property Tax') {
+                    streamTypeInput.value = 'property-based';
+                    subgroupRow.classList.add('d-none');
+                    subgroupSelect.value = '';
+                } else if (val === 'Non-Property') {
+                    streamTypeInput.value = 'non-property';
+                    subgroupRow.classList.remove('d-none');
+                } else {
+                    streamTypeInput.value = '';
+                    subgroupRow.classList.add('d-none');
+                    subgroupSelect.value = '';
+                }
+            }
+
+            streamSelect.addEventListener('change', updateStreamDependents);
+            // Set initial state
+            if (streamSelect.value) {
+                updateStreamDependents();
+            }
+
+            // ─── Dynamic List: Add / Remove ──────────────────────────
+            window.addListItem = function (container, value) {
+                var itemsDiv = container.querySelector('.dynamic-list-items');
+                var row = document.createElement('div');
+                row.className = 'dynamic-list-row';
+                row.innerHTML =
+                    '<input type="text" class="form-control" value="' + escapeAttr(value || '') + '" placeholder="Enter item..." />' +
+                    '<button type="button" class="btn-remove-item" title="Remove item" onclick="removeListItem(this)">' +
+                    '<i class="bi bi-x-circle"></i></button>';
+                itemsDiv.appendChild(row);
+                if (!value) {
+                    row.querySelector('input').focus();
+                }
+            };
+
+            window.removeListItem = function (btn) {
+                var row = btn.closest('.dynamic-list-row');
+                row.remove();
+            };
+
+            function escapeAttr(str) {
+                if (!str) return '';
+                return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+
+            // ─── Read dynamic list values ────────────────────────────
+            function getListValues(fieldName) {
+                var container = document.querySelector('.dynamic-list[data-field="' + fieldName + '"]');
+                if (!container) return [];
+                var inputs = container.querySelectorAll('.dynamic-list-items input[type="text"]');
+                var values = [];
+                inputs.forEach(function (inp) {
+                    var v = inp.value.trim();
+                    if (v) values.push(v);
+                });
+                return values;
+            }
+
+            // ─── Populate dynamic list from array ────────────────────
+            function setListValues(fieldName, arr) {
+                if (!arr || !Array.isArray(arr)) return;
+                var container = document.querySelector('.dynamic-list[data-field="' + fieldName + '"]');
+                if (!container) return;
+                arr.forEach(function (item) {
+                    if (item) addListItem(container, item);
+                });
+            }
+
+            // ─── Collect Overview JSON ───────────────────────────────
+            function collectOverviewJson() {
+                return JSON.stringify({
+                    mainPurpose: document.getElementById('ov_mainPurpose').value.trim(),
+                    bestStartingPoint: document.getElementById('ov_bestStartingPoint').value.trim(),
+                    firstVisibleResult: document.getElementById('ov_firstVisibleResult').value.trim(),
+                    leadershipDecision: document.getElementById('ov_leadershipDecision').value.trim(),
+                    likelyLeadOwner: document.getElementById('ov_likelyLeadOwner').value.trim(),
+                    whatThisOptionDoes: document.getElementById('ov_whatThisOptionDoes').value.trim(),
+                    mostUsefulWhen: getListValues('ov_mostUsefulWhen'),
+                    usuallyNotBestFirstMoveWhen: getListValues('ov_usuallyNotBestFirstMoveWhen'),
+                    whatFullCardWouldPlan: document.getElementById('ov_whatFullCardWouldPlan').value.trim(),
+                    oftenWorksBestAlongside: getListValues('ov_oftenWorksBestAlongside'),
+                    politicalNote: document.getElementById('ov_politicalNote').value.trim()
+                });
+            }
+
+            // ─── Collect Full Details JSON ───────────────────────────
+            function collectFullDetailsJson() {
+                return JSON.stringify({
+                    whyThisCardMatters: document.getElementById('fd_whyThisCardMatters').value.trim(),
+                    whenThisIsAStrongFit: getListValues('fd_whenThisIsAStrongFit'),
+                    whatToLineUpFirst: getListValues('fd_whatToLineUpFirst'),
+                    designChoicesToSettleEarly: getListValues('fd_designChoicesToSettleEarly'),
+                    practicalImplementationPath: {
+                        first90Days: getListValues('fd_first90Days'),
+                        sixToTwelveMonths: getListValues('fd_sixToTwelveMonths'),
+                        twelveToTwentyFourMonths: getListValues('fd_twelveToTwentyFourMonths')
+                    },
+                    legalAndInstitutionalPoints: getListValues('fd_legalAndInstitutionalPoints'),
+                    capacitySystemsPartnershipNeeds: getListValues('fd_capacitySystemsPartnershipNeeds'),
+                    mainRisksAndPracticalSafeguards: getListValues('fd_mainRisksAndPracticalSafeguards'),
+                    whatToMonitor: getListValues('fd_whatToMonitor'),
+                    connectionsToOtherCards: getListValues('fd_connectionsToOtherCards'),
+                    questionsToSettleBeforeLaunch: getListValues('fd_questionsToSettleBeforeLaunch')
+                });
+            }
+
+            // ─── Populate fields from existing data (edit mode) ──────
+            function populateOverviewFromJson(jsonStr) {
+                try {
+                    var data = JSON.parse(jsonStr);
+                    if (!data) return;
+                    if (data.mainPurpose) document.getElementById('ov_mainPurpose').value = data.mainPurpose;
+                    if (data.bestStartingPoint) document.getElementById('ov_bestStartingPoint').value = data.bestStartingPoint;
+                    if (data.firstVisibleResult) document.getElementById('ov_firstVisibleResult').value = data.firstVisibleResult;
+                    if (data.leadershipDecision) document.getElementById('ov_leadershipDecision').value = data.leadershipDecision;
+                    if (data.likelyLeadOwner) document.getElementById('ov_likelyLeadOwner').value = data.likelyLeadOwner;
+                    if (data.whatThisOptionDoes) document.getElementById('ov_whatThisOptionDoes').value = data.whatThisOptionDoes;
+                    setListValues('ov_mostUsefulWhen', data.mostUsefulWhen);
+                    setListValues('ov_usuallyNotBestFirstMoveWhen', data.usuallyNotBestFirstMoveWhen);
+                    if (data.whatFullCardWouldPlan) document.getElementById('ov_whatFullCardWouldPlan').value = data.whatFullCardWouldPlan;
+                    setListValues('ov_oftenWorksBestAlongside', data.oftenWorksBestAlongside);
+                    if (data.politicalNote) document.getElementById('ov_politicalNote').value = data.politicalNote;
+                } catch (e) {
+                    console.warn('Failed to parse OverviewData JSON:', e);
+                }
+            }
+
+            function populateFullDetailsFromJson(jsonStr) {
+                try {
+                    var data = JSON.parse(jsonStr);
+                    if (!data) return;
+                    if (data.whyThisCardMatters) document.getElementById('fd_whyThisCardMatters').value = data.whyThisCardMatters;
+                    setListValues('fd_whenThisIsAStrongFit', data.whenThisIsAStrongFit);
+                    setListValues('fd_whatToLineUpFirst', data.whatToLineUpFirst);
+                    setListValues('fd_designChoicesToSettleEarly', data.designChoicesToSettleEarly);
+                    if (data.practicalImplementationPath) {
+                        setListValues('fd_first90Days', data.practicalImplementationPath.first90Days);
+                        setListValues('fd_sixToTwelveMonths', data.practicalImplementationPath.sixToTwelveMonths);
+                        setListValues('fd_twelveToTwentyFourMonths', data.practicalImplementationPath.twelveToTwentyFourMonths);
+                    }
+                    setListValues('fd_legalAndInstitutionalPoints', data.legalAndInstitutionalPoints);
+                    setListValues('fd_capacitySystemsPartnershipNeeds', data.capacitySystemsPartnershipNeeds);
+                    setListValues('fd_mainRisksAndPracticalSafeguards', data.mainRisksAndPracticalSafeguards);
+                    setListValues('fd_whatToMonitor', data.whatToMonitor);
+                    setListValues('fd_connectionsToOtherCards', data.connectionsToOtherCards);
+                    setListValues('fd_questionsToSettleBeforeLaunch', data.questionsToSettleBeforeLaunch);
+                } catch (e) {
+                    console.warn('Failed to parse FullDetailsData JSON:', e);
+                }
+            }
+
+            // ─── Form Submit ─────────────────────────────────────────
+            document.getElementById('solutionCardForm').addEventListener('submit', function (e) {
+                // Serialize JSON data into hidden fields
+                document.getElementById('overviewJson').value = collectOverviewJson();
+                document.getElementById('fullDetailsJson').value = collectFullDetailsJson();
+            });
+
+            // ─── Initialize ──────────────────────────────────────────
+            if (isEdit && rawOverviewData) {
+                populateOverviewFromJson(rawOverviewData);
+            }
+            if (isEdit && rawFullDetailsData) {
+                populateFullDetailsFromJson(rawFullDetailsData);
+            }
+
+            // Add at least one empty row to each dynamic list if empty (for create mode)
+            if (!isEdit) {
+                document.querySelectorAll('.dynamic-list').forEach(function (dl) {
+                    var items = dl.querySelectorAll('.dynamic-list-items .dynamic-list-row');
+                    if (items.length === 0) {
+                        addListItem(dl, '');
+                    }
+                });
+            }
+
+        })();
+    </script>
+}

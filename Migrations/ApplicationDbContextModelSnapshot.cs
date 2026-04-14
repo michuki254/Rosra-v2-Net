@@ -326,6 +326,47 @@ namespace RosraApp.Migrations
                     b.ToTable("AuditLogs");
                 });
 
+            modelBuilder.Entity("RosraApp.Models.CardSet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CardIds")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("TargetContext")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.ToTable("CardSets");
+                });
+
             modelBuilder.Entity("RosraApp.Models.Country", b =>
                 {
                     b.Property<int>("Id")
@@ -664,13 +705,16 @@ namespace RosraApp.Migrations
                         .HasColumnType("nvarchar(3)");
 
                     b.Property<decimal>("GCP")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(28, 2)");
 
                     b.Property<bool>("Include")
                         .HasColumnType("bit");
 
                     b.Property<decimal>("OSR")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(28, 2)");
+
+                    b.Property<long>("Population")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("SNG")
                         .IsRequired()
@@ -1025,6 +1069,169 @@ namespace RosraApp.Migrations
                     b.ToTable("RosraReports");
                 });
 
+            modelBuilder.Entity("RosraApp.Models.SolutionCard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeliveryDifficulty")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("FullDetailsData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gap")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OverviewData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PoliticalSensitivity")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("ShortTitle")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("SolutionId")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Stream")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("StreamType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Subgroup")
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<string>("Timeline")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("SolutionId")
+                        .IsUnique();
+
+                    b.HasIndex("UpdatedByUserId");
+
+                    b.ToTable("SolutionCards");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.SolutionCardHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ChangedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PreviousData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SolutionCardId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChangedByUserId");
+
+                    b.HasIndex("SolutionCardId");
+
+                    b.ToTable("SolutionCardHistory");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.SystemSetting", b =>
+                {
+                    b.Property<string>("Key")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("SystemSettings");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1085,6 +1292,15 @@ namespace RosraApp.Migrations
                         .IsRequired();
 
                     b.Navigation("Report");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.CardSet", b =>
+                {
+                    b.HasOne("RosraApp.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId");
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("RosraApp.Models.ReportArtifact", b =>
@@ -1150,6 +1366,38 @@ namespace RosraApp.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.SolutionCard", b =>
+                {
+                    b.HasOne("RosraApp.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId");
+
+                    b.HasOne("RosraApp.Models.ApplicationUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("RosraApp.Models.SolutionCardHistory", b =>
+                {
+                    b.HasOne("RosraApp.Models.ApplicationUser", "ChangedBy")
+                        .WithMany()
+                        .HasForeignKey("ChangedByUserId");
+
+                    b.HasOne("RosraApp.Models.SolutionCard", "SolutionCard")
+                        .WithMany()
+                        .HasForeignKey("SolutionCardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChangedBy");
+
+                    b.Navigation("SolutionCard");
                 });
 
             modelBuilder.Entity("RosraApp.Models.Permission", b =>

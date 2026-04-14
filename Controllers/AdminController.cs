@@ -627,13 +627,26 @@ namespace RosraApp.Controllers
                     var values = line.Split(',');
                     if (values.Length < 4) continue;
 
+                    // Support both formats:
+                    // 5 cols: SNG,OSR,GCP,Population,Include
+                    // 4 cols: SNG,OSR,GCP,Include (legacy, no population)
                     var peer = new PeerSNG
                     {
                         SNG = values[0].Trim(),
                         OSR = decimal.Parse(values[1].Trim()),
-                        GCP = decimal.Parse(values[2].Trim()),
-                        Include = values[3].Trim() == "1" || values[3].Trim().ToLower() == "true"
+                        GCP = decimal.Parse(values[2].Trim())
                     };
+
+                    if (values.Length >= 5)
+                    {
+                        peer.Population = long.TryParse(values[3].Trim(), out var pop) ? pop : 0;
+                        peer.Include = values[4].Trim() == "1" || values[4].Trim().ToLower() == "true";
+                    }
+                    else
+                    {
+                        peer.Population = 0;
+                        peer.Include = values[3].Trim() == "1" || values[3].Trim().ToLower() == "true";
+                    }
 
                     _context.Peers_SNG.Add(peer);
                     importedCount++;
@@ -1617,5 +1630,490 @@ namespace RosraApp.Controllers
                 message = $"Purged {result.PurgedReports} reports, {result.PurgedSnapshots} snapshots, {result.PurgedArtifacts} artifacts, {result.PurgedNotes} notes"
             });
         }
+
+        // =====================================================================
+        // SOLUTION CARD MANAGEMENT (CRM)
+        // =====================================================================
+
+        /// <summary>
+        /// Solution Library — list all cards with filters
+        /// </summary>
+        public async Task<IActionResult> SolutionLibrary(
+            int page = 1, int pageSize = 20,
+            string? search = null, string? stream = null,
+            string? gap = null, string? subgroup = null,
+            string? timeline = null, string? status = null)
+        {
+            var query = _context.SolutionCards.IgnoreQueryFilters().AsQueryable();
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(search))
+                query = query.Where(c => c.Title.Contains(search) || c.SolutionId.Contains(search) || (c.ShortTitle != null && c.ShortTitle.Contains(search)));
+            if (!string.IsNullOrEmpty(stream))
+                query = query.Where(c => c.Stream == stream);
+            if (!string.IsNullOrEmpty(gap))
+                query = query.Where(c => c.Gap == gap);
+            if (!string.IsNullOrEmpty(subgroup))
+                query = query.Where(c => c.Subgroup == subgroup);
+            if (!string.IsNullOrEmpty(timeline))
+                query = query.Where(c => c.Timeline == timeline);
+            if (status == "active")
+                query = query.Where(c => c.IsActive && !c.IsDeleted);
+            else if (status == "inactive")
+                query = query.Where(c => !c.IsActive && !c.IsDeleted);
+            else if (status == "deleted")
+                query = query.Where(c => c.IsDeleted);
+            else
+                query = query.Where(c => !c.IsDeleted); // default: show non-deleted
+
+            var totalCount = await query.CountAsync();
+            var cards = await query
+                .OrderBy(c => c.Stream).ThenBy(c => c.Gap).ThenBy(c => c.SortOrder)
+                .Skip((page - 1) * pageSize).Take(pageSize)
+                .ToListAsync();
+
+            // Stats for badges
+            var allCards = _context.SolutionCards.IgnoreQueryFilters();
+            ViewBag.TotalActive = await allCards.CountAsync(c => c.IsActive && !c.IsDeleted);
+            ViewBag.TotalInactive = await allCards.CountAsync(c => !c.IsActive && !c.IsDeleted);
+            ViewBag.TotalDeleted = await allCards.CountAsync(c => c.IsDeleted);
+            ViewBag.TotalCards = await allCards.CountAsync(c => !c.IsDeleted);
+
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            ViewBag.TotalCount = totalCount;
+            ViewBag.Search = search;
+            ViewBag.Stream = stream;
+            ViewBag.Gap = gap;
+            ViewBag.Subgroup = subgroup;
+            ViewBag.Timeline = timeline;
+            ViewBag.Status = status;
+
+            return View(cards);
+        }
+
+        /// <summary>
+        /// Create Solution Card — GET
+        /// </summary>
+        public IActionResult CreateSolutionCard()
+        {
+            return View("SolutionCardEditor", new SolutionCard());
+        }
+
+        /// <summary>
+        /// Create Solution Card — POST
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateSolutionCard(SolutionCard card, string? overviewJson, string? fullDetailsJson)
+        {
+            // Check for duplicate SolutionId
+            if (await _context.SolutionCards.IgnoreQueryFilters().AnyAsync(c => c.SolutionId == card.SolutionId))
+            {
+                ModelState.AddModelError("SolutionId", "A card with this Solution ID already exists.");
+                return View("SolutionCardEditor", card);
+            }
+
+            card.OverviewData = overviewJson;
+            card.FullDetailsData = fullDetailsJson;
+            card.CreatedAt = DateTime.UtcNow;
+            card.CreatedByUserId = _userManager.GetUserId(User);
+
+            _context.SolutionCards.Add(card);
+
+            // Create history entry
+            _context.SolutionCardHistory.Add(new SolutionCardHistory
+            {
+                SolutionCardId = card.Id,
+                ChangeType = "Created",
+                ChangedByUserId = card.CreatedByUserId,
+                ChangedAt = DateTime.UtcNow
+            });
+
+            await _context.SaveChangesAsync();
+
+            // Fix history entry with correct card ID (after save)
+            var historyEntry = await _context.SolutionCardHistory
+                .OrderByDescending(h => h.ChangedAt)
+                .FirstOrDefaultAsync(h => h.ChangeType == "Created" && h.SolutionCardId == 0);
+            if (historyEntry != null)
+            {
+                historyEntry.SolutionCardId = card.Id;
+                await _context.SaveChangesAsync();
+            }
+
+            TempData["SuccessMessage"] = $"Card '{card.SolutionId}' created successfully.";
+            return RedirectToAction("SolutionLibrary");
+        }
+
+        /// <summary>
+        /// Edit Solution Card — GET
+        /// </summary>
+        public async Task<IActionResult> EditSolutionCard(int id)
+        {
+            var card = await _context.SolutionCards.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(c => c.Id == id);
+            if (card == null) return NotFound();
+
+            ViewBag.IsEdit = true;
+            return View("SolutionCardEditor", card);
+        }
+
+        /// <summary>
+        /// Edit Solution Card — POST
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSolutionCard(int id, SolutionCard card, string? overviewJson, string? fullDetailsJson)
+        {
+            var existing = await _context.SolutionCards.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(c => c.Id == id);
+            if (existing == null) return NotFound();
+
+            // Save history before updating
+            _context.SolutionCardHistory.Add(new SolutionCardHistory
+            {
+                SolutionCardId = id,
+                ChangeType = "Updated",
+                PreviousData = System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    existing.SolutionId, existing.Stream, existing.StreamType, existing.Subgroup,
+                    existing.Gap, existing.Title, existing.ShortTitle, existing.Timeline,
+                    existing.DeliveryDifficulty, existing.PoliticalSensitivity, existing.Category,
+                    existing.SortOrder, existing.IsActive, existing.OverviewData, existing.FullDetailsData
+                }),
+                ChangedByUserId = _userManager.GetUserId(User),
+                ChangedAt = DateTime.UtcNow
+            });
+
+            // Update fields
+            existing.SolutionId = card.SolutionId;
+            existing.Stream = card.Stream;
+            existing.StreamType = card.StreamType;
+            existing.Subgroup = card.Subgroup;
+            existing.Gap = card.Gap;
+            existing.Title = card.Title;
+            existing.ShortTitle = card.ShortTitle;
+            existing.Timeline = card.Timeline;
+            existing.DeliveryDifficulty = card.DeliveryDifficulty;
+            existing.PoliticalSensitivity = card.PoliticalSensitivity;
+            existing.Category = card.Category;
+            existing.SortOrder = card.SortOrder;
+            existing.IsActive = card.IsActive;
+            existing.OverviewData = overviewJson;
+            existing.FullDetailsData = fullDetailsJson;
+            existing.UpdatedAt = DateTime.UtcNow;
+            existing.UpdatedByUserId = _userManager.GetUserId(User);
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Card '{existing.SolutionId}' updated successfully.";
+            return RedirectToAction("SolutionLibrary");
+        }
+
+        /// <summary>
+        /// Delete Solution Card (soft-delete) — POST
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteSolutionCard(int id)
+        {
+            var card = await _context.SolutionCards.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(c => c.Id == id);
+            if (card == null) return NotFound();
+
+            card.IsDeleted = true;
+            card.DeletedAt = DateTime.UtcNow;
+
+            _context.SolutionCardHistory.Add(new SolutionCardHistory
+            {
+                SolutionCardId = id,
+                ChangeType = "Deleted",
+                ChangedByUserId = _userManager.GetUserId(User),
+                ChangedAt = DateTime.UtcNow
+            });
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = $"Card '{card.SolutionId}' deleted." });
+        }
+
+        /// <summary>
+        /// Restore a soft-deleted card — POST
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RestoreSolutionCard(int id)
+        {
+            var card = await _context.SolutionCards.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(c => c.Id == id);
+            if (card == null) return NotFound();
+
+            card.IsDeleted = false;
+            card.DeletedAt = null;
+
+            _context.SolutionCardHistory.Add(new SolutionCardHistory
+            {
+                SolutionCardId = id,
+                ChangeType = "Restored",
+                ChangedByUserId = _userManager.GetUserId(User),
+                ChangedAt = DateTime.UtcNow
+            });
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = $"Card '{card.SolutionId}' restored." });
+        }
+
+        /// <summary>
+        /// Toggle card active/inactive — POST
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleSolutionCardActive(int id)
+        {
+            var card = await _context.SolutionCards.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(c => c.Id == id);
+            if (card == null) return NotFound();
+
+            card.IsActive = !card.IsActive;
+            card.UpdatedAt = DateTime.UtcNow;
+            card.UpdatedByUserId = _userManager.GetUserId(User);
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, isActive = card.IsActive, message = $"Card '{card.SolutionId}' is now {(card.IsActive ? "active" : "inactive")}." });
+        }
+
+        /// <summary>
+        /// View card version history — GET
+        /// </summary>
+        public async Task<IActionResult> SolutionCardHistory(int id)
+        {
+            var card = await _context.SolutionCards.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(c => c.Id == id);
+            if (card == null) return NotFound();
+
+            var history = await _context.SolutionCardHistory
+                .Where(h => h.SolutionCardId == id)
+                .OrderByDescending(h => h.ChangedAt)
+                .Include(h => h.ChangedBy)
+                .ToListAsync();
+
+            ViewBag.Card = card;
+            return View(history);
+        }
+
+        /// <summary>
+        /// Export all solution cards as JSON — GET
+        /// </summary>
+        public async Task<IActionResult> ExportSolutionCards()
+        {
+            var cards = await _context.SolutionCards
+                .Where(c => !c.IsDeleted)
+                .OrderBy(c => c.Stream).ThenBy(c => c.Gap).ThenBy(c => c.SortOrder)
+                .ToListAsync();
+
+            var export = cards.Select(c => new
+            {
+                c.SolutionId, c.Stream, c.StreamType, c.Subgroup, c.Gap,
+                c.Title, c.ShortTitle, c.Timeline, c.DeliveryDifficulty,
+                c.PoliticalSensitivity, c.Category, c.SortOrder, c.IsActive,
+                overview = string.IsNullOrEmpty(c.OverviewData) ? null : System.Text.Json.JsonSerializer.Deserialize<object>(c.OverviewData),
+                fullDetails = string.IsNullOrEmpty(c.FullDetailsData) ? null : System.Text.Json.JsonSerializer.Deserialize<object>(c.FullDetailsData)
+            });
+
+            var json = System.Text.Json.JsonSerializer.Serialize(export, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            return File(bytes, "application/json", $"rosra-solution-cards-{DateTime.UtcNow:yyyyMMdd}.json");
+        }
+
+        /// <summary>
+        /// Import solution cards from JSON — POST
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ImportSolutionCards(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return Json(new { success = false, message = "No file provided." });
+
+            try
+            {
+                using var stream = new System.IO.StreamReader(file.OpenReadStream());
+                var json = await stream.ReadToEndAsync();
+                var cards = System.Text.Json.JsonSerializer.Deserialize<List<System.Text.Json.JsonElement>>(json);
+
+                if (cards == null || cards.Count == 0)
+                    return Json(new { success = false, message = "No cards found in file." });
+
+                int imported = 0, skipped = 0;
+                var userId = _userManager.GetUserId(User);
+
+                foreach (var cardJson in cards)
+                {
+                    var solutionId = cardJson.TryGetProperty("solutionId", out var sid) ? sid.GetString() : null;
+                    if (string.IsNullOrEmpty(solutionId)) { skipped++; continue; }
+
+                    // Skip if already exists
+                    if (await _context.SolutionCards.IgnoreQueryFilters().AnyAsync(c => c.SolutionId == solutionId))
+                    { skipped++; continue; }
+
+                    var card = new SolutionCard
+                    {
+                        SolutionId = solutionId,
+                        Stream = cardJson.TryGetProperty("stream", out var s) ? s.GetString() ?? "" : "",
+                        StreamType = cardJson.TryGetProperty("streamType", out var st) ? st.GetString() ?? "" : "",
+                        Subgroup = cardJson.TryGetProperty("subgroup", out var sg) && sg.ValueKind == System.Text.Json.JsonValueKind.String ? sg.GetString() : null,
+                        Gap = cardJson.TryGetProperty("gap", out var g) ? g.GetString() ?? "" : "",
+                        Title = cardJson.TryGetProperty("title", out var t) ? t.GetString() ?? "" : "",
+                        ShortTitle = cardJson.TryGetProperty("shortTitle", out var sht) ? sht.GetString() : null,
+                        Timeline = cardJson.TryGetProperty("timeline", out var tl) ? tl.GetString() : null,
+                        DeliveryDifficulty = cardJson.TryGetProperty("deliveryDifficulty", out var dd) ? dd.GetString() : null,
+                        PoliticalSensitivity = cardJson.TryGetProperty("politicalSensitivity", out var ps) ? ps.GetString() : null,
+                        Category = cardJson.TryGetProperty("category", out var cat) ? cat.GetString() : null,
+                        SortOrder = cardJson.TryGetProperty("sortOrder", out var so) && so.ValueKind == System.Text.Json.JsonValueKind.Number ? so.GetInt32() : 0,
+                        IsActive = true,
+                        OverviewData = cardJson.TryGetProperty("overview", out var ov) ? ov.GetRawText() : null,
+                        FullDetailsData = cardJson.TryGetProperty("fullDetails", out var fd) ? fd.GetRawText() : null,
+                        CreatedAt = DateTime.UtcNow,
+                        CreatedByUserId = userId
+                    };
+
+                    _context.SolutionCards.Add(card);
+                    imported++;
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = $"Imported {imported} cards, skipped {skipped} (already exist or invalid)." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Import failed: {ex.Message}" });
+            }
+        }
+
+        // =====================================================================
+        // SYSTEM SETTINGS
+        // =====================================================================
+
+        public async Task<IActionResult> SystemSettings()
+        {
+            var settings = await _context.SystemSettings.OrderBy(s => s.Key).ToListAsync();
+
+            // Seed defaults if empty
+            if (!settings.Any())
+            {
+                var defaults = new List<SystemSetting>
+                {
+                    new() { Key = "ComplianceRatioThreshold", Value = "75", Description = "Compliance ratio (%) above which 'Revenue Potential' mode is used in Prioritization" },
+                    new() { Key = "CoverageRatioThreshold", Value = "60", Description = "Coverage ratio (%) above which 'Compliance First' mode is used in Prioritization" },
+                    new() { Key = "MaxStreamsPerReport", Value = "20", Description = "Maximum number of custom streams allowed per report" },
+                    new() { Key = "DefaultTimeline", Value = "1-3 years", Description = "Default timeline for new solution cards" }
+                };
+                _context.SystemSettings.AddRange(defaults);
+                await _context.SaveChangesAsync();
+                settings = defaults;
+            }
+
+            return View(settings);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateSystemSetting([FromBody] SystemSettingUpdate update)
+        {
+            if (string.IsNullOrEmpty(update?.Key))
+                return Json(new { success = false, message = "Key is required." });
+
+            var existing = await _context.SystemSettings.FindAsync(update.Key);
+            if (existing != null)
+            {
+                existing.Value = update.Value ?? "";
+                if (!string.IsNullOrEmpty(update.Description))
+                    existing.Description = update.Description;
+                existing.UpdatedAt = DateTime.UtcNow;
+                existing.UpdatedByUserId = _userManager.GetUserId(User);
+            }
+            else
+            {
+                _context.SystemSettings.Add(new SystemSetting
+                {
+                    Key = update.Key,
+                    Value = update.Value ?? "",
+                    Description = update.Description,
+                    UpdatedAt = DateTime.UtcNow,
+                    UpdatedByUserId = _userManager.GetUserId(User)
+                });
+            }
+
+            await _context.SaveChangesAsync();
+            return Json(new { success = true });
+        }
+
+        // =====================================================================
+        // ANALYTICS DASHBOARD
+        // =====================================================================
+
+        public async Task<IActionResult> Analytics()
+        {
+            // Report stats
+            var allReports = await _context.RosraReports.IgnoreQueryFilters().Where(r => !r.IsDeleted).ToListAsync();
+            ViewBag.TotalReports = allReports.Count;
+            ViewBag.ReportsByStatus = allReports.GroupBy(r => r.Status)
+                .Select(g => new { Status = g.Key.ToString(), Count = g.Count() }).ToList();
+            ViewBag.ReportsByCountry = allReports.Where(r => !string.IsNullOrEmpty(r.Country))
+                .GroupBy(r => r.Country).Select(g => new { Country = g.Key, Count = g.Count() })
+                .OrderByDescending(x => x.Count).Take(15).ToList();
+
+            // Solution card stats
+            var cards = await _context.SolutionCards.Where(c => !c.IsDeleted).ToListAsync();
+            ViewBag.TotalCards = cards.Count;
+            ViewBag.CardsByStream = cards.GroupBy(c => c.Stream).Select(g => new { Stream = g.Key, Count = g.Count() }).ToList();
+            ViewBag.CardsByGap = cards.GroupBy(c => c.Gap).Select(g => new { Gap = g.Key, Count = g.Count() }).ToList();
+            ViewBag.CardsByTimeline = cards.GroupBy(c => c.Timeline).Select(g => new { Timeline = g.Key, Count = g.Count() }).ToList();
+
+            // Solution adoption (which cards are most selected across reports)
+            var solutionSelections = new Dictionary<string, int>();
+            foreach (var report in allReports.Where(r => !string.IsNullOrEmpty(r.SelectedSolutionsData)))
+            {
+                try
+                {
+                    var data = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(report.SelectedSolutionsData!);
+                    if (data.TryGetProperty("selectedSolutions", out var solutions) && solutions.ValueKind == System.Text.Json.JsonValueKind.Array)
+                    {
+                        foreach (var sol in solutions.EnumerateArray())
+                        {
+                            var id = sol.TryGetProperty("solutionId", out var sid) ? sid.GetString() ?? "" : "";
+                            if (!string.IsNullOrEmpty(id))
+                            {
+                                solutionSelections[id] = solutionSelections.GetValueOrDefault(id) + 1;
+                            }
+                        }
+                    }
+                }
+                catch { }
+            }
+            ViewBag.TopSelectedCards = solutionSelections.OrderByDescending(kv => kv.Value).Take(10)
+                .Select(kv => new { SolutionId = kv.Key, Count = kv.Value }).ToList();
+
+            // User stats
+            ViewBag.TotalUsers = await _userManager.Users.CountAsync();
+            ViewBag.ActiveUsers = await _userManager.Users
+                .Where(u => !u.LockoutEnabled || u.LockoutEnd == null || u.LockoutEnd < DateTimeOffset.Now)
+                .CountAsync();
+
+            return View();
+        }
+    }
+
+    // DTO for system setting updates
+    public class SystemSettingUpdate
+    {
+        public string? Key { get; set; }
+        public string? Value { get; set; }
+        public string? Description { get; set; }
     }
 }

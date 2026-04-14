@@ -116,7 +116,7 @@
                                 <li><a class="dropdown-item" href="/#data-requirements">
                                     <i class="fas fa-database me-2"></i> @SharedLocalizer["Nav_DataRequirements"]
                                 </a></li>
-                                <li><a class="dropdown-item" href="/#data-requirements">
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="Privacy">
                                     <i class="fas fa-shield-alt me-2"></i> @SharedLocalizer["Nav_DataPrivacy"]
                                 </a></li>
                             </ul>
@@ -187,6 +187,15 @@
                                         </a></li>
                                         <li><a class="dropdown-item" asp-controller="Admin" asp-action="DataManagement">
                                             <i class="fas fa-database me-2"></i> Data Management
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="SolutionLibrary">
+                                            <i class="fas fa-layer-group me-2"></i> Solution Card Library
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Analytics">
+                                            <i class="fas fa-chart-line me-2"></i> Analytics
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="SystemSettings">
+                                            <i class="fas fa-cog me-2"></i> System Settings
                                         </a></li>
                                         <li><a class="dropdown-item" asp-controller="Admin" asp-action="EmailSettings">
                                             <i class="fas fa-envelope-open-text me-2"></i> Email Settings
@@ -333,6 +342,7 @@
     </script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/streamClassification.js" asp-append-version="true"></script>
     <script src="~/js/rosraStateManager.js" asp-append-version="true"></script>
     <script src="~/js/chartExportHelper.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

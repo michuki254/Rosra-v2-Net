@@ -1,0 +1,7 @@
+bin/
+obj/
+.git/
+.vs/
+App_Data/
+TempRosraApp/
+node_modules/

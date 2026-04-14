@@ -85,6 +85,10 @@
             updatedAt: new Date().toISOString()
         };
 
+        // Mode determination (persisted so Overview Selection reads stored value)
+        baseStream.mode = null; // 'revenue-potential', 'compliance-first', 'overhaul' — set by Prioritization tab
+        baseStream.subgroup = null; // For non-property streams: 'A', 'B', 'C'
+
         // Add type-specific gaps
         if (type === STREAM_TYPES.PROPERTY_TAX) {
             baseStream.valuationGap = 0;
@@ -414,6 +418,17 @@
             const stream = this.getStream(streamId);
             if (!stream) return 'overhaul';
 
+            // Return persisted mode if set (set by Prioritization tab)
+            if (stream.mode) return stream.mode;
+
+            // Calculate from ratios if not persisted yet
+            return this.calculateStreamMode(stream);
+        },
+
+        /**
+         * Calculate mode from ratios (without persisting)
+         */
+        calculateStreamMode: function(stream) {
             const complianceRatio = stream.complianceRatio || 0;
             const coverageRatio = stream.coverageRatio || 0;
 
@@ -423,6 +438,19 @@
                 return 'compliance-first';
             } else {
                 return 'overhaul';
+            }
+        },
+
+        /**
+         * Set and persist the mode for a stream (called by Prioritization tab)
+         */
+        setStreamMode: function(streamId, mode) {
+            const stream = this.getStream(streamId);
+            if (stream) {
+                stream.mode = mode;
+                stream.updatedAt = new Date().toISOString();
+                persistToStorage();
+                notifySubscribers('streams', { action: 'modeChanged', streamId, mode });
             }
         },
 
@@ -457,16 +485,18 @@
                             streamRank: stream.finalRank,
                             gapType: gap.type,
                             gapAmount: gap.amount,
-                            gapPriority: gap.priority,
-                            // Combined sort key: stream rank * 10 + gap priority
-                            sortKey: (stream.finalRank * 10) + gap.priority
+                            gapPriority: gap.priority
                         });
                     }
                 });
             });
 
-            // Sort by combined sort key
-            return priorityList.sort((a, b) => a.sortKey - b.sortKey);
+            // Sort by: stream rank ASC, then gap priority ASC, then gap amount DESC (for tie-breaking)
+            return priorityList.sort((a, b) => {
+                if (a.streamRank !== b.streamRank) return a.streamRank - b.streamRank;
+                if (a.gapPriority !== b.gapPriority) return a.gapPriority - b.gapPriority;
+                return b.gapAmount - a.gapAmount; // larger gap first when tied
+            });
         },
 
         /**
