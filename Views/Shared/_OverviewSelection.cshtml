@@ -911,18 +911,41 @@
             }
         }
 
-        // If no streams found, show a message instead of hardcoded test data
+        // If no streams found, use default streams so cards are still visible
         if (streams.length === 0) {
-            const container = document.getElementById('solutionsContainer');
-            if (container) {
-                container.innerHTML = `
-                    <div class="text-center py-5">
-                        <i class="bi bi-exclamation-circle fs-1 text-muted d-block mb-3"></i>
-                        <h5 class="text-muted">No gap analysis data found</h5>
-                        <p class="text-muted">Please complete the Gap Analysis and Prioritisation tabs first, then return here to select solution cards.</p>
-                    </div>
-                `;
-            }
+            streams = [
+                {
+                    rank: 1,
+                    name: 'Property Tax',
+                    type: 'property-tax',
+                    subgroup: null,
+                    gaps: [
+                        { priority: 1, type: 'Compliance', amount: 0 },
+                        { priority: 2, type: 'Coverage', amount: 0 },
+                        { priority: 3, type: 'Valuation', amount: 0 }
+                    ]
+                }
+            ];
+
+            // Also add any generic streams from the form
+            const genericContainers = document.querySelectorAll('.generic-stream-gap-analysis');
+            genericContainers.forEach((c, idx) => {
+                const nameInput = c.querySelector('input[name$=".StreamName"]');
+                const sgInput = c.querySelector('input[name$=".Subgroup"]');
+                if (nameInput && nameInput.value) {
+                    streams.push({
+                        rank: idx + 2,
+                        name: nameInput.value,
+                        type: 'generic-stream',
+                        subgroup: sgInput ? sgInput.value : null,
+                        gaps: [
+                            { priority: 1, type: 'Compliance', amount: 0 },
+                            { priority: 2, type: 'Coverage', amount: 0 },
+                            { priority: 3, type: 'Liability', amount: 0 }
+                        ]
+                    });
+                }
+            });
         }
 
         return streams;
