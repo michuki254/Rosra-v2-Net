@@ -303,16 +303,16 @@
     }
 
     .overview-selection-module .gap-icon.compliance {
-        background: var(--gap-compliance) 100%);
+        background: var(--gap-compliance);
     }
     .overview-selection-module .gap-icon.coverage {
-        background: var(--gap-coverage) 100%);
+        background: var(--gap-coverage);
     }
     .overview-selection-module .gap-icon.valuation {
-        background: var(--gap-valuation) 100%);
+        background: var(--gap-valuation);
     }
     .overview-selection-module .gap-icon.liability {
-        background: var(--gap-liability) 100%);
+        background: var(--gap-liability);
     }
 
     .overview-selection-module .gap-title .badge {
@@ -1168,7 +1168,11 @@
                             <i class="bi bi-${gapType === 'compliance' ? 'check-circle' : gapType === 'coverage' ? 'geo-alt' : 'currency-dollar'}"></i>
                         </span>
                         <span>${gap.type.toUpperCase()} ${_t.gap}</span>
-                        <span class="badge bg-light text-dark ms-2">#${gap.priority}</span>
+                        <span class="badge ms-2" style="background-color: ${
+                            gapType === 'compliance' ? '#F44336' :
+                            gapType === 'coverage' ? '#FF9800' :
+                            gapType === 'valuation' ? '#2196F3' : '#9C27B0'
+                        }; color: #fff; font-size: 0.7rem;">#${gap.priority}</span>
                     </div>
                     <div class="gap-stats">
                         <span class="gap-amount">${formatCurrency(gap.amount)}</span>

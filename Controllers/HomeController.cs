@@ -29,6 +29,11 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult SampleReports()
+    {
+        return View();
+    }
+
     [Authorize(Roles = "Admin")]
     public IActionResult AdminGuide()
     {

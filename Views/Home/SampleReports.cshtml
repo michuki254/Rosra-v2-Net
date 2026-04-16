@@ -1,0 +1,560 @@
+@{
+    ViewData["Title"] = "Sample Reports";
+    // Fixed PublicIds matching SampleReportSeeder
+    var nairobiId = "a0000001-0001-0001-0001-000000000001";
+    var kampalaId = "a0000001-0001-0001-0001-000000000002";
+    var darId = "a0000001-0001-0001-0001-000000000003";
+    var accraId = "a0000001-0001-0001-0001-000000000004";
+    var addisId = "a0000001-0001-0001-0001-000000000005";
+}
+
+<style>
+    .sample-reports-page {
+        font-family: 'Roboto', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+        min-height: 100vh;
+        padding: 3rem 0;
+    }
+    .sample-reports-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    .sample-reports-header h1 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #1a2332;
+        margin-bottom: 0.5rem;
+    }
+    .sample-reports-header .subtitle {
+        font-size: 1.05rem;
+        color: #6c757d;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    .sample-reports-header .badge-row {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    .sample-reports-header .info-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        color: #495057;
+    }
+
+    /* Report Cards */
+    .report-card {
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(0,0,0,0.04);
+    }
+    .report-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 36px rgba(0,0,0,0.1);
+    }
+    .report-card .card-banner {
+        height: 8px;
+    }
+    .report-card .card-body-custom {
+        padding: 1.75rem;
+    }
+    .report-card .city-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    .report-card .city-name {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #1a2332;
+    }
+    .report-card .country-name {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 2px;
+    }
+    .report-card .status-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .report-card .status-validated { background: #d1fae5; color: #065f46; }
+    .report-card .status-demo { background: #e0f2fe; color: #0369a1; }
+
+    /* Financial Summary */
+    .financial-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+    }
+    .fin-item {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 0.75rem;
+        text-align: center;
+    }
+    .fin-item .fin-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    .fin-item .fin-value {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1a2332;
+    }
+
+    /* Streams */
+    .streams-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+    }
+    .stream-tag {
+        padding: 0.3rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    .stream-tag.pt { background: #fef3c7; color: #92400e; }
+    .stream-tag.bl { background: #ede9fe; color: #5b21b6; }
+    .stream-tag.np-a { background: #dbeafe; color: #1e40af; }
+    .stream-tag.np-b { background: #ffedd5; color: #9a3412; }
+    .stream-tag.np-c { background: #d1fae5; color: #065f46; }
+
+    /* Gap Bars */
+    .gap-bars {
+        margin-bottom: 1.25rem;
+    }
+    .gap-bar-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .gap-bar-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #6c757d;
+        width: 80px;
+        text-align: right;
+    }
+    .gap-bar-track {
+        flex: 1;
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .gap-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.8s ease;
+    }
+    .gap-bar-fill.compliance { background: #F44336; }
+    .gap-bar-fill.coverage { background: #FF9800; }
+    .gap-bar-fill.valuation { background: #2196F3; }
+    .gap-bar-fill.liability { background: #9C27B0; }
+    .gap-bar-value {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #333;
+        width: 60px;
+    }
+
+    /* Solutions selected */
+    .solutions-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background: #f0f9ff;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    .solutions-summary .sol-label {
+        font-size: 0.8rem;
+        color: #0369a1;
+        font-weight: 500;
+    }
+    .solutions-summary .sol-count {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0369a1;
+    }
+
+    /* Card footer */
+    .card-footer-custom {
+        padding: 1rem 1.75rem;
+        border-top: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .card-footer-custom .meta-info {
+        font-size: 0.75rem;
+        color: #adb5bd;
+    }
+    .btn-view-report {
+        background: #00689D;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+        text-decoration: none;
+    }
+    .btn-view-report:hover {
+        background: #004d73;
+        color: #fff;
+        text-decoration: none;
+    }
+
+    @@media (max-width: 768px) {
+        .financial-grid { grid-template-columns: 1fr; }
+        .sample-reports-header h1 { font-size: 1.6rem; }
+    }
+</style>
+
+<div class="sample-reports-page">
+    <div class="container" style="max-width: 1000px;">
+
+        <!-- Header -->
+        <div class="sample-reports-header">
+            <h1>Sample ROSRA Reports</h1>
+            <p class="subtitle">Explore completed analyses from different cities to understand how ROSRA identifies revenue gaps and recommends targeted reform solutions.</p>
+            <div class="badge-row">
+                <span class="info-badge"><i class="bi bi-globe2 me-1"></i> 5 Cities</span>
+                <span class="info-badge"><i class="bi bi-bar-chart me-1"></i> Multiple Revenue Streams</span>
+                <span class="info-badge"><i class="bi bi-lightbulb me-1"></i> Gap Analysis + Solutions</span>
+            </div>
+        </div>
+
+        <!-- Report 1: Nairobi -->
+        <div class="report-card">
+            <div class="card-banner" style="background: linear-gradient(90deg, #00689D, #0097e6);"></div>
+            <div class="card-body-custom">
+                <div class="city-row">
+                    <div>
+                        <div class="city-name">Nairobi City County</div>
+                        <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Kenya, East Africa</div>
+                    </div>
+                    <span class="status-badge status-validated">Validated</span>
+                </div>
+                <div class="financial-grid">
+                    <div class="fin-item">
+                        <div class="fin-label">Actual OSR</div>
+                        <div class="fin-value">KES 18.2B</div>
+                    </div>
+                    <div class="fin-item">
+                        <div class="fin-label">Potential OSR</div>
+                        <div class="fin-value">KES 32.7B</div>
+                    </div>
+                    <div class="fin-item">
+                        <div class="fin-label">Total Gap</div>
+                        <div class="fin-value" style="color: #F44336;">KES 14.5B</div>
+                    </div>
+                </div>
+                <div class="streams-row">
+                    <span class="stream-tag pt"><i class="bi bi-house me-1"></i>Property Tax</span>
+                    <span class="stream-tag bl"><i class="bi bi-briefcase me-1"></i>Business Licence</span>
+                    <span class="stream-tag np-c"><i class="bi bi-cart3 me-1"></i>Parking Fee</span>
+                    <span class="stream-tag np-b"><i class="bi bi-trash3 me-1"></i>Solid Waste Fee</span>
+                </div>
+                <div class="gap-bars">
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Compliance</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill compliance" style="width: 55%;"></div></div>
+                        <span class="gap-bar-value">KES 7.9B</span>
+                    </div>
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Coverage</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill coverage" style="width: 25%;"></div></div>
+                        <span class="gap-bar-value">KES 3.6B</span>
+                    </div>
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Valuation</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill valuation" style="width: 20%;"></div></div>
+                        <span class="gap-bar-value">KES 3.0B</span>
+                    </div>
+                </div>
+                <div class="solutions-summary">
+                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Solutions selected</span>
+                    <span class="sol-count">12 cards</span>
+                </div>
+            </div>
+            <div class="card-footer-custom">
+                <span class="meta-info">FY 2024/25 | Population: 4.4M | Currency: KES</span>
+                <a href="@Url.Action("View", "Rosra", new { id = nairobiId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Report</a>
+            </div>
+        </div>
+
+        <!-- Report 2: Kampala -->
+        <div class="report-card">
+            <div class="card-banner" style="background: linear-gradient(90deg, #28a745, #20c997);"></div>
+            <div class="card-body-custom">
+                <div class="city-row">
+                    <div>
+                        <div class="city-name">Kampala Capital City</div>
+                        <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Uganda, East Africa</div>
+                    </div>
+                    <span class="status-badge status-validated">Validated</span>
+                </div>
+                <div class="financial-grid">
+                    <div class="fin-item">
+                        <div class="fin-label">Actual OSR</div>
+                        <div class="fin-value">UGX 280B</div>
+                    </div>
+                    <div class="fin-item">
+                        <div class="fin-label">Potential OSR</div>
+                        <div class="fin-value">UGX 520B</div>
+                    </div>
+                    <div class="fin-item">
+                        <div class="fin-label">Total Gap</div>
+                        <div class="fin-value" style="color: #F44336;">UGX 240B</div>
+                    </div>
+                </div>
+                <div class="streams-row">
+                    <span class="stream-tag pt"><i class="bi bi-house me-1"></i>Property Tax</span>
+                    <span class="stream-tag np-a"><i class="bi bi-briefcase me-1"></i>Trading Licence</span>
+                    <span class="stream-tag np-c"><i class="bi bi-shop me-1"></i>Daily Market Fee</span>
+                </div>
+                <div class="gap-bars">
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Compliance</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill compliance" style="width: 45%;"></div></div>
+                        <span class="gap-bar-value">UGX 108B</span>
+                    </div>
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Coverage</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill coverage" style="width: 35%;"></div></div>
+                        <span class="gap-bar-value">UGX 84B</span>
+                    </div>
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Valuation</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill valuation" style="width: 20%;"></div></div>
+                        <span class="gap-bar-value">UGX 48B</span>
+                    </div>
+                </div>
+                <div class="solutions-summary">
+                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Solutions selected</span>
+                    <span class="sol-count">9 cards</span>
+                </div>
+            </div>
+            <div class="card-footer-custom">
+                <span class="meta-info">FY 2024/25 | Population: 1.7M | Currency: UGX</span>
+                <a href="@Url.Action("View", "Rosra", new { id = kampalaId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Report</a>
+            </div>
+        </div>
+
+        <!-- Report 3: Dar es Salaam -->
+        <div class="report-card">
+            <div class="card-banner" style="background: linear-gradient(90deg, #FF9800, #ff5722);"></div>
+            <div class="card-body-custom">
+                <div class="city-row">
+                    <div>
+                        <div class="city-name">Dar es Salaam</div>
+                        <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Tanzania, East Africa</div>
+                    </div>
+                    <span class="status-badge status-demo">Demo</span>
+                </div>
+                <div class="financial-grid">
+                    <div class="fin-item">
+                        <div class="fin-label">Actual OSR</div>
+                        <div class="fin-value">TZS 145B</div>
+                    </div>
+                    <div class="fin-item">
+                        <div class="fin-label">Potential OSR</div>
+                        <div class="fin-value">TZS 310B</div>
+                    </div>
+                    <div class="fin-item">
+                        <div class="fin-label">Total Gap</div>
+                        <div class="fin-value" style="color: #F44336;">TZS 165B</div>
+                    </div>
+                </div>
+                <div class="streams-row">
+                    <span class="stream-tag pt"><i class="bi bi-house me-1"></i>Property Tax</span>
+                    <span class="stream-tag np-a"><i class="bi bi-briefcase me-1"></i>Business Licence</span>
+                    <span class="stream-tag np-b"><i class="bi bi-droplet me-1"></i>Water Charge</span>
+                    <span class="stream-tag np-c"><i class="bi bi-bus-front me-1"></i>Bus Stand Fee</span>
+                    <span class="stream-tag np-b"><i class="bi bi-trash3 me-1"></i>Waste Fee</span>
+                </div>
+                <div class="gap-bars">
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Compliance</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill compliance" style="width: 40%;"></div></div>
+                        <span class="gap-bar-value">TZS 66B</span>
+                    </div>
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Coverage</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill coverage" style="width: 40%;"></div></div>
+                        <span class="gap-bar-value">TZS 66B</span>
+                    </div>
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Liability</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill liability" style="width: 20%;"></div></div>
+                        <span class="gap-bar-value">TZS 33B</span>
+                    </div>
+                </div>
+                <div class="solutions-summary">
+                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Solutions selected</span>
+                    <span class="sol-count">15 cards</span>
+                </div>
+            </div>
+            <div class="card-footer-custom">
+                <span class="meta-info">FY 2023/24 | Population: 5.4M | Currency: TZS</span>
+                <a href="@Url.Action("View", "Rosra", new { id = darId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Report</a>
+            </div>
+        </div>
+
+        <!-- Report 4: Accra -->
+        <div class="report-card">
+            <div class="card-banner" style="background: linear-gradient(90deg, #9C27B0, #e040fb);"></div>
+            <div class="card-body-custom">
+                <div class="city-row">
+                    <div>
+                        <div class="city-name">Accra Metropolitan Assembly</div>
+                        <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Ghana, West Africa</div>
+                    </div>
+                    <span class="status-badge status-demo">Demo</span>
+                </div>
+                <div class="financial-grid">
+                    <div class="fin-item">
+                        <div class="fin-label">Actual OSR</div>
+                        <div class="fin-value">GHS 85M</div>
+                    </div>
+                    <div class="fin-item">
+                        <div class="fin-label">Potential OSR</div>
+                        <div class="fin-value">GHS 210M</div>
+                    </div>
+                    <div class="fin-item">
+                        <div class="fin-label">Total Gap</div>
+                        <div class="fin-value" style="color: #F44336;">GHS 125M</div>
+                    </div>
+                </div>
+                <div class="streams-row">
+                    <span class="stream-tag pt"><i class="bi bi-house me-1"></i>Property Rate</span>
+                    <span class="stream-tag np-a"><i class="bi bi-briefcase me-1"></i>Business Operating Permit</span>
+                    <span class="stream-tag np-c"><i class="bi bi-p-circle me-1"></i>Parking Fee</span>
+                    <span class="stream-tag np-c"><i class="bi bi-shop me-1"></i>Market Toll</span>
+                </div>
+                <div class="gap-bars">
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Compliance</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill compliance" style="width: 35%;"></div></div>
+                        <span class="gap-bar-value">GHS 44M</span>
+                    </div>
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Coverage</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill coverage" style="width: 45%;"></div></div>
+                        <span class="gap-bar-value">GHS 56M</span>
+                    </div>
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Valuation</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill valuation" style="width: 20%;"></div></div>
+                        <span class="gap-bar-value">GHS 25M</span>
+                    </div>
+                </div>
+                <div class="solutions-summary">
+                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Solutions selected</span>
+                    <span class="sol-count">11 cards</span>
+                </div>
+            </div>
+            <div class="card-footer-custom">
+                <span class="meta-info">FY 2024 | Population: 2.5M | Currency: GHS</span>
+                <a href="@Url.Action("View", "Rosra", new { id = accraId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Report</a>
+            </div>
+        </div>
+
+        <!-- Report 5: Addis Ababa -->
+        <div class="report-card">
+            <div class="card-banner" style="background: linear-gradient(90deg, #2196F3, #00bcd4);"></div>
+            <div class="card-body-custom">
+                <div class="city-row">
+                    <div>
+                        <div class="city-name">Addis Ababa City Administration</div>
+                        <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Ethiopia, East Africa</div>
+                    </div>
+                    <span class="status-badge status-demo">Demo</span>
+                </div>
+                <div class="financial-grid">
+                    <div class="fin-item">
+                        <div class="fin-label">Actual OSR</div>
+                        <div class="fin-value">ETB 12.5B</div>
+                    </div>
+                    <div class="fin-item">
+                        <div class="fin-label">Potential OSR</div>
+                        <div class="fin-value">ETB 28.0B</div>
+                    </div>
+                    <div class="fin-item">
+                        <div class="fin-label">Total Gap</div>
+                        <div class="fin-value" style="color: #F44336;">ETB 15.5B</div>
+                    </div>
+                </div>
+                <div class="streams-row">
+                    <span class="stream-tag pt"><i class="bi bi-house me-1"></i>Property Tax</span>
+                    <span class="stream-tag np-a"><i class="bi bi-briefcase me-1"></i>Trade Licence</span>
+                    <span class="stream-tag np-b"><i class="bi bi-building me-1"></i>Municipal Rent</span>
+                    <span class="stream-tag np-c"><i class="bi bi-shop me-1"></i>Market Fee</span>
+                    <span class="stream-tag np-a"><i class="bi bi-signpost me-1"></i>Signage Permit</span>
+                </div>
+                <div class="gap-bars">
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Compliance</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill compliance" style="width: 30%;"></div></div>
+                        <span class="gap-bar-value">ETB 4.7B</span>
+                    </div>
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Coverage</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill coverage" style="width: 50%;"></div></div>
+                        <span class="gap-bar-value">ETB 7.8B</span>
+                    </div>
+                    <div class="gap-bar-item">
+                        <span class="gap-bar-label">Valuation</span>
+                        <div class="gap-bar-track"><div class="gap-bar-fill valuation" style="width: 20%;"></div></div>
+                        <span class="gap-bar-value">ETB 3.0B</span>
+                    </div>
+                </div>
+                <div class="solutions-summary">
+                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Solutions selected</span>
+                    <span class="sol-count">14 cards</span>
+                </div>
+            </div>
+            <div class="card-footer-custom">
+                <span class="meta-info">FY 2024/25 | Population: 5.5M | Currency: ETB</span>
+                <a href="@Url.Action("View", "Rosra", new { id = addisId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Report</a>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="text-center mt-4 mb-5">
+            <p class="text-muted mb-3">Ready to analyse your city's own-source revenue?</p>
+            <a href="@Url.Action("Index", "Rosra")" class="btn-view-report" style="padding: 0.75rem 2rem; font-size: 1rem;">
+                <i class="bi bi-plus-circle me-2"></i>Start Your Own Analysis
+            </a>
+        </div>
+
+    </div>
+</div>

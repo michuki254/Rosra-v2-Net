@@ -990,35 +990,39 @@ namespace RosraApp.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> View(Guid id)
         {
-            // Check if user is authenticated
-            if (User.Identity == null || !User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            // Get the current user
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
             // Get the report by PublicId
             var report = await _context.RosraReports.FirstOrDefaultAsync(r => r.PublicId == id);
             if (report == null)
             {
                 return NotFound();
             }
-            
-            // Debug the raw PropertyTaxData
-            _logger.LogInformation("Raw PropertyTaxData from database: {PropertyTaxData}", report.PropertyTaxData);
-            
-            // Check if the report belongs to the current user
-            if (report.UserId != user.Id && !User.IsInRole("Admin"))
+
+            // Sample reports (no UserId) are publicly viewable
+            var isSampleReport = string.IsNullOrEmpty(report.UserId);
+
+            if (!isSampleReport)
             {
-                return Forbid();
+                // Check if user is authenticated
+                if (User.Identity == null || !User.Identity.IsAuthenticated)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                // Get the current user
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                // Check if the report belongs to the current user
+                if (report.UserId != user.Id && !User.IsInRole("Admin"))
+                {
+                    return Forbid();
+                }
             }
             
             // Create a view model for the form

@@ -123,6 +123,10 @@ namespace RosraApp.Data
                     var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
                     await Services.SolutionCardSeeder.SeedFromJsFiles(context, logger, env.WebRootPath);
 
+                    // Seed 5 sample reports with pre-populated data
+                    logger.LogInformation("Seeding sample reports");
+                    await Services.SampleReportSeeder.SeedSampleReports(context, logger);
+
                     logger.LogInformation("Database initialization completed successfully");
                 }
                 catch (Exception ex)
