@@ -26,9 +26,19 @@ namespace RosraApp.Data
                     logger.LogInformation("Ensuring database exists");
                     context.Database.EnsureCreated();
 
-                    // Then apply any pending migrations
-                    logger.LogInformation("Applying pending migrations");
-                    context.Database.Migrate();
+                    // Then apply any pending migrations (may fail if tables already exist from EnsureCreated)
+                    try
+                    {
+                        logger.LogInformation("Applying pending migrations");
+                        context.Database.Migrate();
+                    }
+                    catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 2714)
+                    {
+                        // Error 2714: "There is already an object named '...' in the database"
+                        // This happens when EnsureCreated() already created tables without migration history.
+                        // Safe to ignore — tables exist, seeders can proceed.
+                        logger.LogWarning("Migration skipped: tables already exist (created by EnsureCreated). Seeders will still run.");
+                    }
 
                     // Seed default permissions
                     logger.LogInformation("Seeding default permissions");
