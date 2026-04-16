@@ -377,6 +377,40 @@ namespace RosraApp.Controllers
                 }
             }
 
+            // Parse formatted Property Tax number values (commas cause model binding to fail)
+            if (formData.PropertyTax == null) formData.PropertyTax = new GapAnalysisPropertyTaxViewModel();
+            ParseFormInt(Request.Form, "PropertyTax.RegisteredProperties", v => formData.PropertyTax.RegisteredProperties = v);
+            ParseFormInt(Request.Form, "PropertyTax.NonRegisteredProperties", v => formData.PropertyTax.NonRegisteredProperties = v);
+            ParseFormDecimal(Request.Form, "PropertyTax.TotalFiscalBase", v => formData.PropertyTax.TotalFiscalBase = v);
+            ParseFormDecimal(Request.Form, "PropertyTax.TotalMarketValue", v => formData.PropertyTax.TotalMarketValue = v);
+            ParseFormDecimal(Request.Form, "PropertyTax.BilledAmount", v => formData.PropertyTax.BilledAmount = v);
+            ParseFormDecimal(Request.Form, "PropertyTax.OutstandingAmount", v => formData.PropertyTax.OutstandingAmount = v);
+
+            // Parse formatted Business License number values
+            if (formData.License == null) formData.License = new GapAnalysisLicenseViewModel();
+            ParseFormInt(Request.Form, "License.RegisteredBusinesses", v => formData.License.RegisteredBusinesses = v);
+            ParseFormDecimal(Request.Form, "License.EstimatedUnregisteredPercent", v => formData.License.EstimatedUnregisteredPercent = v);
+            ParseFormDecimal(Request.Form, "License.BilledAmount", v => formData.License.BilledAmount = v);
+            ParseFormDecimal(Request.Form, "License.OutstandingAmount", v => formData.License.OutstandingAmount = v);
+            ParseFormDecimal(Request.Form, "License.StatutoryAverageBilled", v => formData.License.StatutoryAverageBilled = v);
+            ParseFormDecimal(Request.Form, "License.RealisticImprovementPercent", v => formData.License.RealisticImprovementPercent = v);
+
+            // Parse formatted Generic Streams number values
+            if (formData.GenericStreams != null)
+            {
+                for (int i = 0; i < formData.GenericStreams.Count; i++)
+                {
+                    var stream = formData.GenericStreams[i];
+                    string prefix = $"GenericStreams[{i}]";
+                    ParseFormInt(Request.Form, $"{prefix}.RegisteredUnits", v => stream.RegisteredUnits = v);
+                    ParseFormDecimal(Request.Form, $"{prefix}.EstimatedUnregisteredPercent", v => stream.EstimatedUnregisteredPercent = v);
+                    ParseFormDecimal(Request.Form, $"{prefix}.BilledAmount", v => stream.BilledAmount = v);
+                    ParseFormDecimal(Request.Form, $"{prefix}.OutstandingAmount", v => stream.OutstandingAmount = v);
+                    ParseFormDecimal(Request.Form, $"{prefix}.StatutoryAverageBilled", v => stream.StatutoryAverageBilled = v);
+                    ParseFormDecimal(Request.Form, $"{prefix}.RealisticImprovementPercent", v => stream.RealisticImprovementPercent = v);
+                }
+            }
+
             // Save form data to session
             SaveFormDataToSession(formData);
 
@@ -433,10 +467,44 @@ namespace RosraApp.Controllers
                 decimal.TryParse(gdpPerCapitaStr, NumberStyles.Any, CultureInfo.InvariantCulture, out gdpPerCapita);
                 formData.GdpPerCapita = gdpPerCapita;
             }
-            
+
+            // Parse formatted Property Tax number values (commas break model binding)
+            if (formData.PropertyTax == null) formData.PropertyTax = new GapAnalysisPropertyTaxViewModel();
+            ParseFormInt(Request.Form, "PropertyTax.RegisteredProperties", v => formData.PropertyTax.RegisteredProperties = v);
+            ParseFormInt(Request.Form, "PropertyTax.NonRegisteredProperties", v => formData.PropertyTax.NonRegisteredProperties = v);
+            ParseFormDecimal(Request.Form, "PropertyTax.TotalFiscalBase", v => formData.PropertyTax.TotalFiscalBase = v);
+            ParseFormDecimal(Request.Form, "PropertyTax.TotalMarketValue", v => formData.PropertyTax.TotalMarketValue = v);
+            ParseFormDecimal(Request.Form, "PropertyTax.BilledAmount", v => formData.PropertyTax.BilledAmount = v);
+            ParseFormDecimal(Request.Form, "PropertyTax.OutstandingAmount", v => formData.PropertyTax.OutstandingAmount = v);
+
+            // Parse formatted Business License number values
+            if (formData.License == null) formData.License = new GapAnalysisLicenseViewModel();
+            ParseFormInt(Request.Form, "License.RegisteredBusinesses", v => formData.License.RegisteredBusinesses = v);
+            ParseFormDecimal(Request.Form, "License.EstimatedUnregisteredPercent", v => formData.License.EstimatedUnregisteredPercent = v);
+            ParseFormDecimal(Request.Form, "License.BilledAmount", v => formData.License.BilledAmount = v);
+            ParseFormDecimal(Request.Form, "License.OutstandingAmount", v => formData.License.OutstandingAmount = v);
+            ParseFormDecimal(Request.Form, "License.StatutoryAverageBilled", v => formData.License.StatutoryAverageBilled = v);
+            ParseFormDecimal(Request.Form, "License.RealisticImprovementPercent", v => formData.License.RealisticImprovementPercent = v);
+
+            // Parse formatted Generic Streams number values
+            if (formData.GenericStreams != null)
+            {
+                for (int i = 0; i < formData.GenericStreams.Count; i++)
+                {
+                    var stream = formData.GenericStreams[i];
+                    string prefix = $"GenericStreams[{i}]";
+                    ParseFormInt(Request.Form, $"{prefix}.RegisteredUnits", v => stream.RegisteredUnits = v);
+                    ParseFormDecimal(Request.Form, $"{prefix}.EstimatedUnregisteredPercent", v => stream.EstimatedUnregisteredPercent = v);
+                    ParseFormDecimal(Request.Form, $"{prefix}.BilledAmount", v => stream.BilledAmount = v);
+                    ParseFormDecimal(Request.Form, $"{prefix}.OutstandingAmount", v => stream.OutstandingAmount = v);
+                    ParseFormDecimal(Request.Form, $"{prefix}.StatutoryAverageBilled", v => stream.StatutoryAverageBilled = v);
+                    ParseFormDecimal(Request.Form, $"{prefix}.RealisticImprovementPercent", v => stream.RealisticImprovementPercent = v);
+                }
+            }
+
             // Save form data to session
             SaveFormDataToSession(formData);
-            
+
             // Create a new report
             var report = new RosraReport
             {
@@ -1483,7 +1551,34 @@ namespace RosraApp.Controllers
             var formDataJson = JsonSerializer.Serialize(formData, _sessionJsonOptions);
             HttpContext.Session.SetString(RosraFormDataKey, formDataJson);
         }
-        
+
+        /// <summary>
+        /// Parse a comma-formatted integer from the form (e.g. "1,000" → 1000).
+        /// The number-format CSS class adds thousand separators that break model binding.
+        /// </summary>
+        private static void ParseFormInt(IFormCollection form, string key, Action<int?> setter)
+        {
+            if (!string.IsNullOrEmpty(form[key]))
+            {
+                string raw = form[key].ToString().Replace(",", "");
+                if (int.TryParse(raw, NumberStyles.Any, CultureInfo.InvariantCulture, out int value))
+                    setter(value);
+            }
+        }
+
+        /// <summary>
+        /// Parse a comma-formatted decimal from the form (e.g. "1,000.50" → 1000.50).
+        /// </summary>
+        private static void ParseFormDecimal(IFormCollection form, string key, Action<decimal?> setter)
+        {
+            if (!string.IsNullOrEmpty(form[key]))
+            {
+                string raw = form[key].ToString().Replace(",", "");
+                if (decimal.TryParse(raw, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal value))
+                    setter(value);
+            }
+        }
+
         // Validate JSON string fields before saving to database
         private static string MapCurrencyNameToSymbol(string currencyName)
         {
