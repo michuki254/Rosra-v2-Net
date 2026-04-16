@@ -1,0 +1,378 @@
+[
+  {
+    "CountryCode": "KEN",
+    "SNG": "Baringo",
+    "OSR": 321400000.0,
+    "GCP": 75459000000.0,
+    "Population": 759000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Bomet",
+    "OSR": 196800000.0,
+    "GCP": 151153000000.0,
+    "Population": 973000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Bungoma",
+    "OSR": 670500000.0,
+    "GCP": 205542000000.0,
+    "Population": 2073000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Busia",
+    "OSR": 205900000.0,
+    "GCP": 88731000000.0,
+    "Population": 1003000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Elgeyo/Marakwet",
+    "OSR": 105900000.0,
+    "GCP": 117229000000.0,
+    "Population": 509000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Embu",
+    "OSR": 236700000.0,
+    "GCP": 149912000000.0,
+    "Population": 671000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Garissa",
+    "OSR": 75400000.0,
+    "GCP": 58634000000.0,
+    "Population": 960000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Homa Bay",
+    "OSR": 166000000.0,
+    "GCP": 120751000000.0,
+    "Population": 1275000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Isiolo",
+    "OSR": 125100000.0,
+    "GCP": 26555000000.0,
+    "Population": 330000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Kajiado",
+    "OSR": 544500000.0,
+    "GCP": 150709000000.0,
+    "Population": 1313000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Kakamega",
+    "OSR": 639800000.0,
+    "GCP": 214365000000.0,
+    "Population": 2073000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Kericho",
+    "OSR": 405500000.0,
+    "GCP": 163543000000.0,
+    "Population": 988000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Kiambu",
+    "OSR": 2192100000.0,
+    "GCP": 554515000000.0,
+    "Population": 2754000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Kilifi",
+    "OSR": 685500000.0,
+    "GCP": 199953000000.0,
+    "Population": 1737000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Kirinyaga",
+    "OSR": 312900000.0,
+    "GCP": 123709000000.0,
+    "Population": 676000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Kisii",
+    "OSR": 472900000.0,
+    "GCP": 198192000000.0,
+    "Population": 1370000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Kisumu",
+    "OSR": 728300000.0,
+    "GCP": 247324000000.0,
+    "Population": 1292000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Kitui",
+    "OSR": 244400000.0,
+    "GCP": 154345000000.0,
+    "Population": 1273000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Kwale",
+    "OSR": 349500000.0,
+    "GCP": 119001000000.0,
+    "Population": 978000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Laikipia",
+    "OSR": 549700000.0,
+    "GCP": 94639000000.0,
+    "Population": 583000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Lamu",
+    "OSR": 89600000.0,
+    "GCP": 32747000000.0,
+    "Population": 176000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Machakos",
+    "OSR": 1075900000.0,
+    "GCP": 309164000000.0,
+    "Population": 1518000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Makueni",
+    "OSR": 259500000.0,
+    "GCP": 110207000000.0,
+    "Population": 1079000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Mandera",
+    "OSR": 78000000.0,
+    "GCP": 56964000000.0,
+    "Population": 993000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Marsabit",
+    "OSR": 81800000.0,
+    "GCP": 60486000000.0,
+    "Population": 539000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Meru",
+    "OSR": 551300000.0,
+    "GCP": 329977000000.0,
+    "Population": 1666000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Migori",
+    "OSR": 292800000.0,
+    "GCP": 120639000000.0,
+    "Population": 1277000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Mombasa",
+    "OSR": 3271200000.0,
+    "GCP": 468749000000.0,
+    "Population": 1368000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Murang'a",
+    "OSR": 567800000.0,
+    "GCP": 200539000000.0,
+    "Population": 1151000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Nairobi",
+    "OSR": 6733300000.0,
+    "GCP": 2682701000000.0,
+    "Population": 4906000,
+    "Include": false
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Nakuru",
+    "OSR": 1511600000.0,
+    "GCP": 483938000000.0,
+    "Population": 2445000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Nandi",
+    "OSR": 217000000.0,
+    "GCP": 149117000000.0,
+    "Population": 985000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Narok",
+    "OSR": 2310900000.0,
+    "GCP": 165462000000.0,
+    "Population": 1355000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Nyamira",
+    "OSR": 133100000.0,
+    "GCP": 116992000000.0,
+    "Population": 681000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Nyandarua",
+    "OSR": 307500000.0,
+    "GCP": 149707000000.0,
+    "Population": 720000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Nyeri",
+    "OSR": 659200000.0,
+    "GCP": 209626000000.0,
+    "Population": 865000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Samburu",
+    "OSR": 192600000.0,
+    "GCP": 29090000000.0,
+    "Population": 367000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Siaya",
+    "OSR": 213100000.0,
+    "GCP": 103899000000.0,
+    "Population": 1097000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Taita/Taveta",
+    "OSR": 216000000.0,
+    "GCP": 63592000000.0,
+    "Population": 373000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Tana River",
+    "OSR": 55500000.0,
+    "GCP": 29460000000.0,
+    "Population": 370000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Tharaka-Nithi",
+    "OSR": 190400000.0,
+    "GCP": 61461000000.0,
+    "Population": 425000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Trans Nzoia",
+    "OSR": 320700000.0,
+    "GCP": 165700000000.0,
+    "Population": 1106000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Turkana",
+    "OSR": 157200000.0,
+    "GCP": 107450000000.0,
+    "Population": 1059000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Uasin Gishu",
+    "OSR": 791800000.0,
+    "GCP": 227871000000.0,
+    "Population": 1301000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Vihiga",
+    "OSR": 132800000.0,
+    "GCP": 83773000000.0,
+    "Population": 636000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "Wajir",
+    "OSR": 58000000.0,
+    "GCP": 49159000000.0,
+    "Population": 901000,
+    "Include": true
+  },
+  {
+    "CountryCode": "KEN",
+    "SNG": "West Pokot",
+    "OSR": 90700000.0,
+    "GCP": 79417000000.0,
+    "Population": 706000,
+    "Include": true
+  }
+]

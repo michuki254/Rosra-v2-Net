@@ -47,7 +47,11 @@ namespace RosraApp.Data
                     // Seed PeersSNG data
                     logger.LogInformation("Seeding PeersSNG data");
                     await SeedPeersSNG(context, logger);
-                    
+
+                    // Seed CountryData (DB_Countries) from embedded JSON
+                    logger.LogInformation("Seeding CountryData (DB_Countries)");
+                    await SeedCountryDataFromJson(context, logger);
+
                     // Seed review workflow permissions (idempotent — only adds missing ones)
                     logger.LogInformation("Seeding review workflow permissions");
                     await SeedReviewPermissions(context, logger);
@@ -431,6 +435,81 @@ namespace RosraApp.Data
             await context.SaveChangesAsync();
 
             logger.LogInformation($"Seeded {peersSNG.Count} Kenya counties into PeersSNG table");
+        }
+
+        private static async Task SeedCountryDataFromJson(ApplicationDbContext context, ILogger logger)
+        {
+            if (await context.DB_Countries.AnyAsync())
+            {
+                logger.LogInformation("CountryData (DB_Countries) already exists, skipping seed");
+                return;
+            }
+
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var resourceName = assembly.GetManifestResourceNames()
+                .FirstOrDefault(n => n.EndsWith("countrydata.json"));
+
+            if (resourceName == null)
+            {
+                logger.LogWarning("countrydata.json embedded resource not found — skipping CountryData seed");
+                return;
+            }
+
+            using var stream = assembly.GetManifestResourceStream(resourceName)!;
+            using var reader = new System.IO.StreamReader(stream);
+            var json = await reader.ReadToEndAsync();
+            var items = System.Text.Json.JsonSerializer.Deserialize<List<CountryDataSeedItem>>(json);
+
+            if (items == null || items.Count == 0)
+            {
+                logger.LogWarning("countrydata.json is empty — skipping");
+                return;
+            }
+
+            var records = items.Select(i => new CountryData
+            {
+                Country = i.Country ?? "",
+                Government_Type = i.Government_Type,
+                Income_Level = i.Income_Level,
+                Income_Group = i.Income_Group,
+                CurrencyCode = i.CurrencyCode,
+                CurrencySymbol = i.CurrencySymbol,
+                GDP_nominal_usd = i.GDP_nominal_usd,
+                Population_total = i.Population_total,
+                OSR_pct_gdp = i.OSR_pct_gdp,
+                SNG_total_revenue_pct_gdp = i.SNG_total_revenue_pct_gdp,
+                SNG_grants_subsidies_pct_gdp = i.SNG_grants_subsidies_pct_gdp,
+                OSR_pc_proxy_usd = i.OSR_pc_proxy_usd,
+                OSR_Data_Complete = i.OSR_Data_Complete,
+                SNG_total_rev_pc_usd = i.SNG_total_rev_pc_usd,
+                Revenue_Autonomy = i.Revenue_Autonomy,
+                OSR_pc_derived_usd = i.OSR_pc_derived_usd
+            }).ToList();
+
+            await context.DB_Countries.AddRangeAsync(records);
+            await context.SaveChangesAsync();
+            logger.LogInformation($"Seeded {records.Count} countries into DB_Countries from embedded JSON");
+        }
+
+        // DTO for deserializing countrydata.json
+        private class CountryDataSeedItem
+        {
+            public string? Country { get; set; }
+            public string? Government_Type { get; set; }
+            public string? Income_Level { get; set; }
+            public string? Income_Group { get; set; }
+            public string? CurrencyCode { get; set; }
+            public string? CurrencySymbol { get; set; }
+            public decimal? GDP_nominal_usd { get; set; }
+            public long? Population_total { get; set; }
+            public decimal? OSR_pct_gdp { get; set; }
+            public decimal? SNG_total_revenue_pct_gdp { get; set; }
+            public decimal? SNG_grants_subsidies_pct_gdp { get; set; }
+            public decimal? OSR_pc_proxy_usd { get; set; }
+            public string? OSR_Data_Complete { get; set; }
+            public decimal? SNG_total_rev_pc_usd { get; set; }
+            public decimal? Revenue_Autonomy { get; set; }
+            public decimal? OSR_pc_derived_usd { get; set; }
         }
 
         private static async Task EnsureAdminUser(UserManager<ApplicationUser> userManager, ILogger logger, string email, string firstName, string lastName)
