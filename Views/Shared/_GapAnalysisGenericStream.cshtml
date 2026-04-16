@@ -31,10 +31,16 @@
         </div>
         @if (!isViewMode)
         {
-            <button type="button" class="btn btn-outline-danger btn-sm delete-stream-btn"
-                    data-stream-index="@streamIndex" title="Delete this stream">
-                <i class="bi bi-trash"></i> @Localizer["DeleteStream"]
-            </button>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-primary btn-sm"
+                        onclick="openEditMetaModal(@streamIndex)" title="Edit stream classification">
+                    <i class="bi bi-pencil-square"></i> Edit Classification
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm delete-stream-btn"
+                        data-stream-index="@streamIndex" title="Delete this stream">
+                    <i class="bi bi-trash"></i> @Localizer["DeleteStream"]
+                </button>
+            </div>
         }
     </div>
 

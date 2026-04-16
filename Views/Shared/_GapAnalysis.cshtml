@@ -735,6 +735,47 @@
     </div>
 </div>
 
+<!-- Edit Stream Metadata Modal -->
+<div class="modal fade stream-name-modal" id="editStreamMetaModal" tabindex="-1" aria-labelledby="editStreamMetaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editStreamMetaModalLabel">
+                    <i class="bi bi-pencil-square me-2"></i>Edit Stream Classification
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="editMetaStreamName" class="form-label fw-bold">Stream Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="editMetaStreamName" placeholder="Enter stream name">
+                </div>
+                <div class="mb-3">
+                    <label for="editMetaSubgroup" class="form-label fw-bold">Stream Type (Subgroup) <span class="text-danger">*</span></label>
+                    <select class="form-select" id="editMetaSubgroup" onchange="onEditMetaSubgroupChange()">
+                        <option value="">-- Select stream type --</option>
+                        <option value="A">Business licences and recurrent operating permits</option>
+                        <option value="B">Service fees and billed use charges</option>
+                        <option value="C">Daily or point-of-collection charges</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="editMetaSubtype" class="form-label">Specific Revenue Type</label>
+                    <select class="form-select" id="editMetaSubtype">
+                        <option value="">-- Select specific type (optional) --</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@SharedLocalizer["Common_Cancel"]</button>
+                <button type="button" class="btn btn-primary" id="confirmEditMetaBtn">
+                    <i class="bi bi-check-circle me-1"></i>@SharedLocalizer["Common_Save"]
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Rename Stream Modal -->
 <div class="modal fade stream-name-modal" id="renameStreamModal" tabindex="-1" aria-labelledby="renameStreamModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -823,6 +864,183 @@
 
     // Call restore on page load
     document.addEventListener('DOMContentLoaded', restoreSavedDisplayNames);
+
+    // ===== STREAM METADATA EDITING =====
+    let editMetaStreamIndex = -1;
+
+    // Reset overview/recommendation selections for a stream when its subgroup changes
+    function resetStreamSelections(streamName) {
+        try {
+            // Reset overview selections
+            var selectionsKey = 'rosraOverviewSelections';
+            var solutionsKey = 'rosraSelectedSolutions';
+
+            // Try FormStateManager first, fallback to localStorage
+            if (typeof FormStateManager !== 'undefined') {
+                var selData = FormStateManager.getData(selectionsKey);
+                var solData = FormStateManager.getData(solutionsKey);
+
+                if (selData && selData.selected) {
+                    selData.selected = selData.selected.filter(function(id) {
+                        // Keep selections that don't belong to this stream
+                        var sol = solData ? solData.find(function(s) { return s.solutionId === id; }) : null;
+                        return !sol || sol.streamName !== streamName;
+                    });
+                    selData.skipped = selData.skipped ? selData.skipped.filter(function(id) {
+                        var sol = solData ? solData.find(function(s) { return s.solutionId === id; }) : null;
+                        return !sol || sol.streamName !== streamName;
+                    }) : [];
+                    FormStateManager.setData(selectionsKey, selData);
+                }
+
+                if (solData) {
+                    solData = solData.filter(function(s) { return s.streamName !== streamName; });
+                    FormStateManager.setData(solutionsKey, solData);
+                }
+            }
+
+            // Also clear localStorage copies
+            var localSel = localStorage.getItem(selectionsKey);
+            if (localSel) {
+                var parsed = JSON.parse(localSel);
+                var localSol = localStorage.getItem(solutionsKey);
+                var parsedSol = localSol ? JSON.parse(localSol) : [];
+                if (parsed.selected) {
+                    parsed.selected = parsed.selected.filter(function(id) {
+                        var sol = parsedSol.find(function(s) { return s.solutionId === id; });
+                        return !sol || sol.streamName !== streamName;
+                    });
+                }
+                if (parsed.skipped) {
+                    parsed.skipped = parsed.skipped.filter(function(id) {
+                        var sol = parsedSol.find(function(s) { return s.solutionId === id; });
+                        return !sol || sol.streamName !== streamName;
+                    });
+                }
+                localStorage.setItem(selectionsKey, JSON.stringify(parsed));
+
+                if (parsedSol.length > 0) {
+                    parsedSol = parsedSol.filter(function(s) { return s.streamName !== streamName; });
+                    localStorage.setItem(solutionsKey, JSON.stringify(parsedSol));
+                }
+            }
+
+            console.log('Reset selections for stream:', streamName);
+        } catch (e) {
+            console.error('Error resetting stream selections:', e);
+        }
+    }
+
+    function openEditMetaModal(streamIndex) {
+        editMetaStreamIndex = streamIndex;
+        const streamId = 'stream' + streamIndex;
+        const container = document.getElementById(streamId + '-container');
+        if (!container) return;
+
+        const nameInput = container.querySelector('input[name$=".StreamName"]');
+        const subgroupInput = container.querySelector('input[name$=".Subgroup"]');
+        const subtypeInput = container.querySelector('input[name$=".Subtype"]');
+
+        document.getElementById('editMetaStreamName').value = nameInput ? nameInput.value : '';
+        document.getElementById('editMetaSubgroup').value = subgroupInput ? subgroupInput.value : '';
+
+        // Populate subtypes for current subgroup
+        onEditMetaSubgroupChange();
+
+        // Set current subtype after populating
+        if (subtypeInput && subtypeInput.value) {
+            document.getElementById('editMetaSubtype').value = subtypeInput.value;
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('editStreamMetaModal'));
+        modal.show();
+    }
+
+    function onEditMetaSubgroupChange() {
+        const subgroup = document.getElementById('editMetaSubgroup').value;
+        const subtypeSelect = document.getElementById('editMetaSubtype');
+        subtypeSelect.innerHTML = '<option value="">-- Select specific type (optional) --</option>';
+        if (subgroup && typeof StreamClassification !== 'undefined') {
+            StreamClassification.getSubtypesForSubgroup(subgroup).forEach(function(st) {
+                const opt = document.createElement('option');
+                opt.value = st;
+                opt.textContent = st;
+                subtypeSelect.appendChild(opt);
+            });
+        }
+    }
+
+    document.getElementById('confirmEditMetaBtn').addEventListener('click', function() {
+        if (editMetaStreamIndex < 0) return;
+
+        const newName = document.getElementById('editMetaStreamName').value.trim();
+        const newSubgroup = document.getElementById('editMetaSubgroup').value;
+        const newSubtype = document.getElementById('editMetaSubtype').value;
+
+        if (!newName) { alert('Please enter a stream name.'); return; }
+        if (!newSubgroup) { alert('Please select a stream type.'); return; }
+
+        const streamId = 'stream' + editMetaStreamIndex;
+        const container = document.getElementById(streamId + '-container');
+        if (!container) return;
+
+        // Check if subgroup changed — warn and reset overview/recommendation selections
+        const oldSubgroup = container.getAttribute('data-subgroup') || '';
+        if (oldSubgroup && oldSubgroup !== newSubgroup) {
+            if (!confirm('Changing the stream type will reset the recommendations already selected for this stream. Do you want to continue?')) {
+                return;
+            }
+            resetStreamSelections(container.querySelector('input[name$=".StreamName"]')?.value || '');
+        }
+
+        // Update hidden inputs
+        const nameInput = container.querySelector('input[name$=".StreamName"]');
+        const localNameInput = container.querySelector('input[name$=".LocalStreamName"]');
+        const subgroupInput = container.querySelector('input[name$=".Subgroup"]');
+        const subtypeInput = container.querySelector('input[name$=".Subtype"]');
+        const visibleNameInput = document.getElementById(streamId + 'Name');
+
+        if (nameInput) nameInput.value = newName;
+        if (localNameInput) localNameInput.value = newName;
+        if (subgroupInput) subgroupInput.value = newSubgroup;
+        if (subtypeInput) subtypeInput.value = newSubtype;
+        if (visibleNameInput) visibleNameInput.value = newName;
+
+        // Update container data attributes
+        container.setAttribute('data-subgroup', newSubgroup);
+        container.setAttribute('data-subtype', newSubtype);
+
+        // Update the subgroup badge in the stream header
+        const subgroupColor = typeof StreamClassification !== 'undefined' ? StreamClassification.getSubgroupColor(newSubgroup) : '#666';
+        const subgroupLabel = typeof StreamClassification !== 'undefined' ? StreamClassification.getSubgroupShortLabel(newSubgroup) : newSubgroup;
+        const headerEditor = container.querySelector('.stream-name-editor');
+        if (headerEditor) {
+            const existingBadge = headerEditor.querySelector('.badge');
+            if (existingBadge) {
+                existingBadge.style.backgroundColor = subgroupColor;
+                existingBadge.textContent = subgroupLabel;
+            }
+        }
+
+        // Update the tab button
+        const tabBtn = document.getElementById(streamId + '-btn');
+        if (tabBtn) {
+            const nameLabel = tabBtn.querySelector('.stream-name-label');
+            if (nameLabel) nameLabel.textContent = newName;
+            tabBtn.setAttribute('data-subgroup', newSubgroup);
+            tabBtn.setAttribute('data-subtype', newSubtype);
+            const tabBadge = tabBtn.querySelector('.badge');
+            if (tabBadge) {
+                tabBadge.style.backgroundColor = subgroupColor;
+                tabBadge.textContent = newSubgroup;
+            }
+        }
+
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('editStreamMetaModal'));
+        modal.hide();
+        editMetaStreamIndex = -1;
+    });
 
     // Function to switch between tabs
     function showTab(tabId) {
@@ -1100,10 +1318,16 @@
                             ${subgroupBadge}
                         </div>
                     </div>
-                    <button type="button" class="btn btn-outline-danger btn-sm delete-stream-btn"
-                            data-stream-index="${streamIndex}" onclick="deleteStream(${streamIndex})" title="Delete this stream">
-                        <i class="bi bi-trash"></i> Delete Stream
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm"
+                                onclick="openEditMetaModal(${streamIndex})" title="Edit stream classification">
+                            <i class="bi bi-pencil-square"></i> Edit Classification
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm delete-stream-btn"
+                                data-stream-index="${streamIndex}" onclick="deleteStream(${streamIndex})" title="Delete this stream">
+                            <i class="bi bi-trash"></i> Delete Stream
+                        </button>
+                    </div>
                 </div>
 
                 <input type="hidden" name="GenericStreams[${streamIndex}].StreamIndex" value="${streamIndex}" />

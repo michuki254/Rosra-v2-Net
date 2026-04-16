@@ -1,7 +1,7 @@
 /**
  * ROSRA Solutions Data - Non-Property Subgroup C
  * Daily or point-of-collection charges
- * Cards organized by gap: Coverage (3), Liability (3), Compliance (8)
+ * Cards organized by gap: Coverage (3), Liability (2), Compliance (9)
  */
 (function(window) {
     'use strict';
@@ -182,7 +182,7 @@
         },
 
         // =============================================
-        // LIABILITY CARDS (3): C3, C4, C5
+        // LIABILITY CARDS (2): C3, C4
         // =============================================
 
         {
@@ -302,7 +302,7 @@
             stream: 'Non-Property',
             streamType: 'non-property',
             subgroup: 'C',
-            gap: 'Liability',
+            gap: 'Compliance',
             title: 'Digital Tickets, Handheld Devices, or Prepaid Tokens',
             shortTitle: 'Digital Collection Tools',
             timeline: '1-3 years',
@@ -355,7 +355,7 @@
         },
 
         // =============================================
-        // COMPLIANCE CARDS (8): C6, C7, C8, C9, C10, C14, C11, C12
+        // COMPLIANCE CARDS (9): C5, C6, C7, C8, C9, C10, C14, C11, C12
         // =============================================
 
         {

@@ -359,6 +359,92 @@
         </div>
     </div>
 
+    <!-- ======================= STEP 3: REVENUE IMPACT & IMPROVEMENT SCORING ======================= -->
+    <hr class="my-5 border-2">
+
+    <div class="prioritization-header mb-4">
+        <h5 class="mb-2"><i class="fas fa-chart-line me-2"></i>Revenue Impact &amp; Improvement Opportunities</h5>
+        <p class="text-muted mb-0">
+            Gaps ranked by absolute revenue impact and scored by improvement potential to help focus reform effort where it matters most.
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Revenue Impact Ranking -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-danger text-white py-3">
+                    <h6 class="mb-0"><i class="fas fa-sort-amount-down me-2"></i>Gaps Ranked by Revenue Impact</h6>
+                </div>
+                <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-sm table-hover mb-0" id="revenueImpactTable">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th class="text-center" style="width: 50px;">#</th>
+                                <th>Stream</th>
+                                <th>Gap Type</th>
+                                <th class="text-end">Amount</th>
+                                <th class="text-center" style="width: 120px;">Share</th>
+                            </tr>
+                        </thead>
+                        <tbody id="revenueImpactBody">
+                            <tr class="placeholder-row">
+                                <td colspan="5" class="text-center text-muted py-3">
+                                    <small>Revenue impact ranking will populate from gap data</small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Improvement Opportunity Scoring -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header text-white py-3" style="background: #7c3aed;">
+                    <h6 class="mb-0"><i class="fas fa-bullseye me-2"></i>Improvement Opportunity Score</h6>
+                </div>
+                <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-sm table-hover mb-0" id="improvementScoreTable">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th class="text-center" style="width: 50px;">#</th>
+                                <th>Stream</th>
+                                <th>Gap Type</th>
+                                <th class="text-center" style="width: 80px;">Score</th>
+                                <th class="text-center" style="width: 140px;">Potential</th>
+                            </tr>
+                        </thead>
+                        <tbody id="improvementScoreBody">
+                            <tr class="placeholder-row">
+                                <td colspan="5" class="text-center text-muted py-3">
+                                    <small>Improvement scores will populate from gap data</small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Priority Matrix -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-dark text-white py-3">
+                    <h6 class="mb-0"><i class="fas fa-th me-2"></i>Priority Matrix — Revenue Impact vs. Number of Solutions</h6>
+                </div>
+                <div class="card-body">
+                    <div id="matrixPlaceholder" class="chart-placeholder text-center text-muted py-5">
+                        <i class="fas fa-th fa-3x mb-3 opacity-50"></i>
+                        <p class="mb-0">Priority matrix will appear after gap prioritization</p>
+                    </div>
+                    <canvas id="priorityMatrixChart" height="300" style="display: none;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Hidden inputs to persist prioritization data -->
     <input type="hidden" id="prioritizationData" name="PrioritizationData" value="@Model.PrioritizationData" />
 </div>
@@ -843,6 +929,73 @@
     .prioritization-module hr.border-2 {
         border-color: #e2e8f0 !important;
         opacity: 1;
+    }
+
+    /* Revenue Impact Table */
+    .prioritization-module .impact-bar {
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 4px;
+        overflow: hidden;
+        min-width: 60px;
+    }
+
+    .prioritization-module .impact-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.4s ease;
+    }
+
+    /* Improvement Score Badge */
+    .prioritization-module .score-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 0.85rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    .prioritization-module .score-badge.score-high {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .prioritization-module .score-badge.score-medium {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .prioritization-module .score-badge.score-low {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    /* Potential Indicator */
+    .prioritization-module .potential-label {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .prioritization-module .potential-label.high {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .prioritization-module .potential-label.medium {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .prioritization-module .potential-label.low {
+        background: #fee2e2;
+        color: #991b1b;
     }
 </style>
 
@@ -1989,6 +2142,279 @@ document.addEventListener('DOMContentLoaded', function() {
 
         tbody.innerHTML = html;
     }
+
+    // ======================= REVENUE IMPACT & IMPROVEMENT SCORING =======================
+
+    let matrixChart = null;
+
+    // Build a flat list of all individual gaps across included streams, sorted by amount
+    function buildRevenueImpactList() {
+        const { finalRanking } = calculateFinalRankings();
+        const allGaps = [];
+
+        finalRanking.forEach(stream => {
+            const isPropertyBased = stream.type === 'property-tax';
+            const gapTypes = [
+                { type: 'Compliance', amount: stream.complianceGap || 0 },
+                { type: 'Coverage', amount: stream.coverageGap || 0 },
+                { type: isPropertyBased ? 'Valuation' : 'Liability', amount: isPropertyBased ? (stream.valuationGap || 0) : (stream.liabilityGap || 0) }
+            ];
+
+            gapTypes.forEach(g => {
+                if (g.amount > 0) {
+                    allGaps.push({
+                        streamName: stream.name,
+                        streamType: stream.type,
+                        streamRank: stream.finalRank,
+                        gapType: g.type,
+                        amount: g.amount,
+                        currentRevenue: stream.currentRevenue || 0,
+                        potentialRevenue: stream.potentialRevenue || (stream.totalFunctionalGap + (stream.currentRevenue || 0)),
+                        totalFunctionalGap: stream.totalFunctionalGap
+                    });
+                }
+            });
+        });
+
+        // Sort by amount descending
+        allGaps.sort((a, b) => b.amount - a.amount);
+
+        const totalGapSum = allGaps.reduce((sum, g) => sum + g.amount, 0);
+        allGaps.forEach(g => {
+            g.share = totalGapSum > 0 ? (g.amount / totalGapSum) * 100 : 0;
+        });
+
+        return allGaps;
+    }
+
+    // Render Revenue Impact Ranking table
+    function renderRevenueImpactTable() {
+        const tbody = document.getElementById('revenueImpactBody');
+        const gaps = buildRevenueImpactList();
+
+        if (gaps.length === 0) {
+            tbody.innerHTML = '<tr class="placeholder-row"><td colspan="5" class="text-center text-muted py-3"><small>No gap data available</small></td></tr>';
+            return;
+        }
+
+        const maxAmount = gaps[0].amount;
+        let html = '';
+        gaps.forEach((g, idx) => {
+            const barWidth = maxAmount > 0 ? (g.amount / maxAmount) * 100 : 0;
+            const barColor = g.gapType === 'Compliance' ? '#ef4444' :
+                             g.gapType === 'Coverage' ? '#f59e0b' :
+                             g.gapType === 'Valuation' ? '#3b82f6' : '#8b5cf6';
+
+            html += `
+                <tr>
+                    <td class="text-center"><span class="priority-number priority-${idx < 3 ? idx + 1 : 3}">${idx + 1}</span></td>
+                    <td>${g.streamName}</td>
+                    <td><span class="gap-badge ${getGapBadgeClass(g.gapType)}">${g.gapType}</span></td>
+                    <td class="text-end fw-semibold">${formatCurrency(g.amount)}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="impact-bar flex-grow-1">
+                                <div class="impact-bar-fill" style="width: ${barWidth}%; background: ${barColor};"></div>
+                            </div>
+                            <span class="small fw-semibold" style="min-width: 36px;">${g.share.toFixed(0)}%</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    // Calculate improvement opportunity score for each gap
+    // Score = weighted combination of: absolute gap size, gap-to-potential ratio, number of available solution cards
+    function buildImprovementScores() {
+        const gaps = buildRevenueImpactList();
+        if (gaps.length === 0) return [];
+
+        const maxAmount = Math.max(...gaps.map(g => g.amount));
+
+        gaps.forEach(g => {
+            // Factor 1: Size relative to largest gap (0-40 points)
+            const sizeFactor = maxAmount > 0 ? (g.amount / maxAmount) * 40 : 0;
+
+            // Factor 2: Gap as % of potential revenue (0-35 points)
+            // Higher gap/potential ratio = more room to improve
+            const gapRatio = g.potentialRevenue > 0 ? g.amount / g.potentialRevenue : 0;
+            const ratioFactor = Math.min(gapRatio, 1) * 35;
+
+            // Factor 3: Available solution cards for this gap type (0-25 points)
+            let cardCount = 0;
+            if (typeof SolutionsDatabase !== 'undefined') {
+                if (g.streamType === 'property-tax') {
+                    cardCount = SolutionsDatabase.getSolutionsByStreamAndGap('Property Tax', g.gapType).length;
+                } else {
+                    // For NP streams, count across all subgroups as a proxy
+                    ['A', 'B', 'C'].forEach(sg => {
+                        cardCount += SolutionsDatabase.getSolutionsBySubgroupAndGap(sg, g.gapType).length;
+                    });
+                    cardCount = Math.round(cardCount / 3); // Average per subgroup
+                }
+            }
+            const cardFactor = Math.min(cardCount / 10, 1) * 25;
+
+            g.score = Math.round(sizeFactor + ratioFactor + cardFactor);
+            g.cardCount = cardCount;
+            g.gapRatio = gapRatio;
+        });
+
+        // Sort by score descending
+        gaps.sort((a, b) => b.score - a.score);
+        return gaps;
+    }
+
+    // Render Improvement Opportunity Scoring table
+    function renderImprovementScoreTable() {
+        const tbody = document.getElementById('improvementScoreBody');
+        const gaps = buildImprovementScores();
+
+        if (gaps.length === 0) {
+            tbody.innerHTML = '<tr class="placeholder-row"><td colspan="5" class="text-center text-muted py-3"><small>No gap data available</small></td></tr>';
+            return;
+        }
+
+        let html = '';
+        gaps.forEach((g, idx) => {
+            const scoreClass = g.score >= 60 ? 'score-high' : g.score >= 35 ? 'score-medium' : 'score-low';
+            const potentialClass = g.gapRatio >= 0.4 ? 'high' : g.gapRatio >= 0.2 ? 'medium' : 'low';
+            const potentialLabel = g.gapRatio >= 0.4 ? 'High potential' : g.gapRatio >= 0.2 ? 'Moderate' : 'Lower';
+
+            html += `
+                <tr>
+                    <td class="text-center"><span class="priority-number priority-${idx < 3 ? idx + 1 : 3}">${idx + 1}</span></td>
+                    <td>${g.streamName}</td>
+                    <td><span class="gap-badge ${getGapBadgeClass(g.gapType)}">${g.gapType}</span></td>
+                    <td class="text-center"><span class="score-badge ${scoreClass}">${g.score}</span></td>
+                    <td class="text-center"><span class="potential-label ${potentialClass}">${potentialLabel}</span></td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    // Render Interactive Priority Matrix (bubble chart)
+    function renderPriorityMatrix() {
+        const placeholder = document.getElementById('matrixPlaceholder');
+        const canvas = document.getElementById('priorityMatrixChart');
+        const gaps = buildImprovementScores();
+
+        if (matrixChart) matrixChart.destroy();
+
+        if (gaps.length === 0) {
+            if (placeholder) placeholder.style.display = 'block';
+            if (canvas) canvas.style.display = 'none';
+            return;
+        }
+
+        if (placeholder) placeholder.style.display = 'none';
+        if (canvas) canvas.style.display = 'block';
+
+        // Map gap types to colors
+        const gapColors = {
+            'Compliance': 'rgba(239, 68, 68, 0.7)',
+            'Coverage': 'rgba(245, 158, 11, 0.7)',
+            'Valuation': 'rgba(59, 130, 246, 0.7)',
+            'Liability': 'rgba(139, 92, 246, 0.7)'
+        };
+
+        const gapBorderColors = {
+            'Compliance': '#ef4444',
+            'Coverage': '#f59e0b',
+            'Valuation': '#3b82f6',
+            'Liability': '#8b5cf6'
+        };
+
+        // Build datasets: one per gap type for legend
+        const byGapType = {};
+        gaps.forEach(g => {
+            if (!byGapType[g.gapType]) byGapType[g.gapType] = [];
+            byGapType[g.gapType].push({
+                x: g.amount,
+                y: g.cardCount,
+                r: Math.max(8, Math.min(30, g.score / 2)),
+                label: g.streamName + ' — ' + g.gapType,
+                score: g.score
+            });
+        });
+
+        const datasets = Object.keys(byGapType).map(gapType => ({
+            label: gapType,
+            data: byGapType[gapType],
+            backgroundColor: gapColors[gapType] || 'rgba(107, 114, 128, 0.7)',
+            borderColor: gapBorderColors[gapType] || '#6b7280',
+            borderWidth: 2
+        }));
+
+        const ctx = canvas.getContext('2d');
+        matrixChart = new Chart(ctx, {
+            type: 'bubble',
+            data: { datasets: datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { usePointStyle: true, padding: 15 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const d = context.raw;
+                                return [
+                                    d.label,
+                                    'Revenue impact: ' + formatCurrency(d.x),
+                                    'Solution cards: ' + d.y,
+                                    'Opportunity score: ' + d.score
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Revenue Impact (Gap Amount)', font: { weight: 'bold' } },
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                var abs = Math.abs(value);
+                                if (abs >= 1e9) return currencySymbol + (value / 1e9).toFixed(1) + 'B';
+                                if (abs >= 1e6) return currencySymbol + (value / 1e6).toFixed(1) + 'M';
+                                if (abs >= 1e3) return currencySymbol + (value / 1e3).toFixed(0) + 'K';
+                                return currencySymbol + value;
+                            }
+                        }
+                    },
+                    y: {
+                        title: { display: true, text: 'Available Solution Cards', font: { weight: 'bold' } },
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+        if (window.registerChart) registerChart('priorityMatrixChart', matrixChart);
+    }
+
+    // Render all Step 3 components
+    function renderRevenueAndScoring() {
+        renderRevenueImpactTable();
+        renderImprovementScoreTable();
+        renderPriorityMatrix();
+    }
+
+    // Hook into gap prioritization init so Step 3 updates whenever Step 2 does
+    const _origInitGapPrioritization = initializeGapPrioritization;
+    initializeGapPrioritization = function() {
+        _origInitGapPrioritization();
+        renderRevenueAndScoring();
+    };
 
     // Initialize Gap Prioritization on load
     initializeGapPrioritization();

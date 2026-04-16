@@ -149,6 +149,10 @@ namespace RosraApp.Models.ViewModels
     // Business License tab - ROSRA Gap Analysis Framework
     public class GapAnalysisLicenseViewModel : GapAnalysisBaseViewModel
     {
+        // Stream classification (non-property subgroup/subtype)
+        public string? Subgroup { get; set; }        // "A", "B", or "C"
+        public string? Subtype { get; set; }         // Specific revenue type within subgroup
+
         // NEW: Business License User Input Fields (6 inputs per spec)
         public int? RegisteredBusinesses { get; set; }
         public decimal? EstimatedUnregisteredPercent { get; set; }
