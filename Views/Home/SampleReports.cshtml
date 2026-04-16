@@ -48,15 +48,22 @@
         color: #495057;
     }
 
-    /* Report Cards */
+    /* Report Cards Grid */
+    .reports-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
     .report-card {
         background: #fff;
         border-radius: 16px;
         overflow: hidden;
         box-shadow: 0 4px 20px rgba(0,0,0,0.06);
         transition: transform 0.3s, box-shadow 0.3s;
-        margin-bottom: 2rem;
         border: 1px solid rgba(0,0,0,0.04);
+        display: flex;
+        flex-direction: column;
     }
     .report-card:hover {
         transform: translateY(-4px);
@@ -232,6 +239,13 @@
         text-decoration: none;
     }
 
+    .report-card .card-body-custom {
+        flex: 1;
+    }
+
+    @@media (max-width: 992px) {
+        .reports-grid { grid-template-columns: 1fr; }
+    }
     @@media (max-width: 768px) {
         .financial-grid { grid-template-columns: 1fr; }
         .sample-reports-header h1 { font-size: 1.6rem; }
@@ -239,7 +253,7 @@
 </style>
 
 <div class="sample-reports-page">
-    <div class="container" style="max-width: 1000px;">
+    <div class="container" style="max-width: 1200px;">
 
         <!-- Header -->
         <div class="sample-reports-header">
@@ -251,6 +265,8 @@
                 <span class="info-badge"><i class="bi bi-lightbulb me-1"></i> Gap Analysis + Solutions</span>
             </div>
         </div>
+
+        <div class="reports-grid">
 
         <!-- Report 1: Nairobi -->
         <div class="report-card">
@@ -547,6 +563,8 @@
                 <a href="@Url.Action("View", "Rosra", new { id = addisId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Report</a>
             </div>
         </div>
+
+        </div><!-- end reports-grid -->
 
         <!-- CTA -->
         <div class="text-center mt-4 mb-5">
