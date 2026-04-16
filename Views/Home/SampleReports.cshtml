@@ -69,9 +69,6 @@
         transform: translateY(-4px);
         box-shadow: 0 12px 36px rgba(0,0,0,0.1);
     }
-    .report-card .card-banner {
-        height: 8px;
-    }
     .report-card .card-body-custom {
         padding: 1.75rem;
     }
@@ -81,8 +78,17 @@
         align-items: flex-start;
         margin-bottom: 1rem;
     }
+    .report-card .city-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .report-card .country-flag {
+        font-size: 2.2rem;
+        line-height: 1;
+    }
     .report-card .city-name {
-        font-size: 1.4rem;
+        font-size: 1.25rem;
         font-weight: 700;
         color: #1a2332;
     }
@@ -270,12 +276,14 @@
 
         <!-- Report 1: Nairobi -->
         <div class="report-card">
-            <div class="card-banner" style="background: linear-gradient(90deg, #00689D, #0097e6);"></div>
             <div class="card-body-custom">
                 <div class="city-row">
-                    <div>
-                        <div class="city-name">Nairobi City County</div>
-                        <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Kenya, East Africa</div>
+                    <div class="city-info">
+                        <span class="country-flag">🇰🇪</span>
+                        <div>
+                            <div class="city-name">Nairobi City County</div>
+                            <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Kenya, East Africa</div>
+                        </div>
                     </div>
                     <span class="status-badge status-validated">Validated</span>
                 </div>
@@ -329,12 +337,14 @@
 
         <!-- Report 2: Kampala -->
         <div class="report-card">
-            <div class="card-banner" style="background: linear-gradient(90deg, #28a745, #20c997);"></div>
             <div class="card-body-custom">
                 <div class="city-row">
-                    <div>
-                        <div class="city-name">Kampala Capital City</div>
-                        <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Uganda, East Africa</div>
+                    <div class="city-info">
+                        <span class="country-flag">🇺🇬</span>
+                        <div>
+                            <div class="city-name">Kampala Capital City</div>
+                            <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Uganda, East Africa</div>
+                        </div>
                     </div>
                     <span class="status-badge status-validated">Validated</span>
                 </div>
@@ -387,12 +397,14 @@
 
         <!-- Report 3: Dar es Salaam -->
         <div class="report-card">
-            <div class="card-banner" style="background: linear-gradient(90deg, #FF9800, #ff5722);"></div>
             <div class="card-body-custom">
                 <div class="city-row">
-                    <div>
-                        <div class="city-name">Dar es Salaam</div>
-                        <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Tanzania, East Africa</div>
+                    <div class="city-info">
+                        <span class="country-flag">🇹🇿</span>
+                        <div>
+                            <div class="city-name">Dar es Salaam</div>
+                            <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Tanzania, East Africa</div>
+                        </div>
                     </div>
                     <span class="status-badge status-demo">Demo</span>
                 </div>
@@ -447,12 +459,14 @@
 
         <!-- Report 4: Accra -->
         <div class="report-card">
-            <div class="card-banner" style="background: linear-gradient(90deg, #9C27B0, #e040fb);"></div>
             <div class="card-body-custom">
                 <div class="city-row">
-                    <div>
-                        <div class="city-name">Accra Metropolitan Assembly</div>
-                        <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Ghana, West Africa</div>
+                    <div class="city-info">
+                        <span class="country-flag">🇬🇭</span>
+                        <div>
+                            <div class="city-name">Accra Metropolitan Assembly</div>
+                            <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Ghana, West Africa</div>
+                        </div>
                     </div>
                     <span class="status-badge status-demo">Demo</span>
                 </div>
@@ -506,12 +520,14 @@
 
         <!-- Report 5: Addis Ababa -->
         <div class="report-card">
-            <div class="card-banner" style="background: linear-gradient(90deg, #2196F3, #00bcd4);"></div>
             <div class="card-body-custom">
                 <div class="city-row">
-                    <div>
-                        <div class="city-name">Addis Ababa City Administration</div>
-                        <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Ethiopia, East Africa</div>
+                    <div class="city-info">
+                        <span class="country-flag">🇪🇹</span>
+                        <div>
+                            <div class="city-name">Addis Ababa City Administration</div>
+                            <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Ethiopia, East Africa</div>
+                        </div>
                     </div>
                     <span class="status-badge status-demo">Demo</span>
                 </div>
