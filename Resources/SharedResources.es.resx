@@ -102,7 +102,7 @@
   <data name="Lang_Spanish" xml:space="preserve"><value>Español</value></data>
 
   <!-- Tab Navigation -->
-  <data name="BottomUp_Intro" xml:space="preserve"><value>Este es el diagnóstico principal. Examina cada fuente de ingresos principal y muestra dónde la recaudación es insuficiente y por qué, de modo que los resultados se traduzcan directamente en prioridades y próximos pasos. Recorra las pestañas en orden para completar el análisis.</value></data>
+  <data name="BottomUp_Intro" xml:space="preserve"><value>Diagnóstico principal: para cada fuente de ingresos, identifique dónde la recaudación es insuficiente y por qué. Recorra las pestañas en orden.</value></data>
 
   <!-- JavaScript Alert/Confirm Strings -->
   <data name="JS_PleaseEnterName" xml:space="preserve"><value>Por favor ingrese un nombre.</value></data>

@@ -109,7 +109,7 @@
   <data name="Profile_ConfirmNewPassword" xml:space="preserve"><value>Confirm New Password</value></data>
 
   <!-- Tab Navigation -->
-  <data name="BottomUp_Intro" xml:space="preserve"><value>This is the main diagnostic. It looks at each major revenue source and shows where collection is falling short and why, so the results translate directly into priorities and next steps. Go through the tabs in order to complete the analysis.</value></data>
+  <data name="BottomUp_Intro" xml:space="preserve"><value>Main diagnostic: for each revenue stream, identify where collection falls short and why. Work through the tabs in order.</value></data>
 
   <!-- Language Names -->
   <data name="Lang_English" xml:space="preserve"><value>English</value></data>

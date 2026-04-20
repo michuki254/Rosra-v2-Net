@@ -102,7 +102,7 @@
   <data name="Lang_Spanish" xml:space="preserve"><value>Español</value></data>
 
   <!-- Tab Navigation -->
-  <data name="BottomUp_Intro" xml:space="preserve"><value>Ceci est le diagnostic principal. Il examine chaque source de revenus majeure et montre où la collecte est insuffisante et pourquoi, afin que les résultats se traduisent directement en priorités et prochaines étapes. Parcourez les onglets dans l'ordre pour compléter l'analyse.</value></data>
+  <data name="BottomUp_Intro" xml:space="preserve"><value>Diagnostic principal : pour chaque source de revenus, identifiez où la collecte est insuffisante et pourquoi. Parcourez les onglets dans l'ordre.</value></data>
 
   <!-- JavaScript Alert/Confirm Strings -->
   <data name="JS_PleaseEnterName" xml:space="preserve"><value>Veuillez entrer un nom.</value></data>
