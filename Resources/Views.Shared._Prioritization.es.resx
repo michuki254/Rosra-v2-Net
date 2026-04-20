@@ -34,7 +34,7 @@
 
   <!-- Step 1: Stream Prioritization Header -->
   <data name="Step1_Title" xml:space="preserve"><value>Priorización de flujos de ingresos</value></data>
-  <data name="Step1_Description" xml:space="preserve"><value>Paso 1 del proceso de priorización: Clasifique los flujos de ingresos según su brecha funcional total para determinar cuáles abordar primero. Incluya o excluya flujos en función de las prioridades locales, la capacidad o las consideraciones políticas.</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>&lt;strong&gt;Paso 1&lt;/strong&gt; del proceso de priorización: Clasifique los flujos de ingresos según su brecha funcional total para determinar cuáles abordar primero. Incluya o excluya flujos en función de las prioridades locales, la capacidad o las consideraciones políticas.</value></data>
 
   <!-- Instructions -->
   <data name="Instructions_Title" xml:space="preserve"><value>Cómo utilizar este módulo</value></data>
@@ -85,7 +85,7 @@
 
   <!-- Step 2: Gap Prioritization Header -->
   <data name="Step2_Title" xml:space="preserve"><value>Priorización de brechas</value></data>
-  <data name="Step2_Description" xml:space="preserve"><value>Paso 2 del proceso de priorización: Después de ordenar los flujos, priorice las brechas (cumplimiento, cobertura, valoración/obligación) dentro de cada uno. ROSRA sugiere un orden predeterminado basado en los indicadores de cumplimiento y cobertura; utilice las columnas "Ajustar prioridad" para cambiar la secuencia o seleccione "Eliminar" para retirar una brecha de su plan.</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>&lt;strong&gt;Paso 2&lt;/strong&gt; del proceso de priorización: Después de ordenar los flujos, priorice las brechas (cumplimiento, cobertura, valoración/obligación) dentro de cada uno. ROSRA sugiere un orden predeterminado basado en los indicadores de cumplimiento y cobertura; utilice las columnas "Ajustar prioridad" para cambiar la secuencia o seleccione "Eliminar" para retirar una brecha de su plan.</value></data>
 
   <!-- Mode Accordion -->
   <data name="Mode_RevenuePotential" xml:space="preserve"><value>Potencial de ingresos</value></data>

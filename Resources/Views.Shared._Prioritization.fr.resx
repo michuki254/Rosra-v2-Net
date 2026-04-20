@@ -34,7 +34,7 @@
 
   <!-- Step 1: Stream Prioritization Header -->
   <data name="Step1_Title" xml:space="preserve"><value>Priorisation des flux de recettes</value></data>
-  <data name="Step1_Description" xml:space="preserve"><value>Étape 1 du processus de priorisation : Classez les flux de recettes selon leur écart fonctionnel total afin de déterminer lesquels traiter en priorité. Incluez ou excluez des flux en fonction des priorités locales, des capacités ou des considérations politiques.</value></data>
+  <data name="Step1_Description" xml:space="preserve"><value>&lt;strong&gt;Étape 1&lt;/strong&gt; du processus de priorisation : Classez les flux de recettes selon leur écart fonctionnel total afin de déterminer lesquels traiter en priorité. Incluez ou excluez des flux en fonction des priorités locales, des capacités ou des considérations politiques.</value></data>
 
   <!-- Instructions -->
   <data name="Instructions_Title" xml:space="preserve"><value>Comment utiliser ce module</value></data>
@@ -85,7 +85,7 @@
 
   <!-- Step 2: Gap Prioritization Header -->
   <data name="Step2_Title" xml:space="preserve"><value>Priorisation des écarts</value></data>
-  <data name="Step2_Description" xml:space="preserve"><value>Étape 2 du processus de priorisation : Après le classement des flux, priorisez les écarts (conformité, couverture, valorisation/obligation) au sein de chacun. ROSRA propose un ordre par défaut basé sur les indicateurs de conformité et de couverture ; utilisez les colonnes « Ajuster la priorité » pour modifier la séquence ou sélectionnez « Supprimer » pour retirer un écart de votre plan.</value></data>
+  <data name="Step2_Description" xml:space="preserve"><value>&lt;strong&gt;Étape 2&lt;/strong&gt; du processus de priorisation : Après le classement des flux, priorisez les écarts (conformité, couverture, valorisation/obligation) au sein de chacun. ROSRA propose un ordre par défaut basé sur les indicateurs de conformité et de couverture ; utilisez les colonnes « Ajuster la priorité » pour modifier la séquence ou sélectionnez « Supprimer » pour retirer un écart de votre plan.</value></data>
 
   <!-- Mode Accordion -->
   <data name="Mode_RevenuePotential" xml:space="preserve"><value>Potentiel de recettes</value></data>
