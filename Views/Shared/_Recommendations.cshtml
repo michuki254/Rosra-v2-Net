@@ -21,47 +21,50 @@
 
     <!-- Summary Stats -->
     <div class="recommendations-summary" id="recommendationsSummary">
-        <div class="summary-card">
+        <button type="button" class="summary-card active" data-filter="all" onclick="RecommendationsModule.filterByTimeline('all')" title="Show all">
             <div class="summary-icon"><i class="fas fa-check-circle"></i></div>
             <div class="summary-content">
                 <span class="summary-value" id="totalSelectedCount">0</span>
                 <span class="summary-label">@Localizer["Summary_SolutionsSelected"]</span>
             </div>
-        </div>
-        <div class="summary-card">
+        </button>
+        <button type="button" class="summary-card" data-filter="<1 year" onclick="RecommendationsModule.filterByTimeline('<1 year')" title="Filter to quick wins">
             <div class="summary-icon quick-win"><i class="fas fa-bolt"></i></div>
             <div class="summary-content">
                 <span class="summary-value" id="quickWinsCount">0</span>
                 <span class="summary-label">@Html.Raw(Localizer["Summary_QuickWins"].Value)</span>
             </div>
-        </div>
-        <div class="summary-card">
+        </button>
+        <button type="button" class="summary-card" data-filter="1-3 years" onclick="RecommendationsModule.filterByTimeline('1-3 years')" title="Filter to medium term">
             <div class="summary-icon medium-term"><i class="fas fa-calendar-alt"></i></div>
             <div class="summary-content">
                 <span class="summary-value" id="mediumTermCount">0</span>
                 <span class="summary-label">@Localizer["Summary_MediumTerm"]</span>
             </div>
-        </div>
-        <div class="summary-card">
+        </button>
+        <button type="button" class="summary-card" data-filter="3+ years" onclick="RecommendationsModule.filterByTimeline('3+ years')" title="Filter to long term">
             <div class="summary-icon long-term"><i class="fas fa-clock"></i></div>
             <div class="summary-content">
                 <span class="summary-value" id="longTermCount">0</span>
                 <span class="summary-label">@Localizer["Summary_LongTerm"]</span>
             </div>
-        </div>
+        </button>
     </div>
 
     <!-- View Toggle -->
     <div class="view-toggle-container">
-        <div class="btn-group view-toggle" role="group">
-            <button type="button" class="btn btn-outline-primary active" data-view="cards" onclick="RecommendationsModule.switchView('cards')">
-                <i class="fas fa-th-large me-1"></i> @Localizer["View_SolutionCards"]
+        <div class="view-toggle" role="tablist" aria-label="Recommendations view">
+            <button type="button" class="view-toggle-btn active" data-view="cards" onclick="RecommendationsModule.switchView('cards')" role="tab" aria-selected="true">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+                <span>@Localizer["View_SolutionCards"]</span>
             </button>
-            <button type="button" class="btn btn-outline-primary" data-view="timeline" onclick="RecommendationsModule.switchView('timeline')">
-                <i class="fas fa-stream me-1"></i> @Localizer["View_TimelineView"]
+            <button type="button" class="view-toggle-btn" data-view="timeline" onclick="RecommendationsModule.switchView('timeline')" role="tab" aria-selected="false">
+                <i class="bi bi-calendar-event"></i>
+                <span>@Localizer["View_TimelineView"]</span>
             </button>
-            <button type="button" class="btn btn-outline-primary" data-view="progress" onclick="RecommendationsModule.switchView('progress')">
-                <i class="fas fa-tasks me-1"></i> @Localizer["View_ProgressTracker"]
+            <button type="button" class="view-toggle-btn" data-view="progress" onclick="RecommendationsModule.switchView('progress')" role="tab" aria-selected="false">
+                <i class="bi bi-clipboard-check"></i>
+                <span>@Localizer["View_ProgressTracker"]</span>
             </button>
         </div>
     </div>
@@ -104,9 +107,15 @@
                         <button class="btn btn-sm btn-outline-secondary" onclick="RecommendationsModule.resetAllProgress()">
                             <i class="fas fa-undo me-1"></i> @Localizer["Progress_ResetAll"]
                         </button>
-                        <button class="btn btn-sm btn-outline-primary" onclick="RecommendationsModule.exportProgress()">
-                            <i class="fas fa-download me-1"></i> @Localizer["Progress_ExportProgress"]
-                        </button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-download me-1"></i> @Localizer["Progress_ExportProgress"]
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); RecommendationsModule.exportProgress('csv');"><i class="fas fa-file-csv me-2"></i>CSV (.csv)</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); RecommendationsModule.exportProgress('excel');"><i class="fas fa-file-excel me-2"></i>Excel (.xls)</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div class="progress-content" id="progressContent"></div>
@@ -154,6 +163,10 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="includeTimeline" checked>
                             <label class="form-check-label" for="includeTimeline">@Localizer["Modal_Timeline"]</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="includeProgressTracker" checked>
+                            <label class="form-check-label" for="includeProgressTracker">Progress Tracker</label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="includeResources" checked>
@@ -230,28 +243,30 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 25px;
+        margin-bottom: 15px;
         flex-wrap: wrap;
-        gap: 15px;
+        gap: 12px;
     }
 
     .recommendations-container .header-content h2 {
         color: var(--un-blue);
         font-weight: 700;
-        margin-bottom: 8px;
+        font-size: 1.4rem;
+        margin-bottom: 4px;
     }
 
     .recommendations-container .header-content h2 i {
         color: var(--un-orange);
-        margin-right: 10px;
+        margin-right: 8px;
+        font-size: 1.2rem;
     }
 
     .recommendations-container .section-description {
         color: #6c757d;
-        font-size: 0.95rem;
-        max-width: 700px;
+        font-size: 0.85rem;
+        max-width: 820px;
         margin: 0;
-        line-height: 1.6;
+        line-height: 1.5;
     }
 
     .recommendations-container .header-actions {
@@ -285,21 +300,27 @@
     /* Summary Stats */
     .recommendations-container .recommendations-summary {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin-bottom: 25px;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+        margin-bottom: 15px;
     }
 
     .recommendations-container .summary-card {
         background: white;
         border-radius: var(--card-radius);
-        padding: 20px;
+        padding: 10px 14px;
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 10px;
         box-shadow: var(--card-shadow);
-        border: none;
+        border: 2px solid transparent;
         transition: var(--transition-normal);
+        cursor: pointer;
+        text-align: left;
+        font: inherit;
+        color: inherit;
+        outline: none;
+        position: relative;
     }
 
     .recommendations-container .summary-card:hover {
@@ -307,17 +328,27 @@
         transform: translateY(-2px);
     }
 
+    .recommendations-container .summary-card:focus-visible {
+        border-color: var(--un-blue);
+    }
+
+    .recommendations-container .summary-card.active {
+        border-color: var(--un-blue);
+        background: #f0f7fc;
+        box-shadow: 0 6px 18px rgba(0, 104, 157, 0.18);
+    }
+
     .recommendations-container .summary-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 12px;
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
         background: var(--un-blue);
         color: white;
-        font-size: 1.4rem;
-        box-shadow: 0 4px 10px rgba(0, 104, 157, 0.3);
+        font-size: 1rem;
+        box-shadow: 0 2px 6px rgba(0, 104, 157, 0.3);
     }
 
     .recommendations-container .summary-icon.quick-win {
@@ -341,53 +372,97 @@
     }
 
     .recommendations-container .summary-value {
-        font-size: 2rem;
+        font-size: 1.35rem;
         font-weight: 700;
         color: var(--un-blue);
         line-height: 1;
     }
 
     .recommendations-container .summary-label {
-        font-size: 0.85rem;
+        font-size: 0.78rem;
         color: #6c757d;
         font-weight: 500;
     }
 
-    /* View Toggle */
+    /* View Toggle — segmented control */
     .recommendations-container .view-toggle-container {
-        margin-bottom: 25px;
+        margin-bottom: 18px;
     }
 
-    .recommendations-container .view-toggle .btn {
-        padding: 12px 24px;
+    .recommendations-container .view-toggle {
+        display: inline-flex;
+        gap: 4px;
+        padding: 4px;
+        background: #eef4f9;
+        border: 1px solid #dbe6f0;
+        border-radius: 12px;
+        box-shadow: inset 0 1px 2px rgba(15, 40, 70, 0.04);
+    }
+
+    .recommendations-container .view-toggle-btn {
+        appearance: none;
+        border: none;
+        background: transparent;
+        color: #355972;
+        font-size: 0.88rem;
         font-weight: 600;
-        border-radius: 8px;
-        transition: var(--transition-fast);
+        letter-spacing: 0.01em;
+        padding: 9px 18px;
+        border-radius: 9px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
     }
 
-    .recommendations-container .view-toggle .btn-outline-primary {
-        border-color: var(--un-blue);
+    .recommendations-container .view-toggle-btn i {
+        font-size: 1rem;
+        line-height: 1;
+        opacity: 0.85;
+    }
+
+    .recommendations-container .view-toggle-btn:hover:not(.active) {
+        background: rgba(0, 104, 157, 0.08);
         color: var(--un-blue);
     }
 
-    .recommendations-container .view-toggle .btn-outline-primary:hover {
-        background: rgba(0, 104, 157, 0.1);
-        border-color: var(--un-blue);
-        color: var(--un-blue);
+    .recommendations-container .view-toggle-btn:focus-visible {
+        outline: 2px solid var(--un-blue);
+        outline-offset: 2px;
     }
 
-    .recommendations-container .view-toggle .btn.active {
+    .recommendations-container .view-toggle-btn.active {
         background: var(--un-blue);
-        border-color: var(--un-blue);
-        color: white;
-        box-shadow: 0 4px 10px rgba(0, 104, 157, 0.3);
+        color: #ffffff;
+        box-shadow: 0 6px 14px rgba(0, 104, 157, 0.25);
+    }
+
+    .recommendations-container .view-toggle-btn.active i {
+        opacity: 1;
+    }
+
+    @@media (max-width: 600px) {
+        .recommendations-container .view-toggle {
+            display: flex;
+            width: 100%;
+        }
+        .recommendations-container .view-toggle-btn {
+            flex: 1;
+            justify-content: center;
+            padding: 9px 10px;
+            font-size: 0.82rem;
+        }
+        .recommendations-container .view-toggle-btn span {
+            white-space: nowrap;
+        }
     }
 
     /* Solution Cards */
     .recommendations-container .stream-section {
         background: white;
         border-radius: var(--card-radius);
-        margin-bottom: 25px;
+        margin-bottom: 14px;
         box-shadow: var(--card-shadow);
         overflow: hidden;
         transition: var(--transition-normal);
@@ -400,7 +475,7 @@
     .recommendations-container .stream-header {
         background: var(--un-blue);
         color: white;
-        padding: 18px 24px;
+        padding: 10px 18px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -408,7 +483,7 @@
 
     .recommendations-container .stream-header h3 {
         margin: 0;
-        font-size: 1.3rem;
+        font-size: 1.05rem;
         font-weight: 700;
     }
 
@@ -418,11 +493,54 @@
 
     .recommendations-container .stream-rank {
         background: var(--un-orange) 100%);
-        padding: 6px 16px;
+        padding: 4px 12px;
         border-radius: 20px;
-        font-size: 0.9rem;
+        font-size: 0.78rem;
         font-weight: 600;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .recommendations-container .stream-toggle-btn {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.5);
+        background: rgba(255,255,255,0.15);
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.9rem;
+        line-height: 1;
+        padding: 0;
+        transition: background 0.15s;
+    }
+
+    .recommendations-container .stream-toggle-btn:hover {
+        background: rgba(255,255,255,0.3);
+    }
+
+    .recommendations-container .gap-toggle-btn {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        background: white;
+        color: var(--un-blue);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.82rem;
+        line-height: 1;
+        padding: 0;
+        transition: background 0.15s, border-color 0.15s;
+    }
+
+    .recommendations-container .gap-toggle-btn:hover {
+        background: #e0f2fe;
+        border-color: var(--un-blue);
     }
 
     .recommendations-container .gap-section {
@@ -434,7 +552,7 @@
     }
 
     .recommendations-container .gap-header {
-        padding: 15px 24px;
+        padding: 9px 18px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -449,12 +567,12 @@
     .recommendations-container .gap-info {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
     }
 
     .recommendations-container .gap-indicator {
-        width: 14px;
-        height: 14px;
+        width: 11px;
+        height: 11px;
         border-radius: 50%;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
@@ -467,28 +585,28 @@
     .recommendations-container .gap-title {
         font-weight: 700;
         color: #2d3748;
-        font-size: 1.05rem;
+        font-size: 0.95rem;
     }
 
     .recommendations-container .gap-badge {
-        font-size: 0.8rem;
+        font-size: 0.72rem;
         color: white;
-        margin-left: 10px;
+        margin-left: 8px;
         background: var(--un-orange) 100%);
-        padding: 3px 10px;
+        padding: 2px 8px;
         border-radius: 12px;
         font-weight: 600;
     }
 
     .recommendations-container .gap-solutions-list {
-        padding: 0 24px 20px;
+        padding: 0 18px 12px;
     }
 
     /* Individual Solution Card */
     .recommendations-container .solution-card {
         background: #fafbfc;
         border-radius: 10px;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
         border: 1px solid #e2e8f0;
         overflow: hidden;
         transition: var(--transition-normal);
@@ -500,7 +618,7 @@
     }
 
     .recommendations-container .solution-card-header {
-        padding: 18px 20px;
+        padding: 12px 16px;
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
@@ -517,36 +635,36 @@
     }
 
     .recommendations-container .solution-id {
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         color: var(--un-blue);
         font-weight: 700;
-        margin-bottom: 5px;
+        margin-bottom: 3px;
         font-family: 'Roboto Mono', monospace;
         background: #e0f2fe;
-        padding: 3px 10px;
+        padding: 2px 8px;
         border-radius: 6px;
         display: inline-block;
     }
 
     .recommendations-container .solution-title {
-        font-size: 1.1rem;
+        font-size: 0.98rem;
         font-weight: 700;
         color: #1e293b;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
     }
 
     .recommendations-container .solution-meta {
         display: flex;
-        gap: 15px;
-        font-size: 0.85rem;
+        gap: 10px;
+        font-size: 0.78rem;
         color: #6c757d;
         font-weight: 500;
     }
 
     .recommendations-container .timeline-badge {
-        padding: 4px 12px;
+        padding: 3px 10px;
         border-radius: 12px;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 700;
     }
 
@@ -584,9 +702,10 @@
     }
 
     .recommendations-container .solution-overview {
-        padding: 0 20px 15px;
+        padding: 0 16px 10px;
         color: #4b5563;
-        line-height: 1.7;
+        font-size: 0.85rem;
+        line-height: 1.55;
     }
 
     /* Expandable Sections */
@@ -600,7 +719,7 @@
     }
 
     .recommendations-container .detail-section {
-        padding: 18px 20px;
+        padding: 12px 16px;
         border-bottom: 1px solid #e9ecef;
     }
 
@@ -613,15 +732,16 @@
         justify-content: space-between;
         align-items: center;
         cursor: pointer;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
     }
 
     .recommendations-container .detail-section-title {
         font-weight: 700;
         color: var(--un-blue);
+        font-size: 0.92rem;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
     }
 
     .recommendations-container .detail-section-title i {
@@ -630,16 +750,21 @@
 
     .recommendations-container .detail-section-content {
         color: #4b5563;
-        line-height: 1.7;
+        font-size: 0.85rem;
+        line-height: 1.55;
     }
 
     .recommendations-container .detail-section-content ul {
         margin: 0;
-        padding-left: 20px;
+        padding-left: 18px;
     }
 
     .recommendations-container .detail-section-content li {
-        margin-bottom: 8px;
+        margin-bottom: 4px;
+    }
+
+    .recommendations-container .detail-section-content p {
+        margin-bottom: 6px;
     }
 
     .recommendations-container .milestone-item {
@@ -686,8 +811,8 @@
     /* Solution Actions */
     .recommendations-container .solution-actions {
         display: flex;
-        gap: 10px;
-        padding: 15px 20px;
+        gap: 8px;
+        padding: 10px 16px;
         background: #f8fafc;
         border-top: 1px solid #e9ecef;
     }
@@ -705,26 +830,28 @@
     }
 
     .recommendations-container .solution-actions button {
-        font-size: 0.85rem;
+        font-size: 0.78rem;
+        padding: 4px 10px;
     }
 
     /* Timeline View */
     .recommendations-container .timeline-container {
         background: white;
         border-radius: var(--card-radius);
-        padding: 25px;
+        padding: 15px 18px;
         box-shadow: var(--card-shadow);
     }
 
     .recommendations-container .timeline-header {
-        margin-bottom: 25px;
-        border-bottom: 3px solid var(--un-blue);
-        padding-bottom: 15px;
+        margin-bottom: 15px;
+        border-bottom: 2px solid var(--un-blue);
+        padding-bottom: 10px;
     }
 
     .recommendations-container .timeline-header h4 {
         color: var(--un-blue);
-        margin-bottom: 5px;
+        font-size: 1.05rem;
+        margin-bottom: 3px;
         font-weight: 700;
     }
 
@@ -734,20 +861,21 @@
 
     .recommendations-container .timeline-header p {
         color: #6c757d;
+        font-size: 0.85rem;
         margin: 0;
     }
 
     .recommendations-container .timeline-section {
-        margin-bottom: 30px;
+        margin-bottom: 18px;
     }
 
     .recommendations-container .timeline-section-header {
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-        border-bottom: 3px solid;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid;
     }
 
     .recommendations-container .timeline-section-header.quick { border-color: var(--timeline-quick); }
@@ -755,14 +883,15 @@
     .recommendations-container .timeline-section-header.long { border-color: var(--un-orange); }
 
     .recommendations-container .timeline-section-icon {
-        width: 44px;
-        height: 44px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        font-size: 0.9rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
 
     .recommendations-container .timeline-section-icon.quick {
@@ -781,21 +910,21 @@
     .recommendations-container .timeline-section-title {
         font-weight: 700;
         color: var(--un-blue);
+        font-size: 0.98rem;
     }
 
     .recommendations-container .timeline-items {
         display: grid;
-        gap: 12px;
+        gap: 8px;
     }
 
     .recommendations-container .timeline-item {
         display: flex;
         align-items: center;
-        gap: 15px;
-        padding: 14px 18px;
+        gap: 12px;
+        padding: 9px 14px;
         background: #fafbfc;
         border-radius: 10px;
-        border-left: 5px solid;
         transition: var(--transition-fast);
     }
 
@@ -804,27 +933,25 @@
         transform: translateX(4px);
     }
 
-    .recommendations-container .timeline-item.quick { border-color: var(--timeline-quick); }
-    .recommendations-container .timeline-item.medium { border-color: var(--timeline-medium); }
-    .recommendations-container .timeline-item.long { border-color: var(--un-orange); }
-
     .recommendations-container .timeline-item-id {
         font-weight: 700;
         color: var(--un-blue);
-        min-width: 85px;
+        font-size: 0.8rem;
+        min-width: 75px;
         font-family: 'Roboto Mono', monospace;
     }
 
     .recommendations-container .timeline-item-title {
         flex: 1;
         color: #1e293b;
+        font-size: 0.88rem;
         font-weight: 500;
     }
 
     .recommendations-container .timeline-item-stream {
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         color: white;
-        padding: 4px 12px;
+        padding: 3px 10px;
         background: var(--un-blue);
         border-radius: 12px;
         font-weight: 600;
@@ -834,19 +961,20 @@
     .recommendations-container .progress-tracker-container {
         background: white;
         border-radius: var(--card-radius);
-        padding: 25px;
+        padding: 15px 18px;
         box-shadow: var(--card-shadow);
     }
 
     .recommendations-container .progress-header {
-        margin-bottom: 25px;
-        border-bottom: 3px solid var(--un-blue);
-        padding-bottom: 15px;
+        margin-bottom: 15px;
+        border-bottom: 2px solid var(--un-blue);
+        padding-bottom: 10px;
     }
 
     .recommendations-container .progress-header h4 {
         color: var(--un-blue);
-        margin-bottom: 5px;
+        font-size: 1.05rem;
+        margin-bottom: 3px;
         font-weight: 700;
     }
 
@@ -856,12 +984,18 @@
 
     .recommendations-container .progress-header p {
         color: #6c757d;
-        margin-bottom: 15px;
+        font-size: 0.85rem;
+        margin-bottom: 10px;
     }
 
     .recommendations-container .progress-actions {
         display: flex;
-        gap: 10px;
+        gap: 8px;
+    }
+
+    .recommendations-container .progress-actions .btn {
+        font-size: 0.8rem;
+        padding: 5px 12px;
     }
 
     .recommendations-container .progress-actions .btn-outline-primary {
@@ -879,13 +1013,13 @@
     .recommendations-container .progress-solution {
         background: #fafbfc;
         border-radius: 12px;
-        margin-bottom: 20px;
+        margin-bottom: 12px;
         overflow: hidden;
         border: 1px solid #e2e8f0;
     }
 
     .recommendations-container .progress-solution-header {
-        padding: 15px 20px;
+        padding: 9px 16px;
         background: white;
         border-bottom: 1px solid #e9ecef;
         display: flex;
@@ -896,18 +1030,19 @@
     .recommendations-container .progress-solution-title {
         font-weight: 700;
         color: var(--un-blue);
+        font-size: 0.92rem;
     }
 
     .recommendations-container .progress-percentage {
         font-weight: 700;
         color: var(--un-orange);
-        font-size: 1.1rem;
+        font-size: 0.95rem;
     }
 
     .recommendations-container .progress-bar-container {
-        height: 8px;
+        height: 6px;
         background: #e9ecef;
-        margin: 0 20px 15px;
+        margin: 0 16px 10px;
         border-radius: 4px;
         overflow: hidden;
     }
@@ -920,14 +1055,14 @@
     }
 
     .recommendations-container .progress-milestones {
-        padding: 0 20px 20px;
+        padding: 0 16px 12px;
     }
 
     .recommendations-container .progress-milestone {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 12px 0;
+        gap: 10px;
+        padding: 7px 0;
         border-bottom: 1px solid #e9ecef;
     }
 
@@ -936,14 +1071,15 @@
     }
 
     .recommendations-container .progress-milestone-check {
-        width: 28px;
-        height: 28px;
+        width: 22px;
+        height: 22px;
         border-radius: 50%;
         border: 2px solid #d1d5db;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        font-size: 0.75rem;
         transition: var(--transition-fast);
     }
 
@@ -962,6 +1098,8 @@
     .recommendations-container .progress-milestone-text {
         flex: 1;
         color: #4b5563;
+        font-size: 0.85rem;
+        line-height: 1.45;
     }
 
     .recommendations-container .progress-milestone.completed .progress-milestone-text {
@@ -970,8 +1108,8 @@
     }
 
     .recommendations-container .progress-milestone-status {
-        font-size: 0.8rem;
-        padding: 4px 12px;
+        font-size: 0.72rem;
+        padding: 3px 10px;
         border-radius: 12px;
         font-weight: 600;
     }
@@ -1100,17 +1238,17 @@
 </style>
 
 <!-- Solutions Data Modules (must load before solutionsDatabase.js) -->
-<script src="/js/solutionsData-PT-Compliance.js"></script>
-<script src="/js/solutionsData-PT-Coverage.js"></script>
-<script src="/js/solutionsData-PT-Valuation.js"></script>
-<script src="/js/solutionsData-NP-A.js"></script>
-<script src="/js/solutionsData-NP-B.js"></script>
-<script src="/js/solutionsData-NP-C.js"></script>
-<script src="/js/solutionsData-BL.js"></script>
-<script src="/js/solutionsData-Generic.js"></script>
-<script src="/js/streamClassification.js"></script>
+<script src="~/js/solutionsData-PT-Compliance.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-PT-Coverage.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-PT-Valuation.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-NP-A.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-NP-B.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-NP-C.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-BL.js" asp-append-version="true"></script>
+<script src="~/js/solutionsData-Generic.js" asp-append-version="true"></script>
+<script src="~/js/streamClassification.js" asp-append-version="true"></script>
 <!-- Core Solutions Database API -->
-<script src="/js/solutionsDatabase.js"></script>
+<script src="~/js/solutionsDatabase.js" asp-append-version="true"></script>
 <!-- Full Solutions Database (detailed solution information) -->
-<script src="/js/solutionsFullDatabase.js"></script>
-<script src="/js/recommendationsModule.js"></script>
+<script src="~/js/solutionsFullDatabase.js" asp-append-version="true"></script>
+<script src="~/js/recommendationsModule.js" asp-append-version="true"></script>

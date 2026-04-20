@@ -1202,8 +1202,11 @@
             // Check if user is authenticated (for save functionality)
             var isAuthenticated = @Json.Serialize(User.Identity?.IsAuthenticated ?? false);
 
-            // Keep URL in sync with the loaded report
+            // Keep URL in sync with the loaded report.
+            // Skip in view mode — the View route is anonymous-accessible (needed for sample reports),
+            // whereas Edit enforces ownership and would AccessDeny on refresh.
             (function() {
+                if (isViewMode) return;
                 var publicId = $("#reportPublicId").val();
                 var reportId = parseInt($("#reportId").val());
                 if (reportId > 0 && publicId && publicId !== '00000000-0000-0000-0000-000000000000') {
