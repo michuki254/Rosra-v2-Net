@@ -599,7 +599,7 @@ header.scrolled .logo-container img {
     }
 
     .user-name {
-        display: none;
+        max-width: none;
     }
 
     .main-nav-links .nav-link {
