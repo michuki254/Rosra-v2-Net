@@ -15,10 +15,10 @@
     <!-- Classification Header -->
     @if (!isViewMode)
     {
-        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-file-earmark-text fs-4 text-primary"></i>
-                <span class="fw-bold fs-5" id="licenseHeaderName">@Model.BusinessLicenseDisplayName</span>
+        <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <i class="bi bi-file-earmark-text text-primary" style="font-size: 1.1rem;"></i>
+                <span class="fw-bold" id="licenseHeaderName" style="font-size: 1rem;">@Model.BusinessLicenseDisplayName</span>
                 @if (!string.IsNullOrEmpty(Model.License.Subgroup))
                 {
                     var badgeColor = Model.License.Subgroup switch { "A" => "#2196F3", "B" => "#FF9800", "C" => "#4CAF50", _ => "#666" };
@@ -30,9 +30,9 @@
                     <span class="badge ms-2 bg-secondary" style="font-size: 0.75rem;" id="licenseSubgroupBadge">Not classified</span>
                 }
             </div>
-            <button type="button" class="btn btn-outline-primary btn-sm"
-                    onclick="openEditLicenseMetaModal()" title="Edit stream classification">
-                <i class="bi bi-pencil-square"></i> Edit Classification
+            <button type="button" class="btn btn-outline-primary btn-sm stream-header-btn"
+                    onclick="openEditLicenseMetaModal()" title="Edit classification" aria-label="Edit classification">
+                <i class="bi bi-pencil-square"></i>
             </button>
         </div>
     }
@@ -172,7 +172,7 @@
 
             <!-- Useful Average Values -->
             <div class="card mb-3 shadow-sm">
-                <div class="card-header bg-info text-white">
+                <div class="card-header bg-primary text-white">
                     <h6 class="mb-0"><i class="bi bi-calculator me-2"></i>@Localizer["AvgValues_Title"]</h6>
                 </div>
                 <div class="card-body">
@@ -216,7 +216,7 @@
 
             <!-- KPI Ratios -->
             <div class="card mb-3 shadow-sm">
-                <div class="card-header bg-warning">
+                <div class="card-header bg-primary text-white">
                     <h6 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>@Localizer["KPI_Title"]</h6>
                 </div>
                 <div class="card-body">
@@ -256,7 +256,7 @@
         <!-- Right Column - Results Section -->
         <div class="col-lg-8">
             <div class="card mb-3 shadow-sm">
-                <div class="card-header bg-success text-white">
+                <div class="card-header bg-primary text-white">
                     <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>@Localizer["Results_Title"]</h6>
                 </div>
                 <div class="card-body">

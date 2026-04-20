@@ -11,34 +11,34 @@
 
 <div class="generic-stream-gap-analysis" data-stream-index="@streamIndex" data-subgroup="@(Model.Subgroup ?? "")" data-subtype="@(Model.Subtype ?? "")" id="@(streamId)-container">
     <!-- Stream Header with Name Editor, Classification Badge, and Delete Button -->
-    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-        <div class="d-flex align-items-center gap-3">
-            <i class="bi bi-bar-chart-line fs-4 text-primary"></i>
-            <div class="stream-name-editor">
-                <input type="text" class="form-control form-control-lg border-0 fw-bold"
+    <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <i class="bi bi-bar-chart-line text-primary" style="font-size: 1.1rem;"></i>
+            <div class="stream-name-editor d-flex align-items-center gap-2 flex-wrap">
+                <input type="text" class="form-control form-control-sm border-0 fw-bold"
                        id="@(streamId)Name" name="GenericStreams[@streamIndex].StreamName"
                        value="@Model.StreamName" placeholder="@Localizer["EnterStreamName"]"
-                       style="font-size: 1.25rem; background: transparent; width: auto; min-width: 250px;"
+                       title="@Localizer["ClickToEditStreamName"]"
+                       style="font-size: 1rem; background: transparent; width: auto; min-width: 200px;"
                        @(isViewMode ? "readonly" : "")>
-                <small class="text-muted ms-2">@Localizer["ClickToEditStreamName"]</small>
                 @if (!string.IsNullOrEmpty(Model.Subgroup))
                 {
                     var badgeColor = Model.Subgroup switch { "A" => "#2196F3", "B" => "#FF9800", "C" => "#4CAF50", _ => "#666" };
                     var badgeText = Model.Subgroup switch { "A" => "Business Licences & Permits", "B" => "Service Fees & Billed Charges", "C" => "Daily / Point-of-Collection", _ => "Unclassified" };
-                    <span class="badge ms-2" style="background-color: @badgeColor; font-size: 0.75rem;">@badgeText</span>
+                    <span class="badge" style="background-color: @badgeColor; font-size: 0.7rem;">@badgeText</span>
                 }
             </div>
         </div>
         @if (!isViewMode)
         {
-            <div class="d-flex gap-2">
-                <button type="button" class="btn btn-outline-primary btn-sm"
-                        onclick="openEditMetaModal(@streamIndex)" title="Edit stream classification">
-                    <i class="bi bi-pencil-square"></i> Edit Classification
+            <div class="d-flex gap-1">
+                <button type="button" class="btn btn-outline-primary btn-sm stream-header-btn"
+                        onclick="openEditMetaModal(@streamIndex)" title="Edit classification" aria-label="Edit classification">
+                    <i class="bi bi-pencil-square"></i>
                 </button>
-                <button type="button" class="btn btn-outline-danger btn-sm delete-stream-btn"
-                        data-stream-index="@streamIndex" title="Delete this stream">
-                    <i class="bi bi-trash"></i> @Localizer["DeleteStream"]
+                <button type="button" class="btn btn-outline-danger btn-sm delete-stream-btn stream-header-btn"
+                        data-stream-index="@streamIndex" title="@Localizer["DeleteStream"]" aria-label="@Localizer["DeleteStream"]">
+                    <i class="bi bi-trash"></i>
                 </button>
             </div>
         }
@@ -156,7 +156,7 @@
 
             <!-- Useful Average Values -->
             <div class="card mb-3 shadow-sm">
-                <div class="card-header bg-info text-white">
+                <div class="card-header bg-primary text-white">
                     <h6 class="mb-0"><i class="bi bi-calculator me-2"></i>@Localizer["UsefulAverageValues"]</h6>
                 </div>
                 <div class="card-body">
@@ -228,7 +228,7 @@
 
             <!-- KPI Ratios -->
             <div class="card mb-3 shadow-sm">
-                <div class="card-header bg-warning">
+                <div class="card-header bg-primary text-white">
                     <h6 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>@Localizer["KPIRatios"]</h6>
                 </div>
                 <div class="card-body">
@@ -268,7 +268,7 @@
         <!-- Right Column - Results Section -->
         <div class="col-lg-8">
             <div class="card mb-3 shadow-sm">
-                <div class="card-header bg-success text-white">
+                <div class="card-header bg-primary text-white">
                     <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>@Localizer["GraphicalRepresentation"]</h6>
                 </div>
                 <div class="card-body">

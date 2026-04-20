@@ -7,68 +7,81 @@
 <style>
     /* Gap Analysis Intro Section */
     .gap-analysis-intro-section {
-        margin-bottom: 1.25rem;
+        margin-bottom: 0.65rem;
     }
 
     .gap-analysis-intro-section .intro-text-box {
         background: #f0f9ff;
-        border-left: 4px solid var(--un-blue, #00b2e3);
-        border-radius: 0 8px 8px 0;
-        padding: 1rem 1.25rem;
+        border-left: 3px solid var(--un-blue, #00b2e3);
+        border-radius: 0 6px 6px 0;
+        padding: 0.5rem 0.75rem;
         display: flex;
-        align-items: flex-start;
-        gap: 0.75rem;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .gap-analysis-intro-section .intro-icon {
         color: var(--un-blue, #00b2e3);
-        font-size: 1.25rem;
+        font-size: 0.95rem;
         flex-shrink: 0;
-        margin-top: 0.1rem;
     }
 
     .gap-analysis-intro-section .intro-text {
         margin: 0;
-        font-size: 0.95rem;
+        font-size: 0.8rem;
         color: #334155;
-        line-height: 1.5;
+        line-height: 1.35;
     }
 
     /* Gap Analysis Modern Tabs */
     .gap-tabs-container {
         background: #fff;
-        border-radius: 12px;
-        padding: 1.5rem;
+        border-radius: 10px;
+        padding: 0.85rem;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Tighter row/card spacing inside the gap-analysis area */
+    .gap-tabs-container .row {
+        --bs-gutter-x: 0.75rem;
+        --bs-gutter-y: 0.75rem;
+    }
+
+    .gap-tabs-container .card {
+        margin-bottom: 0.6rem !important;
+    }
+
+    .gap-tabs-container .card.shadow-sm {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
     }
 
     .gap-tabs-nav {
         display: flex;
-        gap: 0.5rem;
-        padding: 0.375rem;
+        gap: 0.375rem;
+        padding: 0.25rem;
         background: #f1f3f5;
-        border-radius: 10px;
-        margin-bottom: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
         flex-wrap: wrap;
         align-items: center;
     }
 
     .gap-tab-btn {
         flex: 0 0 auto;
-        min-width: 100px;
-        padding: 0.625rem 1rem;
+        min-width: 0;
+        padding: 0.35rem 0.7rem;
         border: none;
         background: transparent;
         color: #6c757d;
-        font-size: 0.875rem;
+        font-size: 0.8rem;
         font-weight: 500;
-        border-radius: 8px;
+        border-radius: 6px;
         cursor: pointer;
         transition: all 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
+        gap: 0.35rem;
     }
 
     .gap-tab-btn:hover {
@@ -83,7 +96,7 @@
     }
 
     .gap-tab-btn i {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 
     /* Dynamic stream tab with close button */
@@ -132,18 +145,18 @@
     /* Add Stream Button */
     .add-stream-btn {
         flex: 0 0 auto;
-        padding: 0.625rem 1rem;
+        padding: 0.35rem 0.7rem;
         border: 2px dashed #6c757d;
         background: transparent;
         color: #6c757d;
-        font-size: 0.875rem;
+        font-size: 0.8rem;
         font-weight: 500;
-        border-radius: 8px;
+        border-radius: 6px;
         cursor: pointer;
         transition: all 0.2s ease;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.35rem;
     }
 
     .add-stream-btn:hover {
@@ -170,6 +183,79 @@
     .stream-name-modal .modal-header {
         background: #00b2e3;
         color: white;
+        padding: 0.6rem 1rem;
+    }
+
+    .stream-name-modal .modal-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .stream-name-modal .modal-title i {
+        font-size: 0.95rem;
+    }
+
+    .stream-name-modal .modal-body {
+        padding: 0.85rem 1rem;
+    }
+
+    .stream-name-modal .modal-footer {
+        padding: 0.55rem 1rem;
+    }
+
+    .stream-name-modal .modal-body p,
+    .stream-name-modal .modal-body .form-label {
+        font-size: 0.82rem;
+        margin-bottom: 0.25rem !important;
+    }
+
+    .stream-name-modal .modal-body .form-select,
+    .stream-name-modal .modal-body .form-control {
+        font-size: 0.85rem;
+        padding: 0.3rem 0.55rem;
+    }
+
+    .stream-name-modal .modal-body small {
+        font-size: 0.7rem;
+        line-height: 1.3;
+    }
+
+    .stream-name-modal .modal-body .mb-3 {
+        margin-bottom: 0.6rem !important;
+    }
+
+    .stream-name-modal .modal-footer .btn {
+        font-size: 0.82rem;
+        padding: 0.3rem 0.7rem;
+    }
+
+    /* Quick Template cards in Add Stream modal */
+    .template-card-body {
+        padding: 0.6rem 0.5rem !important;
+    }
+
+    .template-card-icon {
+        font-size: 1.3rem !important;
+    }
+
+    .template-card-title {
+        font-size: 0.8rem !important;
+        line-height: 1.2 !important;
+        font-weight: 600;
+    }
+
+    .template-card-desc {
+        font-size: 0.68rem !important;
+        line-height: 1.25 !important;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .template-card-badge {
+        font-size: 0.6rem !important;
+        padding: 0.15rem 0.4rem !important;
     }
 
     /* ============================================
@@ -551,6 +637,65 @@
         border-color: #fecaca;
         color: #dc2626;
     }
+
+    /* Compact icon-only header action buttons */
+    .gap-tabs-container .stream-header-btn {
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+    }
+
+    .gap-tabs-container .stream-header-btn i {
+        font-size: 0.85rem;
+    }
+
+    /* Compact gap-analysis stream cards (Entry / Averages / KPI / Results) */
+    .gap-tabs-container .card-header {
+        padding: 0.25rem 0.55rem;
+    }
+
+    .gap-tabs-container .card-header h6 {
+        font-size: 0.62rem;
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 1.15;
+        margin-bottom: 0 !important;
+    }
+
+    .gap-tabs-container .card-header h6 i {
+        font-size: 0.66rem;
+    }
+
+    .gap-tabs-container .card-body {
+        padding: 0.75rem;
+    }
+
+    .gap-tabs-container .card-body .form-label {
+        font-size: 0.78rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .gap-tabs-container .card-body .form-control,
+    .gap-tabs-container .card-body .input-group-text {
+        font-size: 0.82rem;
+        padding: 0.3rem 0.55rem;
+    }
+
+    .gap-tabs-container .card-body .mb-3 {
+        margin-bottom: 0.6rem !important;
+    }
+
+    .gap-tabs-container .card-body .mb-2 {
+        margin-bottom: 0.4rem !important;
+    }
+
+    .gap-tabs-container .card-body small {
+        font-size: 0.7rem;
+    }
 </style>
 
 <div class="gap-tabs-container">
@@ -666,8 +811,8 @@
             <div class="modal-body">
                 <!-- Step 1: Quick Templates -->
                 <div id="addStreamStep1">
-                    <p class="text-muted mb-3">Choose a template to get started, or select "Other" to classify manually.</p>
-                    <div class="row g-3" id="quickTemplateGrid">
+                    <p class="text-muted mb-2">Choose a template to get started, or select "Other" to classify manually.</p>
+                    <div class="row g-2" id="quickTemplateGrid">
                         <!-- Templates rendered by JS from StreamClassification.QUICK_TEMPLATES -->
                     </div>
                 </div>
@@ -1097,17 +1242,17 @@
             const badgeColor = subgroupInfo ? subgroupInfo.color : '#666';
             const badgeLabel = subgroupInfo ? subgroupInfo.shortLabel : 'Manual classification';
             const col = document.createElement('div');
-            col.className = 'col-sm-6 col-md-4';
+            col.className = 'col-6 col-sm-4 col-md-3';
             col.innerHTML = `
                 <div class="card h-100 template-card" style="cursor:pointer; border: 2px solid transparent; transition: border-color 0.2s;"
                      onclick="selectQuickTemplate('${tpl.id}')"
                      onmouseenter="this.style.borderColor='${badgeColor}'"
                      onmouseleave="this.style.borderColor='transparent'">
-                    <div class="card-body text-center p-3">
-                        <i class="bi ${tpl.icon} fs-2 d-block mb-2" style="color:${badgeColor}"></i>
-                        <h6 class="card-title mb-1">${escapeHtml(tpl.name)}</h6>
-                        <small class="text-muted">${escapeHtml(tpl.description)}</small>
-                        ${tpl.subgroup ? '<div class="mt-2"><span class="badge" style="background-color:' + badgeColor + '; font-size: 0.7rem;">' + escapeHtml(badgeLabel) + '</span></div>' : ''}
+                    <div class="card-body text-center template-card-body">
+                        <i class="bi ${tpl.icon} template-card-icon d-block mb-1" style="color:${badgeColor}"></i>
+                        <h6 class="card-title mb-1 template-card-title">${escapeHtml(tpl.name)}</h6>
+                        <small class="text-muted template-card-desc">${escapeHtml(tpl.description)}</small>
+                        ${tpl.subgroup ? '<div class="mt-1"><span class="badge template-card-badge" style="background-color:' + badgeColor + ';">' + escapeHtml(badgeLabel) + '</span></div>' : ''}
                     </div>
                 </div>
             `;
@@ -1306,26 +1451,26 @@
         return `
             <div class="generic-stream-gap-analysis" data-stream-index="${streamIndex}" data-subgroup="${subgroup}" data-subtype="${subtype}" id="${streamId}-container">
                 <!-- Stream Header -->
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                    <div class="d-flex align-items-center gap-3">
-                        <i class="bi bi-bar-chart-line fs-4 text-primary"></i>
-                        <div class="stream-name-editor">
-                            <input type="text" class="form-control form-control-lg border-0 fw-bold"
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <i class="bi bi-bar-chart-line text-primary" style="font-size: 1.1rem;"></i>
+                        <div class="stream-name-editor d-flex align-items-center gap-2 flex-wrap">
+                            <input type="text" class="form-control form-control-sm border-0 fw-bold"
                                    id="${streamId}Name" name="GenericStreams[${streamIndex}].StreamName"
                                    value="${escapeHtml(streamName)}" placeholder="Enter stream name..."
-                                   style="font-size: 1.25rem; background: transparent; width: auto; min-width: 250px;">
-                            <small class="text-muted ms-2">Click to edit stream name</small>
+                                   title="Click to edit stream name"
+                                   style="font-size: 1rem; background: transparent; width: auto; min-width: 200px;">
                             ${subgroupBadge}
                         </div>
                     </div>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-outline-primary btn-sm"
-                                onclick="openEditMetaModal(${streamIndex})" title="Edit stream classification">
-                            <i class="bi bi-pencil-square"></i> Edit Classification
+                    <div class="d-flex gap-1">
+                        <button type="button" class="btn btn-outline-primary btn-sm stream-header-btn"
+                                onclick="openEditMetaModal(${streamIndex})" title="Edit classification" aria-label="Edit classification">
+                            <i class="bi bi-pencil-square"></i>
                         </button>
-                        <button type="button" class="btn btn-outline-danger btn-sm delete-stream-btn"
-                                data-stream-index="${streamIndex}" onclick="deleteStream(${streamIndex})" title="Delete this stream">
-                            <i class="bi bi-trash"></i> Delete Stream
+                        <button type="button" class="btn btn-outline-danger btn-sm delete-stream-btn stream-header-btn"
+                                data-stream-index="${streamIndex}" onclick="deleteStream(${streamIndex})" title="Delete stream" aria-label="Delete stream">
+                            <i class="bi bi-trash"></i>
                         </button>
                     </div>
                 </div>
@@ -1401,7 +1546,7 @@
 
                         <!-- Useful Average Values -->
                         <div class="card mb-3 shadow-sm">
-                            <div class="card-header bg-info text-white">
+                            <div class="card-header bg-primary text-white">
                                 <h6 class="mb-0"><i class="bi bi-calculator me-2"></i>Useful Average Values</h6>
                             </div>
                             <div class="card-body">
@@ -1449,7 +1594,7 @@
 
                         <!-- KPI Ratios -->
                         <div class="card mb-3 shadow-sm">
-                            <div class="card-header bg-warning">
+                            <div class="card-header bg-primary text-white">
                                 <h6 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>Key Performance Indicators (KPI)</h6>
                             </div>
                             <div class="card-body">
@@ -1480,7 +1625,7 @@
                     <!-- Right Column - Results Section (col-lg-8) -->
                     <div class="col-lg-8">
                         <div class="card mb-3 shadow-sm">
-                            <div class="card-header bg-success text-white">
+                            <div class="card-header bg-primary text-white">
                                 <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Graphical Representation of Analyzed Data</h6>
                             </div>
                             <div class="card-body">
