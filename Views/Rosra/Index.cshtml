@@ -26,6 +26,20 @@
             font-family: var(--font-primary);
         }
 
+        /* …but restore the icon-font face for Font Awesome / Bootstrap Icons
+           elements, otherwise the wildcard above clobbers them and FA glyphs
+           render as missing-glyph boxes or "?" characters. */
+        .rosra-full-page .fa, .rosra-full-page .fas, .rosra-full-page .far,
+        .rosra-full-page .fa-solid, .rosra-full-page .fa-regular {
+            font-family: "Font Awesome 6 Free";
+        }
+        .rosra-full-page .fab, .rosra-full-page .fa-brands {
+            font-family: "Font Awesome 6 Brands";
+        }
+        .rosra-full-page .bi, .rosra-full-page [class^="bi-"], .rosra-full-page [class*=" bi-"] {
+            font-family: "bootstrap-icons";
+        }
+
         .rosra-full-page h1,
         .rosra-full-page h2,
         .rosra-full-page h3,
