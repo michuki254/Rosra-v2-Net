@@ -551,8 +551,8 @@ header.scrolled .logo-container img {
         justify-content: center;
     }
 
-    /* Mobile Dropdown */
-    .dropdown-menu {
+    /* Mobile Dropdown — match desktop specificity so these rules win */
+    .main-nav-links .dropdown-menu {
         position: static !important;
         transform: none !important;
         box-shadow: none;
@@ -560,26 +560,32 @@ header.scrolled .logo-container img {
         border-radius: 0;
         margin-top: 0;
         border-top: none;
+        min-width: 0;
+        width: 100%;
     }
 
-    .dropdown-item {
-        color: var(--nav-text-muted);
+    .main-nav-links .dropdown-item {
+        color: var(--nav-text);
         padding: 0.75rem 1.5rem;
         border-left: none;
+        white-space: normal;
+        word-break: break-word;
     }
 
-    .dropdown-item:hover {
-        background: rgba(255, 255, 255, 0.1);
+    .main-nav-links .dropdown-item:hover,
+    .main-nav-links .dropdown-item:focus,
+    .main-nav-links .dropdown-item:active {
+        background: rgba(255, 255, 255, 0.12);
         color: var(--nav-text);
         padding-left: 1.75rem;
     }
 
-    .dropdown-item i {
+    .main-nav-links .dropdown-item i {
         color: var(--sdg11-orange);
     }
 
-    .dropdown-divider {
-        border-color: rgba(255, 255, 255, 0.1);
+    .main-nav-links .dropdown-divider {
+        border-color: rgba(255, 255, 255, 0.2);
     }
 
     .logo-right {
