@@ -2871,5 +2871,44 @@ namespace RosraApp.Controllers
                 return Json(new { success = false, message = "Error saving reference data: " + ex.Message });
             }
         }
+
+        // Echoes a client-built file back to the browser as an attachment download.
+        // We route the recommendations report through here so the download arrives as a normal
+        // server response with Content-Disposition: attachment, which browsers honor regardless
+        // of "automatic downloads" / popup-blocker / extension settings that can silently drop
+        // JS-initiated blob downloads.
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        [RequestSizeLimit(50_000_000)]
+        public IActionResult DownloadAttachment(string content, string filename, string contentType, string encoding = "utf8")
+        {
+            if (string.IsNullOrEmpty(content))
+            {
+                return BadRequest("Missing content");
+            }
+
+            byte[] bytes;
+            try
+            {
+                bytes = string.Equals(encoding, "base64", StringComparison.OrdinalIgnoreCase)
+                    ? Convert.FromBase64String(content)
+                    : System.Text.Encoding.UTF8.GetBytes(content);
+            }
+            catch (FormatException)
+            {
+                return BadRequest("Invalid base64 content");
+            }
+
+            // Sanitize filename: strip path separators, fall back to a default
+            var safeName = string.IsNullOrWhiteSpace(filename)
+                ? "rosra-action-plan"
+                : System.IO.Path.GetFileName(filename);
+
+            var safeContentType = string.IsNullOrWhiteSpace(contentType)
+                ? "application/octet-stream"
+                : contentType;
+
+            return File(bytes, safeContentType, safeName);
+        }
     }
 }

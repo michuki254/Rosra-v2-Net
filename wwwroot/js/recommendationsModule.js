@@ -894,6 +894,65 @@
                 URL.revokeObjectURL(url);
             }
 
+            // Route a download through the server so the browser receives a real
+            // Content-Disposition: attachment response. This bypasses the JS-blob
+            // download path that some browsers / extensions silently block.
+            //
+            // Submits a hidden POST form targeted at a hidden iframe so the current
+            // page doesn't navigate. The server (RosraController.DownloadAttachment)
+            // echoes the bytes back as an attachment with the requested filename.
+            function downloadViaServer(content, filename, contentType, encoding) {
+                const FRAME_ID = 'rosraServerDownloadFrame';
+                let iframe = document.getElementById(FRAME_ID);
+                if (!iframe) {
+                    iframe = document.createElement('iframe');
+                    iframe.id = FRAME_ID;
+                    iframe.name = FRAME_ID;
+                    iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;left:-9999px;';
+                    document.body.appendChild(iframe);
+                }
+
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/Rosra/DownloadAttachment';
+                form.target = FRAME_ID;
+                form.enctype = 'application/x-www-form-urlencoded';
+                form.style.display = 'none';
+
+                const fields = {
+                    content: content,
+                    filename: filename,
+                    contentType: contentType || 'application/octet-stream',
+                    encoding: encoding || 'utf8'
+                };
+                for (const k in fields) {
+                    const i = document.createElement('input');
+                    i.type = 'hidden';
+                    i.name = k;
+                    i.value = fields[k];
+                    form.appendChild(i);
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+                // Leave the form attached briefly; cleanup after the response is committed
+                setTimeout(() => { try { form.remove(); } catch (_) {} }, 30000);
+            }
+
+            // Convert a Blob to a base64 string (without the `data:...;base64,` prefix)
+            function blobToBase64(blob) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const result = String(reader.result || '');
+                        const idx = result.indexOf(',');
+                        resolve(idx >= 0 ? result.slice(idx + 1) : result);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            }
+
             // Export progress in the requested format ('csv' | 'excel')
             function exportProgress(format) {
                 const fmt = (format || 'csv').toLowerCase();
@@ -1012,11 +1071,11 @@
                 }
             }
 
-            // Download the report as a standalone .html file (no popup required)
+            // Download the report as a standalone .html file via the server,
+            // so browsers honor the Content-Disposition: attachment response.
             function downloadReportHtml(html) {
-                const blob = new Blob([html], { type: 'text/html;charset=utf-8;' });
                 const dateStamp = new Date().toISOString().slice(0, 10);
-                triggerDownload(blob, `rosra-action-plan-${dateStamp}.html`);
+                downloadViaServer(html, `rosra-action-plan-${dateStamp}.html`, 'text/html; charset=utf-8', 'utf8');
             }
 
             // Render the report HTML and convert it to a real PDF download.
@@ -1092,6 +1151,9 @@
                         }
                         console.log('[Report] container ready, height=', container.scrollHeight, 'children=', container.children.length);
 
+                        // Build the PDF as a Blob (don't let html2pdf trigger its own .save() —
+                        // we route through the server so the browser receives a proper attachment
+                        // download response, which won't be silently blocked.)
                         window.html2pdf()
                             .set({
                                 margin: [10, 10, 12, 10],
@@ -1102,9 +1164,11 @@
                                 pagebreak: { mode: ['css', 'legacy'], avoid: ['.r-card', '.tl-block', '.pr-block'] }
                             })
                             .from(container)
-                            .save()
-                            .then(() => {
-                                console.log('[Report] PDF saved:', filename);
+                            .outputPdf('blob')
+                            .then(blob => blobToBase64(blob))
+                            .then(base64 => {
+                                console.log('[Report] PDF built, posting to server for attachment download:', filename);
+                                downloadViaServer(base64, filename, 'application/pdf', 'base64');
                                 cleanup();
                             }, err => {
                                 console.error('[Report] html2pdf failed', err);
