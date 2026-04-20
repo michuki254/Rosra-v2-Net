@@ -161,18 +161,24 @@
 
     /* Module Header */
     .overview-selection-module .module-header {
-        border-bottom: 3px solid var(--un-blue);
-        padding-bottom: 1.25rem;
-        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--un-blue);
+        padding-bottom: 0.6rem;
+        margin-bottom: 0.9rem;
     }
 
     .overview-selection-module .module-header h4 {
         color: var(--un-blue);
         font-weight: 700;
+        font-size: 1.15rem;
+        margin-bottom: 0.25rem !important;
     }
 
     .overview-selection-module .module-header h4 i {
         color: var(--un-orange);
+    }
+
+    .overview-selection-module .module-header p {
+        font-size: 0.85rem;
     }
 
     /* Filter Panel */
@@ -195,9 +201,27 @@
     }
 
     .overview-selection-module .progress-stats {
-        font-size: 0.85rem;
+        font-size: 0.78rem;
         font-weight: 600;
         color: #495057;
+    }
+
+    .overview-selection-module .filter-panel .card-body {
+        padding: 0.5rem 0.9rem !important;
+    }
+
+    .overview-selection-module .filter-panel .form-label {
+        font-size: 0.72rem;
+        margin-bottom: 0.15rem !important;
+    }
+
+    .overview-selection-module .filter-panel .form-select {
+        font-size: 0.82rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .overview-selection-module .filter-panel {
+        margin-bottom: 1rem !important;
     }
 
     .overview-selection-module .progress-stats .text-success {
@@ -206,7 +230,7 @@
 
     /* Stream Section Styles */
     .overview-selection-module .stream-section {
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
         border: none;
         border-radius: var(--card-radius);
         overflow: hidden;
@@ -221,7 +245,7 @@
     .overview-selection-module .stream-header {
         background: var(--un-blue);
         color: white;
-        padding: 1rem 1.5rem;
+        padding: 0.55rem 1rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -230,7 +254,7 @@
     .overview-selection-module .stream-header h5 {
         margin: 0;
         font-weight: 700;
-        font-size: 1.1rem;
+        font-size: 0.95rem;
     }
 
     .overview-selection-module .stream-header h5 i {
@@ -239,9 +263,9 @@
 
     .overview-selection-module .stream-rank {
         background: var(--un-orange) 100%);
-        padding: 0.35rem 1rem;
-        border-radius: 20px;
-        font-size: 0.85rem;
+        padding: 0.2rem 0.7rem;
+        border-radius: 14px;
+        font-size: 0.75rem;
         font-weight: 600;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
@@ -256,13 +280,14 @@
     }
 
     .overview-selection-module .gap-header {
-        padding: 1rem 1.5rem;
+        padding: 0.55rem 1rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
         cursor: pointer;
         transition: var(--transition-fast);
         background: white;
+        font-size: 0.9rem;
     }
 
     .overview-selection-module .gap-header:hover {
@@ -291,14 +316,14 @@
     }
 
     .overview-selection-module .gap-icon {
-        width: 32px;
-        height: 32px;
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 0.85rem;
+        font-size: 0.72rem;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
 
@@ -323,9 +348,9 @@
 
     .overview-selection-module .gap-stats {
         display: flex;
-        gap: 1rem;
+        gap: 0.75rem;
         align-items: center;
-        font-size: 0.85rem;
+        font-size: 0.78rem;
     }
 
     .overview-selection-module .gap-amount {
@@ -335,10 +360,11 @@
 
     .overview-selection-module .solutions-count {
         background: #e9ecef;
-        padding: 0.35rem 0.75rem;
-        border-radius: 20px;
+        padding: 0.22rem 0.6rem;
+        border-radius: 14px;
         font-weight: 600;
         color: #495057;
+        font-size: 0.75rem;
     }
 
     .overview-selection-module .solutions-count .text-success {
@@ -347,7 +373,7 @@
 
     /* Solutions Container */
     .overview-selection-module .solutions-grid {
-        padding: 1.25rem 1.5rem;
+        padding: 0.7rem 0.9rem;
         background: #fafbfc;
     }
 
@@ -355,11 +381,12 @@
     .overview-selection-module .solution-card {
         background: white;
         border: 1px solid #e2e8f0;
-        border-radius: var(--card-radius);
-        margin-bottom: 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.55rem;
         transition: var(--transition-normal);
         overflow: hidden;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        font-size: 0.85rem;
     }
 
     .overview-selection-module .solution-card:hover {
@@ -381,7 +408,7 @@
     }
 
     .overview-selection-module .solution-card-header {
-        padding: 0.875rem 1.25rem;
+        padding: 0.5rem 0.85rem;
         border-bottom: 1px solid #e9ecef;
         display: flex;
         justify-content: space-between;
