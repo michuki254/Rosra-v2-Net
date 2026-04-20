@@ -129,32 +129,32 @@
         <div class="col-12">
             <div class="row g-3">
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-sm text-center">
-                        <div class="card-body py-3">
+                    <div class="card border-0 shadow-sm text-center prioritization-stat-card">
+                        <div class="card-body py-2">
                             <h6 class="text-muted mb-1">@Localizer["Stats_TotalStreamsAnalyzed"]</h6>
                             <h3 class="mb-0 text-primary" id="statTotalStreams">0</h3>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-sm text-center">
-                        <div class="card-body py-3">
+                    <div class="card border-0 shadow-sm text-center prioritization-stat-card">
+                        <div class="card-body py-2">
                             <h6 class="text-muted mb-1">@Localizer["Stats_StreamsIncluded"]</h6>
                             <h3 class="mb-0 text-success" id="statIncludedStreams">0</h3>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-sm text-center">
-                        <div class="card-body py-3">
+                    <div class="card border-0 shadow-sm text-center prioritization-stat-card">
+                        <div class="card-body py-2">
                             <h6 class="text-muted mb-1">@Localizer["Stats_TotalGapAll"]</h6>
                             <h3 class="mb-0 text-info" id="statTotalGap">-</h3>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-sm text-center">
-                        <div class="card-body py-3">
+                    <div class="card border-0 shadow-sm text-center prioritization-stat-card">
+                        <div class="card-body py-2">
                             <h6 class="text-muted mb-1">@Localizer["Stats_TotalGapIncluded"]</h6>
                             <h3 class="mb-0 text-warning" id="statIncludedGap">-</h3>
                         </div>
@@ -465,6 +465,24 @@
         --un-danger: #ef4444;
         --card-radius: 12px;
         --input-radius: 8px;
+    }
+
+    /* Summary Stat Cards (Total Streams / Included / Total Gap etc.) */
+    .prioritization-module .prioritization-stat-card .card-body {
+        padding: 0.45rem 0.6rem !important;
+    }
+
+    .prioritization-module .prioritization-stat-card h6 {
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        margin-bottom: 0.15rem !important;
+    }
+
+    .prioritization-module .prioritization-stat-card h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
     }
 
     /* Header Styling */
