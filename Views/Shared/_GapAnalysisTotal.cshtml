@@ -868,7 +868,7 @@
         // Add Chart.js library dynamically if not already loaded
         if (typeof Chart === 'undefined') {
             const chartScript = document.createElement('script');
-            chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+            chartScript.src = '/lib/chart.js/chart.umd.min.js';
             chartScript.onload = initializeCharts;
             document.head.appendChild(chartScript);
         } else {
@@ -1839,7 +1839,7 @@
                         // If Chart.js is not yet loaded, try to load it
                         if (typeof Chart === 'undefined') {
                             const chartScript = document.createElement('script');
-                            chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                            chartScript.src = '/lib/chart.js/chart.umd.min.js';
                             chartScript.onload = function() {
                                 createTop5PotentialChart(document.getElementById('top5PotentialChart'));
                             };
@@ -1899,7 +1899,7 @@
             } else {
                 // If Chart.js is not yet loaded, load it
                 const chartScript = document.createElement('script');
-                chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                chartScript.src = '/lib/chart.js/chart.umd.min.js';
                 chartScript.onload = function() {
                     createTotalGapChart(); // Add this new function call
                 };
@@ -1914,7 +1914,7 @@
             } else {
                 // If Chart.js is not yet loaded, load it
                 const chartScript = document.createElement('script');
-                chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                chartScript.src = '/lib/chart.js/chart.umd.min.js';
                 chartScript.onload = function() {
                     createSimpleCharts();
                 };

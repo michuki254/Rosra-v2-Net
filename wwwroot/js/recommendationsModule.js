@@ -992,21 +992,20 @@
                         console.log('[Report] dispatching format=', format);
                         if (format === 'html') {
                             downloadReportHtml(html);
+                        } else if (format === 'pdf') {
+                            downloadReportPdf(html);
                         } else {
                             printReportHtml(html);
                         }
                     };
 
+                    // Dispatch inside the click's user-gesture window — do NOT wait for modal
+                    // close animation, or Chrome treats the subsequent blob download as automatic
+                    // and may block it silently.
+                    dispatch();
                     const modalEl = document.getElementById('reportModal');
                     const inst = modalEl && window.bootstrap ? bootstrap.Modal.getInstance(modalEl) : null;
-                    if (inst) {
-                        console.log('[Report] hiding modal then dispatching on hidden.bs.modal');
-                        modalEl.addEventListener('hidden.bs.modal', dispatch, { once: true });
-                        inst.hide();
-                    } else {
-                        console.log('[Report] no modal instance — dispatching immediately');
-                        dispatch();
-                    }
+                    if (inst) { try { inst.hide(); } catch (_) {} }
                 } catch (err) {
                     console.error('[Report] generateReport failed', err);
                     alert('Report generation failed: ' + (err && err.message ? err.message : err));
@@ -1018,6 +1017,108 @@
                 const blob = new Blob([html], { type: 'text/html;charset=utf-8;' });
                 const dateStamp = new Date().toISOString().slice(0, 10);
                 triggerDownload(blob, `rosra-action-plan-${dateStamp}.html`);
+            }
+
+            // Render the report HTML and convert it to a real PDF download.
+            // Renders directly into the host document inside a uniquely-scoped, off-screen container —
+            // this avoids cross-document quirks that html2canvas can hit when rendering from an iframe.
+            function downloadReportPdf(html) {
+                console.log('[Report] downloadReportPdf() start, html2pdf loaded?', typeof window.html2pdf);
+                const dateStamp = new Date().toISOString().slice(0, 10);
+                const filename = `rosra-action-plan-${dateStamp}.pdf`;
+                const PDF_WIDTH_PX = 1040;
+                const SCOPE = 'rosra-pdf-scope';
+
+                if (typeof window.html2pdf === 'undefined') {
+                    console.warn('[Report] html2pdf is not loaded — falling back to print dialog');
+                    alert('PDF library failed to load. Falling back to the print dialog — choose "Save as PDF" as the destination.');
+                    printReportHtml(html);
+                    return;
+                }
+
+                let parsed;
+                try {
+                    parsed = new DOMParser().parseFromString(html, 'text/html');
+                } catch (err) {
+                    console.error('[Report] DOMParser failed', err);
+                    alert('Could not parse the report HTML: ' + (err.message || err));
+                    return;
+                }
+
+                const styleNodes = Array.from(parsed.querySelectorAll('style'));
+                const bodyHtml = parsed.body ? parsed.body.innerHTML : '';
+                if (!bodyHtml) {
+                    alert('Report content is empty — nothing to convert to PDF.');
+                    return;
+                }
+
+                // Scope the report's CSS to our container so it doesn't bleed into the host page.
+                // The report stylesheet uses `body { ... }` and bare element selectors; we rewrite those
+                // to descend from `.rosra-pdf-scope` so they only apply inside our offscreen container.
+                const scopedCss = styleNodes
+                    .map(n => n.textContent || '')
+                    .join('\n')
+                    // turn `body { ... }` into `.scope { ... }`
+                    .replace(/(^|[\s,{}])body(\s*[,{])/g, '$1.' + SCOPE + '$2')
+                    // turn bare h1/h2/h3/h4/h5/p/ul/li/table at start of selector into descendants of .scope
+                    .replace(/(^|[}\s,])(h[1-6]|p|ul|li|table|tr|td|div)\b/g, '$1.' + SCOPE + ' $2');
+
+                const existing = document.getElementById('rosraReportPdfRoot');
+                if (existing) existing.remove();
+
+                const styleEl = document.createElement('style');
+                styleEl.id = 'rosraReportPdfStyles';
+                styleEl.textContent = scopedCss;
+                document.head.appendChild(styleEl);
+
+                const container = document.createElement('div');
+                container.id = 'rosraReportPdfRoot';
+                container.className = SCOPE;
+                container.style.cssText =
+                    'position:fixed;left:-10000px;top:0;width:' + PDF_WIDTH_PX + 'px;background:#fff;';
+                container.innerHTML = bodyHtml;
+                document.body.appendChild(container);
+
+                const cleanup = () => {
+                    try { container.remove(); } catch (_) {}
+                    try { styleEl.remove(); } catch (_) {}
+                };
+
+                // Wait one paint so the browser applies styles and lays out the content
+                requestAnimationFrame(() => setTimeout(() => {
+                    try {
+                        if (!container.children.length) {
+                            throw new Error('Report container rendered empty');
+                        }
+                        console.log('[Report] container ready, height=', container.scrollHeight, 'children=', container.children.length);
+
+                        window.html2pdf()
+                            .set({
+                                margin: [10, 10, 12, 10],
+                                filename: filename,
+                                image: { type: 'jpeg', quality: 0.95 },
+                                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: PDF_WIDTH_PX, logging: false },
+                                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+                                pagebreak: { mode: ['css', 'legacy'], avoid: ['.r-card', '.tl-block', '.pr-block'] }
+                            })
+                            .from(container)
+                            .save()
+                            .then(() => {
+                                console.log('[Report] PDF saved:', filename);
+                                cleanup();
+                            }, err => {
+                                console.error('[Report] html2pdf failed', err);
+                                alert('PDF generation failed: ' + (err && err.message ? err.message : err) +
+                                    '\n\nOpening the print dialog as a fallback — choose "Save as PDF".');
+                                cleanup();
+                                printReportHtml(html);
+                            });
+                    } catch (err) {
+                        console.error('[Report] downloadReportPdf failed', err);
+                        alert('PDF generation failed: ' + (err && err.message ? err.message : err));
+                        cleanup();
+                    }
+                }, 100));
             }
 
             // Print via a hidden iframe (no popup window, not blocked)

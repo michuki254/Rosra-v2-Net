@@ -5,151 +5,6 @@
     var activeUmbrellaTab = hasUmbrellaTabs ? Model.UmbrellaTabs.FirstOrDefault(u => u.IsActive) : null;
     var activeSubTabs = activeUmbrellaTab?.SubTabs ?? new List<RosraApp.Models.ViewModels.TabViewModel>();
 }
-
-<div class="tab-system mb-4">
-    @if (hasUmbrellaTabs)
-    {
-        <!-- Umbrella Tab Content (tabs are now in sidebar) -->
-        <div class="tab-content umbrella-tab-content" id="umbrellaTabsContent">
-            @foreach (var umbrellaTab in Model.UmbrellaTabs)
-            {
-                <div class="tab-pane fade @(umbrellaTab.IsActive ? "show active" : "")"
-                     id="@umbrellaTab.Id-umbrella-content"
-                     role="tabpanel"
-                     aria-labelledby="@umbrellaTab.Id-umbrella-tab">
-
-                    @if (umbrellaTab.SubTabs.Count > 1 && umbrellaTab.HasStepper)
-                    {
-                        <!-- Intro Text for Bottom-Up Analysis -->
-                        <div class="bottom-up-intro-section">
-                            <div class="intro-text-box">
-                                <i class="bi bi-info-circle-fill intro-icon"></i>
-                                <p class="intro-text">@SharedLocalizer["BottomUp_Intro"]</p>
-                            </div>
-                        </div>
-
-                        <!-- Stepper Navigation for Bottom-Up Pipeline -->
-                        <div class="stepper-container">
-                            <div class="stepper">
-                                @foreach (var subTab in umbrellaTab.SubTabs)
-                                {
-                                    var stepIndex = umbrellaTab.SubTabs.IndexOf(subTab);
-                                    var isActiveStep = subTab.IsActive;
-                                    var isCompletedStep = subTab.IsVisited && !isActiveStep;
-                                    var stepClass = isActiveStep ? "active" : (isCompletedStep ? "completed" : "");
-
-                                    <div class="stepper-step @stepClass" data-step="@(stepIndex + 1)" data-tab-id="@subTab.Id">
-                                        <div class="step-indicator">
-                                            @if (isCompletedStep)
-                                            {
-                                                <i class="bi bi-check-lg"></i>
-                                            }
-                                            else
-                                            {
-                                                <span>@(stepIndex + 1)</span>
-                                            }
-                                        </div>
-                                        <div class="step-label">@subTab.Title</div>
-                                        @if (stepIndex < umbrellaTab.SubTabs.Count - 1)
-                                        {
-                                            <div class="step-connector"></div>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        </div>
-
-                        <!-- Sub-Tab Content for Stepper -->
-                        <div class="sub-tab-content stepper-content">
-                            @foreach (var subTab in umbrellaTab.SubTabs)
-                            {
-                                <div class="sub-tab-pane @(subTab.IsActive ? "active" : "")"
-                                     id="@subTab.Id-content"
-                                     data-tab-id="@subTab.Id">
-                                    @await Html.PartialAsync(subTab.ContentPartialName, Model.TabContentModel)
-                                </div>
-                            }
-                        </div>
-                    }
-                    else if (umbrellaTab.SubTabs.Count == 1)
-                    {
-                        <!-- Single Sub-Tab (Top-Down - no stepper needed) -->
-                        <div class="single-tab-content">
-                            @await Html.PartialAsync(umbrellaTab.SubTabs[0].ContentPartialName, Model.TabContentModel)
-                        </div>
-                    }
-                    else if (umbrellaTab.SubTabs.Count > 1)
-                    {
-                        <!-- Multiple Sub-Tabs without Stepper (pill tabs) -->
-                        <ul class="nav nav-pills sub-tabs mb-3" role="tablist">
-                            @foreach (var subTab in umbrellaTab.SubTabs)
-                            {
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link @(subTab.IsActive ? "active" : "")"
-                                            id="@subTab.Id-tab"
-                                            data-bs-toggle="pill"
-                                            data-bs-target="#@subTab.Id-content"
-                                            type="button"
-                                            role="tab"
-                                            data-tab-id="@subTab.Id">
-                                        @subTab.Title
-                                    </button>
-                                </li>
-                            }
-                        </ul>
-
-                        <div class="tab-content sub-tab-content">
-                            @foreach (var subTab in umbrellaTab.SubTabs)
-                            {
-                                <div class="tab-pane fade @(subTab.IsActive ? "show active" : "")"
-                                     id="@subTab.Id-content"
-                                     role="tabpanel">
-                                    @await Html.PartialAsync(subTab.ContentPartialName, Model.TabContentModel)
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
-            }
-        </div>
-    }
-    else
-    {
-        <!-- Legacy Tab Navigation (fallback) -->
-        <ul class="nav nav-pills nav-fill mb-3" id="@Model.ContainerId" role="tablist">
-            @foreach (var tab in Model.Tabs)
-            {
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link @(tab.IsActive ? "active" : "")"
-                            id="@tab.Id-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#@tab.Id-content"
-                            type="button"
-                            role="tab"
-                            aria-controls="@tab.Id-content"
-                            aria-selected="@(tab.IsActive ? "true" : "false")"
-                            data-tab-id="@tab.Id">
-                        <span class="badge rounded-pill @(tab.IsVisited ? "bg-primary" : "bg-secondary") tab-badge me-2">@(Model.Tabs.IndexOf(tab) + 1)</span>
-                        @tab.Title
-                    </button>
-                </li>
-            }
-        </ul>
-
-        <div class="tab-content p-3 border-top" id="@(Model.ContainerId)Content">
-            @foreach (var tab in Model.Tabs)
-            {
-                <div class="tab-pane fade @(tab.IsActive ? "show active" : "")"
-                     id="@tab.Id-content"
-                     role="tabpanel"
-                     aria-labelledby="@tab.Id-tab">
-                    @await Html.PartialAsync(tab.ContentPartialName, Model.TabContentModel)
-                </div>
-            }
-        </div>
-    }
-</div>
-
 <style>
     /* UN-Habitat Official Brand Colors */
     :root {
@@ -406,6 +261,151 @@
         }
     }
 </style>
+
+<div class="tab-system mb-4">
+    @if (hasUmbrellaTabs)
+    {
+        <!-- Umbrella Tab Content (tabs are now in sidebar) -->
+        <div class="tab-content umbrella-tab-content" id="umbrellaTabsContent">
+            @foreach (var umbrellaTab in Model.UmbrellaTabs)
+            {
+                <div class="tab-pane fade @(umbrellaTab.IsActive ? "show active" : "")"
+                     id="@umbrellaTab.Id-umbrella-content"
+                     role="tabpanel"
+                     aria-labelledby="@umbrellaTab.Id-umbrella-tab">
+
+                    @if (umbrellaTab.SubTabs.Count > 1 && umbrellaTab.HasStepper)
+                    {
+                        <!-- Intro Text for Bottom-Up Analysis -->
+                        <div class="bottom-up-intro-section">
+                            <div class="intro-text-box">
+                                <i class="bi bi-info-circle-fill intro-icon"></i>
+                                <p class="intro-text">@SharedLocalizer["BottomUp_Intro"]</p>
+                            </div>
+                        </div>
+
+                        <!-- Stepper Navigation for Bottom-Up Pipeline -->
+                        <div class="stepper-container">
+                            <div class="stepper">
+                                @foreach (var subTab in umbrellaTab.SubTabs)
+                                {
+                                    var stepIndex = umbrellaTab.SubTabs.IndexOf(subTab);
+                                    var isActiveStep = subTab.IsActive;
+                                    var isCompletedStep = subTab.IsVisited && !isActiveStep;
+                                    var stepClass = isActiveStep ? "active" : (isCompletedStep ? "completed" : "");
+
+                                    <div class="stepper-step @stepClass" data-step="@(stepIndex + 1)" data-tab-id="@subTab.Id">
+                                        <div class="step-indicator">
+                                            @if (isCompletedStep)
+                                            {
+                                                <i class="bi bi-check-lg"></i>
+                                            }
+                                            else
+                                            {
+                                                <span>@(stepIndex + 1)</span>
+                                            }
+                                        </div>
+                                        <div class="step-label">@subTab.Title</div>
+                                        @if (stepIndex < umbrellaTab.SubTabs.Count - 1)
+                                        {
+                                            <div class="step-connector"></div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Sub-Tab Content for Stepper -->
+                        <div class="sub-tab-content stepper-content">
+                            @foreach (var subTab in umbrellaTab.SubTabs)
+                            {
+                                <div class="sub-tab-pane @(subTab.IsActive ? "active" : "")"
+                                     id="@subTab.Id-content"
+                                     data-tab-id="@subTab.Id">
+                                    @await Html.PartialAsync(subTab.ContentPartialName, Model.TabContentModel)
+                                </div>
+                            }
+                        </div>
+                    }
+                    else if (umbrellaTab.SubTabs.Count == 1)
+                    {
+                        <!-- Single Sub-Tab (Top-Down - no stepper needed) -->
+                        <div class="single-tab-content">
+                            @await Html.PartialAsync(umbrellaTab.SubTabs[0].ContentPartialName, Model.TabContentModel)
+                        </div>
+                    }
+                    else if (umbrellaTab.SubTabs.Count > 1)
+                    {
+                        <!-- Multiple Sub-Tabs without Stepper (pill tabs) -->
+                        <ul class="nav nav-pills sub-tabs mb-3" role="tablist">
+                            @foreach (var subTab in umbrellaTab.SubTabs)
+                            {
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link @(subTab.IsActive ? "active" : "")"
+                                            id="@subTab.Id-tab"
+                                            data-bs-toggle="pill"
+                                            data-bs-target="#@subTab.Id-content"
+                                            type="button"
+                                            role="tab"
+                                            data-tab-id="@subTab.Id">
+                                        @subTab.Title
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+
+                        <div class="tab-content sub-tab-content">
+                            @foreach (var subTab in umbrellaTab.SubTabs)
+                            {
+                                <div class="tab-pane fade @(subTab.IsActive ? "show active" : "")"
+                                     id="@subTab.Id-content"
+                                     role="tabpanel">
+                                    @await Html.PartialAsync(subTab.ContentPartialName, Model.TabContentModel)
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- Legacy Tab Navigation (fallback) -->
+        <ul class="nav nav-pills nav-fill mb-3" id="@Model.ContainerId" role="tablist">
+            @foreach (var tab in Model.Tabs)
+            {
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link @(tab.IsActive ? "active" : "")"
+                            id="@tab.Id-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#@tab.Id-content"
+                            type="button"
+                            role="tab"
+                            aria-controls="@tab.Id-content"
+                            aria-selected="@(tab.IsActive ? "true" : "false")"
+                            data-tab-id="@tab.Id">
+                        <span class="badge rounded-pill @(tab.IsVisited ? "bg-primary" : "bg-secondary") tab-badge me-2">@(Model.Tabs.IndexOf(tab) + 1)</span>
+                        @tab.Title
+                    </button>
+                </li>
+            }
+        </ul>
+
+        <div class="tab-content p-3 border-top" id="@(Model.ContainerId)Content">
+            @foreach (var tab in Model.Tabs)
+            {
+                <div class="tab-pane fade @(tab.IsActive ? "show active" : "")"
+                     id="@tab.Id-content"
+                     role="tabpanel"
+                     aria-labelledby="@tab.Id-tab">
+                    @await Html.PartialAsync(tab.ContentPartialName, Model.TabContentModel)
+                </div>
+            }
+        </div>
+    }
+</div>
+
 
 <!-- Hidden form fields for tab switching -->
 <input type="hidden" id="tabIdInput" name="tabId" />

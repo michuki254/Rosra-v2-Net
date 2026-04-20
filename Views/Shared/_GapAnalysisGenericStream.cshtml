@@ -7,7 +7,7 @@
 }
 
 <!-- Include Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script src="~/lib/chart.js/chart-3.7.1.min.js" asp-append-version="true"></script>
 
 <div class="generic-stream-gap-analysis" data-stream-index="@streamIndex" data-subgroup="@(Model.Subgroup ?? "")" data-subtype="@(Model.Subtype ?? "")" id="@(streamId)-container">
     <!-- Stream Header with Name Editor, Classification Badge, and Delete Button -->

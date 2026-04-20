@@ -2150,14 +2150,13 @@
 }
 </style>
 
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- Chart.js Datalabels Plugin -->
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<!-- Chart.js (self-hosted) -->
+<script src="~/lib/chart.js/chart.umd.min.js" asp-append-version="true"></script>
+<script src="~/lib/chart.js/chartjs-plugin-datalabels.min.js" asp-append-version="true"></script>
 
 <!-- Select2 for searchable dropdowns - CSS only, JS loaded after jQuery -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<link href="~/lib/select2/select2.min.css" rel="stylesheet" asp-append-version="true" />
+<link href="~/lib/select2/select2-bootstrap-5-theme.min.css" rel="stylesheet" asp-append-version="true" />
 
 <style>
 /* Select2 Custom Styling */
@@ -4413,7 +4412,7 @@
                 } else {
                     // Load Select2 script dynamically
                     const script = document.createElement('script');
-                    script.src = 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js';
+                    script.src = '/lib/select2/select2.min.js';
                     script.onload = function() {
                         loadPeerSNGs();
                     };
