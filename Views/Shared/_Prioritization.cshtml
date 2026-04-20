@@ -20,7 +20,7 @@
         </ol>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-2">
         <!-- Table 1: Adjustable Stream Prioritization -->
         <div class="col-12">
             <div class="card border-0 shadow-sm">
@@ -468,15 +468,20 @@
     }
 
     /* Header Styling */
+    .prioritization-module .prioritization-header {
+        margin-bottom: 0.75rem !important;
+    }
+
     .prioritization-module .prioritization-header h5 {
         color: var(--un-blue);
         font-weight: 700;
-        font-size: 1.35rem;
+        font-size: 1.1rem;
+        margin-bottom: 0.2rem !important;
     }
 
     .prioritization-module .prioritization-header p {
-        font-size: 0.95rem;
-        line-height: 1.6;
+        font-size: 0.82rem;
+        line-height: 1.4;
     }
 
     /* Card Styling */
@@ -493,27 +498,30 @@
     }
 
     /* Card Headers with UN-Habitat Colors */
+    .prioritization-module .card-header.bg-primary,
+    .prioritization-module .card-header.bg-success,
+    .prioritization-module .card-header.bg-light {
+        padding: 0.55rem 1rem !important;
+    }
+
     .prioritization-module .card-header.bg-primary {
         background: var(--un-blue) !important;
         border: none;
-        padding: 1rem 1.25rem;
     }
 
     .prioritization-module .card-header.bg-success {
         background: var(--un-success) !important;
         border: none;
-        padding: 1rem 1.25rem;
     }
 
     .prioritization-module .card-header.bg-light {
         background: #f8fafc !important;
         border-bottom: 2px solid #e2e8f0;
-        padding: 1rem 1.25rem;
     }
 
     .prioritization-module .card-header h6 {
         font-weight: 600;
-        font-size: 0.95rem;
+        font-size: 0.88rem;
         letter-spacing: 0.02em;
     }
 
@@ -524,32 +532,47 @@
         border-left: 4px solid var(--un-blue);
         border-radius: var(--input-radius);
         color: #0277bd;
+        padding: 0.6rem 0.9rem;
+        font-size: 0.8rem;
+        margin-bottom: 1rem !important;
     }
 
     .prioritization-module .alert-info .alert-heading {
         color: var(--un-blue);
         font-weight: 600;
+        font-size: 0.88rem;
+        margin-bottom: 0.35rem !important;
+    }
+
+    .prioritization-module .alert-info ol {
+        margin-bottom: 0;
+    }
+
+    .prioritization-module .alert-info ol li {
+        margin-bottom: 0.15rem;
+        line-height: 1.35;
     }
 
     /* Table Styling */
     .prioritization-module .table {
         margin-bottom: 0;
+        font-size: 0.85rem;
     }
 
     .prioritization-module .table th {
         font-weight: 600;
-        font-size: 0.8rem;
+        font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: #475569;
         background: #f8fafc;
         border-bottom: 2px solid #e2e8f0;
-        padding: 0.875rem 1rem;
+        padding: 0.5rem 0.75rem;
     }
 
     .prioritization-module .table td {
         vertical-align: middle;
-        padding: 0.875rem 1rem;
+        padding: 0.45rem 0.75rem;
         color: #334155;
         border-color: #f1f5f9;
     }
@@ -585,11 +608,11 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 36px;
-        height: 36px;
+        width: 28px;
+        height: 28px;
         border-radius: 50%;
         font-weight: 700;
-        font-size: 0.95rem;
+        font-size: 0.82rem;
         box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     }
 
