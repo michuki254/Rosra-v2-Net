@@ -1047,27 +1047,48 @@
                     const html = buildReportHtml(options);
                     console.log('[Report] html built, length=', html.length);
 
+                    const modalEl = document.getElementById('reportModal');
+                    const genBtn = modalEl ? modalEl.querySelector('.modal-footer .btn-primary') : null;
+                    const originalBtnHtml = genBtn ? genBtn.innerHTML : null;
+                    if (genBtn) {
+                        genBtn.disabled = true;
+                        genBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Generating…';
+                    }
+
+                    const closeModal = () => {
+                        if (genBtn) {
+                            genBtn.disabled = false;
+                            if (originalBtnHtml !== null) genBtn.innerHTML = originalBtnHtml;
+                        }
+                        const inst = modalEl && window.bootstrap ? bootstrap.Modal.getInstance(modalEl) : null;
+                        if (inst) { try { inst.hide(); } catch (_) {} }
+                    };
+
                     const dispatch = () => {
                         console.log('[Report] dispatching format=', format);
+                        // Server-attached downloads (HTML blob / base64 PDF) take ~100 ms for HTML
+                        // and ~2-3 s for PDF rendering. Close the modal after a short delay so the
+                        // user sees the "Generating…" state confirm their click worked.
                         if (format === 'html') {
                             downloadReportHtml(html);
+                            setTimeout(closeModal, 400);
                         } else if (format === 'pdf') {
-                            downloadReportPdf(html);
+                            // downloadReportPdf is async internally; it logs "PDF built, posting to
+                            // server…" when the form is submitted. We close shortly after that.
+                            downloadReportPdf(html, closeModal);
                         } else {
                             printReportHtml(html);
+                            setTimeout(closeModal, 400);
                         }
                     };
 
-                    // Dispatch inside the click's user-gesture window — do NOT wait for modal
-                    // close animation, or Chrome treats the subsequent blob download as automatic
-                    // and may block it silently.
                     dispatch();
-                    const modalEl = document.getElementById('reportModal');
-                    const inst = modalEl && window.bootstrap ? bootstrap.Modal.getInstance(modalEl) : null;
-                    if (inst) { try { inst.hide(); } catch (_) {} }
                 } catch (err) {
                     console.error('[Report] generateReport failed', err);
                     alert('Report generation failed: ' + (err && err.message ? err.message : err));
+                    const modalEl = document.getElementById('reportModal');
+                    const genBtn = modalEl ? modalEl.querySelector('.modal-footer .btn-primary') : null;
+                    if (genBtn) { genBtn.disabled = false; }
                 }
             }
 
@@ -1081,17 +1102,19 @@
             // Render the report HTML and convert it to a real PDF download.
             // Renders directly into the host document inside a uniquely-scoped, off-screen container —
             // this avoids cross-document quirks that html2canvas can hit when rendering from an iframe.
-            function downloadReportPdf(html) {
+            function downloadReportPdf(html, onDone) {
                 console.log('[Report] downloadReportPdf() start, html2pdf loaded?', typeof window.html2pdf);
                 const dateStamp = new Date().toISOString().slice(0, 10);
                 const filename = `rosra-action-plan-${dateStamp}.pdf`;
                 const PDF_WIDTH_PX = 1040;
                 const SCOPE = 'rosra-pdf-scope';
+                const finish = () => { try { if (typeof onDone === 'function') onDone(); } catch (_) {} };
 
                 if (typeof window.html2pdf === 'undefined') {
                     console.warn('[Report] html2pdf is not loaded — falling back to print dialog');
                     alert('PDF library failed to load. Falling back to the print dialog — choose "Save as PDF" as the destination.');
                     printReportHtml(html);
+                    finish();
                     return;
                 }
 
@@ -1101,6 +1124,7 @@
                 } catch (err) {
                     console.error('[Report] DOMParser failed', err);
                     alert('Could not parse the report HTML: ' + (err.message || err));
+                    finish();
                     return;
                 }
 
@@ -1108,6 +1132,7 @@
                 const bodyHtml = parsed.body ? parsed.body.innerHTML : '';
                 if (!bodyHtml) {
                     alert('Report content is empty — nothing to convert to PDF.');
+                    finish();
                     return;
                 }
 
@@ -1170,17 +1195,20 @@
                                 console.log('[Report] PDF built, posting to server for attachment download:', filename);
                                 downloadViaServer(base64, filename, 'application/pdf', 'base64');
                                 cleanup();
+                                finish();
                             }, err => {
                                 console.error('[Report] html2pdf failed', err);
                                 alert('PDF generation failed: ' + (err && err.message ? err.message : err) +
                                     '\n\nOpening the print dialog as a fallback — choose "Save as PDF".');
                                 cleanup();
                                 printReportHtml(html);
+                                finish();
                             });
                     } catch (err) {
                         console.error('[Report] downloadReportPdf failed', err);
                         alert('PDF generation failed: ' + (err && err.message ? err.message : err));
                         cleanup();
+                        finish();
                     }
                 }, 100));
             }
