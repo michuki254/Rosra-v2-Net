@@ -280,51 +280,77 @@
                             <div id="peerDataInputSection" class="peer-data-input-section" style="display: none;">
                                 <div class="peer-data-alert">
                                     <i class="bi bi-info-circle"></i>
-                                    <span>No peer SNG data found for this country. Upload peer data or enter manually below.</span>
+                                    <span>No peer SNG data found for this country. Choose how you'd like to provide data:</span>
                                 </div>
 
-                                <!-- CSV Upload Option -->
-                                <div class="peer-upload-option mb-3">
-                                    <label class="form-label fw-bold small">Option 1: Upload CSV File</label>
-                                    <div class="input-group input-group-sm">
-                                        <input type="file" class="form-control" id="peerCsvUpload" accept=".csv">
-                                        <button type="button" class="btn btn-primary" onclick="uploadPeerCSV()">
-                                            <i class="bi bi-upload"></i> Upload
+                                <!-- Input method tabs -->
+                                <ul class="nav nav-tabs peer-input-tabs" id="peerInputTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="peer-upload-tab" data-bs-toggle="tab" data-bs-target="#peerUploadPane" type="button" role="tab" aria-controls="peerUploadPane" aria-selected="true">
+                                            <i class="bi bi-file-earmark-arrow-up me-1"></i> Upload CSV
                                         </button>
-                                    </div>
-                                    <small class="text-muted">CSV format: SNG,OSR,GCP,Population,Include (one row per subnational government)</small>
-                                </div>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="peer-manual-tab" data-bs-toggle="tab" data-bs-target="#peerManualPane" type="button" role="tab" aria-controls="peerManualPane" aria-selected="false">
+                                            <i class="bi bi-pencil-square me-1"></i> Manual Entry
+                                        </button>
+                                    </li>
+                                </ul>
 
-                                <!-- Manual Entry Option -->
-                                <div class="peer-manual-entry">
-                                    <label class="form-label fw-bold small">Option 2: Manual Entry</label>
-                                    <div class="table-responsive">
-                                        <table class="table table-sm table-bordered" id="peerManualEntryTable">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>SNG Name</th>
-                                                    <th>OSR</th>
-                                                    <th>GCP</th>
-                                                    <th style="width: 40px;"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="peerManualEntryBody">
-                                                <tr>
-                                                    <td><input type="text" class="form-control form-control-sm" placeholder="Name"></td>
-                                                    <td><input type="number" class="form-control form-control-sm" placeholder="0" step="any"></td>
-                                                    <td><input type="number" class="form-control form-control-sm" placeholder="0" step="any"></td>
-                                                    <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removePeerRow(this)"><i class="bi bi-trash"></i></button></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                <div class="tab-content peer-input-tab-content">
+                                    <!-- Upload CSV pane -->
+                                    <div class="tab-pane fade show active" id="peerUploadPane" role="tabpanel" aria-labelledby="peer-upload-tab">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted mb-0">Upload a CSV file with your peer SNG data.</small>
+                                            <button type="button" class="btn btn-sm btn-link p-0" onclick="downloadPeerTemplate()" title="Download a sample CSV template with column headers and example rows">
+                                                <i class="bi bi-download"></i> Download Template
+                                            </button>
+                                        </div>
+                                        <div class="input-group input-group-sm mb-2">
+                                            <input type="file" class="form-control" id="peerCsvUpload" accept=".csv">
+                                            <button type="button" class="btn btn-primary" onclick="uploadPeerCSV()">
+                                                <i class="bi bi-upload"></i> Upload
+                                            </button>
+                                        </div>
+                                        <small class="text-muted d-block">CSV columns: <strong>SNG, OSR, GCP</strong>, Population <em>(optional)</em>, Include <em>(optional, defaults to 1)</em>.</small>
+                                        <small class="text-muted d-block"><i class="bi bi-info-circle"></i> Population is only needed for <strong>OSR-per-capita</strong> analysis.</small>
                                     </div>
-                                    <div class="d-flex gap-2 mt-2">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addPeerRow()">
-                                            <i class="bi bi-plus"></i> Add Row
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-primary" onclick="savePeerDataManually()">
-                                            <i class="bi bi-save"></i> Save Peer Data
-                                        </button>
+
+                                    <!-- Manual Entry pane -->
+                                    <div class="tab-pane fade" id="peerManualPane" role="tabpanel" aria-labelledby="peer-manual-tab">
+                                        <small class="text-muted d-block mb-2"><i class="bi bi-info-circle"></i> <strong>SNG Name, OSR, and GCP</strong> are required. <strong>Population</strong> is optional (needed only for per-capita analysis).</small>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered" id="peerManualEntryTable">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>SNG Name <span class="text-danger">*</span></th>
+                                                        <th>OSR <span class="text-danger">*</span></th>
+                                                        <th>GCP <span class="text-danger">*</span></th>
+                                                        <th>Population <span class="text-muted fw-normal" style="font-size: 0.75em;">(optional)</span></th>
+                                                        <th style="width: 70px;" title="Include this SNG in the frontier analysis">Include</th>
+                                                        <th style="width: 40px;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="peerManualEntryBody">
+                                                    <tr>
+                                                        <td><input type="text" class="form-control form-control-sm" placeholder="Name" data-field="sng"></td>
+                                                        <td><input type="text" class="form-control form-control-sm text-end" placeholder="0" inputmode="decimal" data-field="osr" oninput="formatNumberInput(this)"></td>
+                                                        <td><input type="text" class="form-control form-control-sm text-end" placeholder="0" inputmode="decimal" data-field="gcp" oninput="formatNumberInput(this)"></td>
+                                                        <td><input type="text" class="form-control form-control-sm text-end" placeholder="optional" inputmode="numeric" data-field="population" title="Optional — only needed for OSR-per-capita analysis" oninput="formatNumberInput(this, true)"></td>
+                                                        <td class="text-center align-middle"><input type="checkbox" class="form-check-input" data-field="include" checked></td>
+                                                        <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removePeerRow(this)"><i class="bi bi-trash"></i></button></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="d-flex gap-2 mt-2">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addPeerRow()">
+                                                <i class="bi bi-plus"></i> Add Row
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-primary ms-auto" onclick="savePeerDataManually()">
+                                                <i class="bi bi-save"></i> Save Peer Data
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1569,10 +1595,11 @@
 /* Peer Data Input Section Styles */
 .peer-data-input-section {
     margin-top: 1rem;
-    padding: 1rem;
-    background: #fff8e6;
-    border: 1px solid #ffecb3;
-    border-radius: 8px;
+    padding: 1.25rem;
+    background: #ffffff;
+    border: 1px solid #e3e6ea;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .peer-data-alert {
@@ -1580,10 +1607,11 @@
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 1rem;
-    padding: 0.75rem 1rem;
-    background: #fff3cd;
+    padding: 0.625rem 0.875rem;
+    background: #eef5ff;
+    border-left: 3px solid #3b82f6;
     border-radius: 6px;
-    color: #856404;
+    color: #1e40af;
     font-size: 0.85rem;
 }
 
@@ -1592,28 +1620,54 @@
     flex-shrink: 0;
 }
 
-.peer-upload-option {
-    padding-bottom: 1rem;
-    border-bottom: 1px dashed #dee2e6;
+/* Tabbed input (Upload CSV / Manual Entry) */
+.peer-input-tabs {
+    border-bottom: 1px solid #e3e6ea;
+    margin-bottom: 1rem;
+    gap: 0.25rem;
 }
 
-.peer-manual-entry {
-    padding-top: 0.5rem;
+.peer-input-tabs .nav-link {
+    color: #6b7280;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
-.peer-manual-entry .table {
+.peer-input-tabs .nav-link:hover {
+    color: #0d6efd;
+    background: #f8fafc;
+}
+
+.peer-input-tabs .nav-link.active {
+    color: #0d6efd;
+    background: transparent;
+    border-bottom-color: #0d6efd;
+}
+
+.peer-input-tab-content {
+    padding-top: 0.25rem;
+}
+
+.peer-input-tab-content .table {
     font-size: 0.85rem;
     margin-bottom: 0;
 }
 
-.peer-manual-entry .table th {
+.peer-input-tab-content .table th {
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     color: #666;
 }
 
-.peer-manual-entry .form-control {
+.peer-input-tab-content .form-control {
     font-size: 0.8rem;
 }
 
@@ -3506,6 +3560,112 @@
             }
         }
 
+        // Strip thousand separators and parse a formatted number back to a float. Returns 0 on empty/invalid input.
+        function parseFormattedNumber(value) {
+            if (value === null || value === undefined) return 0;
+            const cleaned = String(value).replace(/,/g, '').trim();
+            if (!cleaned) return 0;
+            const n = parseFloat(cleaned);
+            return isNaN(n) ? 0 : n;
+        }
+
+        // Live-format a numeric <input type="text"> with thousand separators while the user types.
+        // Preserves the caret position so typing feels natural. Pass integerOnly=true to strip decimals (e.g. Population).
+        function formatNumberInput(el, integerOnly) {
+            const raw = el.value;
+            if (!raw) return;
+            const caretEnd = el.selectionEnd || 0;
+            const digitsBeforeCaret = (raw.slice(0, caretEnd).match(/[\d.]/g) || []).length;
+
+            // Keep digits, a single decimal point, and a leading minus sign. Disallow decimals when integerOnly.
+            let cleaned = raw.replace(integerOnly ? /[^\d-]/g : /[^\d.-]/g, '');
+            if (cleaned.startsWith('-')) cleaned = '-' + cleaned.slice(1).replace(/-/g, '');
+            else cleaned = cleaned.replace(/-/g, '');
+            if (!integerOnly) {
+                const firstDot = cleaned.indexOf('.');
+                if (firstDot !== -1) cleaned = cleaned.slice(0, firstDot + 1) + cleaned.slice(firstDot + 1).replace(/\./g, '');
+            }
+            if (!cleaned || cleaned === '-' || cleaned === '.' || cleaned === '-.') { el.value = cleaned; return; }
+
+            const negative = cleaned.startsWith('-');
+            const body = negative ? cleaned.slice(1) : cleaned;
+            const parts = body.split('.');
+            const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            const formatted = (negative ? '-' : '') + (parts.length > 1 ? intPart + '.' + parts[1] : intPart);
+
+            el.value = formatted;
+
+            // Restore caret: find the position in `formatted` that contains the same count of digits-or-dot as before.
+            let count = 0, newCaret = formatted.length;
+            for (let i = 0; i < formatted.length; i++) {
+                if (/[\d.]/.test(formatted[i])) {
+                    count++;
+                    if (count === digitsBeforeCaret) { newCaret = i + 1; break; }
+                }
+            }
+            if (typeof el.setSelectionRange === 'function') el.setSelectionRange(newCaret, newCaret);
+        }
+
+        // Download a sample Peer SNG CSV template with headers, example rows and a notes block
+        function downloadPeerTemplate() {
+            const countryCode = (getCurrentCountryCode() || 'XXX').toUpperCase();
+            // Data rows come first so the file opens clean in Excel/Sheets; the column reference
+            // is appended as '#' comment lines at the bottom (both client-side and server-side
+            // uploaders ignore '#' lines, so the file uploads as-is).
+            const lines = [
+                'SNG,OSR,GCP,Population,Include',
+                'Sample Region A,18500000000,4200000000000,4397000,1',
+                'Sample Region B,5200000000,680000000000,1208000,1',
+                'Sample Region C,1800000000,240000000000,610000,1',
+                'Sample Region D,2100000000,310000000000,2162000,1',
+                'Sample Region E,3400000000,520000000000,2417000,0',
+                '',
+                '# ============================================================================',
+                '# ROSRA Peer SNG Data Template  -  Column Reference',
+                '# ============================================================================',
+                '#',
+                '# REQUIRED COLUMNS',
+                '# ----------------------------------------------------------------------------',
+                '#   SNG         Subnational government name',
+                '#               (county, province, state, municipality, etc.)',
+                '#',
+                '#   OSR         Own-Source Revenue  -  annual, in local currency',
+                '#                 - plain number only (no commas, no currency symbols)',
+                '#                 - decimals allowed (e.g. 321400000.00)',
+                '#',
+                '#   GCP         Gross sub-national Product',
+                '#                 - same currency and units as OSR',
+                '#',
+                '# OPTIONAL COLUMNS',
+                '# ----------------------------------------------------------------------------',
+                '#   Population  Total population (whole number)',
+                '#                 - only needed for OSR-per-capita analysis',
+                '#                 - leave as 0 to skip',
+                '#',
+                '#   Include     Frontier analysis inclusion flag',
+                '#                 - 1  =  include (default when blank)',
+                '#                 - 0  =  exclude',
+                '#',
+                '# TIPS',
+                '# ----------------------------------------------------------------------------',
+                '#   * Replace the sample rows above with your own data.',
+                '#   * Keep the header row (SNG,OSR,GCP,Population,Include) unchanged.',
+                '#   * Use the same fiscal year and currency for every row.',
+                '#   * Lines starting with "#" are comments and are ignored by the uploader.',
+                '# ============================================================================'
+            ];
+            const csv = lines.join('\r\n') + '\r\n';
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `peer_sng_template_${countryCode}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
         // Upload peer CSV file (parse client-side, store in memory)
         async function uploadPeerCSV() {
             const fileInput = document.getElementById('peerCsvUpload');
@@ -3524,9 +3684,11 @@
             const file = fileInput.files[0];
 
             try {
-                // Parse CSV client-side
+                // Parse CSV client-side. Blank lines and lines starting with '#' are treated as comments.
                 const text = await file.text();
-                const lines = text.split('\n').filter(line => line.trim());
+                const lines = text.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0 && !line.startsWith('#'));
 
                 if (lines.length < 2) {
                     alert('CSV file must have at least a header and one data row');
@@ -3538,6 +3700,8 @@
                 const sngIdx = header.findIndex(h => h === 'sng' || h === 'name');
                 const osrIdx = header.findIndex(h => h === 'osr');
                 const gcpIdx = header.findIndex(h => h === 'gcp' || h === 'gdp');
+                const popIdx = header.findIndex(h => h === 'population' || h === 'pop');
+                const incIdx = header.findIndex(h => h === 'include' || h === 'included');
 
                 if (sngIdx === -1 || osrIdx === -1 || gcpIdx === -1) {
                     alert('CSV must have columns: SNG (or Name), OSR, GCP (or GDP)');
@@ -3550,11 +3714,14 @@
                     const cols = lines[i].split(',').map(c => c.trim());
                     if (cols.length > Math.max(sngIdx, osrIdx, gcpIdx)) {
                         const sng = cols[sngIdx];
-                        const osr = parseFloat(cols[osrIdx]) || 0;
-                        const gcp = parseFloat(cols[gcpIdx]) || 0;
+                        const osr = parseFormattedNumber(cols[osrIdx]);
+                        const gcp = parseFormattedNumber(cols[gcpIdx]);
+                        const population = popIdx !== -1 && cols[popIdx] !== undefined ? Math.round(parseFormattedNumber(cols[popIdx])) : 0;
+                        const includeRaw = incIdx !== -1 && cols[incIdx] !== undefined ? cols[incIdx].toLowerCase() : '1';
+                        const include = !(includeRaw === '0' || includeRaw === 'false' || includeRaw === 'no');
 
                         if (sng && (osr > 0 || gcp > 0)) {
-                            peers.push({ sng: sng, osr: osr, gcp: gcp, include: true });
+                            peers.push({ sng: sng, osr: osr, gcp: gcp, population: population, include: include });
                         }
                     }
                 }
@@ -3595,9 +3762,11 @@
             const tbody = document.getElementById('peerManualEntryBody');
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
-                <td><input type="text" class="form-control form-control-sm" placeholder="Name"></td>
-                <td><input type="number" class="form-control form-control-sm" placeholder="0" step="any"></td>
-                <td><input type="number" class="form-control form-control-sm" placeholder="0" step="any"></td>
+                <td><input type="text" class="form-control form-control-sm" placeholder="Name" data-field="sng"></td>
+                <td><input type="text" class="form-control form-control-sm text-end" placeholder="0" inputmode="decimal" data-field="osr" oninput="formatNumberInput(this)"></td>
+                <td><input type="text" class="form-control form-control-sm text-end" placeholder="0" inputmode="decimal" data-field="gcp" oninput="formatNumberInput(this)"></td>
+                <td><input type="text" class="form-control form-control-sm text-end" placeholder="optional" inputmode="numeric" data-field="population" title="Optional — only needed for OSR-per-capita analysis" oninput="formatNumberInput(this, true)"></td>
+                <td class="text-center align-middle"><input type="checkbox" class="form-check-input" data-field="include" checked></td>
                 <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removePeerRow(this)"><i class="bi bi-trash"></i></button></td>
             `;
             tbody.appendChild(newRow);
@@ -3627,13 +3796,19 @@
             const peers = [];
 
             rows.forEach(row => {
-                const inputs = row.querySelectorAll('input');
-                const name = inputs[0].value.trim();
-                const osr = parseFloat(inputs[1].value) || 0;
-                const gcp = parseFloat(inputs[2].value) || 0;
+                const getVal = field => {
+                    const el = row.querySelector(`[data-field="${field}"]`);
+                    return el ? el.value : '';
+                };
+                const name = getVal('sng').trim();
+                const osr = parseFormattedNumber(getVal('osr'));
+                const gcp = parseFormattedNumber(getVal('gcp'));
+                const population = Math.round(parseFormattedNumber(getVal('population')));
+                const includeEl = row.querySelector('[data-field="include"]');
+                const include = includeEl ? includeEl.checked : true;
 
                 if (name && (osr > 0 || gcp > 0)) {
-                    peers.push({ sng: name, osr: osr, gcp: gcp, include: true });
+                    peers.push({ sng: name, osr: osr, gcp: gcp, population: population, include: include });
                 }
             });
 
@@ -3647,7 +3822,7 @@
                 const response = await fetch('/Rosra/SavePeerSNGs', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ CountryCode: countryCode, Peers: peers.map(p => ({ SNG: p.sng, OSR: p.osr, GCP: p.gcp })) })
+                    body: JSON.stringify({ CountryCode: countryCode, Peers: peers.map(p => ({ SNG: p.sng, OSR: p.osr, GCP: p.gcp, Population: p.population, Include: p.include })) })
                 });
                 const result = await response.json();
 
@@ -4562,6 +4737,9 @@
         window.removePeerRow = removePeerRow;
         window.savePeerDataManually = savePeerDataManually;
         window.uploadPeerCSV = uploadPeerCSV;
+        window.downloadPeerTemplate = downloadPeerTemplate;
+        window.formatNumberInput = formatNumberInput;
+        window.parseFormattedNumber = parseFormattedNumber;
 
     });
 </script>

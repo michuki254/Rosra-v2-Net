@@ -2304,20 +2304,25 @@ namespace RosraApp.Controllers
                 using (var reader = new StreamReader(file.OpenReadStream()))
                 {
                     int lineNumber = 0;
+                    bool headerSkipped = false;
                     while (!reader.EndOfStream)
                     {
                         var line = await reader.ReadLineAsync();
                         lineNumber++;
 
                         if (string.IsNullOrWhiteSpace(line)) continue;
+                        // Skip comment lines (template explanations, notes, etc.)
+                        if (line.TrimStart().StartsWith("#")) continue;
 
                         var values = line.Split(',');
 
-                        // Skip header row if present
-                        if (lineNumber == 1 && (values[0].Trim().ToUpper() == "SNG" || values[0].Trim().ToUpper() == "NAME"))
+                        // Skip the first header row we encounter (after any leading comments)
+                        if (!headerSkipped && (values[0].Trim().ToUpper() == "SNG" || values[0].Trim().ToUpper() == "NAME"))
                         {
+                            headerSkipped = true;
                             continue;
                         }
+                        headerSkipped = true;
 
                         if (values.Length < 3)
                         {
@@ -2412,7 +2417,8 @@ namespace RosraApp.Controllers
                         sng = p.SNG.Trim(),
                         osr = p.OSR,
                         gcp = p.GCP,
-                        include = true,
+                        population = p.Population,
+                        include = p.Include,
                         mult = p.GCP > 0 ? Math.Round(p.OSR / p.GCP, 10) : 0
                     })
                     .ToList();
@@ -2449,6 +2455,8 @@ namespace RosraApp.Controllers
             public string SNG { get; set; }
             public decimal OSR { get; set; }
             public decimal GCP { get; set; }
+            public long Population { get; set; }
+            public bool Include { get; set; } = true;
         }
 
         /// <summary>

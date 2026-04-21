@@ -616,16 +616,26 @@ namespace RosraApp.Controllers
             try
             {
                 using var reader = new StreamReader(file.OpenReadStream());
-                var header = await reader.ReadLineAsync(); // Skip header
                 var importedCount = 0;
+                bool headerSkipped = false;
 
                 while (!reader.EndOfStream)
                 {
                     var line = await reader.ReadLineAsync();
                     if (string.IsNullOrWhiteSpace(line)) continue;
+                    // Skip template comment lines
+                    if (line.TrimStart().StartsWith("#")) continue;
 
                     var values = line.Split(',');
                     if (values.Length < 4) continue;
+
+                    // Skip the first header row we encounter (after any leading comments)
+                    if (!headerSkipped)
+                    {
+                        headerSkipped = true;
+                        var first = values[0].Trim().ToUpperInvariant();
+                        if (first == "SNG" || first == "NAME") continue;
+                    }
 
                     // Support both formats:
                     // 5 cols: SNG,OSR,GCP,Population,Include
