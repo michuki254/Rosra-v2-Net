@@ -1380,11 +1380,29 @@
                     .seq-item-amount { flex: 0 0 90px; text-align: right; color: #243746; font-variant-numeric: tabular-nums; }
                     .seq-item-cum { flex: 0 0 80px; text-align: right; color: #7a8a99; font-size: 0.76rem; font-variant-numeric: tabular-nums; }
                     .footer { margin-top: 36px; padding-top: 14px; border-top: 1px solid #dbe6f0; font-size: 0.82rem; color: #5d7a8f; }
+
+                    /* --- Page-break control for PDF / print ---
+                       Chromium honors both the modern break-* and legacy page-break-* properties.
+                       Setting both keeps us safe across renderers. */
+                    body { orphans: 3; widows: 3; }
+                    h1, h2, h3, h4, h5 { break-after: avoid; page-break-after: avoid; }
+                    h2, h3 { break-inside: avoid; page-break-inside: avoid; }
+                    .r-card, .tl-block, .pr-block, .gap-card, .seq-group, .stat-grid, .mode-legend {
+                        break-inside: avoid; page-break-inside: avoid;
+                    }
+                    .r-section { break-inside: avoid; page-break-inside: avoid; }
+                    .r-card-head, .pr-head, .gap-card-head, .seq-group-head {
+                        break-after: avoid; page-break-after: avoid;
+                    }
+                    li { break-inside: avoid; page-break-inside: avoid; }
+                    .report-table { break-inside: auto; }
+                    .report-table thead { display: table-header-group; }
+                    .report-table tfoot { display: table-footer-group; }
+                    .report-table tr { break-inside: avoid; page-break-inside: avoid; }
+
                     @@page { size: A4; margin: 18mm 14mm; }
                     @@media print {
                         body { padding: 0; }
-                        .r-card, .tl-block, .pr-block { page-break-inside: avoid; }
-                        h2 { page-break-before: auto; }
                     }
                 `;
 
