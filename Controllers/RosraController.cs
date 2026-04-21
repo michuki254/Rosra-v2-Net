@@ -1168,6 +1168,7 @@ namespace RosraApp.Controllers
 
             // Set ViewMode flag in ViewData
             ViewData["ViewMode"] = true;
+            ViewData["IsSampleReport"] = isSampleReport;
 
             // Create a view model for the tabs with umbrella structure
             var tabsViewModel = new TabsContainerViewModel
@@ -2917,6 +2918,39 @@ namespace RosraApp.Controllers
                 : contentType;
 
             return File(bytes, safeContentType, safeName);
+        }
+
+        // Accepts a full standalone HTML document built client-side (Recommendations
+        // "Generate Report" modal) and renders it to PDF via headless Chromium. Replaces
+        // the old client-side html2pdf path, which produced blank captures in some browsers.
+        [HttpPost]
+        [AllowAnonymous]
+        [IgnoreAntiforgeryToken]
+        [RequestSizeLimit(50_000_000)]
+        [RequestFormLimits(ValueLengthLimit = 50_000_000, MultipartBodyLengthLimit = 50_000_000)]
+        public async Task<IActionResult> RenderReportPdf(string html, string filename)
+        {
+            if (string.IsNullOrWhiteSpace(html))
+            {
+                return BadRequest("Missing html");
+            }
+
+            byte[] pdfBytes;
+            try
+            {
+                pdfBytes = await _htmlToPdfService.RenderHtmlToPdf(html);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error rendering report HTML to PDF");
+                return StatusCode(500, "PDF rendering failed");
+            }
+
+            var safeName = string.IsNullOrWhiteSpace(filename)
+                ? "rosra-action-plan.pdf"
+                : System.IO.Path.GetFileName(filename);
+
+            return File(pdfBytes, "application/pdf", safeName);
         }
     }
 }

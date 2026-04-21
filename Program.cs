@@ -157,6 +157,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Security headers
+var isDevelopment = app.Environment.IsDevelopment();
 app.Use(async (context, next) =>
 {
     context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
@@ -164,13 +165,17 @@ app.Use(async (context, next) =>
     context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
     context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
     context.Response.Headers.Append("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+    // In Development, allow ws: so dotnet-watch browser-refresh can connect over localhost.
+    var connectSrc = isDevelopment
+        ? "connect-src 'self' https://api.worldbank.org ws: wss:;"
+        : "connect-src 'self' https://api.worldbank.org wss:;";
     context.Response.Headers.Append("Content-Security-Policy",
         "default-src 'self'; " +
         "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
         "style-src 'self' 'unsafe-inline'; " +
         "font-src 'self'; " +
         "img-src 'self' data: https:; " +
-        "connect-src 'self' https://api.worldbank.org wss:;");
+        connectSrc);
     await next();
 });
 

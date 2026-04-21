@@ -20,6 +20,25 @@
                 }).format(amount);
             }
 
+            // Compact currency formatter for report tables — e.g. 12,500,000 → "12.5M", 8,200 → "8.2K".
+            // Uses Intl.NumberFormat's compact notation so readers scan large figures quickly.
+            function formatCurrencyCompact(amount) {
+                const n = Number(amount) || 0;
+                // Numbers under 1,000 look odd in compact notation ("45") — keep them plain.
+                if (Math.abs(n) < 1000) {
+                    return currencySymbol + ' ' + new Intl.NumberFormat('en-US', {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0
+                    }).format(n);
+                }
+                const compact = new Intl.NumberFormat('en-US', {
+                    notation: 'compact',
+                    compactDisplay: 'short',
+                    maximumFractionDigits: 1
+                }).format(n);
+                return currencySymbol + ' ' + compact;
+            }
+
             let selectedSolutions = [];
             let progressData = {};
             let timelineFilter = 'all'; // 'all' | '<1 year' | '1-3 years' | '3+ years'
@@ -1099,118 +1118,51 @@
                 downloadViaServer(html, `rosra-action-plan-${dateStamp}.html`, 'text/html; charset=utf-8', 'utf8');
             }
 
-            // Render the report HTML and convert it to a real PDF download.
-            // Renders directly into the host document inside a uniquely-scoped, off-screen container —
-            // this avoids cross-document quirks that html2canvas can hit when rendering from an iframe.
+            // Post the built HTML to the server, which renders it to PDF via headless
+            // Chromium (Playwright) and returns the file as a normal attachment download.
+            // This replaces the earlier client-side html2pdf path, which silently produced
+            // blank captures in some browsers.
             function downloadReportPdf(html, onDone) {
-                console.log('[Report] downloadReportPdf() start, html2pdf loaded?', typeof window.html2pdf);
+                console.log('[Report] downloadReportPdf() start, html length=', html.length);
                 const dateStamp = new Date().toISOString().slice(0, 10);
                 const filename = `rosra-action-plan-${dateStamp}.pdf`;
-                const PDF_WIDTH_PX = 1040;
-                const SCOPE = 'rosra-pdf-scope';
                 const finish = () => { try { if (typeof onDone === 'function') onDone(); } catch (_) {} };
 
-                if (typeof window.html2pdf === 'undefined') {
-                    console.warn('[Report] html2pdf is not loaded — falling back to print dialog');
-                    alert('PDF library failed to load. Falling back to the print dialog — choose "Save as PDF" as the destination.');
-                    printReportHtml(html);
-                    finish();
-                    return;
+                const FRAME_ID = 'rosraServerDownloadFrame';
+                let iframe = document.getElementById(FRAME_ID);
+                if (!iframe) {
+                    iframe = document.createElement('iframe');
+                    iframe.id = FRAME_ID;
+                    iframe.name = FRAME_ID;
+                    iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;left:-9999px;';
+                    document.body.appendChild(iframe);
                 }
 
-                let parsed;
-                try {
-                    parsed = new DOMParser().parseFromString(html, 'text/html');
-                } catch (err) {
-                    console.error('[Report] DOMParser failed', err);
-                    alert('Could not parse the report HTML: ' + (err.message || err));
-                    finish();
-                    return;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/Rosra/RenderReportPdf';
+                form.target = FRAME_ID;
+                form.enctype = 'application/x-www-form-urlencoded';
+                form.acceptCharset = 'UTF-8';
+                form.style.display = 'none';
+
+                const fields = { html: html, filename: filename };
+                for (const k in fields) {
+                    const i = document.createElement('input');
+                    i.type = 'hidden';
+                    i.name = k;
+                    i.value = fields[k];
+                    form.appendChild(i);
                 }
 
-                const styleNodes = Array.from(parsed.querySelectorAll('style'));
-                const bodyHtml = parsed.body ? parsed.body.innerHTML : '';
-                if (!bodyHtml) {
-                    alert('Report content is empty — nothing to convert to PDF.');
-                    finish();
-                    return;
-                }
+                document.body.appendChild(form);
+                console.log('[Report] posting HTML to /Rosra/RenderReportPdf for Playwright render');
+                form.submit();
+                setTimeout(() => { try { form.remove(); } catch (_) {} }, 30000);
 
-                // Scope the report's CSS to our container so it doesn't bleed into the host page.
-                // The report stylesheet uses `body { ... }` and bare element selectors; we rewrite those
-                // to descend from `.rosra-pdf-scope` so they only apply inside our offscreen container.
-                const scopedCss = styleNodes
-                    .map(n => n.textContent || '')
-                    .join('\n')
-                    // turn `body { ... }` into `.scope { ... }`
-                    .replace(/(^|[\s,{}])body(\s*[,{])/g, '$1.' + SCOPE + '$2')
-                    // turn bare h1/h2/h3/h4/h5/p/ul/li/table at start of selector into descendants of .scope
-                    .replace(/(^|[}\s,])(h[1-6]|p|ul|li|table|tr|td|div)\b/g, '$1.' + SCOPE + ' $2');
-
-                const existing = document.getElementById('rosraReportPdfRoot');
-                if (existing) existing.remove();
-
-                const styleEl = document.createElement('style');
-                styleEl.id = 'rosraReportPdfStyles';
-                styleEl.textContent = scopedCss;
-                document.head.appendChild(styleEl);
-
-                const container = document.createElement('div');
-                container.id = 'rosraReportPdfRoot';
-                container.className = SCOPE;
-                container.style.cssText =
-                    'position:fixed;left:-10000px;top:0;width:' + PDF_WIDTH_PX + 'px;background:#fff;';
-                container.innerHTML = bodyHtml;
-                document.body.appendChild(container);
-
-                const cleanup = () => {
-                    try { container.remove(); } catch (_) {}
-                    try { styleEl.remove(); } catch (_) {}
-                };
-
-                // Wait one paint so the browser applies styles and lays out the content
-                requestAnimationFrame(() => setTimeout(() => {
-                    try {
-                        if (!container.children.length) {
-                            throw new Error('Report container rendered empty');
-                        }
-                        console.log('[Report] container ready, height=', container.scrollHeight, 'children=', container.children.length);
-
-                        // Build the PDF as a Blob (don't let html2pdf trigger its own .save() —
-                        // we route through the server so the browser receives a proper attachment
-                        // download response, which won't be silently blocked.)
-                        window.html2pdf()
-                            .set({
-                                margin: [10, 10, 12, 10],
-                                filename: filename,
-                                image: { type: 'jpeg', quality: 0.95 },
-                                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', windowWidth: PDF_WIDTH_PX, logging: false },
-                                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-                                pagebreak: { mode: ['css', 'legacy'], avoid: ['.r-card', '.tl-block', '.pr-block'] }
-                            })
-                            .from(container)
-                            .outputPdf('blob')
-                            .then(blob => blobToBase64(blob))
-                            .then(base64 => {
-                                console.log('[Report] PDF built, posting to server for attachment download:', filename);
-                                downloadViaServer(base64, filename, 'application/pdf', 'base64');
-                                cleanup();
-                                finish();
-                            }, err => {
-                                console.error('[Report] html2pdf failed', err);
-                                alert('PDF generation failed: ' + (err && err.message ? err.message : err) +
-                                    '\n\nOpening the print dialog as a fallback — choose "Save as PDF".');
-                                cleanup();
-                                printReportHtml(html);
-                                finish();
-                            });
-                    } catch (err) {
-                        console.error('[Report] downloadReportPdf failed', err);
-                        alert('PDF generation failed: ' + (err && err.message ? err.message : err));
-                        cleanup();
-                        finish();
-                    }
-                }, 100));
+                // Close the modal once the request is committed; the attachment download
+                // proceeds in the hidden iframe without interrupting the page.
+                setTimeout(finish, 400);
             }
 
             // Print via a hidden iframe (no popup window, not blocked)
@@ -1323,10 +1275,10 @@
                     h5 { color: #5d7a8f; margin: 10px 0 4px 0; font-size: 0.9rem; }
                     .cover { padding-bottom: 16px; border-bottom: 3px solid #00689D; margin-bottom: 16px; }
                     .cover .subtitle { color: #5d7a8f; font-size: 0.95rem; }
-                    .stat-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 4px 0; }
-                    .stat { flex: 1 1 180px; background: #f0f7fc; border: 1px solid #cce1ee; border-radius: 8px; padding: 10px 14px; }
-                    .stat .v { font-size: 1.5rem; font-weight: 700; color: #00689D; line-height: 1; }
-                    .stat .l { font-size: 0.78rem; color: #55697a; text-transform: uppercase; letter-spacing: 0.04em; }
+                    .stat-grid { display: flex; flex-wrap: nowrap; gap: 10px; margin: 14px 0 4px 0; }
+                    .stat { flex: 1 1 0; min-width: 0; background: #f0f7fc; border: 1px solid #cce1ee; border-radius: 8px; padding: 10px 14px; }
+                    .stat .v { font-size: 1.4rem; font-weight: 700; color: #00689D; line-height: 1.1; word-break: break-word; }
+                    .stat .l { font-size: 0.74rem; color: #55697a; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 4px; }
                     .r-card { border: 1px solid #dbe6f0; border-radius: 10px; padding: 16px 18px; margin: 14px 0; page-break-inside: avoid; background: #ffffff; box-shadow: 0 2px 4px rgba(15, 40, 70, 0.04); }
                     .r-card-head { border-bottom: 1px solid #eaf1f7; padding-bottom: 8px; margin-bottom: 10px; }
                     .r-card-id { display: inline-block; font-family: 'Roboto Mono', Consolas, monospace; background: #e0f2fe; color: #00689D; font-weight: 700; font-size: 0.8rem; padding: 2px 8px; border-radius: 6px; }
@@ -1358,6 +1310,54 @@
                     .r-status-in-progress { background: #fff4e0; color: #c26500; }
                     .r-status-completed { background: #e2fbe8; color: #1f8a3a; }
                     .r-status-blocked { background: #ffe5e5; color: #b52626; }
+                    .report-table { width: 100%; border-collapse: collapse; margin: 12px 0 4px 0; font-size: 0.88rem; }
+                    .report-table th { background: #f0f7fc; color: #00689D; border-bottom: 2px solid #00689D; padding: 8px 10px; font-weight: 600; }
+                    .report-table td { border-bottom: 1px solid #eaf1f7; padding: 7px 10px; vertical-align: top; }
+                    .report-table tr:nth-child(even) td { background: #fafcfe; }
+                    .report-table tr.tr-totals td { background: #e0f2fe; border-top: 2px solid #00689D; border-bottom: none; color: #00689D; }
+                    .report-skipped-list { margin: 10px 0 4px 0; padding-left: 22px; }
+                    .report-skipped-list li { font-size: 0.88rem; margin-bottom: 4px; }
+                    .gap-card { border: 1px solid #dbe6f0; border-radius: 10px; padding: 14px 16px; margin: 12px 0; page-break-inside: avoid; background: #ffffff; }
+                    .gap-card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-bottom: 1px solid #eaf1f7; padding-bottom: 8px; margin-bottom: 10px; }
+                    .gap-card-title { font-size: 1rem; font-weight: 700; color: #1a3a52; }
+                    .gap-card-headline { font-size: 0.9rem; color: #55697a; }
+                    .gap-card-headline strong { color: #00689D; font-size: 1.05rem; }
+                    .gap-bars { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+                    .gap-bar-row { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; }
+                    .gap-bar-label { flex: 0 0 110px; color: #2c4a63; font-weight: 600; }
+                    .gap-bar { flex: 1; height: 10px; background: #eef3f8; border-radius: 5px; overflow: hidden; }
+                    .gap-bar-fill { height: 100%; border-radius: 5px; }
+                    .gap-bar-amount { flex: 0 0 140px; text-align: right; color: #243746; font-variant-numeric: tabular-nums; }
+                    .gap-bar-pct { color: #7a8a99; font-size: 0.8rem; }
+                    .gap-ratios { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+                    .gap-ratio { background: #f0f7fc; border: 1px solid #cce1ee; border-radius: 6px; padding: 4px 10px; font-size: 0.82rem; color: #243746; }
+                    .gap-ratio-l { color: #55697a; margin-right: 6px; }
+                    .rank-pill { display: inline-block; min-width: 26px; padding: 2px 8px; border-radius: 50%; background: #00689D; color: #fff; font-weight: 700; font-size: 0.82rem; text-align: center; line-height: 1.2; }
+                    .share-row { display: flex; align-items: center; gap: 8px; }
+                    .share-bar { flex: 1; height: 8px; background: #eef3f8; border-radius: 4px; overflow: hidden; min-width: 60px; }
+                    .share-bar-fill { height: 100%; background: #00689D; border-radius: 4px; }
+                    .share-pct { font-size: 0.82rem; color: #55697a; min-width: 36px; text-align: right; font-variant-numeric: tabular-nums; }
+                    .mode-chip { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 0.76rem; font-weight: 600; border: 1px solid transparent; }
+                    .mode-rp { background: #e2fbe8; color: #1f8a3a; border-color: #bfe8c8; }
+                    .mode-cf { background: #fff4e0; color: #c26500; border-color: #f5d6a8; }
+                    .mode-oh { background: #ffe5e5; color: #b52626; border-color: #f5c1c1; }
+                    .mode-legend { margin-top: 10px; padding: 10px 14px; background: #fafcfe; border: 1px solid #dbe6f0; border-radius: 8px; font-size: 0.82rem; color: #55697a; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+                    .mode-legend strong { color: #1a3a52; margin-right: 4px; }
+                    .mode-legend span .mode-chip { margin-right: 6px; }
+                    .seq-group { border: 1px solid #dbe6f0; border-radius: 10px; padding: 10px 14px; margin: 12px 0; background: #ffffff; page-break-inside: avoid; }
+                    .seq-group-head { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eaf1f7; padding-bottom: 8px; margin-bottom: 8px; }
+                    .seq-group-title { flex: 1; font-weight: 700; color: #1a3a52; font-size: 1rem; }
+                    .seq-group-total { font-size: 0.82rem; color: #55697a; }
+                    .seq-group-total strong { color: #00689D; }
+                    .seq-item { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: 0.85rem; }
+                    .seq-item + .seq-item { border-top: 1px dashed #eaf1f7; }
+                    .seq-item-index { flex: 0 0 30px; color: #7a8a99; font-size: 0.78rem; }
+                    .seq-item-priority { flex: 0 0 30px; font-weight: 700; color: #00689D; font-size: 0.8rem; }
+                    .seq-item-type { flex: 0 0 100px; color: #2c4a63; font-weight: 600; }
+                    .seq-item-bar { flex: 1; height: 8px; background: #eef3f8; border-radius: 4px; overflow: hidden; min-width: 60px; }
+                    .seq-item-bar-fill { height: 100%; border-radius: 4px; }
+                    .seq-item-amount { flex: 0 0 90px; text-align: right; color: #243746; font-variant-numeric: tabular-nums; }
+                    .seq-item-cum { flex: 0 0 80px; text-align: right; color: #7a8a99; font-size: 0.76rem; font-variant-numeric: tabular-nums; }
                     .footer { margin-top: 36px; padding-top: 14px; border-top: 1px solid #dbe6f0; font-size: 0.82rem; color: #5d7a8f; }
                     @@page { size: A4; margin: 18mm 14mm; }
                     @@media print {
@@ -1380,6 +1380,9 @@
     <div class="subtitle">Generated ${esc(new Date().toLocaleDateString())} &middot; ROSRA &middot; UN-Habitat</div>
 </div>`;
 
+                // Shared helper for the gap-related sections below
+                const pct = (part, whole) => whole > 0 ? Math.round((part / whole) * 100) : 0;
+
                 if (options.includeExecSummary) {
                     html += `<h2>Executive Summary</h2>
 <div class="stat-grid">
@@ -1388,6 +1391,255 @@
     <div class="stat"><div class="v">${mediumTerm.length}</div><div class="l">Medium Term (1-3 years)</div></div>
     <div class="stat"><div class="v">${longTerm.length}</div><div class="l">Long Term (3+ years)</div></div>
 </div>`;
+                }
+
+                // ===== Gap Analysis Results =====
+                if (options.includeGapAnalysis) {
+                    const streams = (typeof RosraStateManager !== 'undefined') ? RosraStateManager.getStreams() : [];
+                    html += `<h2>Gap Analysis Results</h2>`;
+                    if (!streams.length) {
+                        html += `<p><em>No revenue stream data captured.</em></p>`;
+                    } else {
+                        // Aggregate totals across all streams
+                        const thirdOf = s => (s.type === 'property-tax') ? (s.valuationGap || 0) : (s.liabilityGap || 0);
+                        const totals = streams.reduce((a, s) => ({
+                            currentRevenue: a.currentRevenue + (s.currentRevenue || 0),
+                            potentialRevenue: a.potentialRevenue + (s.potentialRevenue || 0),
+                            totalGap: a.totalGap + (s.totalFunctionalGap || 0),
+                            compliance: a.compliance + (s.complianceGap || 0),
+                            coverage: a.coverage + (s.coverageGap || 0),
+                            third: a.third + thirdOf(s)
+                        }), { currentRevenue: 0, potentialRevenue: 0, totalGap: 0, compliance: 0, coverage: 0, third: 0 });
+
+                        const collectionRate = pct(totals.currentRevenue, totals.potentialRevenue);
+
+                        // --- Top-line KPI strip ---
+                        html += `<div class="stat-grid">
+    <div class="stat"><div class="v">${esc(formatCurrencyCompact(totals.currentRevenue))}</div><div class="l">Current Revenue</div></div>
+    <div class="stat"><div class="v">${esc(formatCurrencyCompact(totals.potentialRevenue))}</div><div class="l">Potential Revenue</div></div>
+    <div class="stat"><div class="v">${esc(formatCurrencyCompact(totals.totalGap))}</div><div class="l">Total Functional Gap</div></div>
+    <div class="stat"><div class="v">${collectionRate}%</div><div class="l">Collection Rate</div></div>
+</div>`;
+
+                        // --- Overview table with Potential + % of Potential + totals row ---
+                        html += `<h3>Stream Overview</h3>
+<table class="report-table">
+<thead><tr>
+    <th style="text-align:left">Stream</th>
+    <th style="text-align:left">Type</th>
+    <th style="text-align:right">Current</th>
+    <th style="text-align:right">Potential</th>
+    <th style="text-align:right">Gap</th>
+    <th style="text-align:right">Gap % of Potential</th>
+</tr></thead><tbody>`;
+                        streams.forEach(s => {
+                            const gapPct = pct(s.totalFunctionalGap || 0, s.potentialRevenue || 0);
+                            const typeLabel = (s.type || '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                            html += `<tr>
+    <td>${esc(s.name || s.id || '')}${s.included === false ? ' <span class="badge">excluded</span>' : ''}</td>
+    <td>${esc(typeLabel)}</td>
+    <td style="text-align:right">${esc(formatCurrencyCompact(s.currentRevenue || 0))}</td>
+    <td style="text-align:right">${esc(formatCurrencyCompact(s.potentialRevenue || 0))}</td>
+    <td style="text-align:right"><strong>${esc(formatCurrencyCompact(s.totalFunctionalGap || 0))}</strong></td>
+    <td style="text-align:right">${gapPct}%</td>
+</tr>`;
+                        });
+                        html += `<tr class="tr-totals">
+    <td colspan="2"><strong>Total</strong></td>
+    <td style="text-align:right"><strong>${esc(formatCurrencyCompact(totals.currentRevenue))}</strong></td>
+    <td style="text-align:right"><strong>${esc(formatCurrencyCompact(totals.potentialRevenue))}</strong></td>
+    <td style="text-align:right"><strong>${esc(formatCurrencyCompact(totals.totalGap))}</strong></td>
+    <td style="text-align:right"><strong>${pct(totals.totalGap, totals.potentialRevenue)}%</strong></td>
+</tr>
+</tbody></table>`;
+
+                        // --- Per-stream gap breakdown with proportional bars + KPI ratios ---
+                        html += `<h3>Gap Breakdown by Stream</h3>`;
+                        streams.forEach(s => {
+                            const thirdLabel = (s.type === 'property-tax') ? 'Valuation' : 'Liability';
+                            const third = thirdOf(s);
+                            const streamGapTotal = (s.complianceGap || 0) + (s.coverageGap || 0) + third;
+                            const ofGap = v => pct(v, streamGapTotal);
+
+                            const bar = (label, amount, color) => `
+        <div class="gap-bar-row">
+            <div class="gap-bar-label">${esc(label)}</div>
+            <div class="gap-bar"><div class="gap-bar-fill" style="width:${ofGap(amount)}%;background:${color}"></div></div>
+            <div class="gap-bar-amount">${esc(formatCurrencyCompact(amount))} <span class="gap-bar-pct">(${ofGap(amount)}%)</span></div>
+        </div>`;
+
+                            const ratioChip = (label, value, suffix) =>
+                                value != null && !isNaN(value)
+                                    ? `<span class="gap-ratio"><span class="gap-ratio-l">${esc(label)}</span><strong>${Math.round(value)}${esc(suffix || '%')}</strong></span>`
+                                    : '';
+
+                            html += `<div class="gap-card">
+    <div class="gap-card-head">
+        <div class="gap-card-title">${esc(s.name || '')}${s.included === false ? ' <span class="badge">excluded</span>' : ''}</div>
+        <div class="gap-card-headline">Total Gap: <strong>${esc(formatCurrencyCompact(s.totalFunctionalGap || 0))}</strong></div>
+    </div>
+    <div class="gap-bars">
+        ${bar('Compliance', s.complianceGap || 0, '#00689D')}
+        ${bar('Coverage', s.coverageGap || 0, '#10b981')}
+        ${bar(thirdLabel, third, '#f59e0b')}
+    </div>
+    <div class="gap-ratios">
+        ${ratioChip('Compliance Ratio', s.complianceRatio)}
+        ${ratioChip('Coverage Ratio', s.coverageRatio)}
+        ${s.type === 'property-tax' ? ratioChip('Valuation Ratio', s.valuationRatio) : ''}
+    </div>
+</div>`;
+                        });
+                    }
+                }
+
+                // ===== Stream Prioritization =====
+                if (options.includeStreamPrioritization) {
+                    const ranked = (typeof RosraStateManager !== 'undefined') ? RosraStateManager.getStreamsByGapRanking() : [];
+                    html += `<h2>Stream Prioritization</h2>`;
+                    if (!ranked.length) {
+                        html += `<p><em>No streams included for prioritization.</em></p>`;
+                    } else {
+                        const modeLabel = {
+                            'revenue-potential': 'Revenue Potential',
+                            'compliance-first': 'Compliance First',
+                            'overhaul': 'Overhaul'
+                        };
+                        const modeClass = {
+                            'revenue-potential': 'mode-rp',
+                            'compliance-first': 'mode-cf',
+                            'overhaul': 'mode-oh'
+                        };
+                        const modeCounts = ranked.reduce((acc, s) => {
+                            const m = RosraStateManager.getStreamMode(s.id);
+                            acc[m] = (acc[m] || 0) + 1;
+                            return acc;
+                        }, {});
+                        const totalRankedGap = ranked.reduce((a, s) => a + (s.totalFunctionalGap || 0), 0);
+                        const topStream = ranked[0];
+                        const dominantMode = Object.keys(modeCounts).sort((a, b) => modeCounts[b] - modeCounts[a])[0];
+                        const maxGap = Math.max(1, ...ranked.map(s => s.totalFunctionalGap || 0));
+
+                        // KPI strip
+                        html += `<div class="stat-grid">
+    <div class="stat"><div class="v">${ranked.length}</div><div class="l">Streams Prioritized</div></div>
+    <div class="stat"><div class="v">${esc(formatCurrencyCompact(totalRankedGap))}</div><div class="l">Total Gap To Address</div></div>
+    <div class="stat"><div class="v">${esc(topStream?.name || '—')}</div><div class="l">Top Priority</div></div>
+    <div class="stat"><div class="v">${esc(modeLabel[dominantMode] || '—')}</div><div class="l">Dominant Mode</div></div>
+</div>`;
+
+                        // Ranked table with visual rank pill, gap share, and adjustment flag
+                        html += `<h3>Prioritized Streams</h3>
+<table class="report-table">
+<thead><tr>
+    <th style="text-align:center;width:50px">#</th>
+    <th style="text-align:left">Stream</th>
+    <th style="text-align:left">Type</th>
+    <th style="text-align:right">Total Gap</th>
+    <th style="text-align:left;min-width:140px">Share of Gap</th>
+    <th style="text-align:left">Mode</th>
+</tr></thead><tbody>`;
+                        ranked.forEach(s => {
+                            const mode = RosraStateManager.getStreamMode(s.id);
+                            const share = pct(s.totalFunctionalGap || 0, totalRankedGap);
+                            const barPct = Math.max(2, Math.round(((s.totalFunctionalGap || 0) / maxGap) * 100));
+                            const typeLabel = (s.type || '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                            const adjusted = (s.adjustedRank && s.adjustedRank !== s.defaultRank)
+                                ? ` <span class="badge" title="Manually adjusted from rank ${s.defaultRank}">adjusted</span>`
+                                : '';
+                            html += `<tr>
+    <td style="text-align:center"><span class="rank-pill">${esc(String(s.finalRank))}</span></td>
+    <td><strong>${esc(s.name || '')}</strong>${adjusted}</td>
+    <td>${esc(typeLabel)}</td>
+    <td style="text-align:right"><strong>${esc(formatCurrencyCompact(s.totalFunctionalGap || 0))}</strong></td>
+    <td>
+        <div class="share-row">
+            <div class="share-bar"><div class="share-bar-fill" style="width:${barPct}%"></div></div>
+            <div class="share-pct">${share}%</div>
+        </div>
+    </td>
+    <td><span class="mode-chip ${modeClass[mode] || ''}">${esc(modeLabel[mode] || mode || '')}</span></td>
+</tr>`;
+                        });
+                        html += `</tbody></table>`;
+
+                        // Mode legend
+                        html += `<div class="mode-legend">
+    <strong>Prioritization modes:</strong>
+    <span><span class="mode-chip mode-rp">Revenue Potential</span> compliance already ≥ 75%</span>
+    <span><span class="mode-chip mode-cf">Compliance First</span> coverage ≥ 60% but compliance low</span>
+    <span><span class="mode-chip mode-oh">Overhaul</span> both coverage and compliance need work</span>
+</div>`;
+                    }
+                }
+
+                // ===== Gap Sequencing =====
+                if (options.includeGapSequencing) {
+                    const priority = (typeof RosraStateManager !== 'undefined') ? RosraStateManager.getMasterPriorityList() : [];
+                    html += `<h2>Gap Sequencing</h2>`;
+                    if (!priority.length) {
+                        html += `<p><em>No sequenced gaps available.</em></p>`;
+                    } else {
+                        const gapTypeColor = {
+                            compliance: '#00689D',
+                            coverage: '#10b981',
+                            valuation: '#f59e0b',
+                            liability: '#f59e0b'
+                        };
+                        const totalGap = priority.reduce((a, p) => a + (p.gapAmount || 0), 0);
+                        const topThree = priority.slice(0, 3).reduce((a, p) => a + (p.gapAmount || 0), 0);
+                        const largest = priority.reduce((m, p) => (p.gapAmount || 0) > (m.gapAmount || 0) ? p : m, priority[0]);
+                        const maxAmount = Math.max(1, ...priority.map(p => p.gapAmount || 0));
+
+                        // KPI strip
+                        html += `<div class="stat-grid">
+    <div class="stat"><div class="v">${priority.length}</div><div class="l">Gaps in Sequence</div></div>
+    <div class="stat"><div class="v">${esc(formatCurrencyCompact(totalGap))}</div><div class="l">Cumulative Gap</div></div>
+    <div class="stat"><div class="v">${esc(formatCurrencyCompact(topThree))}</div><div class="l">Top 3 Combined</div></div>
+    <div class="stat"><div class="v">${esc(formatCurrencyCompact(largest?.gapAmount || 0))}</div><div class="l">Largest Single Gap</div></div>
+</div>`;
+
+                        // Grouped by stream, preserving the overall sequence order
+                        const grouped = [];
+                        const byStreamId = new Map();
+                        priority.forEach(p => {
+                            if (!byStreamId.has(p.streamId)) {
+                                const group = { streamId: p.streamId, streamName: p.streamName, streamRank: p.streamRank, items: [] };
+                                byStreamId.set(p.streamId, group);
+                                grouped.push(group);
+                            }
+                            byStreamId.get(p.streamId).items.push(p);
+                        });
+
+                        html += `<h3>Sequence by Stream</h3>`;
+                        let runningIndex = 0;
+                        let runningTotal = 0;
+                        grouped.forEach(group => {
+                            const groupTotal = group.items.reduce((a, p) => a + (p.gapAmount || 0), 0);
+                            html += `<div class="seq-group">
+    <div class="seq-group-head">
+        <span class="rank-pill">${esc(String(group.streamRank))}</span>
+        <div class="seq-group-title">${esc(group.streamName || '')}</div>
+        <div class="seq-group-total">Stream Gap Total: <strong>${esc(formatCurrencyCompact(groupTotal))}</strong></div>
+    </div>`;
+                            group.items.forEach(p => {
+                                runningIndex++;
+                                runningTotal += (p.gapAmount || 0);
+                                const barPct = Math.max(3, Math.round(((p.gapAmount || 0) / maxAmount) * 100));
+                                const color = gapTypeColor[p.gapType] || '#55697a';
+                                const cumulativePct = pct(runningTotal, totalGap);
+                                html += `<div class="seq-item">
+    <div class="seq-item-index">#${runningIndex}</div>
+    <div class="seq-item-priority">P${esc(String(p.gapPriority || ''))}</div>
+    <div class="seq-item-type" style="text-transform:capitalize">${esc(p.gapType || '')}</div>
+    <div class="seq-item-bar"><div class="seq-item-bar-fill" style="width:${barPct}%;background:${color}"></div></div>
+    <div class="seq-item-amount">${esc(formatCurrencyCompact(p.gapAmount || 0))}</div>
+    <div class="seq-item-cum">${cumulativePct}% cum.</div>
+</div>`;
+                            });
+                            html += `</div>`;
+                        });
+                    }
                 }
 
                 // ===== Solution Cards =====
@@ -1431,6 +1683,29 @@
                             }
                             html += `</div>`;
                         });
+                    }
+                }
+
+                // ===== Solutions Not Selected (Summary Only) =====
+                if (options.includeSkippedSolutions) {
+                    const catalog = (typeof SolutionsDatabase !== 'undefined') ? SolutionsDatabase.getAllSolutions() : [];
+                    const selectedIds = new Set(selectedSolutions.map(s => s.solutionId));
+                    const skipped = catalog.filter(s => !selectedIds.has(s.solutionId));
+                    html += `<h2>Solutions Not Selected</h2>`;
+                    if (!skipped.length) {
+                        html += `<p><em>All catalog solutions were selected.</em></p>`;
+                    } else {
+                        html += `<p class="r-meta">${skipped.length} of ${catalog.length} catalog solutions were not selected.</p>`;
+                        html += `<ul class="report-skipped-list">`;
+                        skipped.forEach(s => {
+                            const fullId = buildFullIdLabel(s.solutionId, s);
+                            const stream = s.stream || '';
+                            const gap = s.gap || '';
+                            html += `<li><span class="r-card-id">${esc(fullId)}</span> ${esc(s.title || '')}` +
+                                (stream || gap ? ` <span class="r-meta">&middot; ${esc(stream)}${stream && gap ? ' &middot; ' : ''}${esc(gap)}</span>` : '') +
+                                `</li>`;
+                        });
+                        html += `</ul>`;
                     }
                 }
 
@@ -1499,6 +1774,39 @@
                             }
                             html += `</div>`;
                         });
+                    }
+                }
+
+                // ===== Resource Requirements =====
+                // Consolidates the "Capacity, Systems & Partnerships" bullets across every
+                // selected solution so decision-makers see in one place what staffing, tech,
+                // and partners the plan actually needs.
+                if (options.includeResources) {
+                    html += `<h2>Resource Requirements</h2>`;
+                    if (!selectedSolutions.length) {
+                        html += `<p><em>No solutions selected.</em></p>`;
+                    } else {
+                        let rendered = 0;
+                        selectedSolutions.forEach(solution => {
+                            const fs = getCompleteSolution(solution.solutionId);
+                            if (!fs) return;
+                            const fd = fs.fullDetails || {};
+                            const items = fd.capacitySystemsPartnerships || fs.administrativeEssentials;
+                            const list = renderReportList(items);
+                            if (!list) return;
+                            const fullId = buildFullIdLabel(solution.solutionId, fs);
+                            html += `<div class="r-card">
+    <div class="r-card-head">
+        <div class="r-card-id">${esc(fullId)}</div>
+        <div class="r-card-title">${esc(fs.title || '')}</div>
+    </div>
+    <div class="r-section">${list}</div>
+</div>`;
+                            rendered++;
+                        });
+                        if (!rendered) {
+                            html += `<p><em>No resource requirements captured for the selected solutions.</em></p>`;
+                        }
                     }
                 }
 

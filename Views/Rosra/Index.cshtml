@@ -5,6 +5,7 @@
     ViewData["Title"] = "Rosra";
     bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
     bool isSampleData = isViewMode && Model.TabContentModel.Id == 0;
+    bool isSampleReport = ViewData["IsSampleReport"] != null && (bool)ViewData["IsSampleReport"];
 }
 
 @section Styles {
@@ -738,18 +739,38 @@
                 }
                 else
                 {
-                    <a asp-controller="Rosra" asp-action="Edit" asp-route-id="@Model.TabContentModel.PublicId" class="sidebar-btn sidebar-btn-primary">
-                        <span>@RosraLocalizer["Sidebar_EditReport"]</span>
-                    </a>
-                    <div class="sidebar-dropdown dropdown">
-                        <button type="button" class="sidebar-btn sidebar-btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span>@RosraLocalizer["Sidebar_Export"]</span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><button type="button" class="dropdown-item" id="viewExportPdfBtn"><i class="bi bi-file-pdf text-danger me-2"></i>@RosraLocalizer["Sidebar_ExportPdf"]</button></li>
-                            <li><button type="button" class="dropdown-item" id="viewExportExcelBtn"><i class="bi bi-file-earmark-excel text-success me-2"></i>@RosraLocalizer["Sidebar_ExportExcel"]</button></li>
-                        </ul>
-                    </div>
+                    @if (isSampleReport)
+                    {
+                        <a asp-controller="Rosra" asp-action="NewReport" class="sidebar-btn sidebar-btn-primary">
+                            <span>@RosraLocalizer["Sidebar_NewReport"]</span>
+                        </a>
+                        <div class="sidebar-dropdown dropdown">
+                            <button type="button" class="sidebar-btn sidebar-btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span>@RosraLocalizer["Sidebar_Export"]</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><button type="button" class="dropdown-item" id="printTopDownBtn"><i class="bi bi-file-pdf text-primary me-2"></i>Top-Down Analysis (PDF)</button></li>
+                                <li><button type="button" class="dropdown-item" id="printBottomUpBtn"><i class="bi bi-file-pdf text-success me-2"></i>Bottom-Up Analysis (PDF)</button></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><button type="button" class="dropdown-item" id="printFullReportBtn"><i class="bi bi-file-pdf text-danger me-2"></i>Full Report (PDF)</button></li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a asp-controller="Rosra" asp-action="Edit" asp-route-id="@Model.TabContentModel.PublicId" class="sidebar-btn sidebar-btn-primary">
+                            <span>@RosraLocalizer["Sidebar_EditReport"]</span>
+                        </a>
+                        <div class="sidebar-dropdown dropdown">
+                            <button type="button" class="sidebar-btn sidebar-btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span>@RosraLocalizer["Sidebar_Export"]</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><button type="button" class="dropdown-item" id="viewExportPdfBtn"><i class="bi bi-file-pdf text-danger me-2"></i>@RosraLocalizer["Sidebar_ExportPdf"]</button></li>
+                                <li><button type="button" class="dropdown-item" id="viewExportExcelBtn"><i class="bi bi-file-earmark-excel text-success me-2"></i>@RosraLocalizer["Sidebar_ExportExcel"]</button></li>
+                            </ul>
+                        </div>
+                    }
                     <a asp-controller="Dashboard" asp-action="Index" class="sidebar-btn sidebar-btn-outline">
                         <span>@RosraLocalizer["Sidebar_BackToDashboard"]</span>
                     </a>

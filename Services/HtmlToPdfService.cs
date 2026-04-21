@@ -90,5 +90,44 @@ namespace RosraApp.Services
             await browser.CloseAsync();
             return pdfBytes;
         }
+
+        /// <summary>
+        /// Renders a standalone HTML document (as a string) to PDF using headless Chromium.
+        /// Used for reports where the client has already built the full HTML and just needs
+        /// a reliable server-side rasterizer (e.g. the Recommendations "Generate Report" flow).
+        /// </summary>
+        public async Task<byte[]> RenderHtmlToPdf(string html)
+        {
+            using var playwright = await Playwright.CreateAsync();
+            await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+            {
+                Headless = true
+            });
+
+            var context = await browser.NewContextAsync();
+            var page = await context.NewPageAsync();
+
+            await page.SetContentAsync(html, new PageSetContentOptions
+            {
+                WaitUntil = WaitUntilState.NetworkIdle,
+                Timeout = 30000
+            });
+
+            var pdfBytes = await page.PdfAsync(new PagePdfOptions
+            {
+                Format = "A4",
+                PrintBackground = true,
+                Margin = new Margin
+                {
+                    Top = "10mm",
+                    Bottom = "10mm",
+                    Left = "10mm",
+                    Right = "10mm"
+                }
+            });
+
+            await browser.CloseAsync();
+            return pdfBytes;
+        }
     }
 }

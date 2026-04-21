@@ -1053,10 +1053,10 @@
             </p>
         </div>
         <div class="header-actions">
-            <button class="btn btn-outline-secondary" onclick="RecommendationsModule.goToOverviewSelection()">
+            <button type="button" class="btn btn-outline-secondary" onclick="RecommendationsModule.goToOverviewSelection()">
                 <i class="fas fa-arrow-left me-2"></i> @Localizer["Header_BackToOverview"]
             </button>
-            <button class="btn btn-primary" onclick="RecommendationsModule.openReportModal()">
+            <button type="button" class="btn btn-primary" onclick="RecommendationsModule.openReportModal()">
                 <i class="fas fa-file-pdf me-2"></i> @Localizer["Header_GenerateReport"]
             </button>
         </div>
@@ -1121,7 +1121,7 @@
                     <i class="fas fa-clipboard-list empty-icon"></i>
                     <h3>@Localizer["Empty_Title"]</h3>
                     <p>@Localizer["Empty_Description"]</p>
-                    <button class="btn btn-primary" onclick="RecommendationsModule.goToOverviewSelection()">
+                    <button type="button" class="btn btn-primary" onclick="RecommendationsModule.goToOverviewSelection()">
                         <i class="fas fa-arrow-left me-2"></i> @Localizer["Empty_GoToOverview"]
                     </button>
                 </div>
@@ -1147,7 +1147,7 @@
                     <h4><i class="fas fa-tasks me-2"></i> @Localizer["Progress_Title"]</h4>
                     <p>@Localizer["Progress_Description"]</p>
                     <div class="progress-actions">
-                        <button class="btn btn-sm btn-outline-secondary" onclick="RecommendationsModule.resetAllProgress()">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="RecommendationsModule.resetAllProgress()">
                             <i class="fas fa-undo me-1"></i> @Localizer["Progress_ResetAll"]
                         </button>
                         <div class="btn-group">
