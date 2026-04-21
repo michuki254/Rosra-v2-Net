@@ -383,6 +383,7 @@
             function renderDetailSections(solution) {
                 let html = '';
                 const fd = solution.fullDetails || {};
+                const ov = solution.overview || {};
 
                 // New format: Why This Card Matters
                 const whyMatters = fd.whyThisMatters;
@@ -392,12 +393,20 @@
                     html += '<div class="detail-section-content">' + renderListOrText(whyMatters) + '</div></div>';
                 }
 
-                // New format: When This Is a Strong Fit
-                const whenFit = fd.whenStrongFit;
+                // New format: When This Is a Strong Fit (NP schema uses goodFitWhen)
+                const whenFit = fd.whenStrongFit || fd.goodFitWhen;
                 if (whenFit && whenFit.length > 0) {
                     html += '<div class="detail-section">';
                     html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-check-circle"></i> When This Is a Strong Fit</span></div>';
                     html += '<div class="detail-section-content">' + renderListOrText(whenFit) + '</div></div>';
+                }
+
+                // NP schema: When This May Not Be the Right First Move
+                const lessSuitable = fd.lessSuitableWhen;
+                if (lessSuitable && lessSuitable.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-exclamation-circle"></i> When This May Not Be the Right First Move</span></div>';
+                    html += '<div class="detail-section-content">' + renderListOrText(lessSuitable) + '</div></div>';
                 }
 
                 // New format: What to Line Up First
@@ -416,8 +425,9 @@
                     html += '<div class="detail-section-content">' + renderListOrText(design) + '</div></div>';
                 }
 
-                // New format: Practical Implementation Path (3 phases)
+                // Practical Implementation Path — PT uses phased object, NP uses flat implementationPath array
                 const path = fd.practicalPath;
+                const implPath = fd.implementationPath;
                 if (path) {
                     html += '<div class="detail-section">';
                     html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-signpost-split"></i> Practical Implementation Path</span></div>';
@@ -432,30 +442,41 @@
                         html += '<strong>12 to 24 months and beyond</strong>' + renderListOrText(path.twelveToTwentyFourMonths);
                     }
                     html += '</div></div>';
+                } else if (implPath && implPath.length > 0) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-signpost-split"></i> Practical Implementation Path</span></div>';
+                    html += '<div class="detail-section-content">' + renderListOrText(implPath) + '</div></div>';
                 }
 
-                // New format: Legal and Institutional Points
-                const legal = fd.legalInstitutional || solution.legalEssentials;
+                // New format: Legal and Institutional Points (NP uses legalInstitutionalEnablers)
+                const legal = fd.legalInstitutional || fd.legalInstitutionalEnablers || solution.legalEssentials;
                 if (legal && legal.length > 0) {
                     html += '<div class="detail-section">';
                     html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-building"></i> Legal and Institutional Points</span></div>';
                     html += '<div class="detail-section-content">' + renderListOrText(legal) + '</div></div>';
                 }
 
-                // New format: Capacity, Systems, and Partnership Needs
-                const capacity = fd.capacitySystemsPartnerships || solution.administrativeEssentials;
+                // New format: Capacity, Systems, and Partnership Needs (NP uses administrativeSetup)
+                const capacity = fd.capacitySystemsPartnerships || fd.administrativeSetup || solution.administrativeEssentials;
                 if (capacity && capacity.length > 0) {
                     html += '<div class="detail-section">';
                     html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-people"></i> Capacity, Systems, and Partnership Needs</span></div>';
                     html += '<div class="detail-section-content">' + renderListOrText(capacity) + '</div></div>';
                 }
 
-                // New format: Main Risks and Practical Safeguards
-                const risks = fd.risksAndSafeguards || solution.whenNotApplicable;
+                // New format: Main Risks and Practical Safeguards (NP uses risksAndDesignNotes)
+                const risks = fd.risksAndSafeguards || fd.risksAndDesignNotes || solution.whenNotApplicable;
                 if (risks && risks.length > 0) {
                     html += '<div class="detail-section">';
                     html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-exclamation-triangle"></i> Main Risks and Practical Safeguards</span></div>';
                     html += '<div class="detail-section-content">' + renderListOrText(risks) + '</div></div>';
+                }
+
+                // NP schema: Political Note (lives on overview, not fullDetails)
+                if (ov.politicalNote) {
+                    html += '<div class="detail-section">';
+                    html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-flag"></i> Political Note</span></div>';
+                    html += '<div class="detail-section-content">' + renderListOrText(ov.politicalNote) + '</div></div>';
                 }
 
                 // New format: What to Monitor
@@ -466,8 +487,8 @@
                     html += '<div class="detail-section-content">' + renderListOrText(monitor) + '</div></div>';
                 }
 
-                // New format: How This Card Connects to Other Cards
-                const connections = fd.connectionsToOtherCards;
+                // New format: How This Card Connects to Other Cards (NP stores on overview.oftenWorksBestAlongside)
+                const connections = fd.connectionsToOtherCards || ov.oftenWorksBestAlongside;
                 if (connections && connections.length > 0) {
                     html += '<div class="detail-section">';
                     html += '<div class="detail-section-header"><span class="detail-section-title"><i class="bi bi-diagram-3"></i> How This Connects to Other Cards</span></div>';
