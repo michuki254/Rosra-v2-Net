@@ -859,8 +859,10 @@
                 mixedGapCompliance: mixedGapCompliance,
                 mixedGapCoverage: mixedGapCoverage,
                 complianceRatio: complianceRatio,
-                coverageRatio: coverageRatio,
-                included: true
+                coverageRatio: coverageRatio
+                // Do NOT pass `included` here — new streams default to included:true
+                // via createStream(); existing streams keep whatever the user chose
+                // in the Prioritization tab.
             });
             console.log('RosraStateManager: Updated Generic Stream ' + index + ' (' + streamName + ')');
         }

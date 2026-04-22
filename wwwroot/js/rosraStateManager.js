@@ -537,11 +537,17 @@
     // Expose to global scope
     window.RosraStateManager = RosraStateManager;
 
-    // Auto-initialize on load
+    // Load persisted state IMMEDIATELY on script parse so any early
+    // upsertStream() calls from Gap Analysis scripts see the saved
+    // `included` / `adjustedRank` flags and preserve them instead of
+    // clobbering them with createStream() defaults.
+    loadFromStorage();
+
+    // Auto-initialize on load (subscriber notifications etc.)
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => RosraStateManager.init());
+        document.addEventListener('DOMContentLoaded', () => RosraStateManager.init(false));
     } else {
-        RosraStateManager.init();
+        RosraStateManager.init(false);
     }
 
 })(window);
