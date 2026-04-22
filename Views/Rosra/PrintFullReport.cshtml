@@ -777,7 +777,8 @@
             @for (int i = 0; i < Model.GenericStreams.Count; i++)
             {
                 var stream = Model.GenericStreams[i];
-                var gapStreamId = string.IsNullOrEmpty(stream.StreamId) ? $"generic-stream-{i}" : stream.StreamId;
+                // Always use the RosraStateManager stream-id format so the badge script can match.
+                var gapStreamId = $"generic-stream-{i}";
                 <div class="print-section" data-gap-stream-id="@gapStreamId">
                     <div class="print-section-title">@(stream.StreamName ?? "Revenue Stream") Gap Analysis</div>
                     @await Html.PartialAsync("_GapAnalysisGenericStream", stream, new ViewDataDictionary(ViewData) { { "CurrencySymbol", cs } })
@@ -861,6 +862,8 @@
     <script src="~/lib/chart.js/chart.umd.min.js" asp-append-version="true"></script>
     <script src="~/lib/chart.js/chartjs-plugin-datalabels.min.js" asp-append-version="true"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/formStateManager.js" asp-append-version="true"></script>
+    <script src="~/js/rosraStateManager.js" asp-append-version="true"></script>
     <!-- Solution data for Overview Selection & Recommendations -->
     <script src="~/js/solutionsData-PT-Compliance.js"></script>
     <script src="~/js/solutionsData-PT-Coverage.js"></script>
