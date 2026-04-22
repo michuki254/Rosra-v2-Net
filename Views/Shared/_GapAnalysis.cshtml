@@ -1977,6 +1977,47 @@
         setTimeout(calculateGaps, 100);
     }
 
+    // Map Gap Analysis tab data-tab values to RosraStateManager stream ids.
+    // property-tax and license are fixed; stream{i} are generic-stream-{i}.
+    function gapTabStreamIdFor(dataTab) {
+        if (!dataTab) return null;
+        if (dataTab === 'property-tax') return 'property-tax';
+        if (dataTab === 'license') return 'business-license';
+        const m = /^stream(\d+)$/.exec(dataTab);
+        if (m) return 'generic-stream-' + m[1];
+        return null;
+    }
+
+    // Paint an "Excluded" badge on any Gap Analysis tab whose stream has been
+    // excluded on the Prioritization step, and fade the tab so the state is
+    // obvious without hiding the data (user still needs to see Gap Analysis).
+    function refreshGapAnalysisExclusionBadges() {
+        if (typeof RosraStateManager === 'undefined') return;
+        const excluded = new Set(
+            RosraStateManager.getStreams()
+                .filter(s => s.included === false)
+                .map(s => s.id)
+        );
+        document.querySelectorAll('.gap-tab-btn[data-tab]').forEach(btn => {
+            const streamId = gapTabStreamIdFor(btn.getAttribute('data-tab'));
+            const isExcluded = streamId && excluded.has(streamId);
+            let badge = btn.querySelector('.gap-tab-excluded-badge');
+            if (isExcluded) {
+                btn.classList.add('gap-tab-excluded');
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'badge gap-tab-excluded-badge ms-1';
+                    badge.textContent = 'Excluded';
+                    badge.style.cssText = 'background:#dc2626;color:#fff;font-size:0.6rem;vertical-align:middle;font-weight:600;letter-spacing:0.02em;';
+                    btn.appendChild(badge);
+                }
+            } else {
+                btn.classList.remove('gap-tab-excluded');
+                if (badge) badge.remove();
+            }
+        });
+    }
+
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
         // Restore active tab from localStorage
@@ -1987,5 +2028,21 @@
                 showTab(savedTab);
             }
         }
+
+        refreshGapAnalysisExclusionBadges();
+        if (typeof RosraStateManager !== 'undefined' && RosraStateManager.subscribe) {
+            RosraStateManager.subscribe('streams', refreshGapAnalysisExclusionBadges);
+        }
     });
 </script>
+
+<style>
+    .gap-tab-btn.gap-tab-excluded .stream-name-label {
+        text-decoration: line-through;
+        opacity: 0.7;
+    }
+    .gap-tab-btn.gap-tab-excluded:not(.active) {
+        background: #fef2f2;
+        border-color: #fecaca;
+    }
+</style>
