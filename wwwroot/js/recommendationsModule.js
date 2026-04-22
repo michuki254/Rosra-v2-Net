@@ -96,6 +96,54 @@
                         // Re-render if needed (currently no currency values displayed)
                     });
                 }
+
+                // Re-filter and re-render when stream inclusion changes in Prioritization
+                if (typeof RosraStateManager !== 'undefined' && RosraStateManager.subscribe) {
+                    RosraStateManager.subscribe('streams', function() {
+                        loadSelectedSolutions();
+                        renderSolutionCards();
+                        updateSummaryStats();
+                    });
+                }
+            }
+
+            // Defensive normaliser — in case older saved selections still carry
+            // raw timeline strings from the solution cards ("< 1 year",
+            // "Less than a year", "6-12 months", "1-2 years", …), coerce them
+            // onto the three canonical buckets this module filters on so the
+            // Timeline view and summary counts render correctly.
+            function canonicalizeTimeline(raw) {
+                if (typeof window.canonicalizeTimeline === 'function') {
+                    return window.canonicalizeTimeline(raw);
+                }
+                if (!raw) return '1-3 years';
+                const s = String(raw).toLowerCase().trim();
+                if (s.includes('90 day')
+                    || s.includes('less than a year')
+                    || /<\s*1\s*year/.test(s)
+                    || /6\s*-\s*12\s*month/.test(s)
+                    || s.startsWith('less than')) {
+                    return '<1 year';
+                }
+                if (/3\s*\+/.test(s) || /3\s*-\s*5\s*year/.test(s)) {
+                    return '3+ years';
+                }
+                return '1-3 years';
+            }
+
+            function normaliseSelections(arr) {
+                return (arr || []).map(s => ({ ...s, timeline: canonicalizeTimeline(s && s.timeline) }));
+            }
+
+            // Drop solutions belonging to streams the user excluded in Prioritization (step 2).
+            // Excluded streams should produce no recommendations anywhere.
+            function filterByIncludedStreams(solutions) {
+                if (!Array.isArray(solutions) || typeof RosraStateManager === 'undefined') return solutions || [];
+                const streams = RosraStateManager.getStreams();
+                if (!streams.length) return solutions;
+                const excludedNames = new Set(streams.filter(s => s.included === false).map(s => s.name));
+                if (excludedNames.size === 0) return solutions;
+                return solutions.filter(s => !excludedNames.has(s.streamName));
             }
 
             // Load selected solutions from form field (primary) with localStorage fallback
@@ -105,7 +153,7 @@
                     if (typeof FormStateManager !== 'undefined') {
                         const data = FormStateManager.getData('rosraSelectedSolutions');
                         if (data && Array.isArray(data)) {
-                            selectedSolutions = data;
+                            selectedSolutions = filterByIncludedStreams(normaliseSelections(data));
                             console.log('Recommendations: Loaded', selectedSolutions.length, 'solutions from FormStateManager');
                             return;
                         }
@@ -114,7 +162,7 @@
                     // Fallback to localStorage
                     const stored = localStorage.getItem('rosraSelectedSolutions');
                     if (stored) {
-                        selectedSolutions = JSON.parse(stored);
+                        selectedSolutions = filterByIncludedStreams(normaliseSelections(JSON.parse(stored)));
                         console.log('Recommendations: Loaded', selectedSolutions.length, 'solutions from localStorage (fallback)');
                     }
                 } catch (e) {
