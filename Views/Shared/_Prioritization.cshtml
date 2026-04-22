@@ -439,7 +439,10 @@
                         <i class="fas fa-th fa-3x mb-3 opacity-50"></i>
                         <p class="mb-0">Priority matrix will appear after gap prioritization</p>
                     </div>
-                    <canvas id="priorityMatrixChart" height="300" style="display: none;"></canvas>
+                    <div id="priorityMatrixWrapper" style="position: relative; height: 360px; width: 100%; display: none;">
+                        <canvas id="priorityMatrixChart"></canvas>
+                    </div>
+                    <div id="priorityMatrixStreamKey" class="mt-2 small text-muted" style="display: none;"></div>
                 </div>
             </div>
         </div>
@@ -1363,6 +1366,14 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCharts();
         updateStatistics();
 
+        // Propagate to RosraStateManager so Overview and Recommendations respect the decision
+        if (typeof RosraStateManager !== 'undefined') {
+            RosraStateManager.setStreamIncluded(streamId, included);
+            if (!included) {
+                RosraStateManager.setStreamRank(streamId, null);
+            }
+        }
+
         // Save state
         savePrioritizationState();
     };
@@ -1698,6 +1709,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     stream.included = saved.included;
                     stream.adjustedRank = saved.adjustedRank;
                     stateApplied = true;
+
+                    // Keep RosraStateManager in sync with restored state
+                    if (typeof RosraStateManager !== 'undefined') {
+                        RosraStateManager.setStreamIncluded(saved.id, saved.included);
+                        if (!saved.included) {
+                            RosraStateManager.setStreamRank(saved.id, null);
+                        }
+                    }
                 }
             });
         }
@@ -2344,18 +2363,22 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderPriorityMatrix() {
         const placeholder = document.getElementById('matrixPlaceholder');
         const canvas = document.getElementById('priorityMatrixChart');
+        // Toggle the wrapper (which has the fixed height) instead of the canvas
+        // itself — otherwise Chart.js sizes the canvas to an unbounded parent
+        // and we get a chart that's thousands of pixels tall.
+        const wrapper = document.getElementById('priorityMatrixWrapper');
         const gaps = buildImprovementScores();
 
         if (matrixChart) matrixChart.destroy();
 
         if (gaps.length === 0) {
             if (placeholder) placeholder.style.display = 'block';
-            if (canvas) canvas.style.display = 'none';
+            if (wrapper) wrapper.style.display = 'none';
             return;
         }
 
         if (placeholder) placeholder.style.display = 'none';
-        if (canvas) canvas.style.display = 'block';
+        if (wrapper) wrapper.style.display = 'block';
 
         // Map gap types to colors
         const gapColors = {
@@ -2372,6 +2395,22 @@ document.addEventListener('DOMContentLoaded', function() {
             'Liability': '#8b5cf6'
         };
 
+        // Shorten a stream name to a 2-3 character tag we can draw inside the
+        // bubble — saves the user from hovering to figure out which stream is
+        // which. "Property Tax" → "PT", "Business License" → "BL",
+        // "Parking Fee" → "PF", "Solid Waste Fee" → "SWF", etc.
+        function streamAbbrev(name) {
+            if (!name) return '?';
+            const explicit = {
+                'Property Tax': 'PT',
+                'Business License': 'BL',
+                'Business Licenses': 'BL'
+            };
+            if (explicit[name]) return explicit[name];
+            const initials = name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase();
+            return initials.slice(0, 3);
+        }
+
         // Build datasets: one per gap type for legend
         const byGapType = {};
         gaps.forEach(g => {
@@ -2381,6 +2420,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 y: g.cardCount,
                 r: Math.max(8, Math.min(30, g.score / 2)),
                 label: g.streamName + ' — ' + g.gapType,
+                streamName: g.streamName,
+                streamTag: streamAbbrev(g.streamName),
                 score: g.score
             });
         });
@@ -2393,10 +2434,57 @@ document.addEventListener('DOMContentLoaded', function() {
             borderWidth: 2
         }));
 
+        // Render a "tag → stream" legend under the chart so readers can decode
+        // the abbreviations without hovering on every bubble.
+        const keyEl = document.getElementById('priorityMatrixStreamKey');
+        if (keyEl) {
+            const uniquePairs = new Map();
+            gaps.forEach(g => {
+                const tag = streamAbbrev(g.streamName);
+                if (!uniquePairs.has(tag)) uniquePairs.set(tag, g.streamName);
+            });
+            if (uniquePairs.size > 0) {
+                keyEl.style.display = 'block';
+                keyEl.innerHTML = '<strong>Streams:</strong> ' + Array.from(uniquePairs.entries())
+                    .map(([tag, name]) => '<span class="badge bg-light text-dark border me-1" style="font-weight:500;">' + tag + '</span>' + name)
+                    .join(' &nbsp;·&nbsp; ');
+            } else {
+                keyEl.style.display = 'none';
+            }
+        }
+
+        // Inline Chart.js plugin: draw the stream abbreviation at the centre of
+        // each bubble so readers can identify the stream without hovering.
+        // Small bubbles (r < 10px) are skipped to avoid cramped text.
+        const streamTagPlugin = {
+            id: 'streamTag',
+            afterDatasetsDraw(chart) {
+                const ctx2 = chart.ctx;
+                ctx2.save();
+                ctx2.textAlign = 'center';
+                ctx2.textBaseline = 'middle';
+                ctx2.fillStyle = '#1f2937';
+                ctx2.font = '600 11px -apple-system, "Segoe UI", Roboto, sans-serif';
+                chart.data.datasets.forEach((ds, dsIdx) => {
+                    const meta = chart.getDatasetMeta(dsIdx);
+                    meta.data.forEach((element, i) => {
+                        const point = ds.data[i];
+                        if (!point || !point.streamTag) return;
+                        const radius = element.options && element.options.radius ? element.options.radius : (point.r || 0);
+                        if (radius < 10) return;
+                        const { x, y } = element.getCenterPoint();
+                        ctx2.fillText(point.streamTag, x, y);
+                    });
+                });
+                ctx2.restore();
+            }
+        };
+
         const ctx = canvas.getContext('2d');
         matrixChart = new Chart(ctx, {
             type: 'bubble',
             data: { datasets: datasets },
+            plugins: [streamTagPlugin],
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -2419,10 +2507,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 },
+                // Leave headroom at the top so the tallest bubble doesn't
+                // overlap the legend, and on the right so the last bubble isn't
+                // clipped. Chart.js's default auto-scale places the max data
+                // point flush against the plot edge.
+                layout: { padding: { top: 16, right: 24, bottom: 4, left: 4 } },
                 scales: {
                     x: {
                         title: { display: true, text: 'Revenue Impact (Gap Amount)', font: { weight: 'bold' } },
                         beginAtZero: true,
+                        suggestedMax: (function() {
+                            const maxX = Math.max(0, ...gaps.map(g => g.amount));
+                            return maxX * 1.08;
+                        })(),
                         ticks: {
                             callback: function(value) {
                                 var abs = Math.abs(value);
@@ -2436,6 +2533,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     y: {
                         title: { display: true, text: 'Available Solution Cards', font: { weight: 'bold' } },
                         beginAtZero: true,
+                        // Leave ~20% headroom above the tallest bubble so the
+                        // legend at the top doesn't collide with data points.
+                        suggestedMax: (function() {
+                            const maxY = Math.max(0, ...gaps.map(g => g.cardCount));
+                            return Math.ceil(maxY * 1.2) + 1;
+                        })(),
                         ticks: { stepSize: 1 }
                     }
                 }
