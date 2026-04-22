@@ -482,6 +482,53 @@
         .recommendations-container .solution-detail-card { font-size: 0.8rem !important; }
         .recommendations-container h3, .recommendations-container h4 { font-size: 0.95rem !important; }
 
+        /* Force every solution card fully expanded in the PDF so readers see
+           the detailed sections without clicking "Expand Details" (which has
+           no meaning on paper). Also hide the now-redundant card toggle/copy
+           action buttons. */
+        .recommendations-container .solution-details { display: block !important; }
+        .recommendations-container .solution-expand-btn,
+        .recommendations-container .solution-actions { display: none !important; }
+        .recommendations-container .solution-card-header { cursor: default !important; }
+        /* With cards fully expanded, a single card is often taller than an A4
+           page. Letting Chromium break BETWEEN detail-sections avoids the huge
+           white gaps that `break-inside: avoid` on the whole card produced. */
+        .recommendations-container .solution-card,
+        .recommendations-container .solution-details {
+            break-inside: auto !important; page-break-inside: auto !important;
+        }
+        .recommendations-container .detail-section {
+            break-inside: avoid; page-break-inside: avoid;
+        }
+        /* Keep the card header glued to its overview + first detail-section so
+           a title never orphans at the very bottom of a page. */
+        .recommendations-container .solution-card-header,
+        .recommendations-container .solution-overview {
+            break-after: avoid; page-break-after: avoid;
+        }
+
+        /* Strip the stream banner's solid UN-blue background for print — keeps
+           the heading readable against a white page and reduces ink usage. */
+        .recommendations-container .stream-header {
+            background: transparent !important;
+            color: #00689D !important;
+            border-bottom: 2px solid #cfe2f3 !important;
+            padding: 8px 14px !important;
+        }
+        .recommendations-container .stream-header h3,
+        .recommendations-container .stream-header h3 i { color: #00689D !important; }
+        .recommendations-container .stream-rank {
+            background: transparent !important;
+            color: #00689D !important;
+            border: 1px solid #00689D !important;
+            box-shadow: none !important;
+        }
+        .recommendations-container .stream-toggle-btn {
+            background: transparent !important;
+            color: #00689D !important;
+            border: 1px solid #00689D !important;
+        }
+
         /* ── Page break helpers (applied globally for Playwright PDF + browser print) ── */
         .page-break { page-break-before: always; break-before: page; }
 
@@ -497,7 +544,9 @@
         img, svg, canvas { break-inside: avoid; page-break-inside: avoid; }
         table, .table { break-inside: avoid; page-break-inside: avoid; }
         .prioritization-module .col-md-6 .card { break-inside: avoid; page-break-inside: avoid; }
-        .solution-card { break-inside: avoid; page-break-inside: avoid; }
+        /* .solution-card is handled in the expanded-card block above — do NOT
+           re-apply page-break-inside: avoid here, or it forces each fully
+           expanded card onto its own page even when it's taller than A4. */
         .recommendations-summary { break-inside: avoid; page-break-inside: avoid; }
         .gap-analysis-section { break-inside: avoid; page-break-inside: avoid; }
         .stream-section { break-inside: avoid; page-break-inside: avoid; }
@@ -545,8 +594,18 @@
             if (selectedSolutions) {
                 try {
                     localStorage.setItem('selectedSolutionsData', selectedSolutions);
-                    // Also seed as rosraSelectedSolutions for the overview summary
-                    localStorage.setItem('rosraSelectedSolutions', selectedSolutions);
+                    // SelectedSolutionsData wraps { selections, selectedSolutions, timestamp }.
+                    // The Recommendations module expects rosraSelectedSolutions to be the
+                    // plain array, and the Overview Selection summary expects
+                    // rosraOverviewSelections to be the inner selections object — unpack
+                    // both here so those modules can render in the server-side print view.
+                    var parsed = JSON.parse(selectedSolutions);
+                    if (parsed && Array.isArray(parsed.selectedSolutions)) {
+                        localStorage.setItem('rosraSelectedSolutions', JSON.stringify(parsed.selectedSolutions));
+                    }
+                    if (parsed && parsed.selections) {
+                        localStorage.setItem('rosraOverviewSelections', JSON.stringify(parsed.selections));
+                    }
                 } catch(e) {}
             }
         })();
@@ -701,13 +760,13 @@
         </div>
 
         <!-- Property Tax Section -->
-        <div class="print-section">
+        <div class="print-section" data-gap-stream-id="property-tax">
             <div class="print-section-title">Property Tax Gap Analysis</div>
             @await Html.PartialAsync("_GapAnalysisPropertyTaxFixed", Model)
         </div>
 
         <!-- Business License Section -->
-        <div class="print-section">
+        <div class="print-section" data-gap-stream-id="business-license">
             <div class="print-section-title">Business License Gap Analysis</div>
             @await Html.PartialAsync("_GapAnalysisLicense", Model)
         </div>
@@ -715,9 +774,11 @@
         <!-- Generic Streams -->
         @if (Model.GenericStreams != null && Model.GenericStreams.Any())
         {
-            @foreach (var stream in Model.GenericStreams)
+            @for (int i = 0; i < Model.GenericStreams.Count; i++)
             {
-                <div class="print-section">
+                var stream = Model.GenericStreams[i];
+                var gapStreamId = string.IsNullOrEmpty(stream.StreamId) ? $"generic-stream-{i}" : stream.StreamId;
+                <div class="print-section" data-gap-stream-id="@gapStreamId">
                     <div class="print-section-title">@(stream.StreamName ?? "Revenue Stream") Gap Analysis</div>
                     @await Html.PartialAsync("_GapAnalysisGenericStream", stream, new ViewDataDictionary(ViewData) { { "CurrencySymbol", cs } })
                 </div>
@@ -937,6 +998,49 @@
                 document.getElementById('overviewSkippedList').innerHTML = skippedHtml;
             }
         }
+
+        // Paint "Excluded" badge on Gap Analysis section titles for any stream
+        // the user excluded in Prioritization. Runs after _Prioritization partial
+        // has applied saved state back into RosraStateManager.
+        function paintGapAnalysisExclusionBadges() {
+            if (typeof RosraStateManager === 'undefined') return;
+            var excluded = {};
+            RosraStateManager.getStreams().forEach(function(s) {
+                if (s.included === false) excluded[s.id] = true;
+            });
+            document.querySelectorAll('.print-section[data-gap-stream-id]').forEach(function(section) {
+                var title = section.querySelector('.print-section-title');
+                if (!title) return;
+                var existing = title.querySelector('.pdf-excluded-badge');
+                var isExcluded = !!excluded[section.getAttribute('data-gap-stream-id')];
+                if (isExcluded && !existing) {
+                    var badge = document.createElement('span');
+                    badge.className = 'badge pdf-excluded-badge';
+                    badge.textContent = 'Excluded';
+                    badge.style.cssText = 'background:#dc2626;color:#fff;font-size:0.65rem;margin-left:10px;padding:3px 8px;border-radius:4px;font-weight:600;letter-spacing:0.03em;vertical-align:middle;';
+                    title.appendChild(badge);
+                    var originalText = title.childNodes[0];
+                    if (originalText && originalText.nodeType === Node.TEXT_NODE) {
+                        var span = document.createElement('span');
+                        span.textContent = originalText.textContent;
+                        span.style.textDecoration = 'line-through';
+                        span.style.opacity = '0.7';
+                        title.replaceChild(span, originalText);
+                    }
+                } else if (!isExcluded && existing) {
+                    existing.remove();
+                }
+            });
+        }
+
+        // Run after prioritizationData has been seeded and _Prioritization applied state.
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(paintGapAnalysisExclusionBadges, 300);
+            setTimeout(paintGapAnalysisExclusionBadges, 1200);
+            if (typeof RosraStateManager !== 'undefined' && RosraStateManager.subscribe) {
+                RosraStateManager.subscribe('streams', paintGapAnalysisExclusionBadges);
+            }
+        });
     </script>
 </body>
 </html>
