@@ -52,6 +52,10 @@ namespace RosraApp.Data
                     logger.LogInformation("Seeding CountryData (DB_Countries)");
                     await SeedCountryDataFromJson(context, logger);
 
+                    // Seed DB_Frontiers benchmarks (idempotent — fills rows only if missing)
+                    logger.LogInformation("Seeding frontier benchmarks");
+                    await SeedFrontiers(context, logger);
+
                     // Seed review workflow permissions (idempotent — only adds missing ones)
                     logger.LogInformation("Seeding review workflow permissions");
                     await SeedReviewPermissions(context, logger);
@@ -489,6 +493,40 @@ namespace RosraApp.Data
             await context.DB_Countries.AddRangeAsync(records);
             await context.SaveChangesAsync();
             logger.LogInformation($"Seeded {records.Count} countries into DB_Countries from embedded JSON");
+        }
+
+        private static async Task SeedFrontiers(ApplicationDbContext context, ILogger logger)
+        {
+            var seeds = new List<Frontier>
+            {
+                new() { Income_Level = "Low",          Government_Type = "Unitary", SNG_total_rev_pc_frontier = 41.00480178m,   OSR_pc_frontier = 4.03m,     Revenue_Autonomy_frontier = 0.098281173m },
+                new() { Income_Level = "Lower-middle", Government_Type = "Unitary", SNG_total_rev_pc_frontier = 313.6863837m,   OSR_pc_frontier = 187.87m,   Revenue_Autonomy_frontier = 0.59891028m  },
+                new() { Income_Level = "Upper-middle", Government_Type = "Unitary", SNG_total_rev_pc_frontier = 1452.013275m,   OSR_pc_frontier = 657.445m,  Revenue_Autonomy_frontier = 0.452781673m },
+                new() { Income_Level = "High",         Government_Type = "Unitary", SNG_total_rev_pc_frontier = 13860.11906m,   OSR_pc_frontier = 7466.65m,  Revenue_Autonomy_frontier = 0.538714709m },
+                new() { Income_Level = "Upper-middle", Government_Type = "Federal", SNG_total_rev_pc_frontier = 2385.00m,       OSR_pc_frontier = 1759.35m,  Revenue_Autonomy_frontier = 0.88m        }
+            };
+
+            int added = 0;
+            foreach (var s in seeds)
+            {
+                var exists = await context.DB_Frontiers.AnyAsync(f =>
+                    f.Income_Level == s.Income_Level && f.Government_Type == s.Government_Type);
+                if (!exists)
+                {
+                    context.DB_Frontiers.Add(s);
+                    added++;
+                }
+            }
+
+            if (added > 0)
+            {
+                await context.SaveChangesAsync();
+                logger.LogInformation($"Seeded {added} missing frontier benchmark rows");
+            }
+            else
+            {
+                logger.LogInformation("Frontier benchmarks already present — skipping");
+            }
         }
 
         // DTO for deserializing countrydata.json
