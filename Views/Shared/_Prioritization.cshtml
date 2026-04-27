@@ -1069,7 +1069,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof RosraStateManager !== 'undefined') {
             const stateStreams = RosraStateManager.getStreams();
             if (stateStreams.length > 0) {
-                stateStreams.forEach((s, idx) => {
+                // Skip streams the user added but never entered data for (gap is 0 or missing).
+                // This matches the behaviour of the localStorage fallback below.
+                const populatedStreams = stateStreams.filter(s =>
+                    (parseFloat(s.totalFunctionalGap) || 0) > 0
+                );
+
+                populatedStreams.forEach((s, idx) => {
                     // Assign colors based on type
                     let color = streamColors[s.name] || streamColors['default'];
                     if (s.type === 'generic-stream') {
@@ -1083,14 +1089,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 });
 
-                console.log('Prioritization: Loaded', streams.length, 'streams from RosraStateManager');
+                console.log('Prioritization: Loaded', streams.length, 'populated streams from RosraStateManager (skipped',
+                            (stateStreams.length - populatedStreams.length), 'empty streams)');
 
-                // Sort and assign default ranks
-                streams.sort((a, b) => b.totalFunctionalGap - a.totalFunctionalGap);
-                streams.forEach((stream, index) => {
-                    stream.defaultRank = index + 1;
-                });
-                return;
+                if (streams.length > 0) {
+                    // Sort and assign default ranks
+                    streams.sort((a, b) => b.totalFunctionalGap - a.totalFunctionalGap);
+                    streams.forEach((stream, index) => {
+                        stream.defaultRank = index + 1;
+                    });
+                    return;
+                }
+                // If RosraStateManager only contained empty streams, fall through to localStorage
             }
         }
 
