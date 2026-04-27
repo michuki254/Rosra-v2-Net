@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" role="img" aria-label="Strategic Decision Making">
+  <defs>
+    <linearGradient id="sdBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E6F7FC"/>
+      <stop offset="100%" stop-color="#C5EAF6"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#sdBg)"/>
+  <g opacity="0.35" stroke="#00689D" stroke-width="1" fill="none">
+    <line x1="0" y1="60" x2="400" y2="60"/>
+    <line x1="0" y1="120" x2="400" y2="120"/>
+    <line x1="0" y1="180" x2="400" y2="180"/>
+    <line x1="100" y1="0" x2="100" y2="240"/>
+    <line x1="200" y1="0" x2="200" y2="240"/>
+    <line x1="300" y1="0" x2="300" y2="240"/>
+  </g>
+  <circle cx="280" cy="120" r="70" fill="#FFFFFF" stroke="#00689D" stroke-width="3"/>
+  <circle cx="280" cy="120" r="48" fill="none" stroke="#00B2E3" stroke-width="3"/>
+  <circle cx="280" cy="120" r="26" fill="none" stroke="#00689D" stroke-width="3"/>
+  <circle cx="280" cy="120" r="10" fill="#F18F1F"/>
+  <path d="M40 60 Q140 70 232 112" fill="none" stroke="#00689D" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 5"/>
+  <polygon points="225,104 248,118 220,124" fill="#00689D"/>
+  <g fill="#00B2E3">
+    <rect x="50" y="170" width="20" height="20" transform="rotate(45 60 180)"/>
+  </g>
+  <g fill="#F18F1F">
+    <rect x="120" y="30" width="16" height="16" transform="rotate(45 128 38)"/>
+  </g>
+  <g fill="#00689D">
+    <rect x="170" y="180" width="14" height="14" transform="rotate(45 177 187)"/>
+  </g>
+</svg>

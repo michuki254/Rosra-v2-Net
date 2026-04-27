@@ -21,71 +21,47 @@
     </div>
 
     <div class="row g-2">
-        <!-- Table 1: Adjustable Stream Prioritization -->
+        <!-- Combined Stream Prioritization (drag-and-drop OR arrow buttons to re-rank) -->
         <div class="col-12">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-primary text-white py-3">
-                    <h6 class="mb-0"><i class="fas fa-sliders-h me-2"></i>@Localizer["AdjustableStream_Title"]</h6>
+                <div class="card-header bg-primary text-white py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <h6 class="mb-0"><i class="fas fa-sort me-2"></i>Stream Prioritization</h6>
+                    <small class="combined-priority-help">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Drag rows by the <i class="bi bi-grip-vertical mx-1"></i> handle, or use the
+                        <i class="bi bi-arrow-up mx-1"></i><i class="bi bi-arrow-down mx-1"></i> buttons to re-order.
+                    </small>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0" id="adjustableStreamTable">
+                        <table class="table table-hover mb-0" id="combinedStreamTable">
                             <thead class="table-light">
                                 <tr>
-                                    <th class="text-center" style="width: 100px;" data-bs-toggle="tooltip" title="@Localizer["AdjustableStream_Tooltip_DefaultRank"]">@Localizer["AdjustableStream_Col_DefaultRank"]</th>
-                                    <th data-bs-toggle="tooltip" title="@Localizer["AdjustableStream_Tooltip_StreamName"]">@Localizer["AdjustableStream_Col_StreamName"]</th>
-                                    <th class="text-end" data-bs-toggle="tooltip" title="@Localizer["AdjustableStream_Tooltip_TotalFunctionalGap"]">@Localizer["AdjustableStream_Col_TotalFunctionalGap"]</th>
-                                    <th class="text-center" style="width: 150px;" data-bs-toggle="tooltip" title="@Localizer["AdjustableStream_Tooltip_IncludeExclude"]">@Localizer["AdjustableStream_Col_IncludeExclude"]</th>
-                                    <th class="text-center" style="width: 150px;" data-bs-toggle="tooltip" title="@Localizer["AdjustableStream_Tooltip_AdjustRank"]">@Localizer["AdjustableStream_Col_AdjustRank"]</th>
+                                    <th style="width: 36px;" aria-label="Drag handle"></th>
+                                    <th class="text-center" style="width: 80px;" data-bs-toggle="tooltip" title="Final rank — auto-numbered top to bottom for included streams.">Rank</th>
+                                    <th data-bs-toggle="tooltip" title="Revenue stream name.">Stream</th>
+                                    <th class="text-end" data-bs-toggle="tooltip" title="Total Functional Gap from the Gap Analysis tab.">Total Gap</th>
+                                    <th class="text-center" data-bs-toggle="tooltip" title="Share of total gap (across included streams).">Share of Gap</th>
+                                    <th class="text-center" style="width: 130px;" data-bs-toggle="tooltip" title="Include in / exclude from the prioritization.">Status</th>
+                                    <th class="text-center" style="width: 110px;" data-bs-toggle="tooltip" title="Move this stream up or down.">Move</th>
                                 </tr>
                             </thead>
-                            <tbody id="adjustableStreamBody">
-                                <!-- Populated by JavaScript -->
+                            <tbody id="combinedStreamBody">
                                 <tr class="placeholder-row">
-                                    <td colspan="5" class="text-center text-muted py-4">
+                                    <td colspan="7" class="text-center text-muted py-4">
                                         <i class="fas fa-spinner fa-spin me-2"></i>@Localizer["AdjustableStream_Placeholder"]
                                     </td>
                                 </tr>
                             </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Table 2: Final Stream Prioritization -->
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-success text-white py-3">
-                    <h6 class="mb-0"><i class="fas fa-check-circle me-2"></i>@Localizer["FinalStream_Title"]</h6>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0" id="finalStreamTable">
-                            <thead class="table-light">
+                            <tfoot class="table-light fw-bold" id="combinedStreamFooter" style="display: none;">
                                 <tr>
-                                    <th class="text-center" style="width: 100px;" data-bs-toggle="tooltip" title="@Localizer["FinalStream_Tooltip_FinalRank"]">@Localizer["FinalStream_Col_FinalRank"]</th>
-                                    <th data-bs-toggle="tooltip" title="@Localizer["FinalStream_Tooltip_StreamName"]">@Localizer["FinalStream_Col_StreamName"]</th>
-                                    <th class="text-end" data-bs-toggle="tooltip" title="@Localizer["FinalStream_Tooltip_TotalFunctionalGap"]">@Localizer["FinalStream_Col_TotalFunctionalGap"]</th>
-                                    <th class="text-center" data-bs-toggle="tooltip" title="@Localizer["FinalStream_Tooltip_ShareOfTotalGap"]">@Localizer["FinalStream_Col_ShareOfTotalGap"]</th>
-                                    <th class="text-center" style="width: 120px;" data-bs-toggle="tooltip" title="@Localizer["FinalStream_Tooltip_Status"]">@Localizer["FinalStream_Col_Status"]</th>
-                                </tr>
-                            </thead>
-                            <tbody id="finalStreamBody">
-                                <!-- Populated by JavaScript -->
-                                <tr class="placeholder-row">
-                                    <td colspan="5" class="text-center text-muted py-4">
-                                        <i class="fas fa-info-circle me-2"></i>@Localizer["FinalStream_Placeholder"]
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <tfoot class="table-light fw-bold" id="finalStreamFooter" style="display: none;">
-                                <tr>
-                                    <td class="text-center">-</td>
+                                    <td></td>
+                                    <td class="text-center">—</td>
                                     <td>@Localizer["FinalStream_Footer_Total"]</td>
-                                    <td class="text-end" id="totalIncludedGap">-</td>
+                                    <td class="text-end" id="totalIncludedGap">—</td>
                                     <td class="text-center">100%</td>
-                                    <td class="text-center">-</td>
+                                    <td class="text-center">—</td>
+                                    <td></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -94,9 +70,15 @@
             </div>
         </div>
 
-        <!-- Charts Section -->
-        <div class="col-md-7">
-            <div class="card border-0 shadow-sm h-100">
+        @* Hidden DOM stubs preserved so any external JS that looks them up does not error. *@
+        <div style="display:none;" aria-hidden="true">
+            <table id="adjustableStreamTable"><tbody id="adjustableStreamBody"></tbody></table>
+            <table id="finalStreamTable"><tbody id="finalStreamBody"></tbody><tfoot id="finalStreamFooter"></tfoot></table>
+        </div>
+
+        <!-- Charts Section — bar chart fills full row; pie chart removed (data is redundant with the bar + Share column) -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
                 <div class="card-header bg-light py-3">
                     <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>@Localizer["Chart_BarTitle"]</h6>
                 </div>
@@ -110,19 +92,10 @@
             </div>
         </div>
 
-        <div class="col-md-5">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-light py-3">
-                    <h6 class="mb-0"><i class="fas fa-chart-pie me-2"></i>@Localizer["Chart_PieTitle"]</h6>
-                </div>
-                <div class="card-body d-flex align-items-center justify-content-center">
-                    <div id="pieChartPlaceholder" class="chart-placeholder text-center text-muted py-5">
-                        <i class="fas fa-chart-pie fa-3x mb-3 opacity-50"></i>
-                        <p class="mb-0">@Localizer["Chart_Placeholder"]</p>
-                    </div>
-                    <canvas id="gapPieChart" height="280" style="display: none;"></canvas>
-                </div>
-            </div>
+        @* Hidden DOM stubs preserved so the JS that creates / updates the pie chart does not error. *@
+        <div style="display:none;" aria-hidden="true">
+            <div id="pieChartPlaceholder"></div>
+            <canvas id="gapPieChart" height="280"></canvas>
         </div>
 
         <!-- Summary Statistics -->
@@ -227,12 +200,16 @@
         </div>
     </div>
 
-    <!-- Gap Sequencing Table -->
+    <!-- Combined Gap Sequencing + Amounts Table -->
     <div class="row g-4">
         <div class="col-12">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-secondary text-white py-3">
-                    <h6 class="mb-0"><i class="fas fa-sort-numeric-down me-2"></i>@Localizer["GapSequencing_Title"]</h6>
+                <div class="card-header bg-secondary text-white py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <h6 class="mb-0"><i class="fas fa-sort-numeric-down me-2"></i>@Localizer["GapSequencing_Title"] &amp; @Localizer["GapAmounts_Title"]</h6>
+                    <small class="combined-priority-help">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Each cell shows the gap type (selectable) and its amount.
+                    </small>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -260,102 +237,24 @@
             </div>
         </div>
 
-        <!-- Gap Amounts Detail Table -->
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-info text-white py-3">
-                    <h6 class="mb-0"><i class="fas fa-coins me-2"></i>@Localizer["GapAmounts_Title"]</h6>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0" id="gapAmountsTable">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="text-center" style="width: 70px;">@Localizer["GapAmounts_Col_Rank"]</th>
-                                    <th>@Localizer["GapAmounts_Col_Stream"]</th>
-                                    <th class="text-center">@Localizer["GapAmounts_Col_Priority1"]</th>
-                                    <th class="text-end">@Localizer["GapAmounts_Col_Amount1"]</th>
-                                    <th class="text-center">@Localizer["GapAmounts_Col_Priority2"]</th>
-                                    <th class="text-end">@Localizer["GapAmounts_Col_Amount2"]</th>
-                                    <th class="text-center">@Localizer["GapAmounts_Col_Priority3"]</th>
-                                    <th class="text-end">@Localizer["GapAmounts_Col_Amount3"]</th>
-                                </tr>
-                            </thead>
-                            <tbody id="gapAmountsBody">
-                                <tr class="placeholder-row">
-                                    <td colspan="8" class="text-center text-muted py-4">
-                                        <i class="fas fa-info-circle me-2"></i>@Localizer["GapAmounts_Placeholder"]
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        @* Hidden DOM stub for the old amounts table — kept so any external JS that looks it up does not error. *@
+        <div style="display:none;" aria-hidden="true">
+            <table id="gapAmountsTable"><tbody id="gapAmountsBody"></tbody></table>
         </div>
 
-        <!-- Summary Panel -->
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-light py-3">
-                    <h6 class="mb-0"><i class="fas fa-list-ol me-2"></i>@Localizer["ReformSummary_Title"]</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <div class="text-muted small">@Localizer["ReformSummary_TotalStreams"]</div>
-                            <div class="h4 mb-0" id="gapStatTotalStreams">0</div>
-                        </div>
-                        <div class="col-6">
-                            <div class="text-muted small">@Localizer["ReformSummary_TotalGapCombinations"]</div>
-                            <div class="h4 mb-0" id="gapStatTotalCombinations">0</div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="text-muted small">@Localizer["ReformSummary_RemovedGaps"]</div>
-                            <div class="h4 mb-0 text-danger" id="gapStatRemovedGaps">0</div>
-                        </div>
-                        <div class="col-6">
-                            <div class="text-muted small">@Localizer["ReformSummary_ActiveGapActions"]</div>
-                            <div class="h4 mb-0 text-success" id="gapStatActiveGaps">0</div>
-                        </div>
-                    </div>
-                    <hr>
-                    <h6 class="text-muted mb-3">@Localizer["ReformSummary_FirstPriorityActions"]</h6>
-                    <div id="firstPriorityActions" class="small">
-                        <div class="text-muted">@Localizer["ReformSummary_NoActionsDefined"]</div>
-                    </div>
-                </div>
+        @* COMMENTED OUT — "Reform Sequence Summary" + "Master Priority List" panels.
+           Both kept in DOM (display:none) so the JS that writes to gapStatTotalStreams /
+           gapStatTotalCombinations / gapStatRemovedGaps / gapStatActiveGaps / firstPriorityActions /
+           masterPriorityBody continues to work without null reference errors. *@
+        <div style="display:none;" aria-hidden="true">
+            <div>
+                <div id="gapStatTotalStreams">0</div>
+                <div id="gapStatTotalCombinations">0</div>
+                <div id="gapStatRemovedGaps">0</div>
+                <div id="gapStatActiveGaps">0</div>
+                <div id="firstPriorityActions"></div>
             </div>
-        </div>
-
-        <!-- Master Priority List -->
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-light py-3">
-                    <h6 class="mb-0"><i class="fas fa-trophy me-2"></i>@Localizer["MasterPriority_Title"]</h6>
-                </div>
-                <div class="card-body p-0" style="max-height: 350px; overflow-y: auto;">
-                    <table class="table table-sm table-hover mb-0" id="masterPriorityTable">
-                        <thead class="table-light sticky-top">
-                            <tr>
-                                <th class="text-center" style="width: 50px;">@Localizer["MasterPriority_Col_Number"]</th>
-                                <th>@Localizer["MasterPriority_Col_Stream"]</th>
-                                <th>@Localizer["MasterPriority_Col_Gap"]</th>
-                                <th class="text-end">@Localizer["MasterPriority_Col_Amount"]</th>
-                            </tr>
-                        </thead>
-                        <tbody id="masterPriorityBody">
-                            <tr class="placeholder-row">
-                                <td colspan="4" class="text-center text-muted py-3">
-                                    <small>@Localizer["MasterPriority_Placeholder"]</small>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <table id="masterPriorityTable"><tbody id="masterPriorityBody"></tbody></table>
         </div>
     </div>
 
@@ -370,27 +269,38 @@
     </div>
 
     <div class="row g-4">
-        <!-- Revenue Impact Ranking -->
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header text-white py-3" style="background: #334155;">
-                    <h6 class="mb-0"><i class="fas fa-sort-amount-down me-2"></i>Gaps Ranked by Revenue Impact</h6>
+        <!-- Top Gaps to Tackle (combined: Revenue Impact + Improvement Opportunity Score) -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header text-white py-3 d-flex align-items-center justify-content-between flex-wrap gap-2"
+                     style="background: #334155;">
+                    <h6 class="mb-0"><i class="fas fa-bullseye me-2"></i>Top Gaps to Tackle</h6>
+                    <small class="combined-priority-help">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Sort by <strong>Amount</strong> for biggest pile of money, by <strong>Score</strong> for the most actionable wins.
+                    </small>
                 </div>
-                <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
-                    <table class="table table-sm table-hover mb-0" id="revenueImpactTable">
+                <div class="card-body p-0">
+                    <table class="table table-sm table-hover mb-0" id="topGapsTable">
                         <thead class="table-light sticky-top">
                             <tr>
-                                <th class="text-center" style="width: 50px;">#</th>
-                                <th>Stream</th>
-                                <th>Gap Type</th>
-                                <th class="text-end">Amount</th>
-                                <th class="text-center" style="width: 120px;">Share</th>
+                                <th class="text-center" style="width: 50px;" data-bs-toggle="tooltip" title="Rank by the currently-selected sort.">#</th>
+                                <th data-bs-toggle="tooltip" title="Revenue stream.">Stream</th>
+                                <th data-bs-toggle="tooltip" title="Type of gap (Compliance / Coverage / Valuation / Liability).">Gap Type</th>
+                                <th class="text-end top-gaps-sort" data-sort-by="amount" data-bs-toggle="tooltip" title="Click to sort by absolute gap amount.">
+                                    Amount <i class="bi bi-arrow-down-up ms-1 small"></i>
+                                </th>
+                                <th class="text-center" style="width: 110px;" data-bs-toggle="tooltip" title="Share of total gap.">Share</th>
+                                <th class="text-center top-gaps-sort" style="width: 80px;" data-sort-by="score" data-bs-toggle="tooltip" title="Click to sort by improvement opportunity score (size + gap/potential ratio + solutions available).">
+                                    Score <i class="bi bi-arrow-down-up ms-1 small"></i>
+                                </th>
+                                <th class="text-center" style="width: 130px;" data-bs-toggle="tooltip" title="Improvement potential bracket.">Potential</th>
                             </tr>
                         </thead>
-                        <tbody id="revenueImpactBody">
+                        <tbody id="topGapsBody">
                             <tr class="placeholder-row">
-                                <td colspan="5" class="text-center text-muted py-3">
-                                    <small>Revenue impact ranking will populate from gap data</small>
+                                <td colspan="7" class="text-center text-muted py-3">
+                                    <small>Top gaps will populate from gap data.</small>
                                 </td>
                             </tr>
                         </tbody>
@@ -399,33 +309,10 @@
             </div>
         </div>
 
-        <!-- Improvement Opportunity Scoring -->
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header text-white py-3" style="background: #475569;">
-                    <h6 class="mb-0"><i class="fas fa-bullseye me-2"></i>Improvement Opportunity Score</h6>
-                </div>
-                <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
-                    <table class="table table-sm table-hover mb-0" id="improvementScoreTable">
-                        <thead class="table-light sticky-top">
-                            <tr>
-                                <th class="text-center" style="width: 50px;">#</th>
-                                <th>Stream</th>
-                                <th>Gap Type</th>
-                                <th class="text-center" style="width: 80px;">Score</th>
-                                <th class="text-center" style="width: 140px;">Potential</th>
-                            </tr>
-                        </thead>
-                        <tbody id="improvementScoreBody">
-                            <tr class="placeholder-row">
-                                <td colspan="5" class="text-center text-muted py-3">
-                                    <small>Improvement scores will populate from gap data</small>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        @* Hidden DOM stubs preserved so any external JS that looks up the old IDs does not error. *@
+        <div style="display:none;" aria-hidden="true">
+            <table id="revenueImpactTable"><tbody id="revenueImpactBody"></tbody></table>
+            <table id="improvementScoreTable"><tbody id="improvementScoreBody"></tbody></table>
         </div>
 
         <!-- Interactive Priority Matrix -->
@@ -730,6 +617,80 @@
         opacity: 0.5;
         background-color: #fafafa;
     }
+
+    /* ===== Combined Priority Table — drag-and-drop & arrow controls ===== */
+    .prioritization-module .combined-priority-help {
+        font-size: 0.78rem;
+        opacity: 0.95;
+    }
+
+    .prioritization-module .priority-row {
+        transition: background-color 0.15s ease, transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .prioritization-module .priority-row[draggable="true"] {
+        cursor: default;
+    }
+    .prioritization-module .priority-row.dragging {
+        opacity: 0.5;
+        background: #E6F6FB !important;
+    }
+    .prioritization-module .priority-row.drag-over {
+        outline: 2px dashed #00B2E3;
+        outline-offset: -2px;
+        background: #F0F9FC !important;
+    }
+
+    .prioritization-module .drag-handle-cell { width: 36px; }
+    .prioritization-module .drag-handle {
+        font-size: 1.15rem;
+        color: #94a3b8;
+        cursor: grab;
+        user-select: none;
+        padding: 4px;
+        display: inline-block;
+    }
+    .prioritization-module .drag-handle:active { cursor: grabbing; }
+    .prioritization-module .priority-row:hover .drag-handle { color: var(--un-blue, #00B2E3); }
+
+    .prioritization-module .rank-arrow-btn {
+        padding: 0.25rem 0.5rem;
+        line-height: 1;
+        border-radius: 6px;
+    }
+    .prioritization-module .rank-arrow-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+    .prioritization-module .rank-arrow-btn i { font-size: 0.85rem; }
+
+    .prioritization-module .priority-row.excluded-row [draggable] {
+        cursor: not-allowed;
+    }
+
+    /* Combined gap-sequencing cell: dropdown row + amount line beneath */
+    .prioritization-module .priority-cell-amount {
+        margin-top: 0.35rem;
+        font-size: 0.78rem;
+        color: var(--un-blue-dark, #00689D);
+        line-height: 1.2;
+    }
+    .prioritization-module .priority-cell .gap-display + .priority-cell-amount {
+        border-top: 1px dashed #E6EDF3;
+        padding-top: 0.3rem;
+    }
+
+    /* Top Gaps to Tackle — sortable headers */
+    .prioritization-module .top-gaps-sort {
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.15s ease;
+    }
+    .prioritization-module .top-gaps-sort:hover { background-color: #eef2f7; }
+    .prioritization-module .top-gaps-sort--active {
+        background-color: #DDEEFB !important;
+        color: #00689D !important;
+    }
+    .prioritization-module .top-gaps-sort--active i { color: #00B2E3; }
 
     /* Summary Statistics Cards */
     .prioritization-module .col-md-3 .card {
@@ -1275,55 +1236,204 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Render Adjustable Stream Table
-    function renderAdjustableTable() {
-        const tbody = document.getElementById('adjustableStreamBody');
+    // ===== COMBINED PRIORITIZATION TABLE (drag-and-drop + up/down arrows) =====
+    // Sorts included streams by manualRank (initialised from defaultRank), excluded streams to the bottom.
+    function renderCombinedTable() {
+        const tbody = document.getElementById('combinedStreamBody');
+        const footer = document.getElementById('combinedStreamFooter');
+        if (!tbody) return;
 
         if (streams.length === 0) {
             tbody.innerHTML = `
                 <tr class="placeholder-row">
-                    <td colspan="5" class="text-center text-muted py-4">
+                    <td colspan="7" class="text-center text-muted py-4">
                         <i class="fas fa-exclamation-circle me-2"></i>No stream data found. Please complete the Gap Analysis tabs first.
                     </td>
-                </tr>
-            `;
+                </tr>`;
+            if (footer) footer.style.display = 'none';
             return;
         }
 
+        // Initialise manualRank for any stream that doesn't have one
+        streams.forEach(s => {
+            if (s.included && (s.manualRank == null || isNaN(s.manualRank))) {
+                s.manualRank = s.adjustedRank || s.defaultRank || 999;
+            }
+            if (!s.included) s.manualRank = null;
+        });
+
+        const includedOrdered = streams.filter(s => s.included)
+            .slice()
+            .sort((a, b) => (a.manualRank || 999) - (b.manualRank || 999));
+        // Renumber sequentially so manualRank is always 1..N with no gaps
+        includedOrdered.forEach((s, idx) => { s.manualRank = idx + 1; s.adjustedRank = idx + 1; });
+
+        const excluded = streams.filter(s => !s.included);
+        const ordered = [...includedOrdered, ...excluded];
+        const totalGap = includedOrdered.reduce((sum, s) => sum + s.totalFunctionalGap, 0);
+
         let html = '';
-        streams.forEach((stream, index) => {
-            const rowClass = stream.included ? '' : 'excluded-row';
+        ordered.forEach((stream) => {
+            const isIncluded = stream.included;
+            const idxInIncluded = isIncluded ? includedOrdered.indexOf(stream) : -1;
+            const isFirstIncluded = idxInIncluded === 0;
+            const isLastIncluded = idxInIncluded === includedOrdered.length - 1;
+            const sharePct = (isIncluded && totalGap > 0) ? (stream.totalFunctionalGap / totalGap) * 100 : 0;
+            const rowClasses = isIncluded ? 'priority-row' : 'priority-row excluded-row';
+
             html += `
-                <tr class="${rowClass}" data-stream-id="${stream.id}">
-                    <td class="text-center">
-                        <span class="rank-badge ${getRankBadgeClass(stream.defaultRank)}">${stream.defaultRank}</span>
+                <tr class="${rowClasses}" data-stream-id="${stream.id}" draggable="${isIncluded}">
+                    <td class="drag-handle-cell text-center align-middle">
+                        ${isIncluded ? '<i class="bi bi-grip-vertical drag-handle" aria-hidden="true" title="Drag to re-rank"></i>' : ''}
                     </td>
-                    <td>
+                    <td class="text-center align-middle">
+                        ${isIncluded
+                            ? `<span class="rank-badge ${getRankBadgeClass(stream.manualRank)}">${stream.manualRank}</span>`
+                            : `<span class="text-muted">—</span>`}
+                    </td>
+                    <td class="align-middle">
                         <span class="stream-badge ${stream.type}"></span>
                         ${stream.name}
                     </td>
-                    <td class="text-end fw-semibold">${formatCurrency(stream.totalFunctionalGap)}</td>
-                    <td class="text-center">
+                    <td class="text-end fw-semibold align-middle">${formatCurrency(stream.totalFunctionalGap)}</td>
+                    <td class="align-middle">
+                        ${isIncluded ? `
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fw-semibold" style="min-width: 52px;">${formatPercent(sharePct)}</span>
+                                <div class="share-bar flex-grow-1">
+                                    <div class="share-bar-fill" style="width: ${sharePct}%; background-color: ${stream.color};"></div>
+                                </div>
+                            </div>` : '<span class="text-muted">—</span>'}
+                    </td>
+                    <td class="text-center align-middle">
                         <select class="form-select form-select-sm dropdown-include-exclude"
                                 data-stream-id="${stream.id}"
                                 onchange="window.handleIncludeExcludeChange(this)">
-                            <option value="include" ${stream.included ? 'selected' : ''}>Include</option>
-                            <option value="exclude" ${!stream.included ? 'selected' : ''}>Exclude</option>
+                            <option value="include" ${isIncluded ? 'selected' : ''}>Include</option>
+                            <option value="exclude" ${!isIncluded ? 'selected' : ''}>Exclude</option>
                         </select>
                     </td>
-                    <td class="text-center">
-                        <select class="form-select form-select-sm dropdown-adjust-rank"
-                                data-stream-id="${stream.id}"
-                                onchange="window.handleAdjustRankChange(this)"
-                                ${!stream.included ? 'disabled' : ''}>
-                            <option value="">Auto</option>
-                            ${generateRankOptions(streams.length, stream.adjustedRank)}
-                        </select>
+                    <td class="text-center align-middle">
+                        ${isIncluded ? `
+                            <button type="button" class="btn btn-outline-secondary btn-sm rank-arrow-btn"
+                                    data-stream-id="${stream.id}" data-direction="up"
+                                    ${isFirstIncluded ? 'disabled' : ''} aria-label="Move up">
+                                <i class="bi bi-arrow-up"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm rank-arrow-btn ms-1"
+                                    data-stream-id="${stream.id}" data-direction="down"
+                                    ${isLastIncluded ? 'disabled' : ''} aria-label="Move down">
+                                <i class="bi bi-arrow-down"></i>
+                            </button>
+                        ` : '<span class="text-muted">—</span>'}
                     </td>
-                </tr>
-            `;
+                </tr>`;
         });
 
         tbody.innerHTML = html;
+        attachPriorityRowHandlers();
+
+        if (footer) {
+            if (includedOrdered.length > 0) {
+                footer.style.display = '';
+                const totalEl = document.getElementById('totalIncludedGap');
+                if (totalEl) totalEl.textContent = formatCurrency(totalGap);
+            } else {
+                footer.style.display = 'none';
+            }
+        }
+    }
+
+    // Backwards-compatible aliases used elsewhere in this file
+    function renderAdjustableTable() { renderCombinedTable(); }
+    function renderFinalTable()      { renderCombinedTable(); }
+
+    // ----- Drag-and-drop + arrow handlers for the combined table -----
+    function attachPriorityRowHandlers() {
+        const tbody = document.getElementById('combinedStreamBody');
+        if (!tbody) return;
+
+        let draggedRow = null;
+        tbody.querySelectorAll('tr[draggable="true"]').forEach(row => {
+            row.addEventListener('dragstart', (e) => {
+                draggedRow = row;
+                row.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                try { e.dataTransfer.setData('text/plain', row.dataset.streamId); } catch (_) {}
+            });
+            row.addEventListener('dragend', () => {
+                row.classList.remove('dragging');
+                tbody.querySelectorAll('.drag-over').forEach(r => r.classList.remove('drag-over'));
+                draggedRow = null;
+            });
+            row.addEventListener('dragover', (e) => {
+                if (!draggedRow || draggedRow === row) return;
+                if (row.classList.contains('excluded-row')) return; // can't drop onto excluded
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                row.classList.add('drag-over');
+            });
+            row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+            row.addEventListener('drop', (e) => {
+                e.preventDefault();
+                row.classList.remove('drag-over');
+                if (!draggedRow || draggedRow === row) return;
+                reorderStreamByDrop(draggedRow.dataset.streamId, row.dataset.streamId);
+            });
+        });
+
+        // Arrow buttons
+        tbody.querySelectorAll('.rank-arrow-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                moveStreamByArrow(btn.dataset.streamId, btn.dataset.direction);
+            });
+        });
+    }
+
+    function reorderStreamByDrop(fromId, toId) {
+        const fromStream = streams.find(s => s.id === fromId);
+        const toStream   = streams.find(s => s.id === toId);
+        if (!fromStream || !toStream || !fromStream.included || !toStream.included) return;
+
+        const list = streams.filter(s => s.included)
+            .slice()
+            .sort((a, b) => (a.manualRank || 999) - (b.manualRank || 999));
+        const fromIdx = list.indexOf(fromStream);
+        const toIdx   = list.indexOf(toStream);
+        if (fromIdx < 0 || toIdx < 0) return;
+        list.splice(fromIdx, 1);
+        list.splice(toIdx, 0, fromStream);
+        list.forEach((s, i) => { s.manualRank = i + 1; s.adjustedRank = i + 1; });
+
+        afterPriorityChange();
+    }
+
+    function moveStreamByArrow(streamId, direction) {
+        const stream = streams.find(s => s.id === streamId);
+        if (!stream || !stream.included) return;
+        const list = streams.filter(s => s.included)
+            .slice()
+            .sort((a, b) => (a.manualRank || 999) - (b.manualRank || 999));
+        const idx = list.indexOf(stream);
+        const target = direction === 'up' ? idx - 1 : idx + 1;
+        if (target < 0 || target >= list.length) return;
+        [list[idx], list[target]] = [list[target], list[idx]];
+        list.forEach((s, i) => { s.manualRank = i + 1; s.adjustedRank = i + 1; });
+
+        afterPriorityChange();
+    }
+
+    function afterPriorityChange() {
+        renderCombinedTable();
+        updateCharts();
+        updateStatistics();
+        // Propagate ranks to RosraStateManager so Recommendations / Overview stay in sync
+        if (typeof RosraStateManager !== 'undefined') {
+            streams.forEach(s => {
+                RosraStateManager.setStreamRank(s.id, s.included ? s.manualRank : null);
+            });
+        }
+        savePrioritizationState();
     }
 
     // Generate rank options
@@ -1446,57 +1556,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return { finalRanking, totalGap };
     }
 
-    // Render Final Stream Table
-    function renderFinalTable() {
-        const tbody = document.getElementById('finalStreamBody');
-        const footer = document.getElementById('finalStreamFooter');
-        const { finalRanking, totalGap } = calculateFinalRankings();
-
-        if (finalRanking.length === 0) {
-            tbody.innerHTML = `
-                <tr class="placeholder-row">
-                    <td colspan="5" class="text-center text-muted py-4">
-                        <i class="fas fa-info-circle me-2"></i>No streams included. Please include at least one stream in the table above.
-                    </td>
-                </tr>
-            `;
-            footer.style.display = 'none';
-            return;
-        }
-
-        let html = '';
-        finalRanking.forEach((stream) => {
-            html += `
-                <tr data-stream-id="${stream.id}">
-                    <td class="text-center">
-                        <span class="rank-badge ${getRankBadgeClass(stream.finalRank)}">${stream.finalRank}</span>
-                    </td>
-                    <td>
-                        <span class="stream-badge ${stream.type}"></span>
-                        ${stream.name}
-                    </td>
-                    <td class="text-end fw-semibold">${formatCurrency(stream.totalFunctionalGap)}</td>
-                    <td class="text-center">
-                        <div>
-                            <span class="fw-semibold">${formatPercent(stream.shareOfTotalGap)}</span>
-                            <div class="share-bar">
-                                <div class="share-bar-fill" style="width: ${stream.shareOfTotalGap}%; background-color: ${stream.color};"></div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="text-center">
-                        <span class="status-badge included">Included</span>
-                    </td>
-                </tr>
-            `;
-        });
-
-        tbody.innerHTML = html;
-
-        // Show footer with total
-        footer.style.display = '';
-        document.getElementById('totalIncludedGap').textContent = formatCurrency(totalGap);
-    }
+    // The original renderFinalTable() now lives inside renderCombinedTable().
+    // This stub is intentionally left blank so callers can be safely renamed without breakage.
+    // (Backwards-compat alias is defined further up next to renderCombinedTable.)
 
     // Update Charts
     function updateCharts() {
@@ -1993,7 +2055,7 @@ document.addEventListener('DOMContentLoaded', function() {
         tbody.innerHTML = html;
     }
 
-    // Render individual priority cell
+    // Render individual priority cell — combined cell shows the dropdown AND the amount
     function renderPriorityCell(stream, priorityIndex) {
         const gapData = stream.currentSequence[priorityIndex];
         const gapType = gapData ? gapData.type : null;
@@ -2001,8 +2063,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const isOverridden = gapData ? gapData.isOverridden : false;
 
         const displayGap = isRemoved ? 'Remove' : gapType;
-        const badgeClass = getGapBadgeClass(displayGap);
         const overriddenDot = isOverridden ? '<span class="overridden-indicator" title="Overridden from default"></span>' : '';
+        const amount = (!isRemoved && gapType && stream.gaps && stream.gaps[gapType] != null)
+                       ? formatCurrency(stream.gaps[gapType])
+                       : null;
+
+        const amountMarkup = isRemoved
+            ? '<div class="priority-cell-amount text-muted">—</div>'
+            : `<div class="priority-cell-amount fw-semibold">${amount ?? '—'}</div>`;
 
         return `
             <td class="text-center priority-cell">
@@ -2016,6 +2084,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </select>
                     ${overriddenDot}
                 </div>
+                ${amountMarkup}
             </td>
         `;
     }
@@ -2052,48 +2121,8 @@ document.addEventListener('DOMContentLoaded', function() {
         savePrioritizationState();
     };
 
-    // Render Gap Amounts Table
-    function renderGapAmountsTable() {
-        const tbody = document.getElementById('gapAmountsBody');
-
-        if (gapPrioritizationData.length === 0) {
-            tbody.innerHTML = `
-                <tr class="placeholder-row">
-                    <td colspan="8" class="text-center text-muted py-4">
-                        <i class="fas fa-info-circle me-2"></i>Gap amounts will appear after gap prioritization
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        let html = '';
-        gapPrioritizationData.forEach((stream) => {
-            const seq = stream.currentSequence;
-            html += `
-                <tr>
-                    <td class="text-center">
-                        <span class="rank-badge ${getRankBadgeClass(stream.finalRank)}">${stream.finalRank}</span>
-                    </td>
-                    <td>${stream.streamName}</td>
-                    <td class="text-center">
-                        <span class="gap-badge ${getGapBadgeClass(seq[0]?.type)}">${seq[0]?.removed ? '-' : seq[0]?.type}</span>
-                    </td>
-                    <td class="text-end fw-semibold">${seq[0]?.removed ? '-' : formatCurrency(stream.gaps[seq[0]?.type])}</td>
-                    <td class="text-center">
-                        <span class="gap-badge ${getGapBadgeClass(seq[1]?.type)}">${seq[1]?.removed ? '-' : seq[1]?.type}</span>
-                    </td>
-                    <td class="text-end fw-semibold">${seq[1]?.removed ? '-' : formatCurrency(stream.gaps[seq[1]?.type])}</td>
-                    <td class="text-center">
-                        <span class="gap-badge ${getGapBadgeClass(seq[2]?.type)}">${seq[2]?.removed ? '-' : seq[2]?.type}</span>
-                    </td>
-                    <td class="text-end fw-semibold">${seq[2]?.removed ? '-' : formatCurrency(stream.gaps[seq[2]?.type])}</td>
-                </tr>
-            `;
-        });
-
-        tbody.innerHTML = html;
-    }
+    // Gap Amounts table is now combined into renderPriorityCell() — this stub keeps callers safe.
+    function renderGapAmountsTable() { /* merged into the gap sequencing cells */ }
 
     // Render Gap Summary
     function renderGapSummary() {
@@ -2248,23 +2277,36 @@ document.addEventListener('DOMContentLoaded', function() {
         return allGaps;
     }
 
-    // Render Revenue Impact Ranking table
-    function renderRevenueImpactTable() {
-        const tbody = document.getElementById('revenueImpactBody');
-        const gaps = buildRevenueImpactList();
+    // ----- Top Gaps to Tackle (merges Revenue Impact + Improvement Score into one table) -----
+    let topGapsSortBy = 'amount'; // 'amount' or 'score'
+
+    function renderTopGapsTable() {
+        const tbody = document.getElementById('topGapsBody');
+        if (!tbody) return;
+
+        // buildImprovementScores() already includes amount + share + score + gapRatio + cardCount
+        const gaps = buildImprovementScores();
 
         if (gaps.length === 0) {
-            tbody.innerHTML = '<tr class="placeholder-row"><td colspan="5" class="text-center text-muted py-3"><small>No gap data available</small></td></tr>';
+            tbody.innerHTML = '<tr class="placeholder-row"><td colspan="7" class="text-center text-muted py-3"><small>No gap data available.</small></td></tr>';
             return;
         }
 
-        const maxAmount = gaps[0].amount;
+        // Sort by the currently selected key
+        const sorted = gaps.slice().sort((a, b) => {
+            return topGapsSortBy === 'score' ? (b.score - a.score) : (b.amount - a.amount);
+        });
+        const maxAmount = Math.max(...sorted.map(g => g.amount));
+
         let html = '';
-        gaps.forEach((g, idx) => {
+        sorted.forEach((g, idx) => {
             const barWidth = maxAmount > 0 ? (g.amount / maxAmount) * 100 : 0;
             const barColor = g.gapType === 'Compliance' ? '#ef4444' :
-                             g.gapType === 'Coverage' ? '#f59e0b' :
-                             g.gapType === 'Valuation' ? '#3b82f6' : '#8b5cf6';
+                             g.gapType === 'Coverage'   ? '#f59e0b' :
+                             g.gapType === 'Valuation'  ? '#3b82f6' : '#8b5cf6';
+            const scoreClass = g.score >= 60 ? 'score-high' : g.score >= 35 ? 'score-medium' : 'score-low';
+            const potentialClass = g.gapRatio >= 0.4 ? 'high' : g.gapRatio >= 0.2 ? 'medium' : 'low';
+            const potentialLabel = g.gapRatio >= 0.4 ? 'High potential' : g.gapRatio >= 0.2 ? 'Moderate' : 'Lower';
 
             html += `
                 <tr>
@@ -2280,12 +2322,34 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="small fw-semibold" style="min-width: 36px;">${g.share.toFixed(0)}%</span>
                         </div>
                     </td>
-                </tr>
-            `;
+                    <td class="text-center"><span class="score-badge ${scoreClass}">${g.score}</span></td>
+                    <td class="text-center"><span class="potential-label ${potentialClass}">${potentialLabel}</span></td>
+                </tr>`;
         });
 
         tbody.innerHTML = html;
+
+        // Visual indicator on the active sort header
+        document.querySelectorAll('.top-gaps-sort').forEach(th => {
+            th.classList.toggle('top-gaps-sort--active', th.dataset.sortBy === topGapsSortBy);
+        });
     }
+
+    // Wire up click-to-sort on the Amount / Score column headers (idempotent)
+    function attachTopGapsSortHandlers() {
+        document.querySelectorAll('.top-gaps-sort').forEach(th => {
+            if (th.dataset.bound === '1') return;
+            th.dataset.bound = '1';
+            th.style.cursor = 'pointer';
+            th.addEventListener('click', () => {
+                topGapsSortBy = th.dataset.sortBy;
+                renderTopGapsTable();
+            });
+        });
+    }
+
+    // Backwards-compat aliases — the original two render functions now both feed the combined table.
+    function renderRevenueImpactTable() { attachTopGapsSortHandlers(); renderTopGapsTable(); }
 
     // Calculate improvement opportunity score for each gap
     // Score = weighted combination of: absolute gap size, gap-to-potential ratio, number of available solution cards
@@ -2329,35 +2393,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return gaps;
     }
 
-    // Render Improvement Opportunity Scoring table
-    function renderImprovementScoreTable() {
-        const tbody = document.getElementById('improvementScoreBody');
-        const gaps = buildImprovementScores();
-
-        if (gaps.length === 0) {
-            tbody.innerHTML = '<tr class="placeholder-row"><td colspan="5" class="text-center text-muted py-3"><small>No gap data available</small></td></tr>';
-            return;
-        }
-
-        let html = '';
-        gaps.forEach((g, idx) => {
-            const scoreClass = g.score >= 60 ? 'score-high' : g.score >= 35 ? 'score-medium' : 'score-low';
-            const potentialClass = g.gapRatio >= 0.4 ? 'high' : g.gapRatio >= 0.2 ? 'medium' : 'low';
-            const potentialLabel = g.gapRatio >= 0.4 ? 'High potential' : g.gapRatio >= 0.2 ? 'Moderate' : 'Lower';
-
-            html += `
-                <tr>
-                    <td class="text-center"><span class="priority-number priority-${idx < 3 ? idx + 1 : 3}">${idx + 1}</span></td>
-                    <td>${g.streamName}</td>
-                    <td><span class="gap-badge ${getGapBadgeClass(g.gapType)}">${g.gapType}</span></td>
-                    <td class="text-center"><span class="score-badge ${scoreClass}">${g.score}</span></td>
-                    <td class="text-center"><span class="potential-label ${potentialClass}">${potentialLabel}</span></td>
-                </tr>
-            `;
-        });
-
-        tbody.innerHTML = html;
-    }
+    // Improvement scoring is now folded into renderTopGapsTable() — keep this stub for callers.
+    function renderImprovementScoreTable() { /* merged into renderTopGapsTable() */ }
 
     // Render Interactive Priority Matrix (bubble chart)
     function renderPriorityMatrix() {

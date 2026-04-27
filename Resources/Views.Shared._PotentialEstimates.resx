@@ -53,9 +53,9 @@
   <data name="CurrencyOverride" xml:space="preserve"><value>Use a different currency for analysis outputs</value></data>
   <data name="OverrideCurrency" xml:space="preserve"><value>Override Currency</value></data>
   <data name="CurrencyOverrideHelp" xml:space="preserve"><value>This changes the display currency for all analysis outputs.</value></data>
-  <data name="FrontierTitle" xml:space="preserve"><value>Within-Country OSR Frontier (Peer SNGs)</value></data>
-  <data name="FrontierSubtitle" xml:space="preserve"><value>Compare against domestic peer subnational governments</value></data>
-  <data name="SelectCountryForFrontier" xml:space="preserve"><value>Select a country and subnational government to view OSR frontier analysis</value></data>
+  <data name="FrontierTitle" xml:space="preserve"><value>Performance vs. Peer Local Governments</value></data>
+  <data name="FrontierSubtitle" xml:space="preserve"><value>How your collection stacks up against similar local governments in the same country.</value></data>
+  <data name="SelectCountryForFrontier" xml:space="preserve"><value>Fill in the configuration above and click "Get Analysis" to view the frontier comparison.</value></data>
   <data name="SubnationalGov" xml:space="preserve"><value>Subnational Government</value></data>
   <data name="SelectSng" xml:space="preserve"><value>Select a subnational government...</value></data>
   <data name="SelectSngForAnalysis" xml:space="preserve"><value>Select a subnational government to view the OSR frontier analysis</value></data>

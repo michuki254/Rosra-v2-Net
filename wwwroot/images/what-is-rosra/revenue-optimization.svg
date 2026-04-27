@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" role="img" aria-label="Revenue Optimization">
+  <defs>
+    <linearGradient id="roBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E6F7FC"/>
+      <stop offset="100%" stop-color="#C5EAF6"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#roBg)"/>
+  <line x1="40" y1="200" x2="360" y2="200" stroke="#00689D" stroke-width="2"/>
+  <line x1="40" y1="40" x2="40" y2="200" stroke="#00689D" stroke-width="2"/>
+  <rect x="70"  y="160" width="34" height="40"  fill="#4DD4F7"/>
+  <rect x="120" y="130" width="34" height="70"  fill="#00B2E3"/>
+  <rect x="170" y="100" width="34" height="100" fill="#00689D"/>
+  <rect x="220" y="75"  width="34" height="125" fill="#00B2E3"/>
+  <rect x="270" y="50"  width="34" height="150" fill="#00689D"/>
+  <path d="M75 175 L135 145 L195 115 L255 90 L315 60" fill="none" stroke="#F18F1F" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <polygon points="304,55 332,52 320,78" fill="#F18F1F"/>
+  <g transform="translate(330,130)">
+    <circle r="26" fill="#FFFFFF" stroke="#F18F1F" stroke-width="3"/>
+    <text x="0" y="6" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" fill="#00689D">$</text>
+  </g>
+  <circle cx="75" cy="175" r="4" fill="#F18F1F"/>
+  <circle cx="135" cy="145" r="4" fill="#F18F1F"/>
+  <circle cx="195" cy="115" r="4" fill="#F18F1F"/>
+  <circle cx="255" cy="90" r="4" fill="#F18F1F"/>
+</svg>

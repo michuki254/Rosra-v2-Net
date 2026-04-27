@@ -37,6 +37,20 @@ header {
     z-index: 1050;
 }
 
+/* Push the main page content down so the protruding 120×120 logo
+   panel (margin-bottom: -30px on .logo-container) does not overlap. */
+body > main,
+main[role="main"] {
+    padding-top: 38px;
+}
+
+header.scrolled ~ main[role="main"] { padding-top: 28px; }
+
+@media (max-width: 991px) {
+    body > main,
+    main[role="main"] { padding-top: 22px; }
+}
+
 /* Main Navbar - UN Blue Style */
 .main-navbar {
     position: relative;
@@ -59,32 +73,76 @@ header.scrolled .main-navbar {
 }
 
 /* Logo Styles */
+/* Prominent square logo panel — protrudes below the navbar (UN-Habitat style) */
 .logo-container {
     flex-shrink: 0;
-    padding: 0.75rem 0;
+    width: 120px;
+    height: 120px;
+    background: var(--un-blue);
+    border-radius: 4px;
+    box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.18), 0 2px 4px rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem;
+    margin: 0 0 -30px 0;
+    position: relative;
+    z-index: 5;
+    transition: all var(--transition-normal);
+}
+
+.logo-container a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    line-height: 0;
 }
 
 .logo-container img {
-    height: 50px;
+    width: auto;
     max-width: 100%;
-    transition: all var(--transition-normal);
-    filter: brightness(0) invert(1);
+    max-height: 100%;
+    transition: transform var(--transition-normal);
+    /* SVG is already white on transparent — no filter required */
 }
 
 .logo-container img:hover {
-    opacity: 0.9;
+    transform: scale(1.03);
+    opacity: 0.95;
 }
 
-.logo-right {
-    margin-left: 1.5rem;
+/* Right logo (Norad) — keep small/inline, override the new square-panel styling */
+.logo-container.logo-right {
+    width: auto;
+    height: auto;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    margin: 0 0 0 1.5rem;
+    position: static;
+    display: flex;
+    align-items: center;
 }
 
-.logo-right img {
+.logo-container.logo-right a {
+    width: auto;
+    height: auto;
+}
+
+.logo-container.logo-right img {
     height: 40px;
+    max-height: none;
+    width: auto;
 }
 
-header.scrolled .logo-container img {
-    height: 42px;
+header.scrolled .logo-container {
+    width: 92px;
+    height: 92px;
+    padding: 0.6rem;
+    margin-bottom: -22px;
 }
 
 /* Main Navigation Links */
@@ -496,8 +554,14 @@ header.scrolled .logo-container img {
         flex-wrap: wrap;
     }
 
+    .logo-container {
+        width: 78px;
+        height: 78px;
+        padding: 0.55rem;
+        margin-bottom: -16px;
+    }
     .logo-container img {
-        height: 42px;
+        max-height: 100%;
     }
 
     .navbar-collapse {

@@ -1506,14 +1506,14 @@
                                         <span class="input-group-text">%</span>
                                     </div>
                                 </div>
-                                <div class="mb-3">
+                                <!-- HIDDEN: Total Estimated Units / Compliant Units kept in DOM for JS -->
+                                <div class="mb-3" style="display:none;" aria-hidden="true">
                                     <label class="form-label text-primary">Total Estimated Units</label>
-                                    <input type="text" class="form-control" id="${streamId}TotalEstimatedUnits" readonly value="0" style="background-color: #e8f4fc;">
+                                    <input type="text" class="form-control" id="${streamId}TotalEstimatedUnits" readonly value="0">
                                 </div>
-                                <div class="mb-3">
+                                <div class="mb-3" style="display:none;" aria-hidden="true">
                                     <label class="form-label text-primary">Compliant Units</label>
-                                    <input type="text" class="form-control" id="${streamId}CompliantUnits" readonly value="0" style="background-color: #e8f4fc;">
-                                    <small class="text-muted">= Registered × (Revenue / Billed)</small>
+                                    <input type="text" class="form-control" id="${streamId}CompliantUnits" readonly value="0">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Billed Amount (${currencySymbol})</label>
@@ -1533,16 +1533,16 @@
                                                placeholder="Enter value" data-input="true">
                                     </div>
                                 </div>
-                                <div class="mb-3">
+                                <!-- HIDDEN: Revenue to Date kept in DOM for JS / new chart -->
+                                <div class="mb-3" style="display:none;" aria-hidden="true">
                                     <label class="form-label text-primary">Revenue to Date (${currencySymbol})</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text currency-symbol">${currencySymbol}</span>
-                                        <input type="text" class="form-control" id="${streamId}RevenueToDate" readonly value="0" style="background-color: #e8f4fc;">
-                                    </div>
-                                    <small class="text-muted">= Billed - Outstanding</small>
+                                    <input type="text" class="form-control" id="${streamId}RevenueToDate" readonly value="0">
                                 </div>
                             </div>
                         </div>
+
+                        <!-- HIDDEN: Useful Average Values + KPI Ratios cards kept in DOM for JS -->
+                        <div style="display:none;" aria-hidden="true">
 
                         <!-- Useful Average Values -->
                         <div class="card mb-3 shadow-sm">
@@ -1620,6 +1620,8 @@
                                 </div>
                             </div>
                         </div>
+
+                        </div><!-- /HIDDEN wrapper for AvgValues + KPI -->
                     </div>
 
                     <!-- Right Column - Results Section (col-lg-8) -->
@@ -1629,8 +1631,8 @@
                                 <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Graphical Representation of Analyzed Data</h6>
                             </div>
                             <div class="card-body">
-                                <!-- Potential Revenue Breakdown Table -->
-                                <div class="mb-4">
+                                <!-- HIDDEN: Potential Revenue Breakdown table kept in DOM for JS -->
+                                <div class="mb-4" style="display:none;" aria-hidden="true">
                                     <h6 class="text-center mb-3">Potential Revenue Breakdown</h6>
                                     <div class="table-responsive">
                                         <table class="table table-sm table-bordered table-striped table-hover">
@@ -1650,20 +1652,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Revenue and Gaps Pie Chart -->
-                                <div class="mb-4">
-                                    <h6 class="text-center mb-3">Revenue and Functional Gaps</h6>
-                                    <div class="d-flex justify-content-center">
-                                        <div style="height: 300px; width: 450px; position: relative;">
-                                            <canvas id="${streamId}PotentialRevenueChart"></canvas>
-                                        </div>
-                                    </div>
-                                    <p class="small text-muted mt-2 text-center">
-                                        <strong>DESCRIPTION:</strong> This pie chart shows the distribution of total potential revenue and each type of gap.
-                                    </p>
-                                </div>
-
-                                <hr>
+                                <!-- REMOVED: Revenue and Functional Gaps pie chart -->
 
                                 <!-- Matrix Dashboard -->
                                 <div class="mb-4">
@@ -1719,8 +1708,21 @@
 
                                 <hr>
 
-                                <!-- Administrative Gap Breakdown Table -->
-                                <div class="mb-4">
+                                <!-- Revenue to date vs Potential — Gap to Potential (two-bar layout) -->
+                                <div class="mb-4 revenue-gap-stack-section">
+                                    <div class="rg-stack-header">
+                                        <h6 class="rg-stack-title">Revenue to date vs Potential — Gap to Potential</h6>
+                                        <span class="rg-stack-units">AMOUNTS IN <span class="currency-label">${currencySymbol}</span> (B)</span>
+                                    </div>
+                                    <div class="chart-container" style="height: 420px;">
+                                        <canvas id="${streamId}RevenueGapStackedBarChart"></canvas>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <!-- HIDDEN: Administrative Gap Breakdown table kept in DOM for JS -->
+                                <div class="mb-4" style="display:none;" aria-hidden="true">
                                     <h6 class="text-center mb-3">Administrative Gap Breakdown (${currencySymbol})</h6>
                                     <div class="table-responsive">
                                         <table class="table table-sm table-bordered table-striped table-hover">
@@ -1763,6 +1765,7 @@
     function initializeStreamScripts(streamIndex, streamId, currencySymbol) {
         let potentialRevenueChart = null;
         let gapBreakdownChart = null;
+        let revenueGapStackedBarChart = null;
 
         function parseNumber(value) {
             if (!value) return 0;
@@ -1962,6 +1965,140 @@
                         type: 'pie', data: gapData,
                         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } } } }
                     });
+                }
+            }
+
+            // ----- Revenue to date vs Potential — two-bar chart -----
+            const rgCtx = document.getElementById(streamId + 'RevenueGapStackedBarChart');
+            if (rgCtx) {
+                const rgRev   = Math.max(0, revenueToDate);
+                const rgGap   = Math.max(0, complianceGap)
+                              + Math.max(0, coverageGap)
+                              + Math.max(0, liabilityGap)
+                              + Math.max(0, mixedCompliance)
+                              + Math.max(0, mixedCoverage);
+                const rgTotal = rgRev + rgGap;
+
+                if (revenueGapStackedBarChart) {
+                    revenueGapStackedBarChart.data.datasets[0].data = [rgRev, rgRev];
+                    revenueGapStackedBarChart.data.datasets[1].data = [0,     rgGap];
+                    revenueGapStackedBarChart.config._rgValues = { rev: rgRev, gap: rgGap, total: rgTotal };
+                    revenueGapStackedBarChart.update();
+                } else {
+                    const fmtCompactBn = function (v) {
+                        if (v == null || isNaN(v)) return '0';
+                        if (Math.abs(v) >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+                        if (Math.abs(v) >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+                        if (Math.abs(v) >= 1e3) return (v / 1e3).toFixed(1) + 'K';
+                        return Math.round(v).toLocaleString();
+                    };
+                    const rgPlugin = {
+                        id: 'rgGapAnnot_' + streamId,
+                        afterDatasetsDraw: function (chart) {
+                            const c  = chart.ctx;
+                            const m0 = chart.getDatasetMeta(0);
+                            const m1 = chart.getDatasetMeta(1);
+                            if (!m0 || !m1) return;
+                            const bar0Cur = m0.data[0];
+                            const bar0Pot = m0.data[1];
+                            const bar1Pot = m1.data[1];
+                            if (!bar0Cur || !bar0Pot || !bar1Pot) return;
+                            const v   = chart.config._rgValues || { rev: 0, gap: 0, total: 0 };
+                            const pct = v.total > 0 ? Math.round((v.gap / v.total) * 100) : 0;
+                            const fmtFull = function (n) { return currencySymbol + ' ' + fmtCompactBn(n); };
+
+                            c.save();
+                            c.font = '700 13px Roboto, "Segoe UI", Arial, sans-serif';
+                            c.fillStyle = '#1f2937';
+                            c.textAlign = 'center';
+                            c.textBaseline = 'bottom';
+                            c.fillText(fmtFull(v.rev),   bar0Cur.x, bar0Cur.y - 8);
+                            c.fillText(fmtFull(v.total), bar1Pot.x, bar1Pot.y - 8);
+
+                            c.fillStyle = '#ffffff';
+                            c.font = '700 14px Roboto, "Segoe UI", Arial, sans-serif';
+                            c.textBaseline = 'middle';
+                            if (Math.abs(bar0Cur.base - bar0Cur.y) > 22 && v.rev > 0) c.fillText(fmtCompactBn(v.rev), bar0Cur.x, (bar0Cur.y + bar0Cur.base) / 2);
+                            if (Math.abs(bar0Pot.base - bar0Pot.y) > 22 && v.rev > 0) c.fillText(fmtCompactBn(v.rev), bar0Pot.x, (bar0Pot.y + bar0Pot.base) / 2);
+                            if (Math.abs(bar1Pot.base - bar1Pot.y) > 22 && v.gap > 0) c.fillText(fmtCompactBn(v.gap), bar1Pot.x, (bar1Pot.y + bar1Pot.base) / 2);
+
+                            const halfW = (bar0Cur.width || 60) / 2;
+                            c.strokeStyle = '#9ca3af';
+                            c.lineWidth = 1;
+                            c.setLineDash([4, 4]);
+                            c.beginPath();
+                            c.moveTo(bar0Cur.x + halfW, bar0Cur.y);
+                            c.lineTo(bar0Pot.x - halfW, bar0Pot.y);
+                            c.stroke();
+                            c.setLineDash([]);
+
+                            if (v.gap > 0) {
+                                const bracketX = bar1Pot.x + ((bar1Pot.width || 60) / 2) + 18;
+                                const topY = bar1Pot.y, botY = bar1Pot.base;
+                                c.strokeStyle = '#FD9D24';
+                                c.lineWidth = 1.5;
+                                c.beginPath(); c.moveTo(bracketX, topY); c.lineTo(bracketX, botY); c.stroke();
+                                c.beginPath(); c.moveTo(bracketX, topY); c.lineTo(bracketX - 6, topY); c.stroke();
+                                c.beginPath(); c.moveTo(bracketX, botY); c.lineTo(bracketX - 6, botY); c.stroke();
+                                const midY = (topY + botY) / 2;
+                                c.fillStyle = '#FD9D24';
+                                c.textAlign = 'left';
+                                c.font = '700 12px Roboto, "Segoe UI", Arial, sans-serif';
+                                c.textBaseline = 'bottom';
+                                c.fillText('Gap', bracketX + 8, midY - 4);
+                                c.font = '700 14px Roboto, "Segoe UI", Arial, sans-serif';
+                                c.textBaseline = 'top';
+                                c.fillText(fmtCompactBn(v.gap), bracketX + 8, midY + 2);
+                                c.fillStyle = '#94a3b8';
+                                c.font = '500 11px Roboto, "Segoe UI", Arial, sans-serif';
+                                c.fillText(pct + '% of potential', bracketX + 8, midY + 22);
+                            }
+                            c.restore();
+                        }
+                    };
+                    revenueGapStackedBarChart = new Chart(rgCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: [['Revenue to date', 'actual collection'], ['Potential', 'total potential']],
+                            datasets: [
+                                { label: 'Revenue to date', data: [rgRev, rgRev], backgroundColor: '#00B2E3', stack: 'rg', borderWidth: 0, barThickness: 110, maxBarThickness: 130 },
+                                { label: 'Gap',             data: [0,     rgGap], backgroundColor: '#FD9D24', stack: 'rg', borderWidth: 0, barThickness: 110, maxBarThickness: 130 }
+                            ]
+                        },
+                        plugins: [rgPlugin],
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            layout: { padding: { top: 36, right: 150, bottom: 8, left: 8 } },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (ctx) {
+                                            return ctx.dataset.label + ': ' + currencySymbol + ' ' + fmtCompactBn(ctx.parsed.y);
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: { stacked: true, ticks: { font: { size: 12, weight: '700' }, color: '#1f2937', padding: 8 }, grid: { display: false }, border: { display: false } },
+                                y: {
+                                    stacked: true, beginAtZero: true,
+                                    ticks: {
+                                        font: { size: 11, weight: '500' }, color: '#94a3b8',
+                                        callback: function (v) {
+                                            if (v >= 1e9) return (v / 1e9).toFixed(1) + 'B';
+                                            if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+                                            if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
+                                            return v.toLocaleString();
+                                        }
+                                    },
+                                    grid: { color: '#eef0f3', drawBorder: false }
+                                }
+                            }
+                        }
+                    });
+                    revenueGapStackedBarChart.config._rgValues = { rev: rgRev, gap: rgGap, total: rgTotal };
                 }
             }
         }

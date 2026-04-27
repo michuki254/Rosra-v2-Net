@@ -58,7 +58,7 @@
 
   <!-- Tabs -->
   <data name="Tab_TopDown" xml:space="preserve"><value>Analyse descendante</value></data>
-  <data name="Tab_BottomUp" xml:space="preserve"><value>Analyse ascendante</value></data>
+  <data name="Tab_BottomUp" xml:space="preserve"><value>Analyser chaque source de revenus</value></data>
   <data name="Tab_GapAnalysis" xml:space="preserve"><value>Analyse des écarts</value></data>
   <data name="Tab_Prioritization" xml:space="preserve"><value>Priorisation</value></data>
   <data name="Tab_OverviewSelection" xml:space="preserve"><value>Sélection des solutions</value></data>

@@ -5,6 +5,366 @@
     int currentYear = DateTime.Now.Year;
 }
 
+<style>
+    /* ============================================================
+       Configuration Card — new redesigned data input
+       ============================================================ */
+    .config-card {
+        background: #ffffff;
+        border: 1px solid #E6EDF3;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 14px -4px rgba(0, 0, 0, 0.06);
+        margin-bottom: 1.25rem;
+    }
+
+    .config-header {
+        background: linear-gradient(90deg, #2BB8E2 0%, #00B2E3 100%);
+        color: #ffffff;
+        padding: 0.85rem 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .config-header-left {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .config-header-left i { font-size: 1rem; opacity: 0.95; }
+
+    .config-header-right {
+        font-size: 0.78rem;
+        opacity: 0.95;
+        font-weight: 500;
+    }
+
+    .config-body { padding: 1.5rem 1.5rem 1.25rem; }
+
+    .cfg-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem 1.5rem;
+        margin-bottom: 1.1rem;
+    }
+
+    .cfg-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .cfg-row-4 { grid-template-columns: 0.6fr 1.2fr 1.2fr 1fr; }
+
+    .cfg-field { display: flex; flex-direction: column; min-width: 0; }
+    .cfg-field-narrow { max-width: 160px; }
+
+    .cfg-label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .cfg-label-check {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .cfg-check {
+        width: 16px;
+        height: 16px;
+        accent-color: #7c3aed;
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .cfg-req { color: #FD9D24; font-weight: 700; }
+
+    .cfg-input {
+        min-height: 40px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 0.55rem 0.75rem;
+        background-color: #ffffff;
+        color: #1f2937;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        box-sizing: border-box;
+        vertical-align: middle;
+    }
+
+    /* Native selects need extra right padding to clear the dropdown caret
+       and a tiny line-height tweak so the selected text stays centred. */
+    select.cfg-input {
+        padding: 0.4rem 2.25rem 0.4rem 0.75rem;
+        line-height: 1.5;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 14px 12px;
+    }
+
+    .cfg-input:focus {
+        border-color: #00B2E3;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 178, 227, 0.15);
+    }
+
+    .cfg-input.cfg-readonly,
+    .cfg-input[readonly] {
+        background-color: #F3F4F6;
+        color: #374151;
+        cursor: default;
+    }
+
+    .cfg-help {
+        font-size: 0.72rem;
+        color: #00B2E3;
+        margin-top: 0.3rem;
+    }
+
+    .cfg-field-add {
+        border: 1px dashed #d1d5db;
+        border-radius: 8px;
+        padding: 0.55rem 0.75rem;
+        background: #FAFBFC;
+        justify-content: center;
+    }
+
+    .cfg-field-add .cfg-label {
+        margin-bottom: 0.4rem;
+        font-weight: 600;
+        color: #4b5563;
+    }
+
+    .cfg-l3-input { margin-top: 0.4rem; }
+
+    .cfg-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 0.5rem;
+    }
+
+    .btn-get-analysis {
+        background: #FD9D24;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.7rem 1.4rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(253, 157, 36, 0.3);
+        transition: all 0.18s ease;
+    }
+
+    .btn-get-analysis:hover {
+        background: #E8891A;
+        box-shadow: 0 6px 18px rgba(253, 157, 36, 0.4);
+        transform: translateY(-1px);
+    }
+
+    .btn-get-analysis:active { transform: translateY(0); }
+
+    /* Country flag tweak inside cfg layout */
+    .cfg-field .country-select-wrapper { gap: 0.4rem; }
+    .cfg-field .country-select-wrapper .form-select { flex: 1; }
+
+    /* Responsive */
+    @@media (max-width: 992px) {
+        .cfg-row, .cfg-row-3, .cfg-row-4 { grid-template-columns: 1fr 1fr; }
+        .cfg-field-narrow { max-width: none; }
+    }
+    @@media (max-width: 600px) {
+        .cfg-row, .cfg-row-3, .cfg-row-4 { grid-template-columns: 1fr; }
+        .config-header { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+    }
+
+    /* ============================================================
+       Gap-to-Frontier chart header (PRIMARY chart)
+       ============================================================ */
+    .gap-frontier-section {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 1.1rem 1.25rem 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+    .gap-frontier-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 0.4rem;
+    }
+    .gap-frontier-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+    }
+    .gap-frontier-units {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        letter-spacing: 1.2px;
+        font-weight: 600;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+    @@media (max-width: 600px) {
+        .gap-frontier-header { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+    }
+
+    /* ============================================================
+       "More Analysis & Methodology" expandable toggle
+       ============================================================ */
+    .more-analysis-toggle-wrap {
+        margin: 0.5rem 0 1.5rem;
+    }
+    .more-analysis-toggle {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        background: #F0F9FC;
+        border: 1px dashed #BDE3F0;
+        border-radius: 10px;
+        padding: 0.85rem 1.1rem;
+        color: #00689D;
+        font-weight: 600;
+        font-size: 0.92rem;
+        cursor: pointer;
+        transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
+    }
+    .more-analysis-toggle:hover {
+        background: #E6F6FB;
+        border-color: #00B2E3;
+        box-shadow: 0 2px 10px -2px rgba(0, 178, 227, 0.25);
+    }
+    .more-analysis-toggle__text {
+        display: inline-flex;
+        align-items: center;
+    }
+    .more-analysis-toggle__cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: #00B2E3;
+        color: #fff;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.82rem;
+        white-space: nowrap;
+    }
+    .more-analysis-toggle__chevron {
+        transition: transform 0.25s ease;
+    }
+    .more-analysis-toggle.is-expanded .more-analysis-toggle__chevron {
+        transform: rotate(180deg);
+    }
+    .more-analysis-toggle.is-expanded .more-analysis-toggle__cta {
+        background: #00689D;
+    }
+    .more-analysis-content {
+        animation: more-analysis-fadein 0.22s ease;
+    }
+    @@keyframes more-analysis-fadein {
+        from { opacity: 0; transform: translateY(-4px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    @@media (max-width: 600px) {
+        .more-analysis-toggle {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+    }
+
+    /* ============================================================
+       "Next step → Analyse Each Revenue Stream" CTA
+       ============================================================ */
+    .next-step-cta-wrap {
+        margin: 2rem 0 1rem;
+    }
+    .next-step-cta {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+        background: #00B2E3;
+        border: none;
+        border-radius: 14px;
+        padding: 1.1rem 1.6rem;
+        color: #ffffff;
+        text-align: left;
+        cursor: pointer;
+        box-shadow: 0 6px 20px -6px rgba(0, 178, 227, 0.4);
+        transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+    .next-step-cta:hover {
+        transform: translateY(-1px);
+        background: #009ECB;
+        box-shadow: 0 10px 26px -6px rgba(0, 178, 227, 0.55);
+    }
+    .next-step-cta:active { transform: translateY(0); }
+    .next-step-cta__copy {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        min-width: 0;
+    }
+    .next-step-cta__eyebrow {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        opacity: 0.85;
+    }
+    .next-step-cta__title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+    .next-step-cta__sub {
+        font-size: 0.85rem;
+        font-weight: 400;
+        opacity: 0.9;
+        line-height: 1.35;
+    }
+    .next-step-cta__arrow {
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.18);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.18s ease, background 0.18s ease;
+    }
+    .next-step-cta:hover .next-step-cta__arrow {
+        transform: translateX(3px);
+        background: rgba(255, 255, 255, 0.28);
+    }
+    .next-step-cta__arrow i { font-size: 1.2rem; }
+    @@media (max-width: 600px) {
+        .next-step-cta { flex-direction: column; align-items: flex-start; gap: 0.85rem; }
+        .next-step-cta__arrow { align-self: flex-end; }
+    }
+</style>
+
 <div class="potential-estimates-container">
     <!-- Top-Down Analysis Intro Section -->
     <div class="top-down-intro-section mb-4">
@@ -15,228 +375,144 @@
     </div>
 
     <div class="row g-4">
-        <!-- Top Panel - Compact Input Form (Full Width) -->
+        <!-- Top Panel - Configuration Card (Full Width) -->
         <div class="col-12">
             <div class="input-panel">
-                <!-- Combined Data Input Card -->
-                <div class="input-card compact-card">
-                    <div class="input-card-header compact-header collapsible-header" data-bs-toggle="collapse" data-bs-target="#dataInputBody" aria-expanded="true" aria-controls="dataInputBody" style="cursor: pointer;">
-                        <div class="header-icon">
-                            <i class="bi bi-pencil-square"></i>
+                <!-- New Configuration Card (replaces compact data-input card) -->
+                <div class="config-card">
+                    <div class="config-header">
+                        <div class="config-header-left">
+                            <i class="bi bi-gear-fill"></i>
+                            <span>Configuration</span>
                         </div>
-                        <div class="flex-grow-1">
-                            <h5 class="card-title mb-0">@Localizer["DataInputBlock"]</h5>
-                            <p class="card-subtitle mb-0">@Localizer["EnterInfo"]</p>
-                        </div>
-                        <div class="collapse-toggle-btn">
-                            <i class="bi bi-chevron-up collapse-icon"></i>
-                        </div>
+                        <div class="config-header-right">All fields required · ~2 min</div>
                     </div>
-                    <div class="collapse show" id="dataInputBody">
-                    <div class="input-card-body compact-body">
+                    <div class="config-body">
                         <input type="hidden" id="currencySymbol" name="CurrencySymbol" value="@Model.CurrencySymbol">
+                        <input type="hidden" id="finalUnitLevel" name="FinalUnitLevel" value="@Model.FinalUnitLevel">
+                        <input type="hidden" id="overrideCurrencySymbol" name="OverrideCurrencySymbol" value="">
+                        <!-- Hidden — kept so existing JS that sets these values does not error -->
+                        <input type="hidden" id="incomeLevel" name="IncomeLevel" value="@Model.IncomeLevel">
+                        <input type="hidden" id="governmentType" name="GovernmentType" value="@Model.GovernmentType">
+                        <input type="hidden" id="budgetedOsr" name="BudgetedOsr" value="@(Model.BudgetedOsr?.ToString("#,##0.##"))">
 
                         <!-- Row 1: Country & Financial Year -->
-                        <div class="compact-row">
-                            <div class="compact-field">
-                                <label class="compact-label">@Localizer["Country"]</label>
+                        <div class="cfg-row">
+                            <div class="cfg-field">
+                                <label class="cfg-label">@Localizer["Country"]</label>
                                 <div class="country-select-wrapper">
                                     <span id="country-flag" class="fi" style="display: none; font-size: 1.25rem; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></span>
-                                    <select class="form-select form-select-sm @(isViewMode ? "readonly" : "")" id="country" name="Country" @(isViewMode ? "disabled" : "")>
+                                    <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="country" name="Country" @(isViewMode ? "disabled" : "")>
                                         <option value="">@Localizer["SelectCountry"]</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="compact-field">
-                                <label class="compact-label">@Localizer["FinancialYear"]</label>
-                                <select class="form-select form-select-sm @(isViewMode ? "readonly" : "")" id="financialYear" name="FinancialYear" @(isViewMode ? "disabled" : "")>
+                            <div class="cfg-field">
+                                <label class="cfg-label">@Localizer["FinancialYear"]</label>
+                                <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="financialYear" name="FinancialYear" @(isViewMode ? "disabled" : "")>
                                     <option value="">@Localizer["SelectYear"]</option>
                                 </select>
+                                <small class="cfg-help">Period the assessment covers</small>
                             </div>
                         </div>
 
-                        <!-- Row 2: Government Unit Level 1 (hidden until country selected) -->
-                        <div class="compact-row single" id="govUnitLevel1Row" style="display: none;">
-                            <div class="compact-field full-width">
-                                <label class="compact-label">@Localizer["GovUnit1"]</label>
-                                <small class="gov-unit-helper">@Localizer["GovUnit1Helper"]</small>
-                                <select class="form-select form-select-sm @(isViewMode ? "readonly" : "")" id="region" name="Region" @(isViewMode ? "disabled" : "")>
+                        <!-- Row 2: Gov Unit L1 / L2 / Add L3 -->
+                        <div class="cfg-row cfg-row-3" id="govUnitLevel1Row">
+                            <div class="cfg-field">
+                                <label class="cfg-label">Government Unit — Level 1</label>
+                                <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="region" name="Region" @(isViewMode ? "disabled" : "")>
                                     <option value="">@Localizer["SelectLevel1"]</option>
                                 </select>
-                                <div class="form-check mt-1">
-                                    <input class="form-check-input" type="checkbox" id="level1IsFinal" @(isViewMode ? "disabled" : "")>
-                                    <label class="form-check-label gov-unit-checkbox-label" for="level1IsFinal">
-                                        @Localizer["Level1Final"]
-                                    </label>
-                                </div>
+                                <small class="cfg-help">Region, province or county</small>
+                                <input class="d-none" type="checkbox" id="level1IsFinal" @(isViewMode ? "disabled" : "")>
                             </div>
-                        </div>
-
-                        <!-- Row 3: Government Unit Level 2 (hidden until L1 selected & L1 unchecked) -->
-                        <div class="compact-row single" id="govUnitLevel2Row" style="display: none;">
-                            <div class="compact-field full-width">
-                                <label class="compact-label">@Localizer["GovUnit2"]</label>
-                                <small class="gov-unit-helper">@Localizer["GovUnit2Helper"]</small>
-                                <input type="text" class="form-control form-control-sm @(isViewMode ? "readonly" : "")"
+                            <div class="cfg-field" id="govUnitLevel2Row">
+                                <label class="cfg-label cfg-label-check">
+                                    <input type="checkbox" id="level2Toggle" class="cfg-check" checked />
+                                    <span>Government Unit — Level 2</span>
+                                </label>
+                                <input type="text" class="form-control cfg-input @(isViewMode ? "readonly" : "")"
                                        id="city" name="City" value="@Model.City"
                                        placeholder="@Localizer["EnterLevel2"]" @(isViewMode ? "readonly" : "")>
-                                <div class="form-check mt-1">
-                                    <input class="form-check-input" type="checkbox" id="level2IsFinal" @(isViewMode ? "disabled" : "")>
-                                    <label class="form-check-label gov-unit-checkbox-label" for="level2IsFinal">
-                                        @Localizer["Level2Final"]
-                                    </label>
-                                </div>
+                                <small class="cfg-help">District, municipality or sub-county</small>
+                                <input class="d-none" type="checkbox" id="level2IsFinal" @(isViewMode ? "disabled" : "")>
                             </div>
-                        </div>
-
-                        <!-- Row 4: Government Unit Level 3 (hidden until L2 filled & L2 unchecked) -->
-                        <div class="compact-row single" id="govUnitLevel3Row" style="display: none;">
-                            <div class="compact-field full-width">
-                                <label class="compact-label">Government Unit Level 3</label>
-                                <small class="gov-unit-helper">e.g. ward, borough, arrondissement, subcounty, zone, neighborhood</small>
-                                <input type="text" class="form-control form-control-sm @(isViewMode ? "readonly" : "")"
+                            <div class="cfg-field cfg-field-add" id="govUnitLevel3Row">
+                                <label class="cfg-label cfg-label-check">
+                                    <input type="checkbox" id="addLevel3Toggle" class="cfg-check" />
+                                    <span>Add Government Unit — Level 3</span>
+                                </label>
+                                <input type="text" class="form-control cfg-input cfg-l3-input @(isViewMode ? "readonly" : "")"
                                        id="govUnitLevel3" name="GovUnitLevel3" value="@Model.GovUnitLevel3"
-                                       placeholder="Enter level 3 unit" @(isViewMode ? "readonly" : "")>
+                                       placeholder="Ward, borough, sub-county..." @(isViewMode ? "readonly" : "")
+                                       style="display:@(string.IsNullOrEmpty(Model.GovUnitLevel3) ? "none" : "block");">
                             </div>
                         </div>
 
-                        <!-- Hidden field for final unit level -->
-                        <input type="hidden" id="finalUnitLevel" name="FinalUnitLevel" value="@Model.FinalUnitLevel">
+                        @* Hierarchy note text removed per request. Empty stub kept so existing JS that toggles #hierarchyNote does not error. *@
+                        <div id="hierarchyNote" style="display: none;" aria-hidden="true"></div>
 
-                        <!-- Hierarchy note -->
-                        <div class="gov-unit-note" id="hierarchyNote" style="display: none;">
-                            <i class="bi bi-info-circle"></i>
-                            <span>@Localizer["HierarchyNote"]</span>
-                        </div>
-
-                        <!-- Row 5: Currency (auto) & Income Level (auto) -->
-                        <div class="compact-row">
-                            <div class="compact-field">
-                                <label class="compact-label">@Localizer["Currency"]</label>
-                                <div class="auto-value-display" id="currency-display">
-                                    <span class="currency-badge" id="currency-symbol">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "-" : Model.CurrencySymbol)</span>
-                                    <input type="text" class="form-control form-control-sm readonly-auto"
-                                           id="currency" name="Currency" value="@Model.Currency"
-                                           placeholder="-" readonly>
-                                </div>
-                            </div>
-                            <div class="compact-field">
-                                <label class="compact-label">@Localizer["IncomeLevel"]</label>
-                                <input type="text" class="form-control form-control-sm readonly-auto"
-                                       id="incomeLevel" name="IncomeLevel" value="@Model.IncomeLevel"
+                        <!-- Row 3: Currency / OSR / GCP / Population -->
+                        <div class="cfg-row cfg-row-4">
+                            <div class="cfg-field cfg-field-narrow">
+                                <label class="cfg-label">@Localizer["Currency"]</label>
+                                <input type="text" class="form-control cfg-input cfg-readonly"
+                                       id="currency" name="Currency" value="@(string.IsNullOrEmpty(Model.CurrencySymbol) ? Model.Currency : Model.CurrencySymbol)"
                                        placeholder="-" readonly>
+                                <small class="cfg-help">Symbol</small>
+                                <span id="currency-symbol" class="d-none">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "-" : Model.CurrencySymbol)</span>
+                            </div>
+                            <div class="cfg-field">
+                                <label class="cfg-label">Own-Source Revenue (OSR) <span class="cfg-req">*</span></label>
+                                <input type="text" class="form-control cfg-input number-format @(isViewMode ? "readonly" : "")"
+                                       id="actualOsr" name="ActualOsr" value="@(Model.ActualOsr?.ToString("#,##0.##"))"
+                                       placeholder="e.g. 12,500,000,000" @(isViewMode ? "readonly" : "")>
+                                <small class="cfg-help">Total revenue the local government collects directly — taxes, fees, charges, fines (LCU).</small>
+                            </div>
+                            <div class="cfg-field">
+                                <label class="cfg-label">GRP <span class="cfg-req">*</span></label>
+                                <input type="text" class="form-control cfg-input number-format @(isViewMode ? "readonly" : "")"
+                                       id="gdpPerCapita" name="GdpPerCapita" value="@(Model.GdpPerCapita?.ToString("#,##0.##"))"
+                                       placeholder="e.g. 480,000,000,000" @(isViewMode ? "readonly" : "")>
+                                <small class="cfg-help">Gross Regional Product (LCU)</small>
+                            </div>
+                            <div class="cfg-field">
+                                <label class="cfg-label">Population</label>
+                                <input type="text" class="form-control cfg-input number-format @(isViewMode ? "readonly" : "")"
+                                       id="population" name="Population" value="@(Model.Population?.ToString("#,##0"))"
+                                       placeholder="e.g. 4,397,073" @(isViewMode ? "readonly" : "")>
+                                <small class="cfg-help">Optional — most recent census</small>
                             </div>
                         </div>
 
-                        <!-- Row 5b: Currency Override Toggle -->
-                        <div class="compact-row single" id="currencyOverrideRow">
-                            <div class="compact-field full-width">
-                                <div class="currency-override-toggle">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" role="switch" id="useDifferentCurrency" @(isViewMode ? "disabled" : "")>
-                                        <label class="form-check-label" for="useDifferentCurrency">
-                                            @Localizer["CurrencyOverride"]
-                                        </label>
-                                    </div>
+                        @* COMMENTED OUT — Income Level (visual). Hidden input above preserves @Model.IncomeLevel. *@
+                        @* COMMENTED OUT — Government Type (visual). Hidden input above preserves @Model.GovernmentType. *@
+
+                        @* Hidden DOM stubs preserved so existing JS that references these IDs does not throw *@
+                        <div style="display:none;" aria-hidden="true">
+                            <span id="actual-osr-currency">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "" : Model.CurrencySymbol)</span>
+                            <span id="budgeted-osr-currency">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "" : Model.CurrencySymbol)</span>
+                            <div id="currencyOverrideRow">
+                                <input type="checkbox" id="useDifferentCurrency" />
+                                <div id="currencyOverrideSelect">
+                                    <select id="overrideCurrency"><option value=""></option></select>
                                 </div>
-                                <div class="currency-override-select" id="currencyOverrideSelect" style="display: none;">
-                                    <label class="compact-label">@Localizer["OverrideCurrency"]</label>
-                                    <select class="form-select form-select-sm" id="overrideCurrency" @(isViewMode ? "disabled" : "")>
-                                        <option value="">-- Select currency --</option>
-                                        <option value="USD" data-symbol="$" data-name="US Dollar">USD – US Dollar ($)</option>
-                                        <option value="EUR" data-symbol="€" data-name="Euro">EUR – Euro (€)</option>
-                                        <option value="GBP" data-symbol="£" data-name="British Pound">GBP – British Pound (£)</option>
-                                        <option value="JPY" data-symbol="¥" data-name="Japanese Yen">JPY – Japanese Yen (¥)</option>
-                                        <option value="CHF" data-symbol="CHF" data-name="Swiss Franc">CHF – Swiss Franc (CHF)</option>
-                                        <option value="CAD" data-symbol="CA$" data-name="Canadian Dollar">CAD – Canadian Dollar (CA$)</option>
-                                        <option value="AUD" data-symbol="A$" data-name="Australian Dollar">AUD – Australian Dollar (A$)</option>
-                                        <option value="CNY" data-symbol="¥" data-name="Chinese Yuan">CNY – Chinese Yuan (¥)</option>
-                                        <option value="INR" data-symbol="₹" data-name="Indian Rupee">INR – Indian Rupee (₹)</option>
-                                        <option value="ZAR" data-symbol="R" data-name="South African Rand">ZAR – South African Rand (R)</option>
-                                        <option value="BRL" data-symbol="R$" data-name="Brazilian Real">BRL – Brazilian Real (R$)</option>
-                                        <option value="NGN" data-symbol="₦" data-name="Nigerian Naira">NGN – Nigerian Naira (₦)</option>
-                                        <option value="EGP" data-symbol="E£" data-name="Egyptian Pound">EGP – Egyptian Pound (E£)</option>
-                                        <option value="SAR" data-symbol="﷼" data-name="Saudi Riyal">SAR – Saudi Riyal (SAR)</option>
-                                        <option value="AED" data-symbol="د.إ" data-name="UAE Dirham">AED – UAE Dirham (AED)</option>
-                                        <option value="SGD" data-symbol="S$" data-name="Singapore Dollar">SGD – Singapore Dollar (S$)</option>
-                                    </select>
-                                    <small class="text-muted mt-1 d-block">
-                                        <i class="bi bi-info-circle me-1"></i>@Localizer["CurrencyOverrideHelp"]
-                                    </small>
-                                </div>
-                                <input type="hidden" id="overrideCurrencySymbol" name="OverrideCurrencySymbol" value="">
                             </div>
                         </div>
 
-                        <!-- Row 6: Government Type (full width, auto) -->
-                        <div class="compact-row single">
-                            <div class="compact-field full-width">
-                                <label class="compact-label">@Localizer["GovernmentType"]</label>
-                                <input type="text" class="form-control form-control-sm readonly-auto"
-                                       id="governmentType" name="GovernmentType" value="@Model.GovernmentType"
-                                       placeholder="-" readonly>
-                            </div>
+                        <!-- Action: Get Analysis -->
+                        <div class="cfg-actions">
+                            <button type="button" id="getAnalysisBtn" class="btn-get-analysis">
+                                Get Analysis <i class="bi bi-arrow-right ms-1"></i>
+                            </button>
                         </div>
-
-                        <!-- Financial Metrics Section - Hidden (not useful for Top-Down analysis) -->
-                        <div id="financialMetricsSection" style="display: none;">
-                            <!-- Divider -->
-                            <div class="compact-divider">
-                                <span>Financial Metrics <span class="year-display">2024</span></span>
-                            </div>
-
-                            <!-- Row 5: Actual OSR & Budgeted OSR -->
-                            <div class="compact-row">
-                                <div class="compact-field">
-                                    <label class="compact-label">Actual OSR</label>
-                                    <div class="compact-currency-input">
-                                        <span class="currency-prefix" id="actual-osr-currency">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "" : Model.CurrencySymbol)</span>
-                                        <input type="text" class="form-control form-control-sm number-format @(isViewMode ? "readonly" : "")"
-                                               id="actualOsr" name="ActualOsr" value="@(Model.ActualOsr?.ToString("#,##0.##"))"
-                                               placeholder="0" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="compact-field">
-                                    <label class="compact-label">Budgeted OSR</label>
-                                    <div class="compact-currency-input">
-                                        <span class="currency-prefix" id="budgeted-osr-currency">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "" : Model.CurrencySymbol)</span>
-                                        <input type="text" class="form-control form-control-sm number-format @(isViewMode ? "readonly" : "")"
-                                               id="budgetedOsr" name="BudgetedOsr" value="@(Model.BudgetedOsr?.ToString("#,##0.##"))"
-                                               placeholder="0" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Row 6: Population & GDP per capita -->
-                            <div class="compact-row">
-                                <div class="compact-field">
-                                    <label class="compact-label">Population</label>
-                                    <div class="compact-currency-input">
-                                        <span class="currency-prefix"><i class="bi bi-people-fill"></i></span>
-                                        <input type="text" class="form-control form-control-sm number-format @(isViewMode ? "readonly" : "")"
-                                               id="population" name="Population" value="@(Model.Population?.ToString("#,##0"))"
-                                               placeholder="0" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                                <div class="compact-field">
-                                    <label class="compact-label">GDP per capita <span class="usd-indicator" id="gdpUsdIndicator">(USD)</span></label>
-                                    <div class="compact-currency-input">
-                                        <span class="currency-prefix">$</span>
-                                        <input type="text" class="form-control form-control-sm number-format @(isViewMode ? "readonly" : "")"
-                                               id="gdpPerCapita" name="GdpPerCapita" value="@(Model.GdpPerCapita?.ToString("#,##0.##"))"
-                                               placeholder="0" @(isViewMode ? "readonly" : "")>
-                                    </div>
-                                </div>
-                            </div>
-                        </div><!-- End hidden Financial Metrics Section -->
                     </div>
-                    </div> <!-- Close collapse wrapper -->
                 </div>
             </div>
         </div>
 
-        <!-- Bottom Panel - Frontier Analysis (Full Width) -->
-        <div class="col-12">
+        <!-- Bottom Panel - Frontier Analysis (Full Width) — hidden until "Get Analysis" is clicked -->
+        <div class="col-12" id="analysisPanelWrap" style="display:none;">
             <div class="analysis-panel">
                 <!-- Within-Country OSR Frontier Header (PRIMARY) -->
                 <div class="frontier-card">
@@ -258,13 +534,41 @@
 
                     <!-- Frontier Analysis Content -->
                     <div class="frontier-content" id="frontierContent" style="display: none;">
-                        <!-- PRIMARY ANALYSIS: Within-Country OSR Frontier - MOVED TO TOP -->
+                        <!-- PRIMARY CHART: Current OSR vs Potential — Gap to Frontier (above Peer SNGs section) -->
+                        <div class="module2-chart-section gap-frontier-section">
+                            <div class="gap-frontier-header">
+                                <h6 class="gap-frontier-title">Current OSR vs Potential — Gap to Frontier</h6>
+                                <span class="gap-frontier-units" id="gapFrontierUnits">AMOUNTS IN LCU (B)</span>
+                            </div>
+                            <div class="chart-container" style="height: 400px;">
+                                <canvas id="actualVsPotentialChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Collapsible "More Analysis & Methodology" wrapper — collapsed by default -->
+                        <div class="more-analysis-toggle-wrap">
+                            <button type="button" id="moreAnalysisToggle" class="more-analysis-toggle"
+                                    aria-expanded="false" aria-controls="moreAnalysisContent">
+                                <span class="more-analysis-toggle__text">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Want to see more analysis &amp; methodology behind these numbers?
+                                </span>
+                                <span class="more-analysis-toggle__cta">
+                                    <span class="more-analysis-toggle__label">Expand</span>
+                                    <i class="bi bi-chevron-down more-analysis-toggle__chevron"></i>
+                                </span>
+                            </button>
+                        </div>
+
+                        <div id="moreAnalysisContent" class="more-analysis-content" style="display:none;">
+
+                        <!-- PRIMARY ANALYSIS: Within-Country OSR Frontier -->
                         <div class="module2-section" id="withinCountryModuleTop">
                             <div class="module2-header">
                                 <span class="module-number">1</span>
                                 <div class="module-title-block">
-                                    <h5 class="module-title">Within-Country OSR Frontier (Peer SNGs) <span class="badge bg-primary ms-2" style="font-size: 0.65rem;">Primary Analysis</span></h5>
-                                    <p class="module-subtitle">Compare against domestic peer subnational governments</p>
+                                    <h5 class="module-title">Performance vs. Peer Local Governments <span class="badge bg-primary ms-2" style="font-size: 0.65rem;">Primary Analysis</span></h5>
+                                    <p class="module-subtitle">How your collection stacks up against similar local governments in the same country.</p>
                                 </div>
                             </div>
 
@@ -368,7 +672,7 @@
                                     <div class="metric-row">
                                         <span class="metric-label">
                                             @Localizer["Metric_OSR"]
-                                            <button type="button" class="formula-tooltip-btn" data-formula="XLOOKUP(SNG, Peers[SNG], Peers[OSR])">
+                                            <button type="button" class="formula-tooltip-btn" data-description="The actual Own Source Revenues this subnational government collected in the reference year. Pulled automatically from the peer-SNG dataset for the SNG you selected.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -377,7 +681,7 @@
                                     <div class="metric-row">
                                         <span class="metric-label">
                                             @Localizer["Metric_GDP"]
-                                            <button type="button" class="formula-tooltip-btn" data-formula="XLOOKUP(SNG, Peers[SNG], Peers[GCP])">
+                                            <button type="button" class="formula-tooltip-btn" data-description="The size of this subnational government's economy (Gross Contribution to Product). Pulled automatically from the peer-SNG dataset for the SNG you selected.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -386,7 +690,7 @@
                                     <div class="metric-row highlight">
                                         <span class="metric-label">
                                             @Localizer["Metric_FrontierMultiplier"]
-                                            <button type="button" class="formula-tooltip-btn" data-formula="LET(m, SORT(FILTER(Peers[Mult], Peers[Mult]>0), ,-1), k, MAX(1,ROUNDUP(ROWS(m)*0.2,0)), AVERAGE(TAKE(m,k)))">
+                                            <button type="button" class="formula-tooltip-btn" data-description="The average OSR-to-GDP ratio of the top-performing 20% of peer SNGs — the 'frontier' this SNG could realistically reach. Used as the benchmark for what strong peers actually collect.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -395,7 +699,7 @@
                                     <div class="metric-row">
                                         <span class="metric-label">
                                             @Localizer["Metric_SubjectMultiplier"]
-                                            <button type="button" class="formula-tooltip-btn" data-formula="IFERROR(OSR / GDP, 0)">
+                                            <button type="button" class="formula-tooltip-btn" data-description="This SNG's current OSR as a share of its GDP — how much it collects today relative to the size of its economy.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -404,7 +708,7 @@
                                     <div class="metric-row result">
                                         <span class="metric-label bold">
                                             @Localizer["Metric_Benchmark"]
-                                            <button type="button" class="formula-tooltip-btn" data-formula="Frontier_Multiplier × Subnational_GDP">
+                                            <button type="button" class="formula-tooltip-btn" data-description="The OSR this SNG could collect if it matched the peer frontier — i.e. the frontier multiplier applied to this SNG's GDP.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -413,7 +717,7 @@
                                     <div class="metric-row gap">
                                         <span class="metric-label gap-label">
                                             @Localizer["Metric_Gap"]
-                                            <button type="button" class="formula-tooltip-btn" data-formula="Frontier_Benchmark - Current_OSR">
+                                            <button type="button" class="formula-tooltip-btn" data-description="The revenue gap — how much more this SNG could raise each year if it performed at the peer frontier. A positive figure indicates untapped revenue potential.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -423,7 +727,7 @@
                                     <div class="metric-row" style="border-top: 1px dashed #dee2e6; margin-top: 4px; padding-top: 4px;">
                                         <span class="metric-label" style="font-size: 0.8rem; color: #6c757d;">
                                             @Localizer["Metric_OSRPerCapita"]
-                                            <button type="button" class="formula-tooltip-btn" data-formula="OSR / Population">
+                                            <button type="button" class="formula-tooltip-btn" data-description="Average OSR collected per resident. Helpful for comparing SNGs of different sizes on a like-for-like basis.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -432,7 +736,7 @@
                                     <div class="metric-row">
                                         <span class="metric-label" style="font-size: 0.8rem; color: #6c757d;">
                                             @Localizer["Metric_PotentialOSRPerCapita"]
-                                            <button type="button" class="formula-tooltip-btn" data-formula="OSR_Potential / Population">
+                                            <button type="button" class="formula-tooltip-btn" data-description="OSR per resident if this SNG performed at the frontier — the per-capita equivalent of the benchmark.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -441,7 +745,7 @@
                                     <div class="metric-row">
                                         <span class="metric-label" style="font-size: 0.8rem; color: #6c757d;">
                                             @Localizer["Metric_PerCapitaGap"]
-                                            <button type="button" class="formula-tooltip-btn" data-formula="Frontier_OSR_Per_Capita - Actual_OSR_Per_Capita">
+                                            <button type="button" class="formula-tooltip-btn" data-description="Per-resident revenue gap — the amount each resident could be contributing versus what they currently do, if this SNG matched the frontier.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -450,7 +754,7 @@
                                     <div class="metric-row with-bar">
                                         <span class="metric-label accent">
                                             @Localizer["Metric_Performance"]
-                                            <button type="button" class="formula-tooltip-btn" data-formula="IFERROR(Actual_OSR / OSR_Potential, 0)">
+                                            <button type="button" class="formula-tooltip-btn" data-description="How close this SNG is to its benchmark. 1.0 means performing at the frontier; 0.5 means collecting about half of what peers suggest is feasible.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -461,19 +765,11 @@
                                     </div>
                                 </div>
 
-                                <!-- Peer SNG Chart -->
+                                <!-- Peer SNG Scatter Chart -->
                                 <div class="module2-chart-section">
                                     <h6 class="chart-title">@Localizer["Chart_ScatterTitle"]</h6>
-                                    <div class="chart-container" style="height: 350px;">
+                                    <div class="chart-container" style="height: 260px;">
                                         <canvas id="peerSngChartTop"></canvas>
-                                    </div>
-                                </div>
-
-                                <!-- Actual vs DFA Potential Bar Chart -->
-                                <div class="module2-chart-section" style="margin-top: 2rem;">
-                                    <h6 class="chart-title">@Localizer["Chart_BarTitle"]</h6>
-                                    <div class="chart-container" style="height: 180px;">
-                                        <canvas id="actualVsPotentialChart"></canvas>
                                     </div>
                                 </div>
 
@@ -687,6 +983,22 @@
                             <p class="analysis-result-text" id="analysisResultText">
                                 @Localizer["CrossCountry_ResultPlaceholder"]
                             </p>
+                        </div>
+
+                        </div><!-- /#moreAnalysisContent -->
+
+                        <!-- Forward CTA: usher the user to the per-stream analysis section -->
+                        <div class="next-step-cta-wrap">
+                            <button type="button" id="goToStreamAnalysisBtn" class="next-step-cta">
+                                <span class="next-step-cta__copy">
+                                    <span class="next-step-cta__eyebrow">Next step</span>
+                                    <span class="next-step-cta__title">Analyse Each Revenue Stream</span>
+                                    <span class="next-step-cta__sub">Drill into property tax, business licences, user fees and more — stream by stream.</span>
+                                </span>
+                                <span class="next-step-cta__arrow">
+                                    <i class="bi bi-arrow-right"></i>
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1541,16 +1853,16 @@
 
 /* Module 2: Within-Country OSR Frontier Styles */
 .module2-section {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
+    margin-top: 1rem;
+    padding-top: 0.85rem;
     border-top: 2px solid #e9ecef;
 }
 
 .module2-header {
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
+    gap: 0.85rem;
+    margin-bottom: 0.6rem;
 }
 
 .module-number {
@@ -1585,11 +1897,11 @@
 }
 
 .module2-selection {
-    margin-bottom: 1rem;
+    margin-bottom: 0.6rem;
 }
 
 .module2-selection .compact-label {
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
 }
 
 /* Peer Data Input Section Styles */
@@ -2132,20 +2444,21 @@
     font-size: 0.7rem;
 }
 
-/* Formula Popup Tooltip */
+/* Info Popup Tooltip (formerly formula popup — now shows descriptive text) */
 .formula-popup {
     position: fixed;
     background: #1a1a2e;
     color: #fff;
-    padding: 0.625rem 0.875rem;
+    padding: 0.7rem 0.95rem;
     border-radius: 8px;
-    font-size: 0.75rem;
-    font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
-    max-width: 400px;
+    font-size: 0.8rem;
+    font-family: 'Roboto', Calibri, 'Segoe UI', sans-serif;
+    max-width: 320px;
     z-index: 10000;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
     animation: formulaPopupIn 0.2s ease-out;
-    word-break: break-word;
+    word-break: normal;
+    overflow-wrap: break-word;
     line-height: 1.5;
 }
 
@@ -2183,7 +2496,7 @@
 }
 
 .formula-popup-content {
-    color: #a8d4ff;
+    color: #e7f1ff;
 }
 
 @@keyframes formulaPopupIn {
@@ -3074,23 +3387,41 @@
         
         // Add event listeners to format numbers on input
         numberFormatInputs.forEach(input => {
-            // Format on blur (when user leaves the field)
-            input.addEventListener('blur', function() {
+            // Pre-format any value the field renders with on page load
+            if (input.value) {
+                input.value = formatNumberWithCommas(input.value);
+            }
+
+            // Live formatting while the user types — preserves cursor position by counting digits
+            input.addEventListener('input', function () {
+                const oldValue  = this.value;
+                const oldCursor = this.selectionStart || 0;
+                // count digit / decimal characters before the caret in the unformatted view
+                const digitsBefore = oldValue.slice(0, oldCursor).replace(/[^\d.]/g, '').length;
+
+                const newValue = formatNumberWithCommas(oldValue);
+                if (newValue === oldValue) return; // nothing to do
+                this.value = newValue;
+
+                // walk forward in the formatted string until we have re-passed the same digit count
+                let newCursor = 0, digitCount = 0;
+                while (digitCount < digitsBefore && newCursor < newValue.length) {
+                    if (/[\d.]/.test(newValue[newCursor])) digitCount++;
+                    newCursor++;
+                }
+                try { this.setSelectionRange(newCursor, newCursor); } catch (e) { /* unsupported */ }
+            });
+
+            // Re-format on blur as a safety net (covers paste / autofill edge cases)
+            input.addEventListener('blur', function () {
                 this.value = formatNumberWithCommas(this.value);
             });
-            
-            // On focus, remove commas for easier editing
-            input.addEventListener('focus', function() {
-                this.value = this.value.replace(/,/g, '');
-            });
-            
-            // Handle form submission - remove commas before submitting
+
+            // Strip commas right before form submission so server receives clean numbers
             const form = input.closest('form');
             if (form) {
-                form.addEventListener('submit', function() {
-                    numberFormatInputs.forEach(input => {
-                        input.value = input.value.replace(/,/g, '');
-                    });
+                form.addEventListener('submit', function () {
+                    numberFormatInputs.forEach(i => { i.value = i.value.replace(/,/g, ''); });
                 });
             }
         });
@@ -4440,67 +4771,183 @@
 
         let actualVsPotentialChart = null;
 
-        // Create Actual vs Potential Bar Chart (Chart.js with custom plugin)
+        // Create "Current OSR vs Potential — Gap to Frontier" stacked bar chart
         function createActualVsPotentialChart(actualOSR, osrPotential, osrGap) {
-            const ctx = document.getElementById('actualVsPotentialChart');
-            if (!ctx) return;
+            const canvas = document.getElementById('actualVsPotentialChart');
+            if (!canvas) return;
 
-            // Destroy existing chart
             if (actualVsPotentialChart) {
                 actualVsPotentialChart.destroy();
             }
 
-            actualVsPotentialChart = new Chart(ctx, {
+            const symbolEl = document.getElementById('currency-symbol');
+            const rawSymbol = (symbolEl ? symbolEl.textContent : '').trim();
+            const symbol    = (!rawSymbol || rawSymbol === '-') ? '' : rawSymbol;
+
+            // Update header units indicator (e.g. "AMOUNTS IN KSH (B)")
+            const unitsEl = document.getElementById('gapFrontierUnits');
+            if (unitsEl) {
+                const unitText = symbol ? symbol.toUpperCase() : 'LCU';
+                unitsEl.textContent = 'AMOUNTS IN ' + unitText + ' (B)';
+            }
+
+            const fmtShort = function (v) {
+                if (v == null || isNaN(v)) return '0';
+                if (Math.abs(v) >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+                if (Math.abs(v) >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+                if (Math.abs(v) >= 1e3) return (v / 1e3).toFixed(1) + 'K';
+                return v.toLocaleString();
+            };
+            const fmtFull = function (v) {
+                return (symbol ? symbol + ' ' : '') + fmtShort(v);
+            };
+            const pctOfPotential = (osrPotential > 0) ? Math.round((osrGap / osrPotential) * 100) : 0;
+
+            // Custom plugin: total labels above bars, segment values, dashed connector, right-side gap bracket
+            const gapAnnotPlugin = {
+                id: 'gapAnnotations',
+                afterDatasetsDraw: function (chart) {
+                    const c = chart.ctx;
+                    const m0 = chart.getDatasetMeta(0); // base (blue) — Current OSR portion of both bars
+                    const m1 = chart.getDatasetMeta(1); // gap (orange) — only on Potential bar
+                    if (!m0 || !m1) return;
+                    const bar0Cur = m0.data[0]; // Current OSR bar
+                    const bar0Pot = m0.data[1]; // Potential bar — blue base
+                    const bar1Pot = m1.data[1]; // Potential bar — orange top
+                    if (!bar0Cur || !bar0Pot || !bar1Pot) return;
+
+                    c.save();
+
+                    // 1) Total amount label above each bar
+                    c.font = '700 13px Roboto, "Segoe UI", Arial, sans-serif';
+                    c.fillStyle = '#1f2937';
+                    c.textAlign = 'center';
+                    c.textBaseline = 'bottom';
+                    c.fillText(fmtFull(actualOSR),    bar0Cur.x, bar0Cur.y - 8);
+                    c.fillText(fmtFull(osrPotential), bar1Pot.x, bar1Pot.y - 8);
+
+                    // 2) Segment value labels (white) inside each filled segment
+                    c.fillStyle = '#ffffff';
+                    c.font = '700 14px Roboto, "Segoe UI", Arial, sans-serif';
+                    c.textBaseline = 'middle';
+                    if (Math.abs(bar0Cur.base - bar0Cur.y) > 22) {
+                        c.fillText(fmtShort(actualOSR), bar0Cur.x, (bar0Cur.y + bar0Cur.base) / 2);
+                    }
+                    if (Math.abs(bar0Pot.base - bar0Pot.y) > 22) {
+                        c.fillText(fmtShort(actualOSR), bar0Pot.x, (bar0Pot.y + bar0Pot.base) / 2);
+                    }
+                    if (Math.abs(bar1Pot.base - bar1Pot.y) > 22) {
+                        c.fillText(fmtShort(osrGap),    bar1Pot.x, (bar1Pot.y + bar1Pot.base) / 2);
+                    }
+
+                    // 3) Dashed connector — top of Current OSR → top of blue base in Potential
+                    const halfW = (bar0Cur.width || 60) / 2;
+                    c.strokeStyle = '#9ca3af';
+                    c.lineWidth = 1;
+                    c.setLineDash([4, 4]);
+                    c.beginPath();
+                    c.moveTo(bar0Cur.x + halfW, bar0Cur.y);
+                    c.lineTo(bar0Pot.x - halfW, bar0Pot.y);
+                    c.stroke();
+                    c.setLineDash([]);
+
+                    // 4) Right-side gap bracket + labels
+                    if (osrGap > 0) {
+                        const bracketX = bar1Pot.x + ((bar1Pot.width || 60) / 2) + 18;
+                        const topY = bar1Pot.y;
+                        const botY = bar1Pot.base;
+                        c.strokeStyle = '#FD9D24';
+                        c.lineWidth = 1.5;
+                        // vertical
+                        c.beginPath(); c.moveTo(bracketX, topY); c.lineTo(bracketX, botY); c.stroke();
+                        // top tick
+                        c.beginPath(); c.moveTo(bracketX, topY); c.lineTo(bracketX - 6, topY); c.stroke();
+                        // bottom tick
+                        c.beginPath(); c.moveTo(bracketX, botY); c.lineTo(bracketX - 6, botY); c.stroke();
+
+                        const midY = (topY + botY) / 2;
+                        c.fillStyle = '#FD9D24';
+                        c.textAlign = 'left';
+                        c.font = '700 12px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.textBaseline = 'bottom';
+                        c.fillText('Gap', bracketX + 8, midY - 4);
+                        c.font = '700 14px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.textBaseline = 'top';
+                        c.fillText(fmtShort(osrGap), bracketX + 8, midY + 2);
+                        c.fillStyle = '#94a3b8';
+                        c.font = '500 11px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.fillText(pctOfPotential + '% of potential', bracketX + 8, midY + 22);
+                    }
+
+                    c.restore();
+                }
+            };
+
+            actualVsPotentialChart = new Chart(canvas, {
                 type: 'bar',
                 data: {
-                    labels: ['Current OSR', 'Frontier benchmark (OSR potential)', 'Gap to frontier benchmark'],
-                    datasets: [{
-                        data: [actualOSR, osrPotential, osrGap],
-                        backgroundColor: ['#00b2e3', '#0095c0', '#FD9D24'],
-                        borderWidth: 0,
-                        barThickness: 28
-                    }]
+                    labels: [['Current OSR', 'actual collection'], ['Potential', 'frontier benchmark']],
+                    datasets: [
+                        {
+                            label: 'Current',
+                            data: [actualOSR, actualOSR],
+                            backgroundColor: '#00b2e3',
+                            stack: 'osr',
+                            borderWidth: 0,
+                            barThickness: 110,
+                            maxBarThickness: 130
+                        },
+                        {
+                            label: 'Gap',
+                            data: [0, osrGap],
+                            backgroundColor: '#FD9D24',
+                            stack: 'osr',
+                            borderWidth: 0,
+                            barThickness: 110,
+                            maxBarThickness: 130
+                        }
+                    ]
                 },
-                plugins: [barValuePlugin],
+                plugins: [gapAnnotPlugin],
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    indexAxis: 'y',
-                    layout: {
-                        padding: { right: 80 }
-                    },
+                    layout: { padding: { top: 36, right: 150, bottom: 8, left: 8 } },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
-                                    return context.parsed.x.toLocaleString();
+                                label: function (ctx) {
+                                    return ctx.dataset.label + ': ' + fmtFull(ctx.parsed.y);
                                 }
                             }
                         }
                     },
                     scales: {
                         x: {
-                            display: true,
+                            stacked: true,
                             ticks: {
-                                font: { size: 11, weight: '500' },
-                                color: '#333',
-                                autoSkip: true,
-                                callback: function(value) {
-                                    if (value >= 1000000000) return (value / 1000000000).toFixed(1) + 'B';
-                                    if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
-                                    return value.toLocaleString();
-                                }
+                                font: { size: 12, weight: '700' },
+                                color: '#1f2937',
+                                padding: 8
                             },
-                            grid: { color: '#e9ecef' },
-                            beginAtZero: true
+                            grid: { display: false },
+                            border: { display: false }
                         },
                         y: {
+                            stacked: true,
+                            beginAtZero: true,
                             ticks: {
                                 font: { size: 11, weight: '500' },
-                                color: '#333'
+                                color: '#94a3b8',
+                                callback: function (v) {
+                                    if (v >= 1e9) return (v / 1e9).toFixed(1) + 'B';
+                                    if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+                                    if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
+                                    return v.toLocaleString();
+                                }
                             },
-                            grid: { display: false }
+                            grid: { color: '#eef0f3', drawBorder: false }
                         }
                     }
                 }
@@ -4623,19 +5070,20 @@
             // Remove any existing popup
             hideFormulaPopup();
 
+            // Prefer the descriptive text; fall back to data-formula only if no
+            // description has been supplied (legacy buttons).
+            const description = button.getAttribute('data-description');
             const formula = button.getAttribute('data-formula');
-            if (!formula) return;
+            const content = description || formula;
+            if (!content) return;
 
             // Create popup element
             const popup = document.createElement('div');
             popup.className = 'formula-popup';
-            popup.innerHTML = `
-                <div class="formula-popup-header">
-                    <i class="bi bi-code-slash"></i>
-                    <span>Formula</span>
-                </div>
-                <div class="formula-popup-content">${formula}</div>
-            `;
+            // Escape HTML since description may contain user-facing punctuation
+            const tmp = document.createElement('div');
+            tmp.textContent = content;
+            popup.innerHTML = `<div class="formula-popup-content">${tmp.innerHTML}</div>`;
 
             document.body.appendChild(popup);
             activeFormulaPopup = popup;
@@ -4741,5 +5189,100 @@
         window.formatNumberInput = formatNumberInput;
         window.parseFormattedNumber = parseFormattedNumber;
 
+    });
+</script>
+
+<script>
+    // ============================================================
+    // Configuration Card behaviour — Get Analysis + Add Level 3
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function () {
+        var addL3Toggle = document.getElementById('addLevel3Toggle');
+        var l3Input     = document.getElementById('govUnitLevel3');
+        if (addL3Toggle && l3Input) {
+            // initial state: show input only if a value already exists
+            var hasValue = l3Input.value && l3Input.value.trim() !== '';
+            addL3Toggle.checked = hasValue;
+            l3Input.style.display = hasValue ? 'block' : 'none';
+            addL3Toggle.addEventListener('change', function () {
+                l3Input.style.display = this.checked ? 'block' : 'none';
+                if (!this.checked) { l3Input.value = ''; }
+                else { l3Input.focus(); }
+            });
+        }
+
+        // Level 2 toggle — pure UI affordance. Disables city input when off; clears value.
+        var l2Toggle  = document.getElementById('level2Toggle');
+        var cityInput = document.getElementById('city');
+        if (l2Toggle && cityInput) {
+            var hasCity = cityInput.value && cityInput.value.trim() !== '';
+            l2Toggle.checked = hasCity ? true : l2Toggle.checked;
+            cityInput.disabled = !l2Toggle.checked;
+            l2Toggle.addEventListener('change', function () {
+                cityInput.disabled = !this.checked;
+                if (!this.checked) { cityInput.value = ''; }
+                else { cityInput.focus(); }
+            });
+        }
+
+        // Get Analysis — reveal the bottom panel
+        var getBtn = document.getElementById('getAnalysisBtn');
+        var panel  = document.getElementById('analysisPanelWrap');
+        if (getBtn && panel) {
+            // If a country is already selected (edit / sample mode), show panel immediately
+            var country = document.getElementById('country');
+            if (country && country.value) { panel.style.display = ''; }
+
+            getBtn.addEventListener('click', function () {
+                panel.style.display = '';
+                setTimeout(function () {
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 50);
+            });
+        }
+
+        // "Next step → Analyse Each Revenue Stream" CTA — switches umbrella tab to the per-stream pipeline
+        var nextStepBtn = document.getElementById('goToStreamAnalysisBtn');
+        if (nextStepBtn) {
+            nextStepBtn.addEventListener('click', function () {
+                var umbrellaInput = document.getElementById('umbrellaTabIdInput');
+                var tabInput      = document.getElementById('tabIdInput');
+                var form          = document.getElementById('rosraForm');
+                if (!umbrellaInput || !form) {
+                    // Fallback: hard-navigate (no tab state) so the user still gets there
+                    window.location.href = '/Rosra?umbrellaTab=bottom-up&activeTab=gap-analysis';
+                    return;
+                }
+                umbrellaInput.value = 'bottom-up';
+                if (tabInput) tabInput.value = 'gap-analysis';
+                form.action = '@Url.Action("SwitchTab", "Rosra")';
+                form.submit();
+            });
+        }
+
+        // "More analysis & methodology" expandable
+        var moreToggle  = document.getElementById('moreAnalysisToggle');
+        var moreContent = document.getElementById('moreAnalysisContent');
+        if (moreToggle && moreContent) {
+            var labelEl = moreToggle.querySelector('.more-analysis-toggle__label');
+            moreToggle.addEventListener('click', function () {
+                var isOpen = moreContent.style.display !== 'none';
+                if (isOpen) {
+                    moreContent.style.display = 'none';
+                    moreToggle.classList.remove('is-expanded');
+                    moreToggle.setAttribute('aria-expanded', 'false');
+                    if (labelEl) labelEl.textContent = 'Expand';
+                } else {
+                    moreContent.style.display = '';
+                    moreToggle.classList.add('is-expanded');
+                    moreToggle.setAttribute('aria-expanded', 'true');
+                    if (labelEl) labelEl.textContent = 'Collapse';
+                    // any embedded Chart.js charts may need a resize after their container becomes visible
+                    if (window.Chart && Chart.instances) {
+                        Object.values(Chart.instances).forEach(function (ch) { try { ch.resize(); } catch (e) {} });
+                    }
+                }
+            });
+        }
     });
 </script>

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" role="img" aria-label="Reform Prioritization">
+  <defs>
+    <linearGradient id="rpBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E6F7FC"/>
+      <stop offset="100%" stop-color="#C5EAF6"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#rpBg)"/>
+  <g font-family="Segoe UI, Arial, sans-serif" font-weight="700" fill="#FFFFFF">
+    <rect x="60"  y="50"  width="280" height="36" rx="6" fill="#00689D"/>
+    <circle cx="84" cy="68" r="11" fill="#FFFFFF"/>
+    <path d="M79 68 l4 4 l8 -8" fill="none" stroke="#00689D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="105" y="73" font-size="13">High Impact / Low Cost</text>
+    <rect x="305" y="58" width="24" height="20" rx="4" fill="#F18F1F"/>
+    <text x="317" y="73" text-anchor="middle" font-size="12">P1</text>
+  </g>
+  <g font-family="Segoe UI, Arial, sans-serif" font-weight="700" fill="#FFFFFF">
+    <rect x="60"  y="100" width="280" height="36" rx="6" fill="#00B2E3"/>
+    <circle cx="84" cy="118" r="11" fill="#FFFFFF"/>
+    <path d="M79 118 l4 4 l8 -8" fill="none" stroke="#00B2E3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="105" y="123" font-size="13">Quick Wins</text>
+    <rect x="305" y="108" width="24" height="20" rx="4" fill="#F18F1F" opacity="0.85"/>
+    <text x="317" y="123" text-anchor="middle" font-size="12">P2</text>
+  </g>
+  <g font-family="Segoe UI, Arial, sans-serif" font-weight="700" fill="#FFFFFF">
+    <rect x="60"  y="150" width="280" height="36" rx="6" fill="#4DD4F7"/>
+    <circle cx="84" cy="168" r="11" fill="#FFFFFF" stroke="#00689D" stroke-width="1.5"/>
+    <text x="105" y="173" font-size="13" fill="#00689D">Long-term Reform</text>
+    <rect x="305" y="158" width="24" height="20" rx="4" fill="#F18F1F" opacity="0.6"/>
+    <text x="317" y="173" text-anchor="middle" font-size="12">P3</text>
+  </g>
+  <g stroke="#00689D" stroke-width="2" fill="none" stroke-linecap="round">
+    <line x1="370" y1="60" x2="370" y2="180"/>
+    <polyline points="364,66 370,60 376,66"/>
+  </g>
+  <text x="384" y="125" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" fill="#00689D" transform="rotate(-90 384 125)">PRIORITY</text>
+</svg>

@@ -59,26 +59,24 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    @* COMMENTED OUT — "Estimated Properties" + "Compliant Properties" labels & inputs.
+                       Inputs kept in DOM (display:none) so the JS that writes to / reads from
+                       #estimatedProperties and #compliantProperties continues to work. *@
+                    <div class="mb-3" style="display:none;" aria-hidden="true">
                         <label for="estimatedProperties" class="form-label text-primary">
                             @Localizer["EstimatedProperties"]
-                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="@Localizer["EstimatedProperties_Tooltip"]"></i>
                         </label>
                         <input type="text" class="form-control number-format" id="estimatedProperties"
-                               readonly value="0" style="background-color: #e8f4fc;">
+                               readonly value="0">
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3" style="display:none;" aria-hidden="true">
                         <label for="compliantProperties" class="form-label text-primary">
                             @Localizer["CompliantProperties"]
-                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="@Localizer["CompliantProperties_Tooltip"]"></i>
                         </label>
                         <input type="text" class="form-control number-format" id="compliantProperties"
                                name="PropertyTax.CompliantProperties" value="@Model.PropertyTax.CompliantProperties"
-                               readonly style="background-color: #e8f4fc;">
-                        <small class="text-muted">@Localizer["CompliantProperties_Formula"]</small>
+                               readonly>
                     </div>
 
                     <div class="mb-3">
@@ -154,22 +152,25 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    @* COMMENTED OUT — "Revenue to Date" label & input.
+                       Input kept in DOM (display:none) so the JS that writes to #revenueToDate
+                       (and the chart that reads from it) continues to work. *@
+                    <div class="mb-3" style="display:none;" aria-hidden="true">
                         <label for="revenueToDate" class="form-label text-primary">
                             @Localizer["RevenueToDate"] (<span class="currency-label">@currencySymbol</span>)
-                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="@Localizer["RevenueToDate_Tooltip"]"></i>
                         </label>
-                        <div class="input-group">
-                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
-                            <input type="text" class="form-control number-format" id="revenueToDate"
-                                   name="PropertyTax.RevenueToDate" value="@Model.PropertyTax.RevenueToDate"
-                                   readonly style="background-color: #e8f4fc;">
-                        </div>
-                        <small class="text-muted">@Localizer["RevenueToDate_Formula"]</small>
+                        <input type="text" class="form-control number-format" id="revenueToDate"
+                               name="PropertyTax.RevenueToDate" value="@Model.PropertyTax.RevenueToDate"
+                               readonly>
                     </div>
                 </div>
             </div>
+
+            @* COMMENTED OUT — "Useful Average Values" and "KPI Ratios" sections wrapped together below.
+               Cards are kept in the DOM (display:none) so the JS that writes to avgTaxableValue, avgMarketValue,
+               effectiveTaxRate, avgBilledAmount, potentialBilling, complianceRatioBar/Value, coverageRatioBar/Value
+               and valuationRatioBar/Value continues to work without null reference errors. *@
+            <div style="display:none;" aria-hidden="true">
 
             <!-- Useful Average Values -->
             <div class="card mb-3 shadow-sm">
@@ -291,6 +292,8 @@
                     </div>
                 </div>
             </div>
+
+            </div><!-- /hidden wrapper for AvgValues + KPI Ratios -->
         </div>
 
         <!-- Right Column - Results Section -->
@@ -300,8 +303,9 @@
                     <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>@Localizer["Results_Title"]</h6>
                 </div>
                 <div class="card-body">
-                    <!-- Potential Revenue Breakdown Table (MOVED TO TOP) -->
-                    <div class="mb-4">
+                    @* COMMENTED OUT — Potential Revenue Breakdown table (kept hidden via display:none so the
+                       JS that updates its cell IDs continues to work without null reference errors). *@
+                    <div class="mb-4" style="display:none;" aria-hidden="true">
                         <h6 class="text-center mb-3">@Localizer["PotentialRevenue_Title"]</h6>
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered table-striped table-hover">
@@ -319,47 +323,27 @@
                                         <td class="text-end" id="tableRevenueToDatePct">0%</td>
                                     </tr>
                                     <tr>
-                                        <td>
-                                            @Localizer["ComplianceGap"]
-                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="@Localizer["ComplianceGap_Tooltip"]"></i>
-                                        </td>
+                                        <td>@Localizer["ComplianceGap"]</td>
                                         <td class="text-end" id="tableComplianceGap">0</td>
                                         <td class="text-end" id="tableComplianceGapPct">0%</td>
                                     </tr>
                                     <tr>
-                                        <td>
-                                            @Localizer["CoverageGap"]
-                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="@Localizer["CoverageGap_Tooltip"]"></i>
-                                        </td>
+                                        <td>@Localizer["CoverageGap"]</td>
                                         <td class="text-end" id="tableCoverageGap">0</td>
                                         <td class="text-end" id="tableCoverageGapPct">0%</td>
                                     </tr>
                                     <tr>
-                                        <td>
-                                            @Localizer["ValuationGap"]
-                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="@Localizer["ValuationGap_Tooltip"]"></i>
-                                        </td>
+                                        <td>@Localizer["ValuationGap"]</td>
                                         <td class="text-end" id="tableValuationGap">0</td>
                                         <td class="text-end" id="tableValuationGapPct">0%</td>
                                     </tr>
                                     <tr>
-                                        <td>
-                                            @Localizer["MixedGapReg"]
-                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="@Localizer["MixedGapReg_Tooltip"]"></i>
-                                        </td>
+                                        <td>@Localizer["MixedGapReg"]</td>
                                         <td class="text-end" id="tableMixedGapReg">0</td>
                                         <td class="text-end" id="tableMixedGapRegPct">0%</td>
                                     </tr>
                                     <tr>
-                                        <td>
-                                            @Localizer["MixedGapUnreg"]
-                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="@Localizer["MixedGapUnreg_Tooltip"]"></i>
-                                        </td>
+                                        <td>@Localizer["MixedGapUnreg"]</td>
                                         <td class="text-end" id="tableMixedGapUnreg">0</td>
                                         <td class="text-end" id="tableMixedGapUnregPct">0%</td>
                                     </tr>
@@ -372,8 +356,6 @@
                             </table>
                         </div>
                     </div>
-
-                    <hr>
 
                     <!-- Matrix Gap Analysis Dashboard (Primary Visualization) -->
                     <div class="mb-4">
@@ -488,23 +470,25 @@
 
                     <hr>
 
-                    <!-- Revenue and Administrative Gaps Pie Chart -->
-                    <div class="mb-4">
-                        <h6 class="text-center mb-3">@Localizer["RevenueAndAdmGaps_Title"]</h6>
-                        <div class="d-flex justify-content-center">
-                            <div style="height: 300px; width: 450px; position: relative;">
-                                <canvas id="potentialRevenueChart"></canvas>
-                            </div>
+                    <!-- Revenue to date vs Potential — Gap to Potential (mirrors Top-Down chart layout) -->
+                    <div class="mb-4 revenue-gap-stack-section">
+                        <div class="rg-stack-header">
+                            <h6 class="rg-stack-title">Revenue to date vs Potential — Gap to Potential</h6>
+                            <span class="rg-stack-units" id="revenueGapUnits">AMOUNTS IN <span class="currency-label">@currencySymbol</span> (B)</span>
                         </div>
-                        <p class="small text-muted mt-2 text-center">
-                            <strong>@Localizer["Description_Label"]</strong> @Localizer["RevenueAndAdmGaps_Description"]
-                        </p>
+                        <div class="chart-container" style="height: 420px;">
+                            <canvas id="revenueGapStackedBarChart"></canvas>
+                        </div>
                     </div>
 
                     <hr>
 
-                    <!-- Administrative Gap Breakdown Table -->
-                    <div class="mb-4">
+                    @* REMOVED — "Revenue and Administrative Gaps" pie chart, title, and description. *@
+                    @* JS keeps null-guards on #potentialRevenueChart (lines ~808 / ~1169) so removal is safe. *@
+
+                    @* COMMENTED OUT — Administrative Gap Breakdown table (kept hidden via display:none so the JS
+                       at ~line 1036 that writes to admComplianceGap, admCoverageGap, etc. continues to work). *@
+                    <div class="mb-4" style="display:none;" aria-hidden="true">
                         <h6 class="text-center mb-3">@Localizer["AdmGapBreakdown_Title"] (<span class="currency-label">@currencySymbol</span>)</h6>
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered table-striped table-hover">
@@ -517,47 +501,27 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>
-                                            @Localizer["ComplianceGap"]
-                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="@Localizer["ComplianceGap_Tooltip"]"></i>
-                                        </td>
+                                        <td>@Localizer["ComplianceGap"]</td>
                                         <td class="text-end" id="admComplianceGap">0</td>
                                         <td class="text-end" id="admComplianceGapPct">0%</td>
                                     </tr>
                                     <tr>
-                                        <td>
-                                            @Localizer["CoverageGap"]
-                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="@Localizer["CoverageGap_Tooltip"]"></i>
-                                        </td>
+                                        <td>@Localizer["CoverageGap"]</td>
                                         <td class="text-end" id="admCoverageGap">0</td>
                                         <td class="text-end" id="admCoverageGapPct">0%</td>
                                     </tr>
                                     <tr>
-                                        <td>
-                                            @Localizer["ValuationAssessmentGap"]
-                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="@Localizer["ValuationGap_Tooltip"]"></i>
-                                        </td>
+                                        <td>@Localizer["ValuationAssessmentGap"]</td>
                                         <td class="text-end" id="admValuationGap">0</td>
                                         <td class="text-end" id="admValuationGapPct">0%</td>
                                     </tr>
                                     <tr>
-                                        <td>
-                                            @Localizer["MixedGapValReg"]
-                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="@Localizer["MixedGapReg_Tooltip"]"></i>
-                                        </td>
+                                        <td>@Localizer["MixedGapValReg"]</td>
                                         <td class="text-end" id="admMixedGapReg">0</td>
                                         <td class="text-end" id="admMixedGapRegPct">0%</td>
                                     </tr>
                                     <tr>
-                                        <td>
-                                            @Localizer["MixedGapValUnreg"]
-                                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                                               title="@Localizer["MixedGapUnreg_Tooltip"]"></i>
-                                        </td>
+                                        <td>@Localizer["MixedGapValUnreg"]</td>
                                         <td class="text-end" id="admMixedGapUnreg">0</td>
                                         <td class="text-end" id="admMixedGapUnregPct">0%</td>
                                     </tr>
@@ -596,6 +560,37 @@
 
     .property-tax-gap-analysis .card-header {
         border-radius: 8px 8px 0 0;
+    }
+
+    /* Revenue vs Gap stacked bar header */
+    .revenue-gap-stack-section {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 1rem 1.1rem 0.4rem;
+    }
+    .rg-stack-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 0.4rem;
+    }
+    .rg-stack-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+    }
+    .rg-stack-units {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        letter-spacing: 1.2px;
+        font-weight: 600;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+    @@media (max-width: 600px) {
+        .rg-stack-header { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
     }
 
     .property-tax-gap-analysis .form-control[readonly] {
@@ -643,6 +638,7 @@
         // Chart instances
         let potentialRevenueChart = null;
         let adminGapChart = null;
+        let revenueGapStackedBarChart = null;
 
         // Get currency symbol from AppContext (single source of truth)
         function getCurrencySymbol() {
@@ -824,6 +820,169 @@
         calculatePropertyTaxGaps();
 
         function initializeCharts() {
+            // ----- Revenue to date vs Potential — two-bar layout matching the Top-Down chart -----
+            const rgCanvas = document.getElementById('revenueGapStackedBarChart');
+            if (rgCanvas) {
+                const fmtCompact = function (v) {
+                    if (v == null || isNaN(v)) return '0';
+                    if (Math.abs(v) >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+                    if (Math.abs(v) >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+                    if (Math.abs(v) >= 1e3) return (v / 1e3).toFixed(1) + 'K';
+                    return Math.round(v).toLocaleString();
+                };
+
+                // Custom plugin: total labels above bars, segment values, dashed connector, right-side gap bracket
+                const rgLabelsPlugin = {
+                    id: 'rgGapAnnotations',
+                    afterDatasetsDraw: function (chart) {
+                        const c  = chart.ctx;
+                        const m0 = chart.getDatasetMeta(0); // base (cyan) — Revenue to date in BOTH bars
+                        const m1 = chart.getDatasetMeta(1); // gap (orange) — only on Potential bar
+                        if (!m0 || !m1) return;
+                        const bar0Cur = m0.data[0]; // Bar 1: Revenue to date
+                        const bar0Pot = m0.data[1]; // Bar 2: cyan base (= revenue to date)
+                        const bar1Pot = m1.data[1]; // Bar 2: orange top (= gap)
+                        if (!bar0Cur || !bar0Pot || !bar1Pot) return;
+
+                        const symbol = (typeof getCurrencySymbol === 'function') ? getCurrencySymbol() : '';
+                        const v   = chart.config._rgValues || { rev: 0, gap: 0, total: 0 };
+                        const pct = v.total > 0 ? Math.round((v.gap / v.total) * 100) : 0;
+
+                        const fmtFull = function (n) { return (symbol ? symbol + ' ' : '') + fmtCompact(n); };
+
+                        c.save();
+
+                        // 1) Total amount label above each bar
+                        c.font = '700 13px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.fillStyle = '#1f2937';
+                        c.textAlign = 'center';
+                        c.textBaseline = 'bottom';
+                        c.fillText(fmtFull(v.rev),   bar0Cur.x, bar0Cur.y - 8);
+                        c.fillText(fmtFull(v.total), bar1Pot.x, bar1Pot.y - 8);
+
+                        // 2) In-segment labels (white bold)
+                        c.fillStyle = '#ffffff';
+                        c.font = '700 14px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.textBaseline = 'middle';
+                        if (Math.abs(bar0Cur.base - bar0Cur.y) > 22 && v.rev > 0) {
+                            c.fillText(fmtCompact(v.rev), bar0Cur.x, (bar0Cur.y + bar0Cur.base) / 2);
+                        }
+                        if (Math.abs(bar0Pot.base - bar0Pot.y) > 22 && v.rev > 0) {
+                            c.fillText(fmtCompact(v.rev), bar0Pot.x, (bar0Pot.y + bar0Pot.base) / 2);
+                        }
+                        if (Math.abs(bar1Pot.base - bar1Pot.y) > 22 && v.gap > 0) {
+                            c.fillText(fmtCompact(v.gap), bar1Pot.x, (bar1Pot.y + bar1Pot.base) / 2);
+                        }
+
+                        // 3) Dashed connector — top of Bar 1 to top of cyan base in Bar 2
+                        const halfW = (bar0Cur.width || 60) / 2;
+                        c.strokeStyle = '#9ca3af';
+                        c.lineWidth = 1;
+                        c.setLineDash([4, 4]);
+                        c.beginPath();
+                        c.moveTo(bar0Cur.x + halfW, bar0Cur.y);
+                        c.lineTo(bar0Pot.x - halfW, bar0Pot.y);
+                        c.stroke();
+                        c.setLineDash([]);
+
+                        // 4) Right-side gap bracket
+                        if (v.gap > 0) {
+                            const bracketX = bar1Pot.x + ((bar1Pot.width || 60) / 2) + 18;
+                            const topY = bar1Pot.y;
+                            const botY = bar1Pot.base;
+                            c.strokeStyle = '#FD9D24';
+                            c.lineWidth = 1.5;
+                            c.beginPath(); c.moveTo(bracketX, topY); c.lineTo(bracketX, botY); c.stroke();
+                            c.beginPath(); c.moveTo(bracketX, topY); c.lineTo(bracketX - 6, topY); c.stroke();
+                            c.beginPath(); c.moveTo(bracketX, botY); c.lineTo(bracketX - 6, botY); c.stroke();
+
+                            const midY = (topY + botY) / 2;
+                            c.fillStyle = '#FD9D24';
+                            c.textAlign = 'left';
+                            c.font = '700 12px Roboto, "Segoe UI", Arial, sans-serif';
+                            c.textBaseline = 'bottom';
+                            c.fillText('Gap', bracketX + 8, midY - 4);
+                            c.font = '700 14px Roboto, "Segoe UI", Arial, sans-serif';
+                            c.textBaseline = 'top';
+                            c.fillText(fmtCompact(v.gap), bracketX + 8, midY + 2);
+                            c.fillStyle = '#94a3b8';
+                            c.font = '500 11px Roboto, "Segoe UI", Arial, sans-serif';
+                            c.fillText(pct + '% of potential', bracketX + 8, midY + 22);
+                        }
+
+                        c.restore();
+                    }
+                };
+
+                revenueGapStackedBarChart = new Chart(rgCanvas.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: [['Revenue to date', 'actual collection'], ['Potential', 'total potential']],
+                        datasets: [
+                            {
+                                label: 'Revenue to date',
+                                data: [0, 0],
+                                backgroundColor: '#00B2E3',
+                                stack: 'rg',
+                                borderWidth: 0,
+                                barThickness: 110,
+                                maxBarThickness: 130
+                            },
+                            {
+                                label: 'Gap',
+                                data: [0, 0],
+                                backgroundColor: '#FD9D24',
+                                stack: 'rg',
+                                borderWidth: 0,
+                                barThickness: 110,
+                                maxBarThickness: 130
+                            }
+                        ]
+                    },
+                    plugins: [rgLabelsPlugin],
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: { padding: { top: 36, right: 150, bottom: 8, left: 8 } },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (ctx) {
+                                        const symbol = (typeof getCurrencySymbol === 'function') ? getCurrencySymbol() : '';
+                                        return ctx.dataset.label + ': ' + symbol + ' ' + fmtCompact(ctx.parsed.y);
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                stacked: true,
+                                ticks: { font: { size: 12, weight: '700' }, color: '#1f2937', padding: 8 },
+                                grid: { display: false },
+                                border: { display: false }
+                            },
+                            y: {
+                                stacked: true,
+                                beginAtZero: true,
+                                ticks: {
+                                    font: { size: 11, weight: '500' },
+                                    color: '#94a3b8',
+                                    callback: function (v) {
+                                        if (v >= 1e9) return (v / 1e9).toFixed(1) + 'B';
+                                        if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+                                        if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
+                                        return v.toLocaleString();
+                                    }
+                                },
+                                grid: { color: '#eef0f3', drawBorder: false }
+                            }
+                        }
+                    }
+                });
+                if (window.registerChart) registerChart('revenueGapStackedBarChart', revenueGapStackedBarChart);
+            }
+
             // Potential Revenue Pie Chart
             const ctx1 = document.getElementById('potentialRevenueChart');
             if (ctx1) {
@@ -1209,6 +1368,22 @@
                     Math.max(0, mixedGapUnreg)
                 ];
                 adminGapChart.update();
+            }
+
+            // Update "Revenue to date vs Potential" two-bar chart
+            if (revenueGapStackedBarChart) {
+                const rgRev   = Math.max(0, parseNumber(document.getElementById('revenueToDate')?.value));
+                const rgGap   = Math.max(0, complianceGap)
+                              + Math.max(0, coverageGap)
+                              + Math.max(0, valuationGap)
+                              + Math.max(0, mixedGapReg)
+                              + Math.max(0, mixedGapUnreg);
+                const rgTotal = rgRev + rgGap;
+                // Bar 1 = "Revenue to date" (cyan only), Bar 2 = "Potential" (cyan base + orange gap)
+                revenueGapStackedBarChart.data.datasets[0].data = [rgRev, rgRev];
+                revenueGapStackedBarChart.data.datasets[1].data = [0,     rgGap];
+                revenueGapStackedBarChart.config._rgValues = { rev: rgRev, gap: rgGap, total: rgTotal };
+                revenueGapStackedBarChart.update();
             }
         }
 

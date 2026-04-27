@@ -51,7 +51,7 @@
   <data name="Nav_MyDashboard" xml:space="preserve"><value>Mi panel</value></data>
   <data name="Nav_Logout" xml:space="preserve"><value>Cerrar sesión</value></data>
   <data name="Nav_Login" xml:space="preserve"><value>Iniciar sesión</value></data>
-  <data name="Nav_CreateReport" xml:space="preserve"><value>Crear informe</value></data>
+  <data name="Nav_CreateReport" xml:space="preserve"><value>Iniciar análisis</value></data>
 
   <!-- Footer -->
   <data name="Footer_Copyright" xml:space="preserve"><value>© 2025 - RosraApp - Empoderando a los gobiernos locales a través de la optimización de IPP basada en datos</value></data>

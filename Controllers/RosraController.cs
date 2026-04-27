@@ -22,6 +22,7 @@ namespace RosraApp.Controllers
     {
         private const string VisitedTabsKey = "VisitedTabs";
         private const string RosraFormDataKey = "RosraFormData";
+        private const string IsSampleReportKey = "IsSampleReport";
         
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -79,6 +80,13 @@ namespace RosraApp.Controllers
             if (viewMode)
             {
                 ViewData["ViewMode"] = true;
+                // Rehydrate the sample-report flag from session so the sidebar
+                // keeps showing the correct CTA after a tab-switch redirect.
+                var sampleFlag = HttpContext.Session.GetString(IsSampleReportKey);
+                if (sampleFlag == "true")
+                {
+                    ViewData["IsSampleReport"] = true;
+                }
             }
 
             // Create a view model for the tabs
@@ -233,6 +241,7 @@ namespace RosraApp.Controllers
             // Clear the session data
             HttpContext.Session.Remove(RosraFormDataKey);
             HttpContext.Session.Remove(VisitedTabsKey);
+            HttpContext.Session.Remove(IsSampleReportKey);
 
             // Signal the client to clear localStorage as well
             TempData["ClearLocalStorage"] = true;
@@ -247,6 +256,7 @@ namespace RosraApp.Controllers
             // Clear existing session data
             HttpContext.Session.Remove(RosraFormDataKey);
             HttpContext.Session.Remove(VisitedTabsKey);
+            HttpContext.Session.Remove(IsSampleReportKey);
 
             // Build sample form data
             var sampleData = new RosraFormViewModel
@@ -318,6 +328,18 @@ namespace RosraApp.Controllers
         [HttpPost]
         public IActionResult SwitchTab(string tabId, string umbrellaTabId, RosraFormViewModel formData)
         {
+            // View mode is read-only — the data was fully hydrated into session
+            // by View(). The POST only carries fields from the currently-visible
+            // tab, so running the normal binding path here would overwrite session
+            // with a near-empty formData and make the report "disappear" after a
+            // tab switch. Skip all form processing and just redirect.
+            bool isViewModePost = Request.Form.ContainsKey("IsViewMode")
+                && bool.TryParse(Request.Form["IsViewMode"], out bool vm) && vm;
+            if (isViewModePost)
+            {
+                return RedirectToAction("Index", new { activeTab = tabId, umbrellaTab = umbrellaTabId, viewMode = true });
+            }
+
             // Preserve fields from session that don't survive form POST
             var existing = GetFormDataFromSession();
             if (existing != null)
@@ -413,16 +435,6 @@ namespace RosraApp.Controllers
 
             // Save form data to session
             SaveFormDataToSession(formData);
-
-            // Check if we're in view mode (from hidden field in the form)
-            bool isViewMode = Request.Form.ContainsKey("IsViewMode") && bool.TryParse(Request.Form["IsViewMode"], out bool viewMode) && viewMode;
-
-            // If in view mode, pass the view mode flag to the Index action
-            if (isViewMode)
-            {
-                ViewData["ViewMode"] = true;
-                return RedirectToAction("Index", new { activeTab = tabId, umbrellaTab = umbrellaTabId, viewMode = true });
-            }
 
             return RedirectToAction("Index", new { activeTab = tabId, umbrellaTab = umbrellaTabId });
         }
@@ -1165,6 +1177,11 @@ namespace RosraApp.Controllers
 
             // Save form data to session
             SaveFormDataToSession(formData);
+
+            // Persist the sample-report flag in session so subsequent tab-switch
+            // redirects (which land on Index, not View) can keep rendering the
+            // "New Report" CTA instead of "Edit Report".
+            HttpContext.Session.SetString(IsSampleReportKey, isSampleReport ? "true" : "false");
 
             // Set ViewMode flag in ViewData
             ViewData["ViewMode"] = true;

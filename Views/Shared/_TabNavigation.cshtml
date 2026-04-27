@@ -234,6 +234,207 @@
         background-color: rgba(0, 178, 227, 0.05);
     }
 
+    /* "Back to overview" chip — shown above the bottom-up stepper */
+    .back-to-overview-wrap {
+        margin-bottom: 0.65rem;
+    }
+
+    .back-to-overview-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.4rem 0.85rem 0.4rem 0.7rem;
+        background: #ffffff;
+        color: var(--un-blue-dark, #00689D);
+        border: 1px solid #BDE3F0;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease, color 0.16s ease;
+    }
+
+    .back-to-overview-btn:hover {
+        background: #E6F6FB;
+        border-color: var(--un-blue, #00B2E3);
+        color: var(--un-blue, #00B2E3);
+        transform: translateX(-2px);
+    }
+
+    .back-to-overview-btn:active { transform: translateX(0); }
+
+    .back-to-overview-btn i { font-size: 0.95rem; }
+
+    /* ---- Slim "Step X of Y" header (replaces the hidden stepper) ---- */
+    .step-header {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.65rem 1rem;
+        background: #ffffff;
+        border-radius: 10px;
+        border: 1px solid #E6EDF3;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        margin-bottom: 1rem;
+    }
+    .step-header-pill {
+        background: #00B2E3;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.7rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        padding: 0.3rem 0.7rem;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+    .step-header-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--un-blue-dark, #00689D);
+    }
+
+    /* ---- Bottom step navigation: Back + Next ---- */
+    .bottom-step-nav {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin: 2rem 0 1.25rem;
+    }
+    .bottom-step-cta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        border-radius: 14px;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        font-family: inherit;
+        box-shadow: 0 6px 20px -6px rgba(0, 0, 0, 0.18);
+        transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+        min-height: 92px;
+    }
+    .bottom-step-cta:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 26px -6px rgba(0, 0, 0, 0.22);
+        filter: brightness(1.03);
+    }
+    .bottom-step-cta:active { transform: translateY(0); }
+
+    .bottom-step-cta--back {
+        background: #ffffff;
+        color: var(--un-blue-dark, #00689D);
+        border: 1px solid #BDE3F0;
+    }
+    .bottom-step-cta--back:hover {
+        background: #F0F9FC;
+    }
+    .bottom-step-cta--next {
+        background: #00B2E3;
+        color: #ffffff;
+        justify-content: space-between;
+    }
+    .bottom-step-cta--next:hover {
+        background: #009ECB;
+    }
+
+    /* Last-step "Save report" — full-width orange button matching the Previous Step tile size */
+    .bottom-step-save-cell {
+        display: flex;
+        align-items: stretch;
+    }
+    .bottom-save-btn {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #FD9D24;
+        color: #ffffff !important;
+        border: none;
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none !important;
+        min-height: 92px;
+        box-shadow: 0 6px 20px -6px rgba(253, 157, 36, 0.4);
+        transition: background 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+    }
+    .bottom-save-btn:hover {
+        background: #E8891A;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 26px -6px rgba(253, 157, 36, 0.55);
+        color: #ffffff !important;
+    }
+    .bottom-save-btn:active { transform: translateY(0); }
+    .bottom-save-btn i { font-size: 1.2rem; }
+
+    .bottom-step-cta__copy {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        flex: 1;
+        min-width: 0;
+    }
+    .bottom-step-cta__eyebrow {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        opacity: 0.85;
+    }
+    .bottom-step-cta__title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    .bottom-step-cta__sub {
+        font-size: 0.8rem;
+        font-weight: 400;
+        opacity: 0.85;
+        line-height: 1.3;
+    }
+    .bottom-step-cta__arrow {
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: transform 0.16s ease, background 0.16s ease;
+    }
+    .bottom-step-cta--back .bottom-step-cta__arrow {
+        background: #E6F6FB;
+        color: var(--un-blue-dark, #00689D);
+    }
+    .bottom-step-cta--back:hover .bottom-step-cta__arrow {
+        transform: translateX(-3px);
+    }
+    .bottom-step-cta--next .bottom-step-cta__arrow {
+        background: rgba(255, 255, 255, 0.18);
+        color: #ffffff;
+    }
+    .bottom-step-cta--next:hover .bottom-step-cta__arrow {
+        transform: translateX(3px);
+        background: rgba(255, 255, 255, 0.28);
+    }
+
+    .bottom-step-cta-placeholder {
+        /* Empty cell when there is no next step (last sub-tab) */
+        visibility: hidden;
+    }
+
+    @@media (max-width: 768px) {
+        .bottom-step-nav { grid-template-columns: 1fr; }
+        .bottom-step-cta { min-height: auto; }
+    }
+
     /* Responsive */
     @@media (max-width: 768px) {
         .stepper {
@@ -275,6 +476,19 @@
 
                     @if (umbrellaTab.SubTabs.Count > 1 && umbrellaTab.HasStepper)
                     {
+                        var activeStepIndex = umbrellaTab.SubTabs.FindIndex(t => t.IsActive);
+                        var nextSubTab = (activeStepIndex >= 0 && activeStepIndex < umbrellaTab.SubTabs.Count - 1)
+                                         ? umbrellaTab.SubTabs[activeStepIndex + 1] : null;
+                        var prevSubTab = (activeStepIndex > 0) ? umbrellaTab.SubTabs[activeStepIndex - 1] : null;
+                        var activeStepTitle = (activeStepIndex >= 0) ? umbrellaTab.SubTabs[activeStepIndex].Title : "";
+
+                        @* HIDDEN: top "Back to overview" + stepper, kept in DOM so existing JS/data continues to work *@
+                        <div class="back-to-overview-wrap" style="display:none;" aria-hidden="true">
+                            <button type="button" id="backToTopDownBtn" class="back-to-overview-btn">
+                                <i class="bi bi-arrow-left"></i><span>Back to overview</span>
+                            </button>
+                        </div>
+
                         <!-- Intro Text for Bottom-Up Analysis -->
                         <div class="bottom-up-intro-section">
                             <div class="intro-text-box">
@@ -283,35 +497,26 @@
                             </div>
                         </div>
 
-                        <!-- Stepper Navigation for Bottom-Up Pipeline -->
-                        <div class="stepper-container">
+                        @* HIDDEN top stepper. Step elements stay in DOM (display:none) so the existing
+                           click-handler on .stepper-step that drives tab switching keeps working. *@
+                        <div class="stepper-container" style="display:none;" aria-hidden="true">
                             <div class="stepper">
                                 @foreach (var subTab in umbrellaTab.SubTabs)
                                 {
                                     var stepIndex = umbrellaTab.SubTabs.IndexOf(subTab);
-                                    var isActiveStep = subTab.IsActive;
-                                    var isCompletedStep = subTab.IsVisited && !isActiveStep;
-                                    var stepClass = isActiveStep ? "active" : (isCompletedStep ? "completed" : "");
-
-                                    <div class="stepper-step @stepClass" data-step="@(stepIndex + 1)" data-tab-id="@subTab.Id">
-                                        <div class="step-indicator">
-                                            @if (isCompletedStep)
-                                            {
-                                                <i class="bi bi-check-lg"></i>
-                                            }
-                                            else
-                                            {
-                                                <span>@(stepIndex + 1)</span>
-                                            }
-                                        </div>
+                                    <div class="stepper-step @(subTab.IsActive ? "active" : "")"
+                                         data-step="@(stepIndex + 1)" data-tab-id="@subTab.Id">
+                                        <div class="step-indicator"><span>@(stepIndex + 1)</span></div>
                                         <div class="step-label">@subTab.Title</div>
-                                        @if (stepIndex < umbrellaTab.SubTabs.Count - 1)
-                                        {
-                                            <div class="step-connector"></div>
-                                        }
                                     </div>
                                 }
                             </div>
+                        </div>
+
+                        <!-- Slim header showing the current step name (replaces the visible stepper) -->
+                        <div class="step-header">
+                            <span class="step-header-pill">Step @(activeStepIndex + 1) of @umbrellaTab.SubTabs.Count</span>
+                            <h5 class="step-header-title">@activeStepTitle</h5>
                         </div>
 
                         <!-- Sub-Tab Content for Stepper -->
@@ -322,6 +527,78 @@
                                      id="@subTab.Id-content"
                                      data-tab-id="@subTab.Id">
                                     @await Html.PartialAsync(subTab.ContentPartialName, Model.TabContentModel)
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Bottom step navigation: previous-step OR overview (left) + next-step (right) -->
+                        <div class="bottom-step-nav">
+                            @if (prevSubTab != null)
+                            {
+                                <button type="button" id="bottomBackToPrevStepBtn"
+                                        class="bottom-step-cta bottom-step-cta--back"
+                                        data-prev-tab-id="@prevSubTab.Id">
+                                    <span class="bottom-step-cta__arrow"><i class="bi bi-arrow-left"></i></span>
+                                    <span class="bottom-step-cta__copy">
+                                        <span class="bottom-step-cta__eyebrow">Previous step</span>
+                                        <span class="bottom-step-cta__title">@prevSubTab.Title</span>
+                                        <span class="bottom-step-cta__sub">Go back to step @(activeStepIndex) of @umbrellaTab.SubTabs.Count.</span>
+                                    </span>
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" id="bottomBackToOverviewBtn"
+                                        class="bottom-step-cta bottom-step-cta--back">
+                                    <span class="bottom-step-cta__arrow"><i class="bi bi-arrow-left"></i></span>
+                                    <span class="bottom-step-cta__copy">
+                                        <span class="bottom-step-cta__eyebrow">Go back</span>
+                                        <span class="bottom-step-cta__title">Back to overview</span>
+                                        <span class="bottom-step-cta__sub">Return to the high-level analysis snapshot.</span>
+                                    </span>
+                                </button>
+                            }
+
+                            @if (nextSubTab != null)
+                            {
+                                <button type="button" id="bottomNextStepBtn"
+                                        class="bottom-step-cta bottom-step-cta--next"
+                                        data-next-tab-id="@nextSubTab.Id">
+                                    <span class="bottom-step-cta__copy">
+                                        <span class="bottom-step-cta__eyebrow">Next step</span>
+                                        <span class="bottom-step-cta__title">@nextSubTab.Title</span>
+                                        <span class="bottom-step-cta__sub">Continue to step @(activeStepIndex + 2) of @umbrellaTab.SubTabs.Count.</span>
+                                    </span>
+                                    <span class="bottom-step-cta__arrow"><i class="bi bi-arrow-right"></i></span>
+                                </button>
+                            }
+                            else
+                            {
+                                @* Last step — replace the placeholder with a Save CTA so it sits on the same row as the Previous-step button *@
+                                var lastStepIsViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
+                                var lastStepIsSample   = ViewData["IsSampleReport"] != null && (bool)ViewData["IsSampleReport"];
+                                var lastStepReportPublicId = Model.TabContentModel?.PublicId;
+                                var lastStepReportId = Model.TabContentModel?.Id ?? 0;
+
+                                <div class="bottom-step-save-cell">
+                                    @if (!lastStepIsViewMode)
+                                    {
+                                        <button type="button" id="saveReportBtn" class="bottom-save-btn">
+                                            <i class="bi bi-save me-2"></i>@(lastStepReportId > 0 ? "Update report" : "Save report")
+                                        </button>
+                                    }
+                                    else if (lastStepIsSample)
+                                    {
+                                        <a asp-controller="Rosra" asp-action="NewReport" class="bottom-save-btn">
+                                            <i class="bi bi-save me-2"></i>Save as my report
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-controller="Rosra" asp-action="Edit" asp-route-id="@lastStepReportPublicId" class="bottom-save-btn">
+                                            <i class="bi bi-save me-2"></i>Save report
+                                        </a>
+                                    }
                                 </div>
                             }
                         </div>
@@ -413,6 +690,59 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Note: Umbrella tab navigation is now handled in the sidebar (Index.cshtml)
+
+        // "Back to overview" — switch the umbrella tab back to top-down (Performance overview)
+        function switchToOverview() {
+            var umbrellaInput = document.getElementById('umbrellaTabIdInput');
+            var tabInput      = document.getElementById('tabIdInput');
+            var form          = document.getElementById('rosraForm');
+            if (!umbrellaInput || !form) {
+                window.location.href = '/Rosra?umbrellaTab=top-down&activeTab=potential-estimates';
+                return;
+            }
+            umbrellaInput.value = 'top-down';
+            if (tabInput) tabInput.value = 'potential-estimates';
+            form.action = '@Url.Action("SwitchTab", "Rosra")';
+            form.submit();
+        }
+
+        var backBtn = document.getElementById('backToTopDownBtn');
+        if (backBtn) backBtn.addEventListener('click', switchToOverview);
+
+        var bottomBackOverviewBtn = document.getElementById('bottomBackToOverviewBtn');
+        if (bottomBackOverviewBtn) bottomBackOverviewBtn.addEventListener('click', switchToOverview);
+
+        // Reusable: switch to a sub-tab inside the bottom-up umbrella by tabId
+        function switchToBottomUpStep(tabId) {
+            if (!tabId) return;
+            var umbrellaInput = document.getElementById('umbrellaTabIdInput');
+            var tabInput      = document.getElementById('tabIdInput');
+            var form          = document.getElementById('rosraForm');
+            if (!umbrellaInput || !tabInput || !form) {
+                window.location.href = '/Rosra?umbrellaTab=bottom-up&activeTab=' + encodeURIComponent(tabId);
+                return;
+            }
+            umbrellaInput.value = 'bottom-up';
+            tabInput.value = tabId;
+            form.action = '@Url.Action("SwitchTab", "Rosra")';
+            form.submit();
+        }
+
+        // "Previous step" — switch to the prior sub-tab (only rendered on steps 2+)
+        var bottomBackPrevBtn = document.getElementById('bottomBackToPrevStepBtn');
+        if (bottomBackPrevBtn) {
+            bottomBackPrevBtn.addEventListener('click', function () {
+                switchToBottomUpStep(bottomBackPrevBtn.getAttribute('data-prev-tab-id'));
+            });
+        }
+
+        // "Next step" — switch to the next sub-tab
+        var bottomNextBtn = document.getElementById('bottomNextStepBtn');
+        if (bottomNextBtn) {
+            bottomNextBtn.addEventListener('click', function () {
+                switchToBottomUpStep(bottomNextBtn.getAttribute('data-next-tab-id'));
+            });
+        }
 
         // Stepper step click handling
         document.querySelectorAll('.stepper-step').forEach(function(step) {

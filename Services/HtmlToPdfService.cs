@@ -19,10 +19,16 @@ namespace RosraApp.Services
         /// </summary>
         public async Task<byte[]> RenderUrlToPdf(string path, HttpContext httpContext)
         {
-            // Build the local URL from the running server
+            // Build the local URL from the running server. Kestrel bound to
+            // "http://+:8080" (e.g. on Railway) reports the address as
+            // "http://[::]:8080"; "[::]" and "+" are wildcard bind addresses
+            // that Playwright's Chromium cannot connect to, and they are also
+            // invalid cookie domains — forcing 127.0.0.1 fixes both.
             var addresses = _server.Features.Get<Microsoft.AspNetCore.Hosting.Server.Features.IServerAddressesFeature>();
-            var baseUrl = addresses?.Addresses.FirstOrDefault() ?? "http://localhost:5090";
+            var rawUrl = addresses?.Addresses.FirstOrDefault() ?? "http://localhost:5090";
+            var baseUrl = NormalizeLoopback(rawUrl);
             var fullUrl = $"{baseUrl}{path}";
+            var cookieHost = new Uri(baseUrl).Host;
 
             // Get the session cookie to forward to headless browser
             var cookies = new List<Cookie>();
@@ -32,7 +38,7 @@ namespace RosraApp.Services
                 {
                     Name = ".AspNetCore.Session",
                     Value = sessionCookie,
-                    Domain = new Uri(baseUrl).Host,
+                    Domain = cookieHost,
                     Path = "/"
                 });
             }
@@ -43,7 +49,7 @@ namespace RosraApp.Services
                 {
                     Name = ".AspNetCore.Identity.Application",
                     Value = authCookie,
-                    Domain = new Uri(baseUrl).Host,
+                    Domain = cookieHost,
                     Path = "/"
                 });
             }
@@ -128,6 +134,21 @@ namespace RosraApp.Services
 
             await browser.CloseAsync();
             return pdfBytes;
+        }
+
+        private static string NormalizeLoopback(string url)
+        {
+            // Kestrel reports wildcard binds as "http://[::]:PORT", "http://+:PORT",
+            // "http://0.0.0.0:PORT", or "http://*:PORT". None of those are valid
+            // connection targets or cookie domains — rewrite to 127.0.0.1 for
+            // the in-container loopback call.
+            if (string.IsNullOrEmpty(url)) return "http://127.0.0.1:5090";
+
+            var normalized = url.Replace("://+", "://127.0.0.1")
+                                .Replace("://*", "://127.0.0.1")
+                                .Replace("://[::]", "://127.0.0.1")
+                                .Replace("://0.0.0.0", "://127.0.0.1");
+            return normalized.TrimEnd('/');
         }
     }
 }

@@ -12,6 +12,100 @@
         </p>
     </div>
 
+    <!-- Personalisation Questionnaire (3 questions to narrow the 82 cards) -->
+    <div class="card mb-3 personalise-card" id="personaliseCard">
+        <!-- OPEN STATE: full questionnaire form -->
+        <div id="personaliseForm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h6 class="mb-0">
+                    <i class="bi bi-magic me-2"></i>
+                    Personalise these recommendations
+                </h6>
+                <small class="opacity-90">3 quick questions to narrow the 82 cards to ones that fit your context — or skip and browse all.</small>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- Q1: Time horizon (multi-select chips) -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">
+                            <span class="q-num">1</span> How fast do you need results?
+                        </label>
+                        <div class="q-chips" data-question="time">
+                            <label class="q-chip"><input type="checkbox" name="qTime" value="quick" checked><span>Quick wins<small class="d-block opacity-75">under a year</small></span></label>
+                            <label class="q-chip"><input type="checkbox" name="qTime" value="medium" checked><span>Medium-term<small class="d-block opacity-75">1–3 years</small></span></label>
+                            <label class="q-chip"><input type="checkbox" name="qTime" value="long" checked><span>Long-term<small class="d-block opacity-75">3+ years</small></span></label>
+                        </div>
+                        <small class="text-muted d-block mt-1">Pick one or more — leaving all checked shows every timeline.</small>
+                    </div>
+
+                    <!-- Q2: Political feasibility (multi-select chips) -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">
+                            <span class="q-num">2</span> Which political feasibility are you open to?
+                        </label>
+                        <div class="q-chips" data-question="political">
+                            <label class="q-chip"><input type="checkbox" name="qPolitical" value="higher" checked><span>Higher feasibility<small class="d-block opacity-75">low political cost</small></span></label>
+                            <label class="q-chip"><input type="checkbox" name="qPolitical" value="moderate" checked><span>Moderate<small class="d-block opacity-75">some political cost</small></span></label>
+                            <label class="q-chip"><input type="checkbox" name="qPolitical" value="sensitive"><span>Lower feasibility<small class="d-block opacity-75">high political cost</small></span></label>
+                        </div>
+                        <small class="text-muted d-block mt-1">Pick one or more — defaults skip the most politically risky cards.</small>
+                    </div>
+
+                    <!-- Q3: Focus areas (multi-select chips) -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">
+                            <span class="q-num">3</span> Where do you most want to improve?
+                        </label>
+                        <div class="q-chips" data-question="focus" id="qFocusChips">
+                            <label class="q-chip"><input type="checkbox" name="qFocus" value="compliance" checked><span>Compliance</span></label>
+                            <label class="q-chip"><input type="checkbox" name="qFocus" value="coverage" checked><span>Coverage</span></label>
+                            <label class="q-chip"><input type="checkbox" name="qFocus" value="valuation" checked><span>Valuation</span></label>
+                            <label class="q-chip"><input type="checkbox" name="qFocus" value="liability" checked><span>Liability</span></label>
+                        </div>
+                        <small class="text-muted d-block mt-1">Pre-checked from your Step&nbsp;2 priorities — uncheck any you don't want to focus on.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center flex-wrap gap-2 bg-white">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    You can edit answers later or browse all 82 cards at any time.
+                </small>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="personaliseSkipBtn">
+                        Skip — show all
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" id="personaliseApplyBtn">
+                        <i class="bi bi-check-circle me-1"></i>Apply &amp; narrow down
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLLAPSED STATE: chip strip showing active filters -->
+        <div id="personaliseChips" class="card-body py-3" style="display:none;">
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <span class="fw-semibold me-1"><i class="bi bi-funnel-fill text-primary me-1"></i>Showing cards matching:</span>
+                <div id="personaliseChipList" class="d-flex flex-wrap gap-1"></div>
+                <span class="ms-auto d-flex gap-2">
+                    <button type="button" class="btn btn-link btn-sm p-0 personalise-edit" id="personaliseEditBtn">
+                        <i class="bi bi-pencil me-1"></i>Edit
+                    </button>
+                    <button type="button" class="btn btn-link btn-sm p-0 personalise-clear text-muted" id="personaliseClearBtn">
+                        <i class="bi bi-x-circle me-1"></i>Show all 82
+                    </button>
+                </span>
+            </div>
+            <div class="mt-2 small text-muted">
+                <i class="bi bi-card-checklist me-1"></i>
+                <span id="personaliseMatchCount">—</span> of 82 solution cards match.
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards section is hidden until the user applies (or skips) the personalisation questionnaire above. -->
+    <div id="overviewCardsSection" style="display:none;">
+
     <!-- Filter/Navigation Panel -->
     <div class="filter-panel card mb-4">
         <div class="card-body py-3">
@@ -111,11 +205,72 @@
         </div>
     </div>
 
+    </div><!-- /#overviewCardsSection -->
+
     <!-- Hidden fields for form submission -->
     <div id="selectedSolutionsFields"></div>
 </div>
 
 <style>
+    /* =========================================================
+       Personalise questionnaire (3-question filter for the 82 cards)
+       ========================================================= */
+    .overview-selection-module .personalise-card { border: 1px solid #BDE3F0; }
+    .overview-selection-module .q-num {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 22px; height: 22px; border-radius: 50%;
+        background: #00B2E3; color: #fff; font-size: 0.75rem; font-weight: 700;
+        margin-right: 0.4rem;
+    }
+    .overview-selection-module .q-options {
+        display: flex; flex-direction: column; gap: 0.4rem;
+    }
+    .overview-selection-module .q-option {
+        position: relative; cursor: pointer; user-select: none;
+        background: #F8FAFC; border: 1px solid #E6EDF3; border-radius: 8px;
+        padding: 0.55rem 0.75rem;
+        transition: background 0.15s, border-color 0.15s;
+    }
+    .overview-selection-module .q-option:hover { background: #F0F9FC; border-color: #BDE3F0; }
+    .overview-selection-module .q-option input[type="radio"] {
+        position: absolute; opacity: 0; pointer-events: none;
+    }
+    .overview-selection-module .q-option span {
+        display: flex; flex-direction: column; line-height: 1.25;
+    }
+    .overview-selection-module .q-option strong { font-size: 0.88rem; color: #1f2937; }
+    .overview-selection-module .q-option small { font-size: 0.72rem; color: #64748b; }
+    .overview-selection-module .q-option input[type="radio"]:checked + span strong { color: #00689D; }
+    .overview-selection-module .q-option:has(input[type="radio"]:checked) {
+        background: #E6F6FB; border-color: #00B2E3;
+        box-shadow: 0 0 0 2px rgba(0, 178, 227, 0.15);
+    }
+
+    .overview-selection-module .q-chips {
+        display: flex; flex-wrap: wrap; gap: 0.35rem;
+    }
+    .overview-selection-module .q-chip {
+        position: relative; cursor: pointer; user-select: none;
+        background: #F8FAFC; border: 1px solid #E6EDF3; border-radius: 999px;
+        padding: 0.4rem 0.85rem; font-size: 0.82rem; font-weight: 600; color: #475569;
+        transition: all 0.15s;
+    }
+    .overview-selection-module .q-chip input[type="checkbox"] {
+        position: absolute; opacity: 0; pointer-events: none;
+    }
+    .overview-selection-module .q-chip:hover { background: #F0F9FC; border-color: #BDE3F0; color: #00689D; }
+    .overview-selection-module .q-chip:has(input[type="checkbox"]:checked) {
+        background: #00B2E3; border-color: #00B2E3; color: #ffffff;
+    }
+
+    .overview-selection-module .personalise-chip {
+        display: inline-flex; align-items: center; gap: 0.3rem;
+        background: #E6F6FB; color: #00689D; border: 1px solid #BDE3F0;
+        border-radius: 999px; padding: 0.18rem 0.6rem;
+        font-size: 0.76rem; font-weight: 600;
+    }
+    .overview-selection-module .personalise-chip i { font-size: 0.7rem; }
+
     /* ============================================
        UN-Habitat Design System - Overview Selection Module
        ============================================ */
@@ -793,17 +948,48 @@
                     selections.selected = new Set(data.selected || []);
                     selections.skipped = new Set(data.skipped || []);
                     console.log('OverviewSelection: Loaded selections from FormStateManager');
-                    return;
                 }
             }
 
             // Fallback to localStorage for backward compatibility
-            const saved = localStorage.getItem('rosraOverviewSelections');
-            if (saved) {
-                const data = JSON.parse(saved);
-                selections.selected = new Set(data.selected || []);
-                selections.skipped = new Set(data.skipped || []);
-                console.log('OverviewSelection: Loaded selections from localStorage (fallback)');
+            if (selections.selected.size === 0 && selections.skipped.size === 0) {
+                const saved = localStorage.getItem('rosraOverviewSelections');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    selections.selected = new Set(data.selected || []);
+                    selections.skipped = new Set(data.skipped || []);
+                    console.log('OverviewSelection: Loaded selections from localStorage (fallback)');
+                }
+            }
+
+            // Backfill: sample reports (and older saves) ship the materialised
+            // `selectedSolutions` array but omit the `selections.selected` ID
+            // set. Without backfill, Recommendations shows N solutions while
+            // Overview Selection shows 0 and the counts drift once the user
+            // toggles anything. Reconstruct the ID set from the materialised
+            // array when the primary store is empty.
+            if (selections.selected.size === 0 && selections.skipped.size === 0) {
+                try {
+                    let materialised = null;
+                    if (typeof FormStateManager !== 'undefined') {
+                        materialised = FormStateManager.getData('rosraSelectedSolutions');
+                    }
+                    if (!Array.isArray(materialised)) {
+                        const rawSolutions = localStorage.getItem('rosraSelectedSolutions');
+                        if (rawSolutions) {
+                            const parsed = JSON.parse(rawSolutions);
+                            if (Array.isArray(parsed)) materialised = parsed;
+                        }
+                    }
+                    if (Array.isArray(materialised) && materialised.length > 0) {
+                        materialised.forEach(s => {
+                            if (s && s.solutionId) selections.selected.add(s.solutionId);
+                        });
+                        console.log('OverviewSelection: Backfilled', selections.selected.size, 'selections from materialised solutions');
+                    }
+                } catch (e) {
+                    console.warn('OverviewSelection: Backfill from rosraSelectedSolutions failed:', e);
+                }
             }
         } catch (e) {
             console.error('Error loading selections:', e);
@@ -833,6 +1019,31 @@
             console.error('Error saving selections:', e);
         }
     }
+
+    // Map any raw timeline string on a solution card onto one of the three
+    // canonical buckets the Recommendations module filters on. Exported to
+    // window so recommendationsModule.js can apply the same mapping when it
+    // reads back older (non-canonical) selections from localStorage.
+    function canonicalizeTimeline(raw) {
+        if (!raw) return '1-3 years';
+        const s = String(raw).toLowerCase().trim();
+        // Short term — "<1 year", "< 1 year", "less than a year",
+        // "less than a year; repeat", "6-12 months", "90 days", etc.
+        if (s.includes('90 day')
+            || s.includes('less than a year')
+            || /<\s*1\s*year/.test(s)
+            || /6\s*-\s*12\s*month/.test(s)
+            || s.startsWith('less than')) {
+            return '<1 year';
+        }
+        // Long term — "3+ years", "3-5 years"
+        if (/3\s*\+/.test(s) || /3\s*-\s*5\s*year/.test(s)) {
+            return '3+ years';
+        }
+        // Everything else (1-2 years, 1-3 years, "launch; 1-3 years to deepen")
+        return '1-3 years';
+    }
+    window.canonicalizeTimeline = canonicalizeTimeline;
 
     // Save full solution data for Recommendations module
     function saveSelectedSolutionsForRecommendations() {
@@ -894,7 +1105,12 @@
                     streamRank: streamInfo?.rank || 999,
                     gapType: gapType,
                     gapPriority: gapInfo?.priority || 999,
-                    timeline: solution?.timeline || '1-3 years',
+                    // Solution cards use many timeline strings ("< 1 year", "Less
+                    // than a year", "6-12 months", "1-2 years", …). The downstream
+                    // Recommendations module filters on the 3 canonical buckets
+                    // below, so normalise here — otherwise the Timeline view and
+                    // summary counts end up silently empty.
+                    timeline: canonicalizeTimeline(solution?.timeline),
                     title: solution?.title || solution?.shortTitle || solutionId,
                     subgroup: subgroup || ''
                 });
@@ -1147,7 +1363,7 @@
         const polBadge = solution.politicalSensitivity ? `<span class="badge bg-light text-dark border" style="font-size:0.65rem;">Pol: ${solution.politicalSensitivity}</span>` : '';
 
         return `
-            <div class="solution-card ${cardClass}" data-solution-id="${solution.solutionId}" data-timeline="${solution.timeline}">
+            <div class="solution-card ${cardClass}" data-solution-id="${solution.solutionId}" data-timeline="${solution.timeline}" data-political="${solution.politicalFeasibility || ''}" data-gap="${(solution.gap || '').toLowerCase()}">
                 <div class="solution-card-header">
                     <div class="d-flex align-items-center gap-2">
                         <span class="solution-id">${solution.solutionId}</span>
@@ -1391,31 +1607,163 @@
     }
 
     // Apply filters
+    // ----- Personalisation questionnaire state (filters the 82-card pool) -----
+    // null while user hasn't applied; { time, political, focus[] } after Apply.
+    let personalise = null;
+
+    // Map various raw timeline strings into 3 buckets: 'quick' (<1y), 'medium' (1-3y), 'long' (3y+)
+    function timelineBucket(t) {
+        if (!t) return 'unknown';
+        const s = String(t).toLowerCase();
+        if (s.includes('less than a year') || s.includes('< 1') || s.includes('<1') || s.includes('6-12 month') || s.includes('6 month')) return 'quick';
+        if (s.includes('1-2 year') || s.includes('1-3 year') || s.includes('1 year')) return 'medium';
+        if (s.includes('2-4 year') || s.includes('3+') || s.includes('3 year')) return 'long';
+        // Compound timelines like "Less than a year to launch; 1-3 years to deepen" → quick (the launch part)
+        if (s.includes('less than a year')) return 'quick';
+        return 'unknown';
+    }
+
+    // Map politicalFeasibility text → bucket: 'higher' / 'moderate' / 'sensitive'
+    function politicalBucket(p) {
+        if (!p) return 'unknown';
+        const s = String(p).toLowerCase();
+        if (s.includes('more sensitive') || s.includes('sensitive')) return 'sensitive';
+        if (s.includes('moderate')) return 'moderate';
+        if (s.includes('usually higher') || s.includes('higher')) return 'higher';
+        return 'unknown';
+    }
+
+    function cardMatchesPersonalise(card) {
+        if (!personalise) return true; // no questionnaire applied yet → show all
+        const tBucket = timelineBucket(card.dataset.timeline);
+        const pBucket = politicalBucket(card.dataset.political);
+        const gap = (card.dataset.gap || '').toLowerCase();
+
+        // Q1 — time horizon (multi-select). Empty list = no constraint.
+        if (personalise.time && personalise.time.length > 0 && !personalise.time.includes(tBucket)) {
+            // 'unknown' bucket cards are shown if any timeline bucket is selected (don't punish them)
+            if (tBucket !== 'unknown') return false;
+        }
+
+        // Q2 — political feasibility (multi-select). Empty list = no constraint.
+        if (personalise.political && personalise.political.length > 0 && !personalise.political.includes(pBucket)) {
+            if (pBucket !== 'unknown') return false;
+        }
+
+        // Q3 — focus areas (gap types). Empty list = no constraint.
+        if (personalise.focus && personalise.focus.length > 0 && !personalise.focus.includes(gap)) {
+            return false;
+        }
+
+        return true;
+    }
+
     function applyFilters() {
         const streamFilter = document.getElementById('filterStream').value;
         const gapFilter = document.getElementById('filterGap').value;
         const timelineFilter = document.getElementById('filterTimeline').value;
 
-        // Filter stream sections
-        document.querySelectorAll('.stream-section').forEach(section => {
-            const streamName = section.dataset.stream;
-            const matchesStream = streamFilter === 'all' || streamName === streamFilter;
-            section.style.display = matchesStream ? '' : 'none';
-        });
-
-        // Filter gap sections
-        document.querySelectorAll('.gap-section').forEach(section => {
-            const gapType = section.dataset.gapType;
-            const matchesGap = gapFilter === 'all' || gapType === gapFilter;
-            section.style.display = matchesGap ? '' : 'none';
-        });
-
-        // Filter solution cards by timeline
+        // Filter solution cards (combined: existing dropdowns + personalise questionnaire)
         document.querySelectorAll('.solution-card').forEach(card => {
             const timeline = card.dataset.timeline;
             const matchesTimeline = timelineFilter === 'all' || timeline === timelineFilter;
-            card.style.display = matchesTimeline ? '' : 'none';
+            const matchesPersonalise = cardMatchesPersonalise(card);
+            card.style.display = (matchesTimeline && matchesPersonalise) ? '' : 'none';
         });
+
+        // Filter gap sections — also hide if no visible cards remain inside
+        document.querySelectorAll('.gap-section').forEach(section => {
+            const gapType = section.dataset.gapType;
+            const matchesGap = gapFilter === 'all' || gapType === gapFilter;
+            const visibleCards = section.querySelectorAll('.solution-card:not([style*="display: none"])').length;
+            section.style.display = (matchesGap && visibleCards > 0) ? '' : 'none';
+        });
+
+        // Filter stream sections — also hide if no visible gap sections
+        document.querySelectorAll('.stream-section').forEach(section => {
+            const streamName = section.dataset.stream;
+            const matchesStream = streamFilter === 'all' || streamName === streamFilter;
+            const visibleGaps = section.querySelectorAll('.gap-section:not([style*="display: none"])').length;
+            section.style.display = (matchesStream && visibleGaps > 0) ? '' : 'none';
+        });
+
+        updatePersonaliseMatchCount();
+    }
+
+    function updatePersonaliseMatchCount() {
+        const el = document.getElementById('personaliseMatchCount');
+        if (!el) return;
+        const visible = document.querySelectorAll('.solution-card:not([style*="display: none"])').length;
+        el.textContent = visible;
+    }
+
+    // Read the questionnaire form into the `personalise` state (all three are multi-select arrays)
+    function readPersonaliseForm() {
+        const time      = Array.from(document.querySelectorAll('input[name="qTime"]:checked')).map(i => i.value);
+        const political = Array.from(document.querySelectorAll('input[name="qPolitical"]:checked')).map(i => i.value);
+        const focus     = Array.from(document.querySelectorAll('input[name="qFocus"]:checked')).map(i => i.value);
+        return { time, political, focus };
+    }
+
+    // Render the chip-strip when banner is collapsed
+    function renderPersonaliseChips() {
+        const list = document.getElementById('personaliseChipList');
+        if (!list || !personalise) return;
+        const chips = [];
+
+        const timeLabels = { quick: 'Quick wins', medium: 'Medium-term', long: 'Long-term' };
+        const polLabels  = { higher: 'Higher feasibility', moderate: 'Moderate', sensitive: 'Lower feasibility' };
+        const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+        // Q1 — time
+        if (personalise.time.length === 0) {
+            chips.push(`<span class="personalise-chip text-warning"><i class="bi bi-exclamation-triangle"></i>No timeline selected</span>`);
+        } else if (personalise.time.length === 3) {
+            chips.push(`<span class="personalise-chip"><i class="bi bi-clock"></i>Any timeline</span>`);
+        } else {
+            chips.push(`<span class="personalise-chip"><i class="bi bi-clock"></i>${personalise.time.map(t => timeLabels[t]).join(' · ')}</span>`);
+        }
+
+        // Q2 — political
+        if (personalise.political.length === 0) {
+            chips.push(`<span class="personalise-chip text-warning"><i class="bi bi-exclamation-triangle"></i>No feasibility selected</span>`);
+        } else if (personalise.political.length === 3) {
+            chips.push(`<span class="personalise-chip"><i class="bi bi-shield"></i>Any feasibility</span>`);
+        } else {
+            chips.push(`<span class="personalise-chip"><i class="bi bi-shield"></i>${personalise.political.map(p => polLabels[p]).join(' · ')}</span>`);
+        }
+
+        // Q3 — focus
+        if (personalise.focus.length === 0) {
+            chips.push(`<span class="personalise-chip text-warning"><i class="bi bi-exclamation-triangle"></i>No gap types selected</span>`);
+        } else if (personalise.focus.length === 4) {
+            chips.push(`<span class="personalise-chip"><i class="bi bi-bullseye"></i>All gap types</span>`);
+        } else {
+            chips.push(`<span class="personalise-chip"><i class="bi bi-bullseye"></i>${personalise.focus.map(cap).join(' · ')}</span>`);
+        }
+
+        list.innerHTML = chips.join('');
+    }
+
+    // Reveal the cards section after the user submits or skips the questionnaire
+    function revealCardsSection() {
+        const wrap = document.getElementById('overviewCardsSection');
+        if (wrap && wrap.style.display === 'none') {
+            wrap.style.display = '';
+            // Smooth scroll the user to the now-visible filter panel
+            setTimeout(() => wrap.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+        }
+    }
+
+    function showPersonaliseChips() {
+        document.getElementById('personaliseForm').style.display = 'none';
+        document.getElementById('personaliseChips').style.display = '';
+        renderPersonaliseChips();
+    }
+
+    function showPersonaliseForm() {
+        document.getElementById('personaliseChips').style.display = 'none';
+        document.getElementById('personaliseForm').style.display = '';
     }
 
     // Select all quick wins
@@ -1472,6 +1820,40 @@
         document.getElementById('filterStream').addEventListener('change', applyFilters);
         document.getElementById('filterGap').addEventListener('change', applyFilters);
         document.getElementById('filterTimeline').addEventListener('change', applyFilters);
+
+        // Personalisation banner — Apply / Skip / Edit / Clear
+        var applyBtn = document.getElementById('personaliseApplyBtn');
+        if (applyBtn) {
+            applyBtn.addEventListener('click', function () {
+                personalise = readPersonaliseForm();
+                showPersonaliseChips();
+                revealCardsSection();
+                applyFilters();
+            });
+        }
+        var skipBtn = document.getElementById('personaliseSkipBtn');
+        if (skipBtn) {
+            skipBtn.addEventListener('click', function () {
+                personalise = null;
+                showPersonaliseChips();
+                document.getElementById('personaliseChipList').innerHTML =
+                    '<span class="personalise-chip"><i class="bi bi-eye"></i>Showing all 82 cards</span>';
+                revealCardsSection();
+                applyFilters();
+            });
+        }
+        var editBtn = document.getElementById('personaliseEditBtn');
+        if (editBtn) editBtn.addEventListener('click', showPersonaliseForm);
+
+        var clearBtn = document.getElementById('personaliseClearBtn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function () {
+                personalise = null;
+                applyFilters();
+                document.getElementById('personaliseChipList').innerHTML =
+                    '<span class="personalise-chip"><i class="bi bi-eye"></i>Showing all 82 cards</span>';
+            });
+        }
 
         // Quick action buttons
         document.getElementById('selectAllQuickWins').addEventListener('click', selectAllQuickWins);

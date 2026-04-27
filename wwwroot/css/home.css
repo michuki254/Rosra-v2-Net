@@ -478,6 +478,18 @@
 
 .uh-info-card:hover .uh-info-card__img img { transform: scale(1.05); }
 
+/* SVG illustration variant — show whole artwork (no crop) */
+.uh-info-card__img--svg {
+    background: linear-gradient(135deg, #E6F7FC 0%, #C5EAF6 100%);
+}
+
+.uh-info-card__img--svg img {
+    object-fit: contain;
+    padding: 8px;
+}
+
+.uh-info-card:hover .uh-info-card__img--svg img { transform: scale(1.03); }
+
 .uh-info-card__body { padding: 16px; }
 
 .uh-info-card__body h4 {

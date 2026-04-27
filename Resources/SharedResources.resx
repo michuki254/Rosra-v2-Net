@@ -63,7 +63,7 @@
   <data name="Nav_MyDashboard" xml:space="preserve"><value>My Dashboard</value></data>
   <data name="Nav_Logout" xml:space="preserve"><value>Logout</value></data>
   <data name="Nav_Login" xml:space="preserve"><value>Login</value></data>
-  <data name="Nav_CreateReport" xml:space="preserve"><value>Create Report</value></data>
+  <data name="Nav_CreateReport" xml:space="preserve"><value>Start Analysis</value></data>
 
   <!-- Footer -->
   <data name="Footer_Copyright" xml:space="preserve"><value>© 2025 - RosraApp - Empowering local governments through data-driven OSR optimization</value></data>

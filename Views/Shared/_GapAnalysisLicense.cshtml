@@ -68,21 +68,20 @@
                         </label>
                         <div class="input-group">
                             <input type="number" class="form-control bg-light fw-bold" id="blEstimatedUnregisteredPercent"
-                                   name="License.EstimatedUnregisteredPercent" value="@(Model.License.EstimatedUnregisteredPercent ?? 3)"
+                                   name="License.EstimatedUnregisteredPercent" value="@(Model.License.EstimatedUnregisteredPercent?.ToString() ?? "")"
                                    placeholder="@Localizer["EnterPercent"]" min="0" max="100" step="0.1" @(isViewMode ? "readonly" : "") data-input="true">
                             <span class="input-group-text">%</span>
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    @* COMMENTED OUT — "Total Estimated Businesses" label & input.
+                       Input kept in DOM (display:none) so JS that writes to #blTotalEstimatedBusinesses keeps working. *@
+                    <div class="mb-3" style="display:none;" aria-hidden="true">
                         <label for="blTotalEstimatedBusinesses" class="form-label text-primary">
                             @Localizer["TotalEstimatedBusinesses"]
-                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="@Localizer["TotalEstimatedBusinesses_Tooltip"]"></i>
                         </label>
                         <input type="text" class="form-control number-format" id="blTotalEstimatedBusinesses"
-                               readonly value="0" style="background-color: #e8f4fc;">
-                        <small class="text-muted">@Localizer["TotalEstimatedBusinesses_Formula"]</small>
+                               readonly value="0">
                     </div>
 
                     <div class="mb-3">
@@ -113,31 +112,28 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    @* COMMENTED OUT — "Revenue to Date" label & input.
+                       Input kept in DOM (display:none) so JS / chart that read from #blRevenueToDate keep working,
+                       and the model field License.RevenueToDate still posts on save. *@
+                    <div class="mb-3" style="display:none;" aria-hidden="true">
                         <label for="blRevenueToDate" class="form-label text-primary">
                             @Localizer["RevenueToDate"] (<span class="currency-label">@currencySymbol</span>)
-                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="@Localizer["RevenueToDate_Tooltip"]"></i>
                         </label>
-                        <div class="input-group">
-                            <span class="input-group-text currency-prefix-display">@currencySymbol</span>
-                            <input type="text" class="form-control number-format" id="blRevenueToDate"
-                                   name="License.RevenueToDate" value="@Model.License.RevenueToDate"
-                                   readonly style="background-color: #e8f4fc;">
-                        </div>
-                        <small class="text-muted">@Localizer["RevenueToDate_Formula"]</small>
+                        <input type="text" class="form-control number-format" id="blRevenueToDate"
+                               name="License.RevenueToDate" value="@Model.License.RevenueToDate"
+                               readonly>
                     </div>
 
-                    <div class="mb-3">
+                    @* COMMENTED OUT — "Compliant Businesses" label & input.
+                       Input kept in DOM (display:none) so JS that writes to #blCompliantBusinesses keeps working,
+                       and License.CompliantBusinesses still posts on save. *@
+                    <div class="mb-3" style="display:none;" aria-hidden="true">
                         <label for="blCompliantBusinesses" class="form-label text-primary">
                             @Localizer["CompliantBusinesses"]
-                            <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="@Localizer["CompliantBusinesses_Tooltip"]"></i>
                         </label>
                         <input type="text" class="form-control number-format" id="blCompliantBusinesses"
                                name="License.CompliantBusinesses" value="@Model.License.CompliantBusinesses"
-                               readonly style="background-color: #e8f4fc;">
-                        <small class="text-muted">@Localizer["CompliantBusinesses_Formula"]</small>
+                               readonly>
                     </div>
 
                     <div class="mb-3">
@@ -162,13 +158,18 @@
                         </label>
                         <div class="input-group">
                             <input type="number" class="form-control bg-light fw-bold" id="blRealisticImprovementPercent"
-                                   name="License.RealisticImprovementPercent" value="@(Model.License.RealisticImprovementPercent ?? 15)"
+                                   name="License.RealisticImprovementPercent" value="@(Model.License.RealisticImprovementPercent?.ToString() ?? "")"
                                    placeholder="@Localizer["EnterPercent"]" min="0" max="100" step="1" @(isViewMode ? "readonly" : "") data-input="true">
                             <span class="input-group-text">%</span>
                         </div>
                     </div>
                 </div>
             </div>
+
+            @* COMMENTED OUT — "Useful Average Values" + "KPI Ratios" cards. Cards stay in DOM (display:none)
+               so JS that writes to blAvgBilledAmount/blAchievableAvgBill/blDeltaA and the ratio bars/badges
+               continues to work without null-reference errors. *@
+            <div style="display:none;" aria-hidden="true">
 
             <!-- Useful Average Values -->
             <div class="card mb-3 shadow-sm">
@@ -251,6 +252,8 @@
                     </div>
                 </div>
             </div>
+
+            </div><!-- /hidden wrapper for AvgValues + KPI Ratios -->
         </div>
 
         <!-- Right Column - Results Section -->
@@ -260,8 +263,9 @@
                     <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>@Localizer["Results_Title"]</h6>
                 </div>
                 <div class="card-body">
-                    <!-- Potential Revenue Breakdown Table -->
-                    <div class="mb-4">
+                    @* COMMENTED OUT — Potential Revenue Breakdown table (kept in DOM via display:none so JS
+                       writing to blTableRevenueToDate / blTableComplianceGap / etc. doesn't error). *@
+                    <div class="mb-4" style="display:none;" aria-hidden="true">
                         <h6 class="text-center mb-3">@Localizer["PotentialRevenue_Title"]</h6>
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered table-striped table-hover">
@@ -337,20 +341,8 @@
                         </div>
                     </div>
 
-                    <!-- Revenue and Functional Gaps Pie Chart -->
-                    <div class="mb-4">
-                        <h6 class="text-center mb-3">@Localizer["PotentialRevenuePie_Title"]</h6>
-                        <div class="d-flex justify-content-center">
-                            <div style="height: 300px; width: 450px; position: relative;">
-                                <canvas id="blPotentialRevenueChart"></canvas>
-                            </div>
-                        </div>
-                        <p class="small text-muted mt-2 text-center">
-                            <strong>@Localizer["Description_Label"]</strong> @Localizer["PotentialRevenuePie_Description"]
-                        </p>
-                    </div>
-
-                    <hr>
+                    @* REMOVED — "Revenue and Functional Gaps" pie chart, title, and description.
+                       JS keeps null-guards on #blPotentialRevenueChart so removal is safe. *@
 
                     <!-- Matrix Gap Analysis Dashboard -->
                     <div class="mb-4">
@@ -465,8 +457,21 @@
 
                     <hr>
 
-                    <!-- Gap Breakdown Table -->
-                    <div class="mb-4">
+                    <!-- Revenue to date vs Potential — Gap to Potential (two-bar layout) -->
+                    <div class="mb-4 revenue-gap-stack-section">
+                        <div class="rg-stack-header">
+                            <h6 class="rg-stack-title">Revenue to date vs Potential — Gap to Potential</h6>
+                            <span class="rg-stack-units">AMOUNTS IN <span class="currency-label">@currencySymbol</span> (B)</span>
+                        </div>
+                        <div class="chart-container" style="height: 420px;">
+                            <canvas id="blRevenueGapStackedBarChart"></canvas>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    @* COMMENTED OUT — Gap Breakdown table (kept in DOM via display:none for JS safety). *@
+                    <div class="mb-4" style="display:none;" aria-hidden="true">
                         <h6 class="text-center mb-3">@Localizer["GapBreakdown_Title"] (<span class="currency-label">@currencySymbol</span>)</h6>
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered table-striped table-hover">
@@ -560,6 +565,13 @@
         border-radius: 8px 8px 0 0;
     }
 
+    /* Revenue vs Gap two-bar chart header */
+    .revenue-gap-stack-section { background: #ffffff; border-radius: 10px; padding: 1rem 1.1rem 0.4rem; }
+    .rg-stack-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.4rem; }
+    .rg-stack-title { font-size: 1rem; font-weight: 700; color: #1f2937; margin: 0; }
+    .rg-stack-units { font-size: 0.72rem; color: #94a3b8; letter-spacing: 1.2px; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+    @@media (max-width: 600px) { .rg-stack-header { flex-direction: column; align-items: flex-start; gap: 0.25rem; } }
+
     .business-license-gap-analysis .form-control[readonly] {
         cursor: default;
     }
@@ -605,6 +617,7 @@
         // Chart instances
         let potentialRevenueChart = null;
         let gapBreakdownChart = null;
+        let blRevenueGapStackedBarChart = null;
 
         // Get currency symbol from AppContext (single source of truth)
         function getCurrencySymbol() {
@@ -631,15 +644,6 @@
         }
 
         // Default values for Business License (must be defined before any calculateBusinessLicenseGaps calls)
-        const DEFAULTS = {
-            registeredBusinesses: 451,
-            estimatedUnregisteredPercent: 3,
-            billedAmount: 233073733,
-            outstandingAmount: 55623018,
-            statutoryAverageBilled: 680500,
-            realisticImprovementPercent: 15
-        };
-
         // Subscribe to AppContext currency changes
         if (window.AppContext) {
             window.AppContext.subscribe('currencySymbol', function(newSymbol) {
@@ -685,6 +689,131 @@
         calculateBusinessLicenseGaps();
 
         function initializeCharts() {
+            // ----- Revenue to date vs Potential — two-bar layout (mirrors Top-Down chart) -----
+            const blRgCanvas = document.getElementById('blRevenueGapStackedBarChart');
+            if (blRgCanvas) {
+                const fmtCompact = function (v) {
+                    if (v == null || isNaN(v)) return '0';
+                    if (Math.abs(v) >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+                    if (Math.abs(v) >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+                    if (Math.abs(v) >= 1e3) return (v / 1e3).toFixed(1) + 'K';
+                    return Math.round(v).toLocaleString();
+                };
+
+                const blRgLabelsPlugin = {
+                    id: 'blRgGapAnnotations',
+                    afterDatasetsDraw: function (chart) {
+                        const c  = chart.ctx;
+                        const m0 = chart.getDatasetMeta(0);
+                        const m1 = chart.getDatasetMeta(1);
+                        if (!m0 || !m1) return;
+                        const bar0Cur = m0.data[0];
+                        const bar0Pot = m0.data[1];
+                        const bar1Pot = m1.data[1];
+                        if (!bar0Cur || !bar0Pot || !bar1Pot) return;
+
+                        const symbol = (typeof getCurrencySymbol === 'function') ? getCurrencySymbol() : '';
+                        const v   = chart.config._rgValues || { rev: 0, gap: 0, total: 0 };
+                        const pct = v.total > 0 ? Math.round((v.gap / v.total) * 100) : 0;
+                        const fmtFull = function (n) { return (symbol ? symbol + ' ' : '') + fmtCompact(n); };
+
+                        c.save();
+                        c.font = '700 13px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.fillStyle = '#1f2937';
+                        c.textAlign = 'center';
+                        c.textBaseline = 'bottom';
+                        c.fillText(fmtFull(v.rev),   bar0Cur.x, bar0Cur.y - 8);
+                        c.fillText(fmtFull(v.total), bar1Pot.x, bar1Pot.y - 8);
+
+                        c.fillStyle = '#ffffff';
+                        c.font = '700 14px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.textBaseline = 'middle';
+                        if (Math.abs(bar0Cur.base - bar0Cur.y) > 22 && v.rev > 0) c.fillText(fmtCompact(v.rev), bar0Cur.x, (bar0Cur.y + bar0Cur.base) / 2);
+                        if (Math.abs(bar0Pot.base - bar0Pot.y) > 22 && v.rev > 0) c.fillText(fmtCompact(v.rev), bar0Pot.x, (bar0Pot.y + bar0Pot.base) / 2);
+                        if (Math.abs(bar1Pot.base - bar1Pot.y) > 22 && v.gap > 0) c.fillText(fmtCompact(v.gap), bar1Pot.x, (bar1Pot.y + bar1Pot.base) / 2);
+
+                        const halfW = (bar0Cur.width || 60) / 2;
+                        c.strokeStyle = '#9ca3af';
+                        c.lineWidth = 1;
+                        c.setLineDash([4, 4]);
+                        c.beginPath();
+                        c.moveTo(bar0Cur.x + halfW, bar0Cur.y);
+                        c.lineTo(bar0Pot.x - halfW, bar0Pot.y);
+                        c.stroke();
+                        c.setLineDash([]);
+
+                        if (v.gap > 0) {
+                            const bracketX = bar1Pot.x + ((bar1Pot.width || 60) / 2) + 18;
+                            const topY = bar1Pot.y;
+                            const botY = bar1Pot.base;
+                            c.strokeStyle = '#FD9D24';
+                            c.lineWidth = 1.5;
+                            c.beginPath(); c.moveTo(bracketX, topY); c.lineTo(bracketX, botY); c.stroke();
+                            c.beginPath(); c.moveTo(bracketX, topY); c.lineTo(bracketX - 6, topY); c.stroke();
+                            c.beginPath(); c.moveTo(bracketX, botY); c.lineTo(bracketX - 6, botY); c.stroke();
+                            const midY = (topY + botY) / 2;
+                            c.fillStyle = '#FD9D24';
+                            c.textAlign = 'left';
+                            c.font = '700 12px Roboto, "Segoe UI", Arial, sans-serif';
+                            c.textBaseline = 'bottom';
+                            c.fillText('Gap', bracketX + 8, midY - 4);
+                            c.font = '700 14px Roboto, "Segoe UI", Arial, sans-serif';
+                            c.textBaseline = 'top';
+                            c.fillText(fmtCompact(v.gap), bracketX + 8, midY + 2);
+                            c.fillStyle = '#94a3b8';
+                            c.font = '500 11px Roboto, "Segoe UI", Arial, sans-serif';
+                            c.fillText(pct + '% of potential', bracketX + 8, midY + 22);
+                        }
+                        c.restore();
+                    }
+                };
+
+                blRevenueGapStackedBarChart = new Chart(blRgCanvas.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: [['Revenue to date', 'actual collection'], ['Potential', 'total potential']],
+                        datasets: [
+                            { label: 'Revenue to date', data: [0, 0], backgroundColor: '#00B2E3', stack: 'rg', borderWidth: 0, barThickness: 110, maxBarThickness: 130 },
+                            { label: 'Gap',             data: [0, 0], backgroundColor: '#FD9D24', stack: 'rg', borderWidth: 0, barThickness: 110, maxBarThickness: 130 }
+                        ]
+                    },
+                    plugins: [blRgLabelsPlugin],
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: { padding: { top: 36, right: 150, bottom: 8, left: 8 } },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (ctx) {
+                                        const symbol = (typeof getCurrencySymbol === 'function') ? getCurrencySymbol() : '';
+                                        return ctx.dataset.label + ': ' + symbol + ' ' + fmtCompact(ctx.parsed.y);
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { stacked: true, ticks: { font: { size: 12, weight: '700' }, color: '#1f2937', padding: 8 }, grid: { display: false }, border: { display: false } },
+                            y: {
+                                stacked: true, beginAtZero: true,
+                                ticks: {
+                                    font: { size: 11, weight: '500' }, color: '#94a3b8',
+                                    callback: function (v) {
+                                        if (v >= 1e9) return (v / 1e9).toFixed(1) + 'B';
+                                        if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+                                        if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
+                                        return v.toLocaleString();
+                                    }
+                                },
+                                grid: { color: '#eef0f3', drawBorder: false }
+                            }
+                        }
+                    }
+                });
+                if (window.registerChart) registerChart('blRevenueGapStackedBarChart', blRevenueGapStackedBarChart);
+            }
+
             // Potential Revenue Pie Chart
             const ctx1 = document.getElementById('blPotentialRevenueChart');
             if (ctx1) {
@@ -822,39 +951,18 @@
         }
 
         function calculateBusinessLicenseGaps() {
-            // Get input values (6 user inputs) with defaults
-            let registeredBusinesses = parseNumber(document.getElementById('blRegisteredBusinesses')?.value);
-            let estimatedUnregisteredPercent = parseFloat(document.getElementById('blEstimatedUnregisteredPercent')?.value);
-            let billedAmount = parseNumber(document.getElementById('blBilledAmount')?.value);
-            let outstandingAmount = parseNumber(document.getElementById('blOutstandingAmount')?.value);
-            let statutoryAverageBilled = parseNumber(document.getElementById('blStatutoryAverageBilled')?.value);
-            let realisticImprovementPercent = parseFloat(document.getElementById('blRealisticImprovementPercent')?.value);
-
-            // Apply defaults if values are zero or NaN (first load with empty model)
-            if (!registeredBusinesses || registeredBusinesses === 0) {
-                registeredBusinesses = DEFAULTS.registeredBusinesses;
-                document.getElementById('blRegisteredBusinesses').value = registeredBusinesses.toLocaleString();
-            }
-            if (isNaN(estimatedUnregisteredPercent) || estimatedUnregisteredPercent === 0) {
-                estimatedUnregisteredPercent = DEFAULTS.estimatedUnregisteredPercent;
-                document.getElementById('blEstimatedUnregisteredPercent').value = estimatedUnregisteredPercent;
-            }
-            if (!billedAmount || billedAmount === 0) {
-                billedAmount = DEFAULTS.billedAmount;
-                document.getElementById('blBilledAmount').value = formatCurrency(billedAmount).replace('.00', '');
-            }
-            if (!outstandingAmount || outstandingAmount === 0) {
-                outstandingAmount = DEFAULTS.outstandingAmount;
-                document.getElementById('blOutstandingAmount').value = formatCurrency(outstandingAmount).replace('.00', '');
-            }
-            if (!statutoryAverageBilled || statutoryAverageBilled === 0) {
-                statutoryAverageBilled = DEFAULTS.statutoryAverageBilled;
-                document.getElementById('blStatutoryAverageBilled').value = formatCurrency(statutoryAverageBilled).replace('.00', '');
-            }
-            if (isNaN(realisticImprovementPercent) || realisticImprovementPercent === 0) {
-                realisticImprovementPercent = DEFAULTS.realisticImprovementPercent;
-                document.getElementById('blRealisticImprovementPercent').value = realisticImprovementPercent;
-            }
+            // Read the 6 user inputs. Empty/NaN is treated as 0 so the calc still
+            // runs and derived fields show 0 on a blank form — we no longer force
+            // demo values into the inputs when they're empty (previous behavior
+            // broke "start a new report").
+            const registeredBusinesses = parseNumber(document.getElementById('blRegisteredBusinesses')?.value) || 0;
+            const rawEstUnreg = parseFloat(document.getElementById('blEstimatedUnregisteredPercent')?.value);
+            const estimatedUnregisteredPercent = isNaN(rawEstUnreg) ? 0 : rawEstUnreg;
+            const billedAmount = parseNumber(document.getElementById('blBilledAmount')?.value) || 0;
+            const outstandingAmount = parseNumber(document.getElementById('blOutstandingAmount')?.value) || 0;
+            const statutoryAverageBilled = parseNumber(document.getElementById('blStatutoryAverageBilled')?.value) || 0;
+            const rawRealImp = parseFloat(document.getElementById('blRealisticImprovementPercent')?.value);
+            const realisticImprovementPercent = isNaN(rawRealImp) ? 0 : rawRealImp;
 
             // Calculate Auto-Calculated Fields
             const totalEstimatedBusinesses = Math.max(0, registeredBusinesses * (1 + estimatedUnregisteredPercent / 100));
@@ -1024,6 +1132,21 @@
                     Math.max(0, mixedGapCoverage)
                 ];
                 gapBreakdownChart.update();
+            }
+
+            // Update "Revenue to date vs Potential" two-bar chart
+            if (blRevenueGapStackedBarChart) {
+                const rgRev   = Math.max(0, revenueToDate);
+                const rgGap   = Math.max(0, complianceGap)
+                              + Math.max(0, coverageGap)
+                              + Math.max(0, liabilityGap)
+                              + Math.max(0, mixedGapCompliance)
+                              + Math.max(0, mixedGapCoverage);
+                const rgTotal = rgRev + rgGap;
+                blRevenueGapStackedBarChart.data.datasets[0].data = [rgRev, rgRev];
+                blRevenueGapStackedBarChart.data.datasets[1].data = [0,     rgGap];
+                blRevenueGapStackedBarChart.config._rgValues = { rev: rgRev, gap: rgGap, total: rgTotal };
+                blRevenueGapStackedBarChart.update();
             }
         }
 
