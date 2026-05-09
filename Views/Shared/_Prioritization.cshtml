@@ -2,6 +2,27 @@
 
 <div class="tab-content-container prioritization-module">
     <div class="row g-2">
+        <!-- Stream summary chart: horizontal stacked bar, one row per analyzed stream,
+             sorted by total gap. Each row shows (1) total amount at the bar end, (2)
+             gap-type composition via colour segments, (3) plan status via opacity +
+             label suffix. Bridges Gap Analysis output into the prioritization decision. -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light py-3">
+                    <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Total Functional Gap by Stream</h6>
+                </div>
+                <div class="card-body">
+                    <div id="gapParetoPlaceholder" class="chart-placeholder text-center text-muted py-5">
+                        <i class="fas fa-chart-bar fa-3x mb-3 opacity-50"></i>
+                        <p class="mb-0">Add streams in Gap Analysis to see the breakdown.</p>
+                    </div>
+                    <div id="gapParetoWrap" style="display:none;">
+                        <canvas id="gapParetoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Combined Stream Prioritization (drag-and-drop OR arrow buttons to re-rank) -->
         <div class="col-12">
             <div class="card border-0 shadow-sm">
@@ -57,15 +78,16 @@
             <table id="finalStreamTable"><tbody id="finalStreamBody"></tbody><tfoot id="finalStreamFooter"></tfoot></table>
         </div>
 
-        <!-- Charts Section — bar chart fills full row; pie chart removed (data is redundant with the bar + Share column) -->
-        <div class="col-12">
+        @* Legacy stacked bar chart — replaced by the heatmap above. Kept hidden so existing
+           Chart.js setup code that references #gapBarChart / #barChartPlaceholder still resolves
+           the elements without throwing. Safe to delete once the heatmap is approved. *@
+        <div class="col-12" style="display:none;" aria-hidden="true">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-light py-3">
                     <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>@Localizer["Chart_BarTitle"]</h6>
                 </div>
                 <div class="card-body">
                     <div id="barChartPlaceholder" class="chart-placeholder text-center text-muted py-5">
-                        <i class="fas fa-chart-bar fa-3x mb-3 opacity-50"></i>
                         <p class="mb-0">@Localizer["Chart_Placeholder"]</p>
                     </div>
                     <canvas id="gapBarChart" height="180" style="display: none;"></canvas>
@@ -126,58 +148,6 @@
         <h5 class="mb-2"><i class="fas fa-layer-group me-2"></i>@Localizer["Step2_Title"]</h5>
     </div>
 
-    <!-- Mode Explanation Accordion -->
-    <div class="accordion mb-4" id="modeExplanationAccordion">
-        <div class="accordion-item border-0 shadow-sm mb-2">
-            <h2 class="accordion-header" id="headingRevenuePotential">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRevenuePotential" aria-expanded="false" aria-controls="collapseRevenuePotential">
-                    <span class="mode-badge mode-revenue-potential me-2">@Localizer["Mode_RevenuePotential"]</span>
-                    <span class="text-muted small">@Localizer["Mode_RevenuePotential_Condition"]</span>
-                </button>
-            </h2>
-            <div id="collapseRevenuePotential" class="accordion-collapse collapse" aria-labelledby="headingRevenuePotential" data-bs-parent="#modeExplanationAccordion">
-                <div class="accordion-body">
-                    <p class="mb-0">
-                        <strong>@Localizer["Mode_RevenuePotential_WhenApplied"]</strong> @Localizer["Mode_RevenuePotential_Condition"]<br><br>
-                        @Html.Raw(Localizer["Mode_RevenuePotential_Description"].Value)
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="accordion-item border-0 shadow-sm mb-2">
-            <h2 class="accordion-header" id="headingComplianceFirst">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseComplianceFirst" aria-expanded="false" aria-controls="collapseComplianceFirst">
-                    <span class="mode-badge mode-compliance-first me-2">@Localizer["Mode_ComplianceFirst"]</span>
-                    <span class="text-muted small">@Localizer["Mode_ComplianceFirst_Condition"]</span>
-                </button>
-            </h2>
-            <div id="collapseComplianceFirst" class="accordion-collapse collapse" aria-labelledby="headingComplianceFirst" data-bs-parent="#modeExplanationAccordion">
-                <div class="accordion-body">
-                    <p class="mb-0">
-                        <strong>@Localizer["Mode_ComplianceFirst_WhenApplied"]</strong> @Localizer["Mode_ComplianceFirst_Condition"]<br><br>
-                        @Html.Raw(Localizer["Mode_ComplianceFirst_Description"].Value)
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="accordion-item border-0 shadow-sm">
-            <h2 class="accordion-header" id="headingOverhaul">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOverhaul" aria-expanded="false" aria-controls="collapseOverhaul">
-                    <span class="mode-badge mode-overhaul me-2">@Localizer["Mode_Overhaul"]</span>
-                    <span class="text-muted small">@Localizer["Mode_Overhaul_Condition"]</span>
-                </button>
-            </h2>
-            <div id="collapseOverhaul" class="accordion-collapse collapse" aria-labelledby="headingOverhaul" data-bs-parent="#modeExplanationAccordion">
-                <div class="accordion-body">
-                    <p class="mb-0">
-                        <strong>@Localizer["Mode_Overhaul_WhenApplied"]</strong> @Localizer["Mode_Overhaul_Condition"]<br><br>
-                        @Html.Raw(Localizer["Mode_Overhaul_Description"].Value)
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Combined Gap Sequencing + Amounts Table -->
     <div class="row g-4">
         <div class="col-12">
@@ -233,6 +203,53 @@
                 <div id="firstPriorityActions"></div>
             </div>
             <table id="masterPriorityTable"><tbody id="masterPriorityBody"></tbody></table>
+        </div>
+    </div>
+
+    <!-- Mode Explanation — single collapsed toggle. Reveals all 3 modes inside; default closed
+         so it doesn't distract from the prioritization table above. -->
+    <div class="accordion mt-3 mb-4" id="modeExplanationAccordion">
+        <div class="accordion-item border-0 shadow-sm">
+            <h2 class="accordion-header" id="headingPrioritizationModes">
+                <button class="accordion-button collapsed" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapsePrioritizationModes"
+                        aria-expanded="false" aria-controls="collapsePrioritizationModes">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <span class="fw-semibold">How prioritization modes are chosen</span>
+                    <span class="text-muted small ms-2">3 modes &middot; click to expand</span>
+                </button>
+            </h2>
+            <div id="collapsePrioritizationModes" class="accordion-collapse collapse"
+                 aria-labelledby="headingPrioritizationModes" data-bs-parent="#modeExplanationAccordion">
+                <div class="accordion-body">
+                    <div class="mb-3">
+                        <span class="mode-badge mode-revenue-potential me-2">@Localizer["Mode_RevenuePotential"]</span>
+                        <span class="text-muted small">@Localizer["Mode_RevenuePotential_Condition"]</span>
+                        <p class="mb-0 mt-2">
+                            <strong>@Localizer["Mode_RevenuePotential_WhenApplied"]</strong>
+                            @Html.Raw(Localizer["Mode_RevenuePotential_Description"].Value)
+                        </p>
+                    </div>
+                    <hr class="my-3">
+                    <div class="mb-3">
+                        <span class="mode-badge mode-compliance-first me-2">@Localizer["Mode_ComplianceFirst"]</span>
+                        <span class="text-muted small">@Localizer["Mode_ComplianceFirst_Condition"]</span>
+                        <p class="mb-0 mt-2">
+                            <strong>@Localizer["Mode_ComplianceFirst_WhenApplied"]</strong>
+                            @Html.Raw(Localizer["Mode_ComplianceFirst_Description"].Value)
+                        </p>
+                    </div>
+                    <hr class="my-3">
+                    <div>
+                        <span class="mode-badge mode-overhaul me-2">@Localizer["Mode_Overhaul"]</span>
+                        <span class="text-muted small">@Localizer["Mode_Overhaul_Condition"]</span>
+                        <p class="mb-0 mt-2">
+                            <strong>@Localizer["Mode_Overhaul_WhenApplied"]</strong>
+                            @Html.Raw(Localizer["Mode_Overhaul_Description"].Value)
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1073,6 +1090,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let streams = [];
     let barChart = null;
     let pieChart = null;
+    let paretoChart = null;
     // Hoisted up here (declared again later in the file would shadow it). Several
     // helpers — getStreamPlanStatus, the chart code, the recommendations filter —
     // access this from inside renderCombinedTable() which can run during initial
@@ -1672,6 +1690,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (piePlaceholder) piePlaceholder.style.display = 'block';
             if (barCanvas) barCanvas.style.display = 'none';
             if (pieCanvas) pieCanvas.style.display = 'none';
+            // Pareto empty state
+            const ptPlaceholder = document.getElementById('gapParetoPlaceholder');
+            const ptWrap = document.getElementById('gapParetoWrap');
+            if (ptPlaceholder) ptPlaceholder.style.display = 'block';
+            if (ptWrap) ptWrap.style.display = 'none';
+            if (paretoChart) { paretoChart.destroy(); paretoChart = null; }
             return;
         }
 
@@ -1728,6 +1752,142 @@ document.addEventListener('DOMContentLoaded', function() {
             { key: 'mixedComp',  label: 'Mixed (Compliance)',     color: '#9C27B0' },
             { key: 'mixedCov',   label: 'Mixed (Coverage)',       color: '#E91E63' }
         ];
+
+        // ----- Polished horizontal stacked bar (rebuilt). -----
+        // Streams sorted by total gap descending. Each row is a stream; coloured
+        // segments show gap-type composition; total amount rendered at the end of
+        // each bar. Plan status is encoded both in the label suffix ("(no plan)" /
+        // "(partial plan)") and in colour opacity (no plan = faded).
+        (function renderStackedSummary() {
+            const canvas = document.getElementById('gapParetoChart');
+            const wrap = document.getElementById('gapParetoWrap');
+            const placeholder = document.getElementById('gapParetoPlaceholder');
+            if (!canvas) return;
+            if (placeholder) placeholder.style.display = 'none';
+            if (wrap) wrap.style.display = 'block';
+
+            // Sort streams by total gap descending so the biggest opportunity is on top.
+            const sortedRanking = finalRanking
+                .map(s => ({ stream: s, total: gapSeries.reduce((sum, g) => sum + gapValue(s, g.key), 0) }))
+                .sort((a, b) => b.total - a.total)
+                .map(x => x.stream);
+
+            // Re-derive plan statuses + labels in the new sort order.
+            const sortedStatuses = sortedRanking.map(s => getStreamPlanStatus(s.id));
+            const sortedLabels = sortedRanking.map((s, i) => {
+                const ps = sortedStatuses[i];
+                if (ps === 'none')    return s.name + '  (no plan)';
+                if (ps === 'partial') return s.name + '  (partial plan)';
+                return s.name;
+            });
+            function sortedAlpha(idx) {
+                const ps = sortedStatuses[idx];
+                if (ps === 'none')    return 0.25;
+                if (ps === 'partial') return 0.55;
+                return 1;
+            }
+
+            const sortedDatasets = gapSeries.map(gs => ({
+                label: gs.label,
+                data: sortedRanking.map(s => gapValue(s, gs.key)),
+                backgroundColor: sortedRanking.map((_, i) => hexToRgba(gs.color, sortedAlpha(i))),
+                borderWidth: 0,
+                stack: 'total'
+            }));
+
+            // Set canvas height proportional to row count (so bars stay ~36px tall).
+            const rowH = 44;
+            wrap.style.height = (60 + sortedRanking.length * rowH) + 'px';
+
+            // Custom plugin: draw the stream's TOTAL amount just past the right edge of each bar.
+            const totalLabelsPlugin = {
+                id: 'streamTotalLabels',
+                afterDatasetsDraw: function (chart) {
+                    const ctx = chart.ctx;
+                    // Pull the last visible dataset meta to find the right edge of each bar.
+                    const lastDsIdx = chart.data.datasets.length - 1;
+                    const lastMeta = chart.getDatasetMeta(lastDsIdx);
+                    if (!lastMeta || !lastMeta.data) return;
+                    ctx.save();
+                    ctx.font = '700 12px Roboto, "Segoe UI", Arial, sans-serif';
+                    ctx.fillStyle = '#1f2937';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    sortedRanking.forEach((s, i) => {
+                        const total = sortedDatasets.reduce((sum, ds) => sum + (ds.data[i] || 0), 0);
+                        if (total <= 0) return;
+                        // Bar's right edge = last segment's right boundary.
+                        const bar = lastMeta.data[i];
+                        if (!bar) return;
+                        ctx.fillText('  ' + formatCurrency(total), bar.x + 4, bar.y);
+                    });
+                    ctx.restore();
+                }
+            };
+
+            if (paretoChart) paretoChart.destroy();
+            paretoChart = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: { labels: sortedLabels, datasets: sortedDatasets },
+                plugins: [totalLabelsPlugin],
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: { padding: { right: 90 } }, // room for end-of-bar total labels
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: { boxWidth: 14, boxHeight: 14, font: { size: 12 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (ctx) {
+                                    const amt = ctx.parsed.x || 0;
+                                    if (amt === 0) return null;
+                                    return ctx.dataset.label + ': ' + formatCurrency(amt);
+                                },
+                                footer: function (items) {
+                                    if (!items || !items.length) return '';
+                                    const idx = items[0].dataIndex;
+                                    const total = sortedDatasets.reduce((sum, ds) => sum + (ds.data[idx] || 0), 0);
+                                    return 'Total: ' + formatCurrency(total);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                font: { size: 11, weight: '700' },
+                                color: '#1f2937',
+                                callback: function (v) {
+                                    var abs = Math.abs(v);
+                                    if (abs >= 1e9) return currencySymbol + (v / 1e9).toFixed(1) + 'B';
+                                    if (abs >= 1e6) return currencySymbol + (v / 1e6).toFixed(1) + 'M';
+                                    if (abs >= 1e3) return currencySymbol + (v / 1e3).toFixed(0) + 'K';
+                                    return currencySymbol + v;
+                                }
+                            },
+                            grid: { color: '#eef0f3' }
+                        },
+                        y: {
+                            stacked: true,
+                            ticks: {
+                                font: { size: 13, weight: '700' },
+                                color: '#1f2937',
+                                padding: 8
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+            if (window.registerChart) registerChart('gapParetoChart', paretoChart);
+        })();
 
         const datasets = gapSeries.map(gs => ({
             label: gs.label,

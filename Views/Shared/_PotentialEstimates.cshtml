@@ -4713,8 +4713,8 @@
                                 font: { size: 12, weight: 'bold' }
                             },
                             ticks: {
-                                font: { size: 11, weight: '500' },
-                                color: '#333',
+                                font: { size: 11, weight: '700' },
+                                color: '#1f2937',
                                 autoSkip: true,
                                 maxTicksLimit: 8,
                                 callback: function(value) {
@@ -4734,8 +4734,8 @@
                                 font: { size: 12, weight: 'bold' }
                             },
                             ticks: {
-                                font: { size: 11, weight: '500' },
-                                color: '#333',
+                                font: { size: 11, weight: '700' },
+                                color: '#1f2937',
                                 autoSkip: true,
                                 maxTicksLimit: 8,
                                 callback: function(value) {
@@ -4898,7 +4898,7 @@
                         c.fillText(fmtShort(osrGap), bracketX + 8, midY + 2);
                         c.fillStyle = '#94a3b8';
                         c.font = '500 11px Roboto, "Segoe UI", Arial, sans-serif';
-                        c.fillText(pctOfPotential + '% of potential', bracketX + 8, midY + 22);
+                        c.fillText(pctOfPotential + '% of top-peer level', bracketX + 8, midY + 22);
                     }
 
                     c.restore();
@@ -4908,10 +4908,10 @@
             actualVsPotentialChart = new Chart(canvas, {
                 type: 'bar',
                 data: {
-                    labels: [['Current OSR', 'actual collection'], ['Potential', 'frontier benchmark']],
+                    labels: ['Actual revenue', 'Potential revenue'],
                     datasets: [
                         {
-                            label: 'Current',
+                            label: 'Actual revenue',
                             data: [actualOSR, actualOSR],
                             backgroundColor: '#00b2e3',
                             stack: 'osr',
@@ -4960,8 +4960,8 @@
                             stacked: true,
                             beginAtZero: true,
                             ticks: {
-                                font: { size: 11, weight: '500' },
-                                color: '#94a3b8',
+                                font: { size: 11, weight: '700' },
+                                color: '#1f2937',
                                 callback: function (v) {
                                     if (v >= 1e9) return (v / 1e9).toFixed(1) + 'B';
                                     if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
