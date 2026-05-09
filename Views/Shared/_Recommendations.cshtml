@@ -45,6 +45,55 @@
         padding: 20px 0;
     }
 
+    /* Personalisation chip filter bar */
+    .recommendations-container .rec-personalise-bar {
+        background: #F8FAFC;
+        border: 1px solid #E6EDF3;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .recommendations-container .rec-personalise-row {
+        display: flex; flex-wrap: wrap; gap: 14px 24px;
+        align-items: flex-start;
+    }
+    .recommendations-container .rec-chip-group {
+        display: flex; flex-direction: column; gap: 6px; min-width: 0;
+    }
+    .recommendations-container .rec-group-label {
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+        text-transform: uppercase; color: #6b7280;
+    }
+    .recommendations-container .rec-q-chips {
+        display: flex; flex-wrap: wrap; gap: 0.35rem;
+    }
+    .recommendations-container .rec-q-chip {
+        position: relative; cursor: pointer; user-select: none;
+        background: #ffffff; border: 1px solid #E6EDF3; border-radius: 999px;
+        padding: 0.35rem 0.8rem; font-size: 0.78rem; font-weight: 600; color: #475569;
+        transition: all 0.15s; margin: 0;
+    }
+    .recommendations-container .rec-q-chip input[type="checkbox"] {
+        position: absolute; opacity: 0; pointer-events: none;
+    }
+    .recommendations-container .rec-q-chip:hover { background: #F0F9FC; border-color: #BDE3F0; color: #00689D; }
+    .recommendations-container .rec-q-chip:has(input[type="checkbox"]:checked) {
+        background: #00B2E3; border-color: #00B2E3; color: #ffffff;
+    }
+    .recommendations-container .rec-personalise-status {
+        display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+        font-size: 0.82rem; color: #475569;
+        padding-top: 8px; border-top: 1px dashed #E6EDF3;
+    }
+    .recommendations-container .rec-personalise-status .btn-link {
+        color: #00689D; font-size: 0.8rem; font-weight: 600;
+        text-decoration: none;
+    }
+    .recommendations-container .rec-personalise-status .btn-link:hover { text-decoration: underline; }
+
     /* Header */
     .recommendations-container .recommendations-header {
         display: flex;
@@ -1286,6 +1335,45 @@
         </div>
     </div>
 
+    <!-- Personalisation chip filter (replaces the old Overview Selection step).
+         Cards are auto-derived from Prioritization (included streams + their gap types);
+         these chips refine the visible subset live. State persists in
+         localStorage['rosraOverviewSelections'] for backward compat with reports. -->
+    <div class="rec-personalise-bar" id="recPersonaliseBar">
+        <div class="rec-personalise-row">
+            <div class="rec-chip-group">
+                <span class="rec-group-label">Time</span>
+                <div class="rec-q-chips" data-question="time">
+                    <label class="rec-q-chip"><input type="checkbox" name="qTime" value="quick" checked><span>Quick wins</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qTime" value="medium" checked><span>Medium-term</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qTime" value="long" checked><span>Long-term</span></label>
+                </div>
+            </div>
+            <div class="rec-chip-group">
+                <span class="rec-group-label">Risk</span>
+                <div class="rec-q-chips" data-question="political">
+                    <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="higher" checked><span>Higher feasibility</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="moderate" checked><span>Moderate</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="sensitive"><span>Lower feasibility</span></label>
+                </div>
+            </div>
+            <div class="rec-chip-group">
+                <span class="rec-group-label">Focus</span>
+                <div class="rec-q-chips" data-question="focus" id="recFocusChips">
+                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="compliance" checked><span>Compliance</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="coverage" checked><span>Coverage</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="valuation" checked><span>Valuation</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="liability" checked><span>Liability</span></label>
+                </div>
+            </div>
+        </div>
+        <div class="rec-personalise-status">
+            <span><strong id="recVisibleCount">—</strong> of <strong id="recTotalCount">—</strong> cards match</span>
+            <button type="button" class="btn btn-link btn-sm p-0" id="recShowAllBtn" title="Broaden the pool to all 82 solution cards">Show all 82 cards</button>
+            <button type="button" class="btn btn-link btn-sm p-0 text-muted" id="recResetChipsBtn" title="Restore default chip selection">Reset filters</button>
+        </div>
+    </div>
+
     <!-- Summary Stats -->
     <div class="recommendations-summary" id="recommendationsSummary">
         <button type="button" class="summary-card active" data-filter="all" onclick="RecommendationsModule.filterByTimeline('all')" title="Show all">
@@ -1344,9 +1432,9 @@
                 <div class="empty-state">
                     <i class="fas fa-clipboard-list empty-icon"></i>
                     <h3>@Localizer["Empty_Title"]</h3>
-                    <p>@Localizer["Empty_Description"]</p>
-                    <button type="button" class="btn btn-primary" onclick="RecommendationsModule.goToOverviewSelection()">
-                        <i class="fas fa-arrow-left me-2"></i> @Localizer["Empty_GoToOverview"]
+                    <p>No streams have been prioritized yet, so we couldn't auto-derive any cards. Click below to broaden the pool to all 82 solution cards.</p>
+                    <button type="button" class="btn btn-primary" id="recEmptyShowAllBtn">
+                        <i class="fas fa-th me-2"></i> Show all 82 cards
                     </button>
                 </div>
             </div>
@@ -1536,3 +1624,244 @@
 <!-- html2pdf (jsPDF + html2canvas) — self-hosted to avoid CDN/CSP ambiguity -->
 <script src="~/lib/html2pdf/html2pdf.bundle.min.js" asp-append-version="true"></script>
 <script src="~/js/recommendationsModule.js" asp-append-version="true"></script>
+
+<script>
+    // ============================================================================
+    // Personalisation chip filter (replaces the old Overview Selection step).
+    //
+    // Two responsibilities, both run after RecommendationsModule.init() has loaded:
+    //   1) AUTO-SELECT — if the user has no manual selection in
+    //      rosraSelectedSolutions, derive a default selection from the streams
+    //      and gap types they prioritized (RosraStateManager.getStreams). This
+    //      replaces the manual "browse 82 and check the ones you want" step.
+    //   2) LIVE CHIP FILTER — three chip groups (Time / Risk / Focus) refine
+    //      the visible cards via a DOM walk; state persists in
+    //      localStorage['rosraOverviewSelections'] (same key the old step used)
+    //      so saved reports keep working.
+    // ============================================================================
+    (function () {
+        'use strict';
+        var STORAGE_KEY = 'rosraOverviewSelections';
+        var SELECTED_KEY = 'rosraSelectedSolutions';
+
+        function timelineBucket(t) {
+            if (!t) return 'unknown';
+            var s = String(t).toLowerCase();
+            if (s.indexOf('less than a year') >= 0 || s.indexOf('< 1') >= 0 || s.indexOf('<1') >= 0
+                || s.indexOf('6-12 month') >= 0 || s.indexOf('6 month') >= 0) return 'quick';
+            if (s.indexOf('1-2 year') >= 0 || s.indexOf('1-3 year') >= 0 || s.indexOf('1 year') >= 0) return 'medium';
+            if (s.indexOf('2-4 year') >= 0 || s.indexOf('3+') >= 0 || s.indexOf('3 year') >= 0) return 'long';
+            return 'unknown';
+        }
+        function politicalBucket(p) {
+            if (!p) return 'unknown';
+            var s = String(p).toLowerCase();
+            if (s.indexOf('more sensitive') >= 0 || s.indexOf('sensitive') >= 0) return 'sensitive';
+            if (s.indexOf('moderate') >= 0) return 'moderate';
+            if (s.indexOf('usually higher') >= 0 || s.indexOf('higher') >= 0 || s.indexOf('low political') >= 0) return 'higher';
+            return 'unknown';
+        }
+
+        // Collect the gap-type set per included stream from Prioritization output.
+        // Returns Map<streamName, Set<lowercase gap type>>.
+        function gapTypesPerIncludedStream() {
+            var out = new Map();
+            if (typeof RosraStateManager === 'undefined') return out;
+            var streams = RosraStateManager.getStreams() || [];
+            streams.forEach(function (s) {
+                if (s.included === false) return;
+                var gaps = new Set();
+                if ((s.complianceGap || 0) > 0) gaps.add('compliance');
+                if ((s.coverageGap || 0) > 0) gaps.add('coverage');
+                if ((s.valuationGap || 0) > 0) gaps.add('valuation');
+                if ((s.liabilityGap || 0) > 0) gaps.add('liability');
+                if ((s.mixedGapCompliance || s.mixedGapReg || 0) > 0) gaps.add('compliance');
+                if ((s.mixedGapCoverage || s.mixedGapUnreg || 0) > 0) gaps.add('coverage');
+                out.set(s.name, gaps);
+            });
+            return out;
+        }
+
+        // Build the auto-selected list of solution cards based on Prioritization.
+        // Returns an array shaped like rosraSelectedSolutions entries so the existing
+        // RecommendationsModule consumes it without changes.
+        function autoSelectFromPrioritization() {
+            if (typeof SolutionsDatabase === 'undefined') return [];
+            var all = SolutionsDatabase.getAllSolutions();
+            var streamGaps = gapTypesPerIncludedStream();
+            // Empty prioritization → fall back to ALL 82 cards so the page is not blank.
+            if (streamGaps.size === 0) {
+                return all.map(function (c) { return shapeForSelected(c); });
+            }
+            return all.filter(function (c) {
+                var sGaps = streamGaps.get(c.stream);
+                if (!sGaps) return false;
+                return sGaps.has(String(c.gap || '').toLowerCase());
+            }).map(function (c) { return shapeForSelected(c); });
+        }
+        function shapeForSelected(c) {
+            return {
+                solutionId: c.solutionId,
+                streamName: c.stream,
+                streamRank: 999,
+                gapType: c.gap,
+                gapPriority: 999,
+                timeline: c.timeline,
+                title: c.title || c.shortTitle || c.solutionId,
+                subgroup: c.subgroup || ''
+            };
+        }
+
+        // Persist a selection list using FormStateManager (preferred) with localStorage fallback.
+        function saveSelected(list) {
+            try {
+                if (typeof FormStateManager !== 'undefined') FormStateManager.setData(SELECTED_KEY, list);
+                else localStorage.setItem(SELECTED_KEY, JSON.stringify(list));
+            } catch (e) { console.error('saveSelected failed', e); }
+        }
+
+        // Run auto-select if no manual selection exists yet. Idempotent.
+        function ensureAutoSelected() {
+            try {
+                var existing = null;
+                if (typeof FormStateManager !== 'undefined') existing = FormStateManager.getData(SELECTED_KEY);
+                if (!existing) {
+                    var raw = localStorage.getItem(SELECTED_KEY);
+                    if (raw) existing = JSON.parse(raw);
+                }
+                if (Array.isArray(existing) && existing.length > 0) return; // user already has something
+            } catch (e) { /* fall through to auto-select */ }
+            saveSelected(autoSelectFromPrioritization());
+        }
+
+        // Smart-default the focus chips based on which gap types are actually present
+        // in the user's prioritization. Other chip groups keep HTML defaults.
+        function smartDefaultFocus() {
+            var streamGaps = gapTypesPerIncludedStream();
+            if (streamGaps.size === 0) return;
+            var present = new Set();
+            streamGaps.forEach(function (set) { set.forEach(function (g) { present.add(g); }); });
+            if (present.size === 0) return;
+            document.querySelectorAll('.rec-personalise-bar input[name="qFocus"]').forEach(function (i) {
+                i.checked = present.has(i.value);
+            });
+        }
+
+        // Restore chip state from localStorage if present, otherwise apply smart defaults.
+        function restoreOrDefault() {
+            var saved = null;
+            try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) {}
+            if (saved && Array.isArray(saved.time) && Array.isArray(saved.political) && Array.isArray(saved.focus)) {
+                document.querySelectorAll('.rec-personalise-bar input[name="qTime"]').forEach(function (i) { i.checked = saved.time.indexOf(i.value) >= 0; });
+                document.querySelectorAll('.rec-personalise-bar input[name="qPolitical"]').forEach(function (i) { i.checked = saved.political.indexOf(i.value) >= 0; });
+                document.querySelectorAll('.rec-personalise-bar input[name="qFocus"]').forEach(function (i) { i.checked = saved.focus.indexOf(i.value) >= 0; });
+            } else {
+                smartDefaultFocus();
+            }
+        }
+
+        function readChips() {
+            var state = { time: [], political: [], focus: [] };
+            document.querySelectorAll('.rec-personalise-bar input[name="qTime"]:checked').forEach(function (i) { state.time.push(i.value); });
+            document.querySelectorAll('.rec-personalise-bar input[name="qPolitical"]:checked').forEach(function (i) { state.political.push(i.value); });
+            document.querySelectorAll('.rec-personalise-bar input[name="qFocus"]:checked').forEach(function (i) { state.focus.push(i.value); });
+            return state;
+        }
+
+        // Apply the chip filter to whatever cards are currently rendered. Hides
+        // cards that don't match and collapses now-empty gap/stream group containers.
+        function applyChipFilter() {
+            var state = readChips();
+            var cards = document.querySelectorAll('#solutionCardsContainer .solution-card');
+            var visible = 0;
+            cards.forEach(function (card) {
+                var t = timelineBucket(card.dataset.timeline);
+                var p = politicalBucket(card.dataset.political);
+                var g = (card.dataset.gap || '').toLowerCase();
+                var match = true;
+                if (state.time.length && state.time.indexOf(t) < 0 && t !== 'unknown') match = false;
+                if (state.political.length && state.political.indexOf(p) < 0 && p !== 'unknown') match = false;
+                if (state.focus.length && state.focus.indexOf(g) < 0) match = false;
+                card.style.display = match ? '' : 'none';
+                if (match) visible++;
+            });
+            // Hide empty gap-section / stream-section containers so the page doesn't show empty headers.
+            // Order matters: collapse gap-sections first, then collapse stream-sections that contain
+            // zero visible cards across all their gap-sections.
+            ['.gap-section', '.stream-section'].forEach(function (sel) {
+                document.querySelectorAll('#solutionCardsContainer ' + sel).forEach(function (group) {
+                    var any = group.querySelector('.solution-card:not([style*="display: none"])');
+                    group.style.display = any ? '' : 'none';
+                });
+            });
+            var vEl = document.getElementById('recVisibleCount');
+            var tEl = document.getElementById('recTotalCount');
+            if (vEl) vEl.textContent = visible;
+            if (tEl) tEl.textContent = cards.length;
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+        }
+
+        // Broaden the pool: load all 82 cards, open all chips, re-render.
+        function showAll82() {
+            if (typeof SolutionsDatabase === 'undefined') return;
+            var all = SolutionsDatabase.getAllSolutions().map(shapeForSelected);
+            saveSelected(all);
+            document.querySelectorAll('.rec-personalise-bar input[type="checkbox"]').forEach(function (i) { i.checked = true; });
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+            if (typeof RecommendationsModule !== 'undefined' && RecommendationsModule.init) {
+                RecommendationsModule.init();
+            }
+            setTimeout(applyChipFilter, 100);
+        }
+
+        // Restore default chip state (HTML defaults + smart focus) and re-filter.
+        function resetChips() {
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+            document.querySelectorAll('.rec-personalise-bar input[name="qTime"]').forEach(function (i) { i.checked = true; });
+            document.querySelectorAll('.rec-personalise-bar input[name="qPolitical"]').forEach(function (i) {
+                i.checked = (i.value === 'higher' || i.value === 'moderate');
+            });
+            document.querySelectorAll('.rec-personalise-bar input[name="qFocus"]').forEach(function (i) { i.checked = true; });
+            smartDefaultFocus();
+            applyChipFilter();
+        }
+
+        function init() {
+            ensureAutoSelected();
+            restoreOrDefault();
+
+            document.querySelectorAll('.rec-personalise-bar input[type="checkbox"]').forEach(function (input) {
+                input.addEventListener('change', applyChipFilter);
+            });
+            var showBtn = document.getElementById('recShowAllBtn');
+            if (showBtn) showBtn.addEventListener('click', showAll82);
+            var emptyShowBtn = document.getElementById('recEmptyShowAllBtn');
+            if (emptyShowBtn) emptyShowBtn.addEventListener('click', showAll82);
+            var resetBtn = document.getElementById('recResetChipsBtn');
+            if (resetBtn) resetBtn.addEventListener('click', resetChips);
+
+            // RecommendationsModule.init() runs on the same DOMContentLoaded — give it a tick
+            // to render the cards container, then apply the chip filter once.
+            setTimeout(applyChipFilter, 250);
+
+            // Re-apply whenever the cards container is re-rendered (e.g. after a stream
+            // inclusion change in Prioritization). Cheap MutationObserver — only fires
+            // on actual childList swaps, not on style/attribute toggles we make ourselves.
+            var container = document.getElementById('solutionCardsContainer');
+            if (container && typeof MutationObserver !== 'undefined') {
+                var pending = false;
+                new MutationObserver(function () {
+                    if (pending) return;
+                    pending = true;
+                    setTimeout(function () { pending = false; applyChipFilter(); }, 50);
+                }).observe(container, { childList: true, subtree: false });
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
+</script>

@@ -350,12 +350,12 @@
                                 <h3><i class="bi bi-bar-chart-fill me-2"></i> ${streamName}</h3>
                                 <div style="display:flex; align-items:center; gap:12px;">
                                     <span class="stream-rank">Rank #${streamData.rank}</span>
-                                    <button type="button" class="stream-toggle-btn" id="stream-icon-${streamKey}" aria-label="Collapse ${streamName}" title="Collapse" onclick="event.stopPropagation(); RecommendationsModule.toggleStream('${streamKey}')">
-                                        <i class="bi bi-dash-lg"></i>
+                                    <button type="button" class="stream-toggle-btn" id="stream-icon-${streamKey}" aria-label="Expand ${streamName}" title="Expand" onclick="event.stopPropagation(); RecommendationsModule.toggleStream('${streamKey}')">
+                                        <i class="bi bi-plus-lg"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="stream-body" id="stream-body-${streamKey}">
+                            <div class="stream-body" id="stream-body-${streamKey}" style="display:none;">
                     `;
 
                     // Sort gaps by priority
@@ -419,7 +419,10 @@
                 const fullIdLabel = buildFullIdLabel(solution.solutionId, fullSolution);
 
                 return `
-                    <div class="solution-card" data-solution-id="${solution.solutionId}">
+                    <div class="solution-card" data-solution-id="${solution.solutionId}"
+                         data-timeline="${escapeForTemplate(solution.timeline || '')}"
+                         data-political="${escapeForTemplate(fullSolution.politicalFeasibility || '')}"
+                         data-gap="${escapeForTemplate(String(solution.gapType || '').toLowerCase())}">
                         <div class="solution-card-header" onclick="RecommendationsModule.toggleSolution('${solution.solutionId}')">
                             <div class="solution-title-section">
                                 <div class="solution-id">${escapeForTemplate(fullIdLabel)}</div>

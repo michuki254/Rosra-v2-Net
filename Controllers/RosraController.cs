@@ -102,7 +102,17 @@ namespace RosraApp.Controllers
             string activeUmbrellaId = umbrellaTab ?? "top-down";
             string activeSubTabId = activeTab;
 
-            // Define Bottom-Up sub-tabs (4-step pipeline)
+            // Backward compat: the former "overview-selection" step was merged into
+            // Recommendations. Bookmarks / shared URLs / saved reports that still
+            // point at it should land on Recommendations instead.
+            if (activeSubTabId == "overview-selection")
+            {
+                activeSubTabId = "recommendations";
+            }
+
+            // Define Bottom-Up sub-tabs (3-step pipeline; the former Overview Selection
+            // step was merged into Recommendations, which now auto-derives a default
+            // selection from prioritization and exposes the chip filter inline).
             var bottomUpSubTabs = new List<TabViewModel>
             {
                 new TabViewModel
@@ -121,17 +131,10 @@ namespace RosraApp.Controllers
                 },
                 new TabViewModel
                 {
-                    Id = "overview-selection",
-                    Title = _localizer["Tab_OverviewSelection"].Value,
-                    ContentPartialName = "_OverviewSelection",
-                    StepNumber = 3
-                },
-                new TabViewModel
-                {
                     Id = "recommendations",
                     Title = _localizer["Tab_Recommendations"].Value,
                     ContentPartialName = "_Recommendations",
-                    StepNumber = 4
+                    StepNumber = 3
                 }
             };
 
