@@ -381,7 +381,7 @@
                          market value, which is a hard ceiling. The note below explains this to the user. -->
                     <div class="mb-4 revenue-gap-stack-section">
                         <div class="rg-stack-header">
-                            <h6 class="rg-stack-title">Revenue to date vs Potential — Gap to Potential</h6>
+                            <h6 class="rg-stack-title">Actual vs potential</h6>
                             <span class="rg-stack-units" id="revenueGapUnits">AMOUNTS IN <span class="currency-label">@currencySymbol</span> (B)</span>
                         </div>
                         <div class="chart-container" style="height: 420px;">
@@ -473,7 +473,7 @@
                                         <!-- Row 3: Compliant -->
                                         <div class="matrix-row d-flex" id="matrixRowCompliant" style="flex: 1; min-height: 12px;">
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="matrixActualRevenue"
-                                                 style="background-color: #59A14F; color: white; flex: 1; min-width: 30px;">
+                                                 style="background-color: #00B2E3; color: white; flex: 1; min-width: 30px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["Matrix_ActualRevenue"]</small><br>
                                                     <span id="matrixActualRevenueVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
@@ -1010,8 +1010,8 @@
                                 stacked: true,
                                 beginAtZero: true,
                                 ticks: {
-                                    font: { size: 11, weight: '500' },
-                                    color: '#94a3b8',
+                                    font: { size: 11, weight: '700' },
+                                    color: '#1f2937',
                                     callback: function (v) {
                                         if (v >= 1e9) return (v / 1e9).toFixed(1) + 'B';
                                         if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';

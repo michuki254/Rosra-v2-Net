@@ -106,7 +106,7 @@
   <data name="PotentialRevenuePie_Description" xml:space="preserve"><value>Este gráfico circular ilustra la distribución porcentual de los ingresos potenciales totales del sistema de facturación. Muestra visualmente la participación correspondiente a los ingresos efectivamente recaudados durante el año, así como la contribución de cada tipo de brecha (ingresos no recaudados o perdidos) a ese total.</value></data>
 
   <!-- Matrix Dashboard -->
-  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Análisis de brechas de licencias comerciales - Tablero</value></data>
+  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Análisis de brechas de licencias comerciales</value></data>
   <data name="Matrix_YAxisTitle" xml:space="preserve"><value>N.° de empresas</value></data>
   <data name="Matrix_Estimated" xml:space="preserve"><value>Estimadas</value></data>
   <data name="Matrix_Registered" xml:space="preserve"><value>Registradas</value></data>

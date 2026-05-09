@@ -112,7 +112,7 @@
   <data name="TotalPotentialRevenue" xml:space="preserve"><value>TOTAL (Ingresos potenciales)</value></data>
 
   <!-- Matrix Dashboard -->
-  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Análisis de brechas del impuesto predial - Tablero</value></data>
+  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Análisis de brechas del impuesto predial</value></data>
   <data name="Matrix_YAxisTitle" xml:space="preserve"><value>N.° de propiedades</value></data>
   <data name="Matrix_Estimated" xml:space="preserve"><value>Estimadas</value></data>
   <data name="Matrix_Registered" xml:space="preserve"><value>Registradas</value></data>

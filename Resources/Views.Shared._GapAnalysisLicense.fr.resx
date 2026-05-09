@@ -106,7 +106,7 @@
   <data name="PotentialRevenuePie_Description" xml:space="preserve"><value>Ce diagramme circulaire illustre la répartition en pourcentage des recettes potentielles totales du système de facturation. Il montre visuellement la part correspondant aux recettes effectivement collectées au cours de l'année, ainsi que la contribution de chaque type d'écart (recettes non collectées ou perdues) à ce total.</value></data>
 
   <!-- Matrix Dashboard -->
-  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Analyse des écarts des licences commerciales - Tableau de bord</value></data>
+  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Analyse des écarts des licences commerciales</value></data>
   <data name="Matrix_YAxisTitle" xml:space="preserve"><value>Nbre d'entreprises</value></data>
   <data name="Matrix_Estimated" xml:space="preserve"><value>Estimées</value></data>
   <data name="Matrix_Registered" xml:space="preserve"><value>Enregistrées</value></data>

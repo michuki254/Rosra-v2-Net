@@ -110,7 +110,7 @@
   <data name="Description" xml:space="preserve"><value>DESCRIPTION:</value></data>
 
   <!-- Matrix Section -->
-  <data name="GapAnalysisDashboard" xml:space="preserve"><value>Gap Analysis - Dashboard</value></data>
+  <data name="GapAnalysisDashboard" xml:space="preserve"><value>Gap Analysis</value></data>
   <data name="NumberOfUnits" xml:space="preserve"><value># of Units</value></data>
   <data name="Estimated" xml:space="preserve"><value>Estimated</value></data>
   <data name="Registered" xml:space="preserve"><value>Registered</value></data>

@@ -112,7 +112,7 @@
   <data name="TotalPotentialRevenue" xml:space="preserve"><value>TOTAL (Recettes potentielles)</value></data>
 
   <!-- Matrix Dashboard -->
-  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Analyse des écarts de l'impôt foncier - Tableau de bord</value></data>
+  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Analyse des écarts de l'impôt foncier</value></data>
   <data name="Matrix_YAxisTitle" xml:space="preserve"><value>Nbre de propriétés</value></data>
   <data name="Matrix_Estimated" xml:space="preserve"><value>Estimées</value></data>
   <data name="Matrix_Registered" xml:space="preserve"><value>Enregistrées</value></data>

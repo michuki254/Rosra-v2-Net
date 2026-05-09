@@ -370,7 +370,7 @@
                          Property Tax "Why only 2 bars?" note). -->
                     <div class="mb-4 revenue-gap-stack-section">
                         <div class="rg-stack-header">
-                            <h6 class="rg-stack-title">Revenue to date vs Potential — Gap to Potential</h6>
+                            <h6 class="rg-stack-title">Actual vs potential</h6>
                             <span class="rg-stack-units">AMOUNTS IN <span class="currency-label">@currencySymbol</span> (B)</span>
                         </div>
                         <div class="chart-container" style="height: 420px;">
@@ -464,7 +464,7 @@
                                         <!-- Row 3: Compliant -->
                                         <div class="matrix-row d-flex" id="@(streamId)MatrixRowCompliant" style="flex: 1; min-height: 12px;">
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="@(streamId)MatrixActualRevenue"
-                                                 style="background-color: #59A14F; color: white; flex: 1; min-width: 30px;">
+                                                 style="background-color: #00B2E3; color: white; flex: 1; min-width: 30px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["ActualRevenue"]</small><br>
                                                     <span id="@(streamId)MatrixActualRevenueVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
@@ -1040,6 +1040,34 @@
                         c.stroke();
                     }
                     c.setLineDash([]);
+
+                    // Right-side gap bracket — orange annotation showing Gap / xxB / x% of potential
+                    const bar1Pot = m1.data[1];
+                    if (bar1Pot && v.gap > 0) {
+                        const pct = v.total > 0 ? Math.round((v.gap / v.total) * 100) : 0;
+                        const bracketX = bar1Pot.x + ((bar1Pot.width || 60) / 2) + 18;
+                        const topY = bar1Pot.y;
+                        const botY = bar1Pot.base;
+                        c.strokeStyle = '#FD9D24';
+                        c.lineWidth = 1.5;
+                        c.beginPath(); c.moveTo(bracketX, topY); c.lineTo(bracketX, botY); c.stroke();
+                        c.beginPath(); c.moveTo(bracketX, topY); c.lineTo(bracketX - 6, topY); c.stroke();
+                        c.beginPath(); c.moveTo(bracketX, botY); c.lineTo(bracketX - 6, botY); c.stroke();
+
+                        const midY = (topY + botY) / 2;
+                        c.fillStyle = '#FD9D24';
+                        c.textAlign = 'left';
+                        c.font = '700 12px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.textBaseline = 'bottom';
+                        c.fillText('Gap', bracketX + 8, midY - 4);
+                        c.font = '700 14px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.textBaseline = 'top';
+                        c.fillText(fmtCompact(v.gap), bracketX + 8, midY + 2);
+                        c.fillStyle = '#94a3b8';
+                        c.font = '500 11px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.fillText(pct + '% of potential', bracketX + 8, midY + 22);
+                    }
+
                     c.restore();
                 }
             };
@@ -1060,7 +1088,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    layout: { padding: { top: 36, right: 16, bottom: 8, left: 8 } },
+                    layout: { padding: { top: 36, right: 150, bottom: 8, left: 8 } },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
@@ -1077,7 +1105,7 @@
                         y: {
                             stacked: true, beginAtZero: true,
                             ticks: {
-                                font: { size: 11, weight: '500' }, color: '#94a3b8',
+                                font: { size: 11, weight: '700' }, color: '#1f2937',
                                 callback: function (v) {
                                     if (v >= 1e9) return (v / 1e9).toFixed(1) + 'B';
                                     if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';

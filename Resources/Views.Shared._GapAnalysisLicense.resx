@@ -106,7 +106,7 @@
   <data name="PotentialRevenuePie_Description" xml:space="preserve"><value>This pie chart illustrates the percentage distribution of the total potential revenue from the billing system. It visually shows the share corresponding to the revenue actually collected during the year, as well as the contribution of each type of gap (uncollected or lost revenue) to that total.</value></data>
 
   <!-- Matrix Dashboard -->
-  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Business License Gap Analysis - Dashboard</value></data>
+  <data name="MatrixDashboard_Title" xml:space="preserve"><value>Business License Gap Analysis</value></data>
   <data name="Matrix_YAxisTitle" xml:space="preserve"><value># of Businesses</value></data>
   <data name="Matrix_Estimated" xml:space="preserve"><value>Estimated</value></data>
   <data name="Matrix_Registered" xml:space="preserve"><value>Registered</value></data>

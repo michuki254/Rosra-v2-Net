@@ -110,7 +110,7 @@
   <data name="Description" xml:space="preserve"><value>DESCRIPCI&#211;N:</value></data>
 
   <!-- Matrix Section -->
-  <data name="GapAnalysisDashboard" xml:space="preserve"><value>An&#225;lisis de brechas - Panel de control</value></data>
+  <data name="GapAnalysisDashboard" xml:space="preserve"><value>An&#225;lisis de brechas</value></data>
   <data name="NumberOfUnits" xml:space="preserve"><value>N.&#176; de unidades</value></data>
   <data name="Estimated" xml:space="preserve"><value>Estimadas</value></data>
   <data name="Registered" xml:space="preserve"><value>Registradas</value></data>
