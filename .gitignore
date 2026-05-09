@@ -84,9 +84,33 @@ appsettings.Development.json
 # Publish output
 publish/
 publish-linux/
+publish-azure/
+publish-azure.zip
+*.bacpac
 
 # Claude Code
 .claude/
+
+# Stale project copy
+TempRosraApp/
+
+# Runtime data
+App_Data/
+
+# Playwright artifacts
+.playwright-mcp/
+snapshot-initial.yml
+
+# UI iteration screenshots (root-level only; assets under wwwroot/ are tracked)
+/*.png
+
+# Office lock files
+~$*.docx
+~$*.xlsx
+
+# Local data exports / scratch files
+/temp_np_*.txt
+/*_export.csv
 
 # Backup files
 *.bak2
