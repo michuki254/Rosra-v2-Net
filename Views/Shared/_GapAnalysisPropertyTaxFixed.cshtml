@@ -357,6 +357,43 @@
                         </div>
                     </div>
 
+                    <!-- Headline KPI: Total Revenue Gap. Updated by JS in calculatePropertyTaxGaps(). -->
+                    <div class="kpi-headline mb-3" role="region" aria-label="@Localizer["KpiHeadline_AriaLabel"]">
+                        <div class="kpi-headline-row">
+                            <div class="kpi-headline-label">
+                                <span class="kpi-eyebrow">@Localizer["KpiHeadline_Eyebrow"]</span>
+                                <span class="kpi-headline-title">@Localizer["KpiHeadline_Title"]</span>
+                            </div>
+                            <div class="kpi-headline-value">
+                                <span class="kpi-value" id="ptKpiGapValue">@currencySymbol 0</span>
+                                <span class="kpi-pct"><strong id="ptKpiGapPct">0%</strong> @Localizer["KpiHeadline_OfPotential"]</span>
+                            </div>
+                        </div>
+                        <div class="kpi-headline-meta">
+                            <span class="kpi-collected"><strong id="ptKpiCollectedPct">0%</strong> @Localizer["KpiHeadline_Collected"]</span>
+                            <span class="kpi-potential">@Localizer["KpiHeadline_Potential"] <strong id="ptKpiPotentialValue">@currencySymbol 0</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Revenue to date vs Potential — Gap to Potential (mirrors Top-Down chart layout).
+                         NB: Property Tax intentionally shows 2 bars (not 3 like License/Generic) because
+                         it has no Realistic Improvement % input — its potential is anchored directly to
+                         market value, which is a hard ceiling. The note below explains this to the user. -->
+                    <div class="mb-4 revenue-gap-stack-section">
+                        <div class="rg-stack-header">
+                            <h6 class="rg-stack-title">Revenue to date vs Potential — Gap to Potential</h6>
+                            <span class="rg-stack-units" id="revenueGapUnits">AMOUNTS IN <span class="currency-label">@currencySymbol</span> (B)</span>
+                        </div>
+                        <div class="chart-container" style="height: 420px;">
+                            <canvas id="revenueGapStackedBarChart"></canvas>
+                        </div>
+                        <p class="rg-stack-note">
+                            <strong>@Localizer["RgStackNote_Heading"]</strong> @Localizer["RgStackNote_Body"]
+                        </p>
+                    </div>
+
+                    <hr>
+
                     <!-- Matrix Gap Analysis Dashboard (Primary Visualization) -->
                     <div class="mb-4">
                         <h6 class="text-center mb-3">@Localizer["MatrixDashboard_Title"]</h6>
@@ -369,20 +406,27 @@
                                         <span style="transform: rotate(-90deg); white-space: nowrap; font-size: 0.6rem; color: #666;">@Localizer["Matrix_YAxisTitle"]</span>
                                     </div>
 
-                                    <!-- Y-axis Labels Container - labels positioned at row BOUNDARIES -->
-                                    <div class="matrix-y-labels position-absolute" id="matrixYLabelsContainer" style="left: 20px; top: 0; bottom: 30px; width: 55px; font-size: 0.6rem; background: #f8f9fa; position: relative;">
+                                    <!-- Y-axis Labels Container - labels positioned at row BOUNDARIES.
+                                         NB: keep this absolute so top:0/bottom:30px give it real height —
+                                         a stray `position: relative;` here was collapsing the container to
+                                         zero height, which made the JS that pins Registered/Compliant by
+                                         pixel-top stack them all at the top. -->
+                                    <div class="matrix-y-labels position-absolute" id="matrixYLabelsContainer" style="left: 20px; top: 0; bottom: 30px; width: 55px; font-size: 0.6rem; background: #f8f9fa;">
                                         <!-- Estimated label at TOP boundary (top of matrix) -->
-                                        <div class="y-label-item" id="yLabelEstimated" style="position: absolute; right: 3px; top: 0; text-align: right; transform: translateY(-50%);">
+                                        <div class="y-label-item" id="yLabelEstimated" style="position: absolute; right: 3px; top: 0; text-align: right; transform: translateY(-50%); cursor: help;"
+                                             data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="@Localizer["Matrix_Estimated_Tooltip"]">
                                             <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Matrix_Estimated"]</small>
                                             <span id="matrixEstimatedLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
                                         </div>
                                         <!-- Registered label at boundary between Row1 and Row2 -->
-                                        <div class="y-label-item" id="yLabelRegistered" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%);">
+                                        <div class="y-label-item" id="yLabelRegistered" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%); cursor: help;"
+                                             data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="@Localizer["Matrix_Registered_Tooltip"]">
                                             <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Matrix_Registered"]</small>
                                             <span id="matrixRegisteredLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
                                         </div>
                                         <!-- Compliant label at boundary between Row2 and Row3 -->
-                                        <div class="y-label-item" id="yLabelCompliant" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%);">
+                                        <div class="y-label-item" id="yLabelCompliant" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%); cursor: help;"
+                                             data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="@Localizer["Matrix_Compliant_Tooltip"]">
                                             <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Matrix_Compliant"]</small>
                                             <span id="matrixCompliantLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
                                         </div>
@@ -391,16 +435,17 @@
                                     <!-- Matrix Grid Area -->
                                     <div class="matrix-grid position-absolute" id="matrixGridArea" style="left: 75px; top: 0; right: 0; bottom: 30px; display: flex; flex-direction: column;">
                                         <!-- Row 1: Unregistered (Estimated - Registered) -->
-                                        <div class="matrix-row d-flex" id="matrixRowUnreg" style="flex: 1; min-height: 30px;">
+                                        <div class="matrix-row d-flex" id="matrixRowUnreg" style="flex: 1; min-height: 12px;">
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="matrixCoverageGap"
-                                                 style="background-color: #5B9BD5; color: white; flex: 1; min-width: 60px;">
+                                                 style="background-color: #F28E2B; color: white; flex: 1; min-width: 30px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["Matrix_CoverageGap"]</small><br>
                                                     <span id="matrixCoverageGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="matrixMixedUnreg"
-                                                 style="background-color: #FF6B6B; color: white; flex: 1; min-width: 60px;">
+                                                 style="background-color: #B07AA1; color: white; flex: 1; min-width: 30px; cursor: help;"
+                                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="@Localizer["Matrix_MixedGapUnreg_Tooltip"]">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["Matrix_MixedGapUnreg"]</small><br>
                                                     <span id="matrixMixedUnregVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
@@ -408,16 +453,17 @@
                                             </div>
                                         </div>
                                         <!-- Row 2: Non-Compliant Registered (Registered - Compliant) -->
-                                        <div class="matrix-row d-flex" id="matrixRowNonCompliant" style="flex: 1; min-height: 30px;">
+                                        <div class="matrix-row d-flex" id="matrixRowNonCompliant" style="flex: 1; min-height: 12px;">
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="matrixComplianceGap"
-                                                 style="background-color: #FFD966; color: #333; flex: 1; min-width: 60px;">
+                                                 style="background-color: #E15759; color: white; flex: 1; min-width: 30px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["Matrix_ComplianceGap"]</small><br>
                                                     <span id="matrixComplianceGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="matrixMixedReg"
-                                                 style="background-color: #F4A6A6; color: #333; flex: 1; min-width: 60px;">
+                                                 style="background-color: #76B7B2; color: white; flex: 1; min-width: 30px; cursor: help;"
+                                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="@Localizer["Matrix_MixedGapReg_Tooltip"]">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["Matrix_MixedGapReg"]</small><br>
                                                     <span id="matrixMixedRegVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
@@ -425,16 +471,16 @@
                                             </div>
                                         </div>
                                         <!-- Row 3: Compliant -->
-                                        <div class="matrix-row d-flex" id="matrixRowCompliant" style="flex: 1; min-height: 30px;">
+                                        <div class="matrix-row d-flex" id="matrixRowCompliant" style="flex: 1; min-height: 12px;">
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="matrixActualRevenue"
-                                                 style="background-color: #70AD47; color: white; flex: 1; min-width: 60px;">
+                                                 style="background-color: #59A14F; color: white; flex: 1; min-width: 30px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["Matrix_ActualRevenue"]</small><br>
                                                     <span id="matrixActualRevenueVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="matrixValuationGap"
-                                                 style="background-color: #FFF2CC; color: #333; flex: 1; min-width: 60px;">
+                                                 style="background-color: #4E79A7; color: white; flex: 1; min-width: 30px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["Matrix_ValuationGap"]</small><br>
                                                     <span id="matrixValuationGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
@@ -466,19 +512,6 @@
                         <p class="small text-muted mt-3 text-center">
                             <strong>@Localizer["Description_Label"]</strong> @Localizer["MatrixDashboard_Description"]
                         </p>
-                    </div>
-
-                    <hr>
-
-                    <!-- Revenue to date vs Potential — Gap to Potential (mirrors Top-Down chart layout) -->
-                    <div class="mb-4 revenue-gap-stack-section">
-                        <div class="rg-stack-header">
-                            <h6 class="rg-stack-title">Revenue to date vs Potential — Gap to Potential</h6>
-                            <span class="rg-stack-units" id="revenueGapUnits">AMOUNTS IN <span class="currency-label">@currencySymbol</span> (B)</span>
-                        </div>
-                        <div class="chart-container" style="height: 420px;">
-                            <canvas id="revenueGapStackedBarChart"></canvas>
-                        </div>
                     </div>
 
                     <hr>
@@ -535,13 +568,13 @@
                         </div>
                     </div>
 
-                    <!-- Breakdown of Administrative Gaps Pie Chart -->
+                    <!-- Breakdown of Administrative Gaps — horizontal bar chart.
+                         Was a doughnut with a 5-row legend on the side; switched to bar
+                         so labels sit on the y-axis and small categories stay readable. -->
                     <div class="mb-4">
                         <h6 class="text-center mb-3">@Localizer["AdmGapsPie_Title"]</h6>
-                        <div class="d-flex justify-content-center">
-                            <div style="height: 300px; width: 450px; position: relative;">
-                                <canvas id="adminGapChart"></canvas>
-                            </div>
+                        <div style="height: 320px; position: relative;">
+                            <canvas id="adminGapChart"></canvas>
                         </div>
                         <p class="small text-muted mt-2 text-center">
                             <strong>@Localizer["Description_Label"]</strong> @Localizer["AdmGapsPie_Description"]
@@ -819,15 +852,26 @@
         // Initial calculation
         calculatePropertyTaxGaps();
 
+        // Recalculate when the Property Tax tab becomes visible. While the tab
+        // is display:none, matrix cells measure 0×0 so the guard-rail step skips
+        // them; re-running once the tab has real size applies the rails.
+        document.addEventListener('tabShown', function(e) {
+            if (e.detail && e.detail.tabId === 'property-tax') {
+                calculatePropertyTaxGaps();
+            }
+        });
+
         function initializeCharts() {
             // ----- Revenue to date vs Potential — two-bar layout matching the Top-Down chart -----
             const rgCanvas = document.getElementById('revenueGapStackedBarChart');
             if (rgCanvas) {
+                // 2 sig figs — must match formatCurrencyShort / formatCompact so the
+                // same value renders identically across the bar chart, matrix, and donut.
                 const fmtCompact = function (v) {
                     if (v == null || isNaN(v)) return '0';
-                    if (Math.abs(v) >= 1e9) return (v / 1e9).toFixed(2) + 'B';
-                    if (Math.abs(v) >= 1e6) return (v / 1e6).toFixed(2) + 'M';
-                    if (Math.abs(v) >= 1e3) return (v / 1e3).toFixed(1) + 'K';
+                    if (Math.abs(v) >= 1e9) return (v / 1e9).toFixed(1) + 'B';
+                    if (Math.abs(v) >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+                    if (Math.abs(v) >= 1e3) return (v / 1e3).toFixed(0) + 'K';
                     return Math.round(v).toLocaleString();
                 };
 
@@ -987,12 +1031,12 @@
             const ctx1 = document.getElementById('potentialRevenueChart');
             if (ctx1) {
                 potentialRevenueChart = new Chart(ctx1.getContext('2d'), {
-                    type: 'pie',
+                    type: 'doughnut',
                     data: {
                         labels: ['Revenue to date', 'Compliance Gap', 'Coverage Gap', 'Valuation Gap', 'Mixed Gap (reg.)', 'Mixed Gap (unreg.)'],
                         datasets: [{
                             data: [0, 0, 0, 0, 0, 0],
-                            backgroundColor: ['#4CAF50', '#F44336', '#FF9800', '#2196F3', '#9C27B0', '#E91E63'],
+                            backgroundColor: ['#59A14F', '#E15759', '#F28E2B', '#4E79A7', '#76B7B2', '#B07AA1'],
                             borderWidth: 2,
                             borderColor: '#ffffff'
                         }]
@@ -1041,57 +1085,81 @@
                 if (window.registerChart) registerChart('potentialRevenueChart', potentialRevenueChart);
             }
 
-            // Administrative Gap Pie Chart
+            // Administrative Gap — horizontal bar chart.
+            // Was a doughnut with a 5-row legend on the side; switched to bar so labels
+            // sit on the y-axis and small categories don't get squashed below readable size.
             const ctx2 = document.getElementById('adminGapChart');
             if (ctx2) {
+                // Custom plugin: draw "KSh X (YY%)" at the right end of each bar.
+                const adminGapBarValuesPlugin = {
+                    id: 'adminGapBarValues',
+                    afterDatasetsDraw: function (chart) {
+                        const c = chart.ctx;
+                        const meta = chart.getDatasetMeta(0);
+                        if (!meta) return;
+                        const data = chart.data.datasets[0].data || [];
+                        const total = data.reduce((a, b) => a + b, 0);
+                        c.save();
+                        c.font = '600 11px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.textBaseline = 'middle';
+                        c.fillStyle = '#1f2937';
+                        meta.data.forEach((bar, i) => {
+                            if (!bar) return;
+                            const value = data[i] || 0;
+                            if (value <= 0) return;
+                            const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+                            const text = formatCurrencyShort(value) + '  (' + pct + '%)';
+                            c.textAlign = 'left';
+                            c.fillText(text, bar.x + 6, bar.y);
+                        });
+                        c.restore();
+                    }
+                };
+
                 adminGapChart = new Chart(ctx2.getContext('2d'), {
-                    type: 'pie',
+                    type: 'bar',
                     data: {
                         labels: ['Compliance Gap', 'Coverage Gap', 'Valuation/assessment gap', 'Mixed Gap (reg.)', 'Mixed Gap (unreg.)'],
                         datasets: [{
                             data: [0, 0, 0, 0, 0],
-                            backgroundColor: ['#F44336', '#FF9800', '#2196F3', '#9C27B0', '#E91E63'],
-                            borderWidth: 2,
-                            borderColor: '#ffffff'
+                            backgroundColor: ['#E15759', '#F28E2B', '#4E79A7', '#76B7B2', '#B07AA1'],
+                            borderWidth: 0,
+                            borderRadius: 3,
+                            barThickness: 22
                         }]
                     },
+                    plugins: [adminGapBarValuesPlugin],
                     options: {
+                        indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
+                        layout: { padding: { right: 110, left: 8, top: 8, bottom: 8 } },
                         plugins: {
-                            legend: {
-                                position: 'right',
-                                labels: {
-                                    boxWidth: 12,
-                                    font: { size: 10 },
-                                    generateLabels: function(chart) {
-                                        const data = chart.data;
-                                        if (data.labels.length && data.datasets.length) {
-                                            const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                            return data.labels.map((label, i) => {
-                                                const value = data.datasets[0].data[i];
-                                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                                return {
-                                                    text: label + ' (' + percentage + '%)',
-                                                    fillStyle: data.datasets[0].backgroundColor[i],
-                                                    hidden: false,
-                                                    index: i
-                                                };
-                                            });
-                                        }
-                                        return [];
-                                    }
-                                }
-                            },
+                            legend: { display: false },
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
                                         const value = context.raw || 0;
                                         const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                         const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                        return context.label + ': ' + formatCurrency(value) + ' (' + percentage + '%)';
+                                        return formatCurrencyShort(value) + ' (' + percentage + '%)';
                                     }
                                 }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                grid: { color: '#f1f5f9', drawBorder: false },
+                                ticks: {
+                                    font: { size: 10 },
+                                    color: '#64748b',
+                                    callback: function (value) { return formatCurrencyShort(value); }
+                                }
+                            },
+                            y: {
+                                grid: { display: false, drawBorder: false },
+                                ticks: { font: { size: 11 }, color: '#334155' }
                             }
                         }
                     }
@@ -1113,6 +1181,20 @@
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }).format(value);
+        }
+
+        // Compact currency, 2 significant figures. KEEP IN SYNC with formatCompact()
+        // in updateMatrixDashboard — both must round identically so the same value
+        // doesn't render as "1.05B" in one chart and "1.1B" in another.
+        // 24,922,222,222 → "KSh 24.9B" / 8,830,000 → "KSh 8.8M" / 540,500 → "KSh 541K"
+        function formatCurrencyShort(value) {
+            if (isNaN(value) || value === null) return '0';
+            const sym = (typeof getCurrencySymbol === 'function') ? (getCurrencySymbol() + ' ') : '';
+            const abs = Math.abs(value);
+            if (abs >= 1e9) return sym + (value / 1e9).toFixed(1) + 'B';
+            if (abs >= 1e6) return sym + (value / 1e6).toFixed(1) + 'M';
+            if (abs >= 1e3) return sym + (value / 1e3).toFixed(0) + 'K';
+            return sym + Math.round(value).toString();
         }
 
         function formatPercentage(value) {
@@ -1358,33 +1440,51 @@
                 potentialRevenueChart.update();
             }
 
-            // Update Admin Gap Chart
+            // Update Admin Gap Chart — sorted by value descending so the biggest
+            // gap is on top. Sort labels, values, and colors together so each keeps
+            // its semantic color from the matrix.
             if (adminGapChart) {
-                adminGapChart.data.datasets[0].data = [
-                    Math.max(0, complianceGap),
-                    Math.max(0, coverageGap),
-                    Math.max(0, valuationGap),
-                    Math.max(0, mixedGapReg),
-                    Math.max(0, mixedGapUnreg)
+                const items = [
+                    { label: 'Compliance Gap',           value: Math.max(0, complianceGap),  color: '#E15759' },
+                    { label: 'Coverage Gap',             value: Math.max(0, coverageGap),    color: '#F28E2B' },
+                    { label: 'Valuation/assessment gap', value: Math.max(0, valuationGap),   color: '#4E79A7' },
+                    { label: 'Mixed Gap (reg.)',         value: Math.max(0, mixedGapReg),    color: '#76B7B2' },
+                    { label: 'Mixed Gap (unreg.)',       value: Math.max(0, mixedGapUnreg),  color: '#B07AA1' }
                 ];
+                items.sort((a, b) => b.value - a.value);
+                adminGapChart.data.labels = items.map(x => x.label);
+                adminGapChart.data.datasets[0].data = items.map(x => x.value);
+                adminGapChart.data.datasets[0].backgroundColor = items.map(x => x.color);
                 adminGapChart.update();
             }
 
             // Update "Revenue to date vs Potential" two-bar chart
+            const rgRev   = Math.max(0, parseNumber(document.getElementById('revenueToDate')?.value));
+            const rgGap   = Math.max(0, complianceGap)
+                          + Math.max(0, coverageGap)
+                          + Math.max(0, valuationGap)
+                          + Math.max(0, mixedGapReg)
+                          + Math.max(0, mixedGapUnreg);
+            const rgTotal = rgRev + rgGap;
             if (revenueGapStackedBarChart) {
-                const rgRev   = Math.max(0, parseNumber(document.getElementById('revenueToDate')?.value));
-                const rgGap   = Math.max(0, complianceGap)
-                              + Math.max(0, coverageGap)
-                              + Math.max(0, valuationGap)
-                              + Math.max(0, mixedGapReg)
-                              + Math.max(0, mixedGapUnreg);
-                const rgTotal = rgRev + rgGap;
                 // Bar 1 = "Revenue to date" (cyan only), Bar 2 = "Potential" (cyan base + orange gap)
                 revenueGapStackedBarChart.data.datasets[0].data = [rgRev, rgRev];
                 revenueGapStackedBarChart.data.datasets[1].data = [0,     rgGap];
                 revenueGapStackedBarChart.config._rgValues = { rev: rgRev, gap: rgGap, total: rgTotal };
                 revenueGapStackedBarChart.update();
             }
+
+            // Update Headline KPI (Total Revenue Gap) — same numbers as the bar chart.
+            const ptKpiGapVal    = document.getElementById('ptKpiGapValue');
+            const ptKpiGapPct    = document.getElementById('ptKpiGapPct');
+            const ptKpiCollected = document.getElementById('ptKpiCollectedPct');
+            const ptKpiPotential = document.getElementById('ptKpiPotentialValue');
+            if (ptKpiGapVal)    ptKpiGapVal.textContent    = formatCurrencyShort(rgGap);
+            if (ptKpiPotential) ptKpiPotential.textContent = formatCurrencyShort(rgTotal);
+            const ptGapPct = rgTotal > 0 ? Math.round((rgGap / rgTotal) * 100) : 0;
+            const ptColPct = rgTotal > 0 ? 100 - ptGapPct : 0;
+            if (ptKpiGapPct)    ptKpiGapPct.textContent    = ptGapPct + '%';
+            if (ptKpiCollected) ptKpiCollected.textContent = ptColPct + '%';
         }
 
         function updateMatrixDashboard(data) {
@@ -1445,21 +1545,22 @@
             if (matrixMixedUnreg) matrixMixedUnreg.textContent = formatCompact(data.mixedGapUnreg);
 
             // === DYNAMIC ROW HEIGHTS (proportional to property counts) ===
-            const totalProps = data.estimatedProperties || 1;
-            const unregProps = Math.max(0, data.estimatedProperties - data.registeredProperties);
-            const nonCompliantProps = Math.max(0, data.registeredProperties - data.compliantProperties);
-            const compliantProps = Math.max(0, data.compliantProperties);
+            const totalPropsRaw = data.estimatedProperties || 0;
+            const unregProps = Math.max(0, (data.estimatedProperties || 0) - (data.registeredProperties || 0));
+            const nonCompliantProps = Math.max(0, (data.registeredProperties || 0) - (data.compliantProperties || 0));
+            const compliantProps = Math.max(0, data.compliantProperties || 0);
+            // Empty state: no data entered yet. Render a clean even 2×3 grid so all six
+            // cells are legible — otherwise the Marimekko rows collapse to min-height
+            // and cluster at the top-left, hiding the labels.
+            const rowsEmpty = totalPropsRaw === 0 || (unregProps + nonCompliantProps + compliantProps === 0);
+            const totalProps = rowsEmpty ? 1 : totalPropsRaw;
 
-            // Calculate flex ratios with minimum 15% to ensure text visibility
-            const minFlex = 0.15;
-            const unregRatio = unregProps / totalProps;
-            const nonCompliantRatio = nonCompliantProps / totalProps;
-            const compliantRatio = compliantProps / totalProps;
-
-            // Apply minimum and scale
-            const unregFlex = Math.max(minFlex, unregRatio);
-            const nonCompliantFlex = Math.max(minFlex, nonCompliantRatio);
-            const compliantFlex = Math.max(minFlex, compliantRatio);
+            // True Marimekko: cell AREA encodes the underlying count.
+            // Floor 5% — small cells stay visible without distorting proportions of larger ones.
+            const minFlex = 0.05;
+            const unregFlex = rowsEmpty ? 1 : Math.max(minFlex, unregProps / totalProps);
+            const nonCompliantFlex = rowsEmpty ? 1 : Math.max(minFlex, nonCompliantProps / totalProps);
+            const compliantFlex = rowsEmpty ? 1 : Math.max(minFlex, compliantProps / totalProps);
 
             const rowUnreg = document.getElementById('matrixRowUnreg');
             const rowNonCompliant = document.getElementById('matrixRowNonCompliant');
@@ -1470,17 +1571,16 @@
             if (rowCompliant) rowCompliant.style.flex = compliantFlex.toString();
 
             // === DYNAMIC COLUMN WIDTHS (proportional to billing amounts) ===
-            const totalBilling = data.potentialBilling || 1;
+            const totalBillingRaw = data.potentialBilling || 0;
             const avgBilled = data.avgBilledAmount || 0;
-            const valuationDiff = Math.max(0, data.potentialBilling - data.avgBilledAmount);
+            const valuationDiff = Math.max(0, (data.potentialBilling || 0) - (data.avgBilledAmount || 0));
+            const colsEmpty = totalBillingRaw === 0 || (avgBilled + valuationDiff === 0);
+            const totalBilling = colsEmpty ? 1 : totalBillingRaw;
 
-            // Calculate column width ratios (min 20% to ensure text visibility)
-            const minColWidth = 0.2;
-            const leftColRatio = avgBilled / totalBilling;
-            const rightColRatio = valuationDiff / totalBilling;
-
-            const leftColFlex = Math.max(minColWidth, leftColRatio);
-            const rightColFlex = Math.max(minColWidth, rightColRatio);
+            // Column floor 5% — same Marimekko principle as rows.
+            const minColWidth = 0.05;
+            const leftColFlex = colsEmpty ? 1 : Math.max(minColWidth, avgBilled / totalBilling);
+            const rightColFlex = colsEmpty ? 1 : Math.max(minColWidth, valuationDiff / totalBilling);
 
             // Apply to all row cells
             const allRows = document.querySelectorAll('.matrix-row');
@@ -1533,9 +1633,53 @@
                 const totalColFlex = leftColFlex + rightColFlex;
                 const leftColPercent = (leftColFlex / totalColFlex) * 100;
 
-                // Position the "Avg. Billed" label at the column boundary
+                // Always show the "Avg. Billed" label — adapt the anchor so it doesn't
+                // collide with the corner labels when the boundary is near an edge.
                 xLabelAvgBilled.style.left = leftColPercent + '%';
+                xLabelAvgBilled.style.visibility = 'visible';
+                if (leftColPercent > 80) {
+                    xLabelAvgBilled.style.transform = 'translateX(-100%)';
+                    xLabelAvgBilled.style.textAlign = 'right';
+                } else if (leftColPercent < 20) {
+                    xLabelAvgBilled.style.transform = 'translateX(0%)';
+                    xLabelAvgBilled.style.textAlign = 'left';
+                } else {
+                    xLabelAvgBilled.style.transform = 'translateX(-50%)';
+                    xLabelAvgBilled.style.textAlign = 'center';
+                }
             }
+
+            // === GUARD RAILS: hide cell text when the cell is too small =====
+            // Once the flex sizing has been applied, measure each cell. Below
+            // these thresholds the two-line label+value can't render without
+            // bleeding into adjacent cells, so we suppress it. Information is
+            // preserved via a native title tooltip on hover.
+            requestAnimationFrame(() => {
+                document.querySelectorAll('#matrixGridArea .matrix-cell').forEach(cell => {
+                    const rect = cell.getBoundingClientRect();
+                    // Skip when the matrix is hidden (tab not active). We'd measure
+                    // 0×0 and wrongly classify every cell as too small. The tabShown
+                    // listener below re-runs this once the tab is visible.
+                    if (rect.width === 0 || rect.height === 0) return;
+                    const content = cell.querySelector('.text-center');
+                    if (!content) return;
+
+                    const tooShort = rect.height < 28;   // can't fit label + value
+                    const tooNarrow = rect.width < 70;   // value text would overflow
+
+                    cell.classList.toggle('is-too-small', tooShort);
+                    cell.classList.toggle('is-too-narrow', !tooShort && tooNarrow);
+
+                    // Fallback tooltip for cells that don't already have a
+                    // Bootstrap tooltip configured. Skip cells with
+                    // data-bs-toggle so we don't clobber their static title.
+                    if (!cell.hasAttribute('data-bs-toggle')) {
+                        const label = content.querySelector('small')?.textContent?.trim() || '';
+                        const value = content.querySelector('span')?.textContent?.trim() || '';
+                        cell.title = label && value ? `${label}: ${value}` : (label || value);
+                    }
+                });
+            });
         }
 
         // Expose calculatePropertyTaxGaps globally

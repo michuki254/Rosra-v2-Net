@@ -38,10 +38,10 @@
 
   <!-- Instructions -->
   <data name="Instructions_Title" xml:space="preserve"><value>How to use this module</value></data>
-  <data name="Instructions_Step1" xml:space="preserve"><value>Review the &lt;strong&gt;Adjustable Stream Prioritization&lt;/strong&gt; table showing all analyzed revenue streams ranked by Total Functional Gap.</value></data>
-  <data name="Instructions_Step2" xml:space="preserve"><value>Use the &lt;strong&gt;Include/Exclude&lt;/strong&gt; dropdown to select which streams to include in your reform plan.</value></data>
-  <data name="Instructions_Step3" xml:space="preserve"><value>Use the &lt;strong&gt;Adjust Rank&lt;/strong&gt; dropdown to override the default ranking based on local priorities.</value></data>
-  <data name="Instructions_Step4" xml:space="preserve"><value>View the &lt;strong&gt;Final Stream Prioritization&lt;/strong&gt; table to see your finalized rankings and share of total gap.</value></data>
+  <data name="Instructions_Step1" xml:space="preserve"><value>Review the &lt;strong&gt;Stream Prioritization&lt;/strong&gt; table — streams come pre-ranked by Total Functional Gap and the &lt;strong&gt;Share of Gap&lt;/strong&gt; column shows each stream's contribution to the total.</value></data>
+  <data name="Instructions_Step2" xml:space="preserve"><value>Re-order streams by dragging rows with the &lt;i class="bi bi-grip-vertical"&gt;&lt;/i&gt; handle, or use the &lt;i class="bi bi-arrow-up"&gt;&lt;/i&gt;/&lt;i class="bi bi-arrow-down"&gt;&lt;/i&gt; buttons in the &lt;strong&gt;Move&lt;/strong&gt; column.</value></data>
+  <data name="Instructions_Step3" xml:space="preserve"><value>Use the &lt;strong&gt;Status&lt;/strong&gt; toggle to include or exclude each stream — excluded streams are removed from rank, share, and the bar chart automatically.</value></data>
+  <data name="Instructions_Step4" xml:space="preserve"><value>Move on to &lt;strong&gt;Step 2 (Gap Sequencing)&lt;/strong&gt; to choose a mode (Revenue Potential / Compliance First / Overhaul) and pick the priority gap-types per stream, then &lt;strong&gt;Step 3 (Top Gaps to Tackle)&lt;/strong&gt; to sort by amount or opportunity score.</value></data>
 
   <!-- Adjustable Stream Table -->
   <data name="AdjustableStream_Title" xml:space="preserve"><value>Adjustable Stream Prioritization</value></data>
@@ -109,13 +109,13 @@
   <data name="GapSequencing_Col_Priority1" xml:space="preserve"><value>Priority 1</value></data>
   <data name="GapSequencing_Col_Priority2" xml:space="preserve"><value>Priority 2</value></data>
   <data name="GapSequencing_Col_Priority3" xml:space="preserve"><value>Priority 3</value></data>
-  <data name="GapSequencing_Tooltip_Rank" xml:space="preserve"><value>Stream's final rank from Step 1</value></data>
+  <data name="GapSequencing_Tooltip_Rank" xml:space="preserve"><value>Stream's final rank from the Stream Prioritization table</value></data>
   <data name="GapSequencing_Tooltip_Stream" xml:space="preserve"><value>Revenue stream name</value></data>
   <data name="GapSequencing_Tooltip_Mode" xml:space="preserve"><value>Prioritization mode based on KPI ratios</value></data>
   <data name="GapSequencing_Tooltip_Priority1" xml:space="preserve"><value>First gap to address</value></data>
   <data name="GapSequencing_Tooltip_Priority2" xml:space="preserve"><value>Second gap to address</value></data>
   <data name="GapSequencing_Tooltip_Priority3" xml:space="preserve"><value>Third gap to address</value></data>
-  <data name="GapSequencing_Placeholder" xml:space="preserve"><value>Include streams in Step 1 to see gap prioritization options</value></data>
+  <data name="GapSequencing_Placeholder" xml:space="preserve"><value>Include streams in the Stream Prioritization table above to see gap prioritization options</value></data>
 
   <!-- Gap Amounts Table -->
   <data name="GapAmounts_Title" xml:space="preserve"><value>Gap Amounts by Priority</value></data>

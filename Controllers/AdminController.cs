@@ -324,6 +324,7 @@ namespace RosraApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddUserToRole(string userId, string roleName)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -354,6 +355,7 @@ namespace RosraApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveUserFromRole(string userId, string roleName)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -557,6 +559,7 @@ namespace RosraApp.Controllers
 
         // Toggle User Active Status
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleUserStatus(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -606,6 +609,8 @@ namespace RosraApp.Controllers
 
         // Upload PeerSNG Data
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [RequestSizeLimit(5_000_000)]
         public async Task<IActionResult> UploadPeerSNGData(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -690,6 +695,8 @@ namespace RosraApp.Controllers
 
         // Upload CountryData (16 columns including CurrencyCode and CurrencySymbol)
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [RequestSizeLimit(5_000_000)]
         public async Task<IActionResult> UploadCountryData(IFormFile file)
         {
             if (file == null || file.Length == 0)

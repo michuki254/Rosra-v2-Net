@@ -60,9 +60,9 @@
     /* Stepper Styling - pops out from background */
     .stepper-container {
         background: white;
-        border-radius: 10px;
-        padding: 0.5rem 1rem;
-        margin-bottom: 0.75rem;
+        border-radius: 8px;
+        padding: 0.25rem 1rem;
+        margin-bottom: 0.5rem;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
         border: none;
     }
@@ -81,19 +81,36 @@
         flex: 1;
         position: relative;
         cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 8px;
+        padding: 0.25rem 0.4rem;
+        border-radius: 6px;
         transition: all 0.2s ease;
     }
 
     .stepper-step:hover {
         background: rgba(0, 178, 227, 0.08);
-        transform: translateY(-2px);
+        transform: translateY(-1px);
+    }
+
+    /* Locked (not-yet-completed) steps: not clickable, dimmed, no hover lift */
+    .stepper-step.locked {
+        cursor: not-allowed;
+        opacity: 0.55;
+    }
+    .stepper-step.locked:hover {
+        background: transparent;
+        transform: none;
+    }
+    .stepper-step.locked:hover .step-indicator {
+        transform: none;
+        box-shadow: none;
+    }
+    .stepper-step.locked:hover .step-label {
+        color: #757575;
     }
 
     .step-indicator {
-        width: 32px;
-        height: 32px;
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
         background: #e0e0e0;
         color: #757575;
@@ -101,8 +118,8 @@
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 0.85rem;
-        margin-bottom: 0.3rem;
+        font-size: 0.72rem;
+        margin-bottom: 0.15rem;
         position: relative;
         z-index: 2;
         border: 1.5px solid #e0e0e0;
@@ -128,12 +145,12 @@
     }
 
     .step-label {
-        font-size: 0.78rem;
+        font-size: 0.7rem;
         font-weight: 600;
         color: #757575;
         text-align: center;
         max-width: 120px;
-        line-height: 1.2;
+        line-height: 1.15;
         transition: color 0.2s ease;
     }
 
@@ -150,23 +167,29 @@
         color: var(--un-blue);
     }
 
-    .step-connector {
+    /* Connector line drawn to the LEFT of each step (except the first). The line is
+       coloured "completed" when the previous step is completed — i.e. when the current
+       step is itself completed or active. */
+    .stepper-step:not(:first-child)::before {
+        content: '';
         position: absolute;
         top: 16px;
-        left: calc(50% + 18px);
-        width: calc(100% - 36px);
+        left: calc(-50% + 12px);
+        right: calc(50% + 12px);
         height: 2px;
         background: #e0e0e0;
         z-index: 1;
         border-radius: 2px;
     }
 
-    .stepper-step.completed .step-connector {
+    .stepper-step.completed::before,
+    .stepper-step.active::before {
         background: var(--un-blue);
     }
 
-    .stepper-step.active .step-connector {
-        background: #e0e0e0;
+    .step-indicator i {
+        font-size: 0.8rem;
+        line-height: 1;
     }
 
     /* Sub-Tab Content Styling */
@@ -270,28 +293,28 @@
     .step-header {
         display: flex;
         align-items: center;
-        gap: 0.85rem;
-        padding: 0.65rem 1rem;
+        gap: 0.7rem;
+        padding: 0.4rem 0.85rem;
         background: #ffffff;
-        border-radius: 10px;
+        border-radius: 8px;
         border: 1px solid #E6EDF3;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem;
     }
     .step-header-pill {
         background: #00B2E3;
         color: #fff;
         font-weight: 700;
-        font-size: 0.7rem;
-        letter-spacing: 0.6px;
+        font-size: 0.65rem;
+        letter-spacing: 0.55px;
         text-transform: uppercase;
-        padding: 0.3rem 0.7rem;
+        padding: 0.2rem 0.55rem;
         border-radius: 999px;
         white-space: nowrap;
     }
     .step-header-title {
         margin: 0;
-        font-size: 1rem;
+        font-size: 0.9rem;
         font-weight: 700;
         color: var(--un-blue-dark, #00689D);
     }
@@ -489,31 +512,43 @@
                             </button>
                         </div>
 
-                        <!-- Intro Text for Bottom-Up Analysis -->
-                        <div class="bottom-up-intro-section">
-                            <div class="intro-text-box">
-                                <i class="bi bi-info-circle-fill intro-icon"></i>
-                                <p class="intro-text">@SharedLocalizer["BottomUp_Intro"]</p>
-                            </div>
-                        </div>
-
-                        @* HIDDEN top stepper. Step elements stay in DOM (display:none) so the existing
-                           click-handler on .stepper-step that drives tab switching keeps working. *@
-                        <div class="stepper-container" style="display:none;" aria-hidden="true">
-                            <div class="stepper">
+                        <!-- Visual stepper: shows all steps with a tick on each completed step -->
+                        <div class="stepper-container">
+                            <div class="stepper" role="list">
                                 @foreach (var subTab in umbrellaTab.SubTabs)
                                 {
                                     var stepIndex = umbrellaTab.SubTabs.IndexOf(subTab);
-                                    <div class="stepper-step @(subTab.IsActive ? "active" : "")"
-                                         data-step="@(stepIndex + 1)" data-tab-id="@subTab.Id">
-                                        <div class="step-indicator"><span>@(stepIndex + 1)</span></div>
+                                    var isCompleted = stepIndex < activeStepIndex;
+                                    var isLocked = !subTab.IsActive && !subTab.IsVisited;
+                                    var stateClass = subTab.IsActive ? "active" : (isCompleted ? "completed" : "");
+                                    if (isLocked) { stateClass += " locked"; }
+                                    <div class="stepper-step @stateClass"
+                                         data-step="@(stepIndex + 1)" data-tab-id="@subTab.Id"
+                                         role="listitem"
+                                         aria-current="@(subTab.IsActive ? "step" : null)"
+                                         aria-disabled="@(isLocked ? "true" : "false")"
+                                         title="@(isLocked ? "Complete the previous step first" : subTab.Title)">
+                                        <div class="step-indicator">
+                                            @if (isCompleted)
+                                            {
+                                                <i class="bi bi-check-lg" aria-label="Completed"></i>
+                                            }
+                                            else if (isLocked)
+                                            {
+                                                <i class="bi bi-lock-fill" aria-label="Locked"></i>
+                                            }
+                                            else
+                                            {
+                                                <span>@(stepIndex + 1)</span>
+                                            }
+                                        </div>
                                         <div class="step-label">@subTab.Title</div>
                                     </div>
                                 }
                             </div>
                         </div>
 
-                        <!-- Slim header showing the current step name (replaces the visible stepper) -->
+                        <!-- Slim header showing the current step name -->
                         <div class="step-header">
                             <span class="step-header-pill">Step @(activeStepIndex + 1) of @umbrellaTab.SubTabs.Count</span>
                             <h5 class="step-header-title">@activeStepTitle</h5>
@@ -589,7 +624,7 @@
                                     }
                                     else if (lastStepIsSample)
                                     {
-                                        <a asp-controller="Rosra" asp-action="NewReport" class="bottom-save-btn">
+                                        <a asp-controller="Rosra" asp-action="SaveAsMyReport" class="bottom-save-btn">
                                             <i class="bi bi-save me-2"></i>Save as my report
                                         </a>
                                     }
@@ -748,6 +783,11 @@
         document.querySelectorAll('.stepper-step').forEach(function(step) {
             step.addEventListener('click', function(e) {
                 e.preventDefault();
+
+                // Locked steps cannot be navigated to until prior steps are completed.
+                if (this.classList.contains('locked')) {
+                    return;
+                }
 
                 var tabId = this.getAttribute('data-tab-id');
                 document.getElementById('tabIdInput').value = tabId;

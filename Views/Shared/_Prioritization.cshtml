@@ -1,25 +1,6 @@
 @model RosraApp.Models.ViewModels.RosraFormViewModel
 
 <div class="tab-content-container prioritization-module">
-    <!-- Header Section -->
-    <div class="prioritization-header mb-4">
-        <h5 class="mb-2"><i class="fas fa-sort-amount-down me-2"></i>@Localizer["Step1_Title"]</h5>
-        <p class="text-muted mb-0">
-            @Html.Raw(Localizer["Step1_Description"].Value)
-        </p>
-    </div>
-
-    <!-- Instructions Card -->
-    <div class="alert alert-info mb-4" role="alert">
-        <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>@Localizer["Instructions_Title"]</h6>
-        <ol class="mb-0 ps-3">
-            <li>@Html.Raw(Localizer["Instructions_Step1"].Value)</li>
-            <li>@Html.Raw(Localizer["Instructions_Step2"].Value)</li>
-            <li>@Html.Raw(Localizer["Instructions_Step3"].Value)</li>
-            <li>@Html.Raw(Localizer["Instructions_Step4"].Value)</li>
-        </ol>
-    </div>
-
     <div class="row g-2">
         <!-- Combined Stream Prioritization (drag-and-drop OR arrow buttons to re-rank) -->
         <div class="col-12">
@@ -140,12 +121,9 @@
     <!-- ======================= STEP 2: GAP PRIORITIZATION ======================= -->
     <hr class="my-5 border-2">
 
-    <!-- Step 2 Header -->
+    <!-- Gap Prioritization Section Header -->
     <div class="prioritization-header mb-4">
         <h5 class="mb-2"><i class="fas fa-layer-group me-2"></i>@Localizer["Step2_Title"]</h5>
-        <p class="text-muted mb-0">
-            @Html.Raw(Localizer["Step2_Description"].Value)
-        </p>
     </div>
 
     <!-- Mode Explanation Accordion -->
@@ -315,24 +293,6 @@
             <table id="improvementScoreTable"><tbody id="improvementScoreBody"></tbody></table>
         </div>
 
-        <!-- Interactive Priority Matrix -->
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-dark text-white py-3">
-                    <h6 class="mb-0"><i class="fas fa-th me-2"></i>Priority Matrix — Revenue Impact vs. Number of Solutions</h6>
-                </div>
-                <div class="card-body">
-                    <div id="matrixPlaceholder" class="chart-placeholder text-center text-muted py-5">
-                        <i class="fas fa-th fa-3x mb-3 opacity-50"></i>
-                        <p class="mb-0">Priority matrix will appear after gap prioritization</p>
-                    </div>
-                    <div id="priorityMatrixWrapper" style="position: relative; height: 360px; width: 100%; display: none;">
-                        <canvas id="priorityMatrixChart"></canvas>
-                    </div>
-                    <div id="priorityMatrixStreamKey" class="mt-2 small text-muted" style="display: none;"></div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Hidden inputs to persist prioritization data -->
@@ -616,6 +576,53 @@
     .prioritization-module .table tbody tr.excluded-row {
         opacity: 0.5;
         background-color: #fafafa;
+    }
+
+    /* ===== Plan-status row treatments (Step 2 Gap Sequencing removals) ===== */
+    /* Stream still ranked, but at least one priority slot is set to (Remove). */
+    .prioritization-module .table tbody tr.plan-partial-row {
+        background-color: #FFFBEB; /* very light amber */
+    }
+    /* Stream still ranked, but ALL priorities are set to (Remove) — empty plan. */
+    .prioritization-module .table tbody tr.plan-empty-row {
+        background-color: #FEF2F2; /* very light red */
+    }
+    .prioritization-module .table tbody tr.plan-empty-row .stream-name-text {
+        text-decoration: line-through;
+        text-decoration-color: rgba(220, 38, 38, 0.55);
+        color: #6b7280;
+    }
+    /* Soften the share bar fill on streams with no actionable plan so the
+       visual weight matches the "no plan" status without removing the bar. */
+    .prioritization-module .table tbody tr.plan-empty-row .share-bar-fill {
+        opacity: 0.35;
+    }
+    .prioritization-module .table tbody tr.plan-partial-row .share-bar-fill {
+        opacity: 0.65;
+    }
+
+    /* Inline pill next to the stream name */
+    .prioritization-module .plan-status-badge {
+        display: inline-block;
+        margin-left: 0.45rem;
+        padding: 0.1rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+    .prioritization-module .plan-status-partial {
+        background: #FEF3C7;
+        color: #92400E;
+        border: 1px solid #FDE68A;
+    }
+    .prioritization-module .plan-status-empty {
+        background: #FEE2E2;
+        color: #991B1B;
+        border: 1px solid #FCA5A5;
     }
 
     /* ===== Combined Priority Table — drag-and-drop & arrow controls ===== */
@@ -1008,6 +1015,19 @@
 <script src="~/lib/chart.js/chart.umd.min.js" asp-append-version="true"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Server-side authoritative list of generic-stream IDs that exist in the
+    // currently saved/active report. RosraStateManager state can be polluted
+    // with leftover generic streams from a previous session — only streams
+    // listed here should be considered when this page is loaded directly.
+    // Property Tax and Business License are always present and don't appear here.
+    // Match the id RosraStateManager assigns: 'generic-stream-{index}'
+    const validGenericStreamIds = new Set([
+        @for (int i = 0; i < (Model.GenericStreams?.Count ?? 0); i++)
+        {
+            <text>'generic-stream-@(i)',</text>
+        }
+    ].filter(Boolean));
+
     // Stream color scheme
     const streamColors = {
         'Property Tax': '#4e79a7',
@@ -1053,6 +1073,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let streams = [];
     let barChart = null;
     let pieChart = null;
+    // Hoisted up here (declared again later in the file would shadow it). Several
+    // helpers — getStreamPlanStatus, the chart code, the recommendations filter —
+    // access this from inside renderCombinedTable() which can run during initial
+    // page setup *before* the original declaration site executed, triggering a
+    // temporal-dead-zone ReferenceError. Declaring it early makes the empty
+    // array the safe default until initializeGapPrioritization() populates it.
+    let gapPrioritizationData = [];
 
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -1069,11 +1096,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof RosraStateManager !== 'undefined') {
             const stateStreams = RosraStateManager.getStreams();
             if (stateStreams.length > 0) {
-                // Skip streams the user added but never entered data for (gap is 0 or missing).
-                // This matches the behaviour of the localStorage fallback below.
-                const populatedStreams = stateStreams.filter(s =>
-                    (parseFloat(s.totalFunctionalGap) || 0) > 0
-                );
+                // Two-stage filter:
+                //   1. Drop generic streams that aren't in the server's authoritative
+                //      list — those are leftovers from a previous session/report and
+                //      must not appear here even if RosraStateManager localStorage
+                //      still has data for them. Property Tax and Business License
+                //      are fixed streams and always allowed through.
+                //   2. Drop streams the user added but never entered data for
+                //      (totalFunctionalGap is zero/missing).
+                const populatedStreams = stateStreams.filter(s => {
+                    const isFixed = s.type === 'property-tax' || s.type === 'business-license';
+                    if (!isFixed && !validGenericStreamIds.has(s.id)) return false;
+                    return (parseFloat(s.totalFunctionalGap) || 0) > 0;
+                });
 
                 populatedStreams.forEach((s, idx) => {
                     // Assign colors based on type
@@ -1157,6 +1192,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (Array.isArray(genericStreams)) {
                     genericStreams.forEach((gs, index) => {
                         const streamId = gs.streamId || `generic-stream-${index}`;
+                        if (!validGenericStreamIds.has(streamId)) return;
                         const gap = parseFloat(localStorage.getItem(streamId + 'GapValue')) || 0;
                         if (gap > 0) {
                             streams.push({
@@ -1185,6 +1221,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Also check for individual generic stream keys
         for (let i = 0; i < 10; i++) {
             const streamId = `generic-stream-${i}`;
+            if (!validGenericStreamIds.has(streamId)) continue;
             const gap = parseFloat(localStorage.getItem(streamId + 'GapValue')) || 0;
             const streamName = localStorage.getItem(streamId + 'Name');
 
@@ -1245,6 +1282,37 @@ document.addEventListener('DOMContentLoaded', function() {
         return 'rank-default';
     }
 
+    // Convert "#rrggbb" / "#rgb" / "rgb(...)" to an rgba() string with the
+    // requested alpha. Falls back to the original colour if it can't parse.
+    function hexToRgba(color, alpha) {
+        if (!color) return 'rgba(118, 183, 178, ' + alpha + ')';
+        const s = String(color).trim();
+        if (s.startsWith('rgba(')) return s.replace(/rgba\(([^)]+),\s*[\d.]+\)/, 'rgba($1, ' + alpha + ')');
+        if (s.startsWith('rgb('))  return s.replace(/^rgb\(([^)]+)\)/, 'rgba($1, ' + alpha + ')');
+        let hex = s.startsWith('#') ? s.slice(1) : s;
+        if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+        if (hex.length !== 6) return color;
+        const r = parseInt(hex.slice(0, 2), 16);
+        const g = parseInt(hex.slice(2, 4), 16);
+        const b = parseInt(hex.slice(4, 6), 16);
+        return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+    }
+
+    // Plan status for a stream, derived from its Step 2 Gap Sequencing entries:
+    //   'full'    = all 3 priorities active (default)
+    //   'partial' = 1-2 priorities removed
+    //   'none'    = all 3 priorities removed
+    // Falls back to 'full' if gapPrioritizationData hasn't been built yet.
+    function getStreamPlanStatus(streamId) {
+        if (typeof gapPrioritizationData === 'undefined') return 'full';
+        const entry = gapPrioritizationData.find(g => g.streamId === streamId);
+        if (!entry || !Array.isArray(entry.currentSequence) || entry.currentSequence.length === 0) return 'full';
+        const removedCount = entry.currentSequence.filter(s => s && s.removed).length;
+        if (removedCount === 0) return 'full';
+        if (removedCount >= entry.currentSequence.length) return 'none';
+        return 'partial';
+    }
+
     // Render Adjustable Stream Table
     // ===== COMBINED PRIORITIZATION TABLE (drag-and-drop + up/down arrows) =====
     // Sorts included streams by manualRank (initialised from defaultRank), excluded streams to the bottom.
@@ -1289,7 +1357,28 @@ document.addEventListener('DOMContentLoaded', function() {
             const isFirstIncluded = idxInIncluded === 0;
             const isLastIncluded = idxInIncluded === includedOrdered.length - 1;
             const sharePct = (isIncluded && totalGap > 0) ? (stream.totalFunctionalGap / totalGap) * 100 : 0;
-            const rowClasses = isIncluded ? 'priority-row' : 'priority-row excluded-row';
+
+            // Plan status — derived from this stream's Step 2 Gap Sequencing.
+            // 'full'    = all 3 priorities active
+            // 'partial' = 1-2 priorities removed
+            // 'none'    = all 3 priorities removed (a fully-empty plan)
+            const planStatus = (typeof getStreamPlanStatus === 'function')
+                ? getStreamPlanStatus(stream.id) : 'full';
+
+            const rowClasses = [
+                'priority-row',
+                !isIncluded ? 'excluded-row' : '',
+                isIncluded && planStatus === 'none'    ? 'plan-empty-row'   : '',
+                isIncluded && planStatus === 'partial' ? 'plan-partial-row' : ''
+            ].filter(Boolean).join(' ');
+
+            // Badge shown next to the stream name describing the plan state.
+            let planBadgeHtml = '';
+            if (isIncluded && planStatus === 'partial') {
+                planBadgeHtml = `<span class="plan-status-badge plan-status-partial" title="One or more gap priorities are set to (Remove) in Step 2 Gap Sequencing.">Partial plan</span>`;
+            } else if (isIncluded && planStatus === 'none') {
+                planBadgeHtml = `<span class="plan-status-badge plan-status-empty" title="All gap priorities are set to (Remove) in Step 2 Gap Sequencing — this stream has no actionable plan.">No plan</span>`;
+            }
 
             html += `
                 <tr class="${rowClasses}" data-stream-id="${stream.id}" draggable="${isIncluded}">
@@ -1303,7 +1392,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     </td>
                     <td class="align-middle">
                         <span class="stream-badge ${stream.type}"></span>
-                        ${stream.name}
+                        <span class="stream-name-text">${stream.name}</span>
+                        ${planBadgeHtml}
                     </td>
                     <td class="text-end fw-semibold align-middle">${formatCurrency(stream.totalFunctionalGap)}</td>
                     <td class="align-middle">
@@ -1467,21 +1557,13 @@ document.addEventListener('DOMContentLoaded', function() {
             stream.included = included;
             if (!included) {
                 stream.adjustedRank = null;
+                stream.manualRank = null;
             }
         }
 
-        // Update row styling
-        const row = selectElement.closest('tr');
-        if (included) {
-            row.classList.remove('excluded-row');
-            row.querySelector('.dropdown-adjust-rank').disabled = false;
-        } else {
-            row.classList.add('excluded-row');
-            row.querySelector('.dropdown-adjust-rank').disabled = true;
-            row.querySelector('.dropdown-adjust-rank').value = '';
-        }
-
-        // Recalculate and render
+        // Re-render the whole combined table — it rebuilds rows from `streams`
+        // (with included rows on top and excluded rows pushed to the bottom),
+        // so we don't need to fiddle with the row's classes manually.
         renderFinalTable();
         updateCharts();
         updateStatistics();
@@ -1599,43 +1681,98 @@ document.addEventListener('DOMContentLoaded', function() {
         if (barCanvas) barCanvas.style.display = 'block';
         if (pieCanvas) pieCanvas.style.display = 'block';
 
-        const labels = finalRanking.map(s => s.name);
-        const gapData = finalRanking.map(s => s.totalFunctionalGap);
+        // Annotate each stream with its plan status so we can mute the bar
+        // colour when the user has removed all of a stream's priorities (no plan)
+        // or some of them (partial plan). Keeping the rank/total stable preserves
+        // the Step 1 truth — only the visual weight changes.
+        const planStatuses = finalRanking.map(s => getStreamPlanStatus(s.id));
+        const labels = finalRanking.map((s, i) => {
+            const ps = planStatuses[i];
+            if (ps === 'none')    return s.name + '  (no plan)';
+            if (ps === 'partial') return s.name + '  (partial plan)';
+            return s.name;
+        });
         const shareData = finalRanking.map(s => s.shareOfTotalGap);
-        const colors = finalRanking.map(s => s.color);
+        const baseColors = finalRanking.map(s => s.color);
 
-        // Bar Chart (horizontal)
+        // Helper: alpha multiplier reflecting the stream's plan status.
+        function planAlpha(idx) {
+            const ps = planStatuses[idx];
+            if (ps === 'none')    return 0.25;
+            if (ps === 'partial') return 0.55;
+            return 1;
+        }
+        // Helper: stream gap value resilient to property-tax vs non-property fields.
+        function gapValue(stream, key) {
+            switch (key) {
+                case 'compliance': return stream.complianceGap || 0;
+                case 'coverage':   return stream.coverageGap || 0;
+                case 'thirdGap':   return stream.type === 'property-tax'
+                                    ? (stream.valuationGap || 0)
+                                    : (stream.liabilityGap || 0);
+                case 'mixedComp':  return (stream.mixedGapCompliance != null ? stream.mixedGapCompliance
+                                         : stream.mixedGapReg) || 0;
+                case 'mixedCov':   return (stream.mixedGapCoverage   != null ? stream.mixedGapCoverage
+                                         : stream.mixedGapUnreg) || 0;
+                default: return 0;
+            }
+        }
+
+        // Stacked breakdown of each stream's Total Functional Gap. Each segment
+        // is an individual gap-type — same colour palette as the Gap Analysis
+        // doughnut/breakdown charts so the visual language is consistent.
+        const gapSeries = [
+            { key: 'compliance', label: 'Compliance Gap',         color: '#F44336' },
+            { key: 'coverage',   label: 'Coverage Gap',           color: '#FF9800' },
+            { key: 'thirdGap',   label: 'Valuation / Liability',  color: '#3b82f6' },
+            { key: 'mixedComp',  label: 'Mixed (Compliance)',     color: '#9C27B0' },
+            { key: 'mixedCov',   label: 'Mixed (Coverage)',       color: '#E91E63' }
+        ];
+
+        const datasets = gapSeries.map(gs => ({
+            label: gs.label,
+            data: finalRanking.map(s => gapValue(s, gs.key)),
+            backgroundColor: finalRanking.map((_, i) => hexToRgba(gs.color, planAlpha(i))),
+            borderColor: finalRanking.map((_, i) => hexToRgba(gs.color, Math.max(planAlpha(i), 0.6))),
+            borderWidth: 0,
+            stack: 'total'
+        }));
+
+        // Bar Chart (horizontal, stacked)
         const barCtx = document.getElementById('gapBarChart').getContext('2d');
         barChart = new Chart(barCtx, {
             type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Total Functional Gap',
-                    data: gapData,
-                    backgroundColor: colors,
-                    borderColor: colors.map(c => c),
-                    borderWidth: 1
-                }]
-            },
+            data: { labels: labels, datasets: datasets },
             options: {
                 indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: false
+                        display: true,
+                        position: 'bottom',
+                        labels: { boxWidth: 12, boxHeight: 12, font: { size: 11 } }
                     },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                return formatCurrency(context.raw);
+                                const amt = context.parsed.x || 0;
+                                if (amt === 0) return null; // hide empty segments
+                                return context.dataset.label + ': ' + formatCurrency(amt);
+                            },
+                            // Show each stream's total in the footer of the tooltip
+                            footer: function(items) {
+                                if (!items || !items.length) return '';
+                                const idx = items[0].dataIndex;
+                                const total = datasets.reduce((sum, ds) => sum + (ds.data[idx] || 0), 0);
+                                return 'Total: ' + formatCurrency(total);
                             }
                         }
                     }
                 },
                 scales: {
                     x: {
+                        stacked: true,
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
@@ -1646,13 +1783,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                 return currencySymbol + value;
                             }
                         }
+                    },
+                    y: {
+                        stacked: true
                     }
                 }
             }
         });
         if (window.registerChart) registerChart('gapBarChart', barChart);
 
-        // Pie Chart
+        // Pie Chart — share of total gap per stream (per-stream colour palette)
+        const pieFillColors = baseColors.map((c, i) => hexToRgba(c, planAlpha(i)));
         const pieCtx = document.getElementById('gapPieChart').getContext('2d');
         pieChart = new Chart(pieCtx, {
             type: 'doughnut',
@@ -1660,7 +1801,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 labels: labels,
                 datasets: [{
                     data: shareData,
-                    backgroundColor: colors,
+                    backgroundColor: pieFillColors,
                     borderColor: '#fff',
                     borderWidth: 2
                 }]
@@ -1737,25 +1878,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Load prioritization state from FormStateManager (or localStorage fallback)
+    // Load prioritization state from FormStateManager (or localStorage fallback).
+    //
+    // The hidden form field that FormStateManager reads first carries the
+    // server-rendered state of the saved report, which on sample / older
+    // reports uses a legacy shape ({ streams: [...] }) with no
+    // streamCustomizations / gapPrioritization arrays. The user's actual
+    // include/exclude + (Remove) decisions on this session live in
+    // localStorage (savePrioritizationState writes there too as a backup).
+    // So if FormStateManager's value lacks BOTH expected arrays, fall through
+    // to localStorage instead of returning the legacy stub.
     function loadPrioritizationState() {
         try {
             let state = null;
 
-            // Use FormStateManager if available (preferred)
             if (typeof FormStateManager !== 'undefined') {
-                state = FormStateManager.getData('prioritizationState');
-                if (state) {
+                const fromForm = FormStateManager.getData('prioritizationState');
+                if (fromForm && (Array.isArray(fromForm.streamCustomizations)
+                              || Array.isArray(fromForm.gapPrioritization))) {
+                    state = fromForm;
                     console.log('Prioritization: State loaded via FormStateManager');
                 }
             }
 
-            // Fallback to localStorage
             if (!state) {
                 const localData = localStorage.getItem('prioritizationState');
                 if (localData) {
-                    state = JSON.parse(localData);
-                    console.log('Prioritization: State loaded from localStorage');
+                    const parsed = JSON.parse(localData);
+                    if (parsed && (Array.isArray(parsed.streamCustomizations)
+                                || Array.isArray(parsed.gapPrioritization))) {
+                        state = parsed;
+                        console.log('Prioritization: State loaded from localStorage');
+                    }
                 }
             }
 
@@ -1882,8 +2036,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ======================= GAP PRIORITIZATION (STEP 2) =======================
 
-    // Gap prioritization data structure
-    let gapPrioritizationData = [];
+    // Gap prioritization data structure — declared near the top of this script
+    // block so early renderCombinedTable() calls don't hit a TDZ ReferenceError.
 
     // Determine mode based on compliance and coverage ratios
     function determineMode(stream) {
@@ -2001,6 +2155,13 @@ document.addEventListener('DOMContentLoaded', function() {
         renderGapAmountsTable();
         renderGapSummary();
         renderMasterPriorityList();
+
+        // gapPrioritizationData is now populated, so the Stream Prioritization
+        // table and the bar chart can pick up the "Partial plan" / "No plan"
+        // signals on initial page load (otherwise they stay 'full' until the
+        // user changes a priority).
+        renderFinalTable();
+        updateCharts();
     }
 
     // Generate gap dropdown options
@@ -2034,7 +2195,7 @@ document.addEventListener('DOMContentLoaded', function() {
             tbody.innerHTML = `
                 <tr class="placeholder-row">
                     <td colspan="6" class="text-center text-muted py-4">
-                        <i class="fas fa-info-circle me-2"></i>Include streams in Step 1 to see gap prioritization options
+                        <i class="fas fa-info-circle me-2"></i>Include streams in the Stream Prioritization table above to see gap prioritization options
                     </td>
                 </tr>
             `;
@@ -2126,6 +2287,14 @@ document.addEventListener('DOMContentLoaded', function() {
         renderGapAmountsTable();
         renderGapSummary();
         renderMasterPriorityList();
+        // Top Gaps to Tackle reads gapPrioritizationData via buildRevenueImpactList,
+        // so it must be re-rendered when the user removes / reassigns a priority.
+        renderTopGapsTable();
+        // Stream Prioritization table shows "Partial plan" / "No plan" badges
+        // derived from gapPrioritizationData — rerender so they update live,
+        // along with the bar chart's plan-aware colouring.
+        renderFinalTable();
+        updateCharts();
 
         // Save state
         savePrioritizationState();
@@ -2245,6 +2414,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ======================= REVENUE IMPACT & IMPROVEMENT SCORING =======================
 
+    // Retained for the inert renderPriorityMatrix() function below; the chart
+    // itself was removed from the UI.
     let matrixChart = null;
 
     // Build a flat list of all individual gaps across included streams, sorted by amount
@@ -2260,19 +2431,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 { type: isPropertyBased ? 'Valuation' : 'Liability', amount: isPropertyBased ? (stream.valuationGap || 0) : (stream.liabilityGap || 0) }
             ];
 
+            // Honour the user's Gap Sequencing decisions: a gap-type is only
+            // surfaced in Top Gaps to Tackle / improvement scoring if it sits
+            // in an *active* (non-removed) priority slot for this stream.
+            // If gapPrioritizationData has no entry for this stream yet (eg.
+            // first render before initializeGapPrioritizationData runs), fall
+            // back to allowing all gap-types through.
+            const seqEntry = (typeof gapPrioritizationData !== 'undefined')
+                ? gapPrioritizationData.find(g => g.streamId === stream.id)
+                : null;
+            const activeGapTypes = seqEntry
+                ? new Set(seqEntry.currentSequence.filter(s => !s.removed).map(s => s.type))
+                : null; // null = no filter
+
             gapTypes.forEach(g => {
-                if (g.amount > 0) {
-                    allGaps.push({
-                        streamName: stream.name,
-                        streamType: stream.type,
-                        streamRank: stream.finalRank,
-                        gapType: g.type,
-                        amount: g.amount,
-                        currentRevenue: stream.currentRevenue || 0,
-                        potentialRevenue: stream.potentialRevenue || (stream.totalFunctionalGap + (stream.currentRevenue || 0)),
-                        totalFunctionalGap: stream.totalFunctionalGap
-                    });
-                }
+                if (g.amount <= 0) return;
+                if (activeGapTypes && !activeGapTypes.has(g.type)) return;
+
+                allGaps.push({
+                    streamName: stream.name,
+                    streamType: stream.type,
+                    streamRank: stream.finalRank,
+                    gapType: g.type,
+                    amount: g.amount,
+                    currentRevenue: stream.currentRevenue || 0,
+                    potentialRevenue: stream.potentialRevenue || (stream.totalFunctionalGap + (stream.currentRevenue || 0)),
+                    totalFunctionalGap: stream.totalFunctionalGap
+                });
             });
         });
 
@@ -2406,7 +2591,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Improvement scoring is now folded into renderTopGapsTable() — keep this stub for callers.
     function renderImprovementScoreTable() { /* merged into renderTopGapsTable() */ }
 
-    // Render Interactive Priority Matrix (bubble chart)
+    // Priority Matrix bubble chart was removed from the UI. The function below
+    // is no longer called from renderRevenueAndScoring(), but is kept inert in
+    // case any external code path still calls it — its DOM lookups will all
+    // return null and the function will exit early.
     function renderPriorityMatrix() {
         const placeholder = document.getElementById('matrixPlaceholder');
         const canvas = document.getElementById('priorityMatrixChart');
@@ -2598,7 +2786,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderRevenueAndScoring() {
         renderRevenueImpactTable();
         renderImprovementScoreTable();
-        renderPriorityMatrix();
     }
 
     // Hook into gap prioritization init so Step 3 updates whenever Step 2 does

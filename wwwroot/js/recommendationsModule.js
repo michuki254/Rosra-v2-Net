@@ -135,15 +135,87 @@
                 return (arr || []).map(s => ({ ...s, timeline: canonicalizeTimeline(s && s.timeline) }));
             }
 
-            // Drop solutions belonging to streams the user excluded in Prioritization (step 2).
-            // Excluded streams should produce no recommendations anywhere.
+            // Build a map: streamName -> Set of gap-types the user marked (Remove)
+            // in the Step 2 Gap Sequencing table. Reads from FormStateManager
+            // (preferred) or the localStorage fallback that Prioritization writes
+            // to via savePrioritizationState().
+            //
+            // Note: FormStateManager.getData reads the server-rendered hidden
+            // form field first. For sample / saved reports that field carries a
+            // *legacy* shape ({ streams: [...] }) with no `gapPrioritization`
+            // array. We must fall through to localStorage in that case — that's
+            // where the user's client-side priority changes actually land.
+            function getRemovedGapsByStream() {
+                let priState = null;
+                try {
+                    if (typeof FormStateManager !== 'undefined') {
+                        priState = FormStateManager.getData('prioritizationState');
+                    }
+                    if (!priState || !Array.isArray(priState.gapPrioritization)) {
+                        const raw = localStorage.getItem('prioritizationState');
+                        if (raw) {
+                            const fromLocal = JSON.parse(raw);
+                            if (fromLocal && Array.isArray(fromLocal.gapPrioritization)) {
+                                priState = fromLocal;
+                            }
+                        }
+                    }
+                } catch (_) { priState = null; }
+
+                if (!priState || !Array.isArray(priState.gapPrioritization)) return new Map();
+                if (typeof RosraStateManager === 'undefined') return new Map();
+
+                // Map streamId -> streamName via RosraStateManager so we can match
+                // the streamName carried on each saved selection.
+                const idToName = new Map(RosraStateManager.getStreams().map(s => [s.id, s.name]));
+
+                const removed = new Map();
+                priState.gapPrioritization.forEach(entry => {
+                    const name = idToName.get(entry.streamId);
+                    if (!name || !Array.isArray(entry.currentSequence)) return;
+                    const removedTypes = new Set(
+                        entry.currentSequence
+                            .filter(seq => seq && seq.removed)
+                            .map(seq => seq.type)
+                            .filter(t => t && t !== 'Remove')
+                    );
+                    // Also infer "this gap-type isn't planned" from the active set:
+                    // a gap-type is removed if it doesn't appear in any non-removed slot.
+                    const activeTypes = new Set(
+                        entry.currentSequence
+                            .filter(seq => seq && !seq.removed && seq.type && seq.type !== 'Remove')
+                            .map(seq => seq.type)
+                    );
+                    ['Compliance', 'Coverage', 'Valuation', 'Liability'].forEach(t => {
+                        if (!activeTypes.has(t)) removedTypes.add(t);
+                    });
+                    removed.set(name, removedTypes);
+                });
+                return removed;
+            }
+
+            // Drop solutions belonging to streams the user excluded in Prioritization (step 2),
+            // OR whose gap-type was set to (Remove) in the Gap Sequencing table.
+            // Anything excluded at either level should produce no recommendations.
             function filterByIncludedStreams(solutions) {
                 if (!Array.isArray(solutions) || typeof RosraStateManager === 'undefined') return solutions || [];
                 const streams = RosraStateManager.getStreams();
                 if (!streams.length) return solutions;
+
                 const excludedNames = new Set(streams.filter(s => s.included === false).map(s => s.name));
-                if (excludedNames.size === 0) return solutions;
-                return solutions.filter(s => !excludedNames.has(s.streamName));
+                const removedGapsByStream = getRemovedGapsByStream();
+
+                if (excludedNames.size === 0 && removedGapsByStream.size === 0) return solutions;
+
+                return solutions.filter(s => {
+                    if (excludedNames.has(s.streamName)) return false;
+                    const removedSet = removedGapsByStream.get(s.streamName);
+                    // removedSet entries are lowercased; saved selectedSolutions
+                    // carry capitalised gapType (e.g. "Compliance"), so compare
+                    // case-insensitively to match the lowercase set.
+                    if (removedSet && s.gapType && removedSet.has(String(s.gapType).toLowerCase())) return false;
+                    return true;
+                });
             }
 
             // Load selected solutions from form field (primary) with localStorage fallback
@@ -1013,6 +1085,11 @@
                     contentType: contentType || 'application/octet-stream',
                     encoding: encoding || 'utf8'
                 };
+                // DownloadAttachment is now [Authorize] + [ValidateAntiForgeryToken] (audit F-21).
+                const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (tokenInput && tokenInput.value) {
+                    fields['__RequestVerificationToken'] = tokenInput.value;
+                }
                 for (const k in fields) {
                     const i = document.createElement('input');
                     i.type = 'hidden';
@@ -1216,6 +1293,12 @@
                 form.style.display = 'none';
 
                 const fields = { html: html, filename: filename };
+                // RenderReportPdf is now [Authorize] + [ValidateAntiForgeryToken] (audit F-9),
+                // so include the per-page antiforgery token rendered by the layout.
+                const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (tokenInput && tokenInput.value) {
+                    fields['__RequestVerificationToken'] = tokenInput.value;
+                }
                 for (const k in fields) {
                     const i = document.createElement('input');
                     i.type = 'hidden';

@@ -235,6 +235,25 @@ namespace RosraApp.Controllers
             return View(tabsViewModel);
         }
         
+        // Renders the Generic Stream partial server-side so newly-added streams use the
+        // exact same layout as saved/sample streams. Called by addNewStream() in JS.
+        [HttpGet]
+        public IActionResult RenderGenericStream(int streamIndex, string? subgroup, string? subtype, string? streamName, string? currencySymbol)
+        {
+            var stream = new GenericStreamViewModel
+            {
+                StreamIndex = streamIndex,
+                StreamId = $"stream{streamIndex}",
+                StreamName = string.IsNullOrWhiteSpace(streamName) ? "New Stream" : streamName,
+                Subgroup = subgroup,
+                Subtype = subtype,
+                LocalStreamName = string.IsNullOrWhiteSpace(streamName) ? null : streamName
+            };
+            ViewData["CurrencySymbol"] = string.IsNullOrEmpty(currencySymbol) ? "$" : currencySymbol;
+            ViewData["ViewMode"] = false;
+            return PartialView("_GapAnalysisGenericStream", stream);
+        }
+
         [HttpGet]
         public IActionResult NewReport()
         {
@@ -323,6 +342,83 @@ namespace RosraApp.Controllers
             SaveFormDataToSession(sampleData);
             TempData["ClearLocalStorage"] = true;
             return RedirectToAction("Index", new { viewMode = true });
+        }
+
+        // Saves the sample report the user is currently viewing as a new report
+        // owned by the signed-in user, then redirects them to edit their copy.
+        // Triggered from the "Save as my report" CTA on the recommendations step
+        // when viewMode=True and the report has no UserId (sample).
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> SaveAsMyReport()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var formData = GetFormDataFromSession();
+            if (formData == null)
+            {
+                TempData["ErrorMessage"] = "No sample data available to save. Please reopen the sample report and try again.";
+                return RedirectToAction("Index", "Dashboard");
+            }
+
+            RosraReport copy;
+
+            // Prefer copying from the DB row when the sample came from /Rosra/View/{id}
+            // — the session formData omits PeerSNGData / TopOsrConfigData / EstimatedBudget,
+            // so cloning the entity preserves those fields.
+            if (formData.PublicId != Guid.Empty)
+            {
+                var source = await _context.RosraReports.AsNoTracking()
+                    .FirstOrDefaultAsync(r => r.PublicId == formData.PublicId);
+
+                if (source != null && string.IsNullOrEmpty(source.UserId))
+                {
+                    copy = CloneSampleReport(source, user.Id);
+                }
+                else
+                {
+                    // Source missing or already owned — fall back to session data
+                    copy = CreateReportFromFormData(formData, null, user.Id);
+                }
+            }
+            else
+            {
+                // LoadSampleData flow: no DB row exists, use the in-memory form data
+                copy = CreateReportFromFormData(formData, null, user.Id);
+            }
+
+            // Strip a trailing "(Sample)" so the user's own copy isn't mislabelled
+            if (!string.IsNullOrWhiteSpace(copy.Title))
+            {
+                copy.Title = System.Text.RegularExpressions.Regex.Replace(
+                    copy.Title, @"\s*\(Sample\)\s*$", string.Empty,
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            }
+
+            try
+            {
+                _context.RosraReports.Add(copy);
+                await _context.SaveChangesAsync();
+
+                // Clear the sample-report flag so subsequent renders show normal edit CTAs
+                HttpContext.Session.Remove(IsSampleReportKey);
+                HttpContext.Session.Remove(RosraFormDataKey);
+                HttpContext.Session.Remove(VisitedTabsKey);
+                TempData["ClearLocalStorage"] = true;
+
+                TempData["SuccessMessage"] = "Sample report saved as your own. You can find it on your dashboard.";
+                return RedirectToAction("Index", "Dashboard");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to save sample as user's report");
+                TempData["ErrorMessage"] = "Failed to save report: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpPost]
@@ -443,8 +539,17 @@ namespace RosraApp.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> SaveReport(RosraFormViewModel formData, string DynamicCategoriesJson)
         {
+            // Resolve the caller up-front. We need the user identity to enforce
+            // ownership on existing reports (otherwise any authenticated user
+            // could overwrite anyone else's report by editing the hidden Id
+            // field — see F-1 in the security audit).
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null) return Forbid();
+            bool isAdmin = User.IsInRole("Admin");
+
             // Parse formatted number values
             decimal actualOsr = 0;
             decimal budgetedOsr = 0;
@@ -573,16 +678,8 @@ namespace RosraApp.Controllers
                 PeerSNGData = formData.PeerSNGData
             };
             
-            // Get current user
-            ApplicationUser? currentUser = null;
-            if (User.Identity != null && User.Identity.IsAuthenticated)
-            {
-                currentUser = await _userManager.GetUserAsync(User);
-                if (currentUser != null)
-                {
-                    report.UserId = currentUser.Id;
-                }
-            }
+            // currentUser was resolved at the top of the action — assign owner.
+            report.UserId = currentUser.Id;
 
             // Validate JSON fields before saving
             var jsonFields = new[] {
@@ -609,9 +706,30 @@ namespace RosraApp.Controllers
                 {
                     // Get the existing report
                     var existingReport = await _context.RosraReports.FindAsync(formData.Id);
-                    
+
                     if (existingReport != null)
                     {
+                        // Authorization: the caller must own the report, unless they're an admin.
+                        // The Id field is rendered as a hidden form input, so without this check
+                        // any authenticated user could overwrite any other user's report by
+                        // editing the field in DevTools. (Security audit F-1.)
+                        if (existingReport.UserId != currentUser.Id && !isAdmin)
+                        {
+                            return Forbid();
+                        }
+
+                        // Editing-window: only Draft and NeedsRevision are user-editable. Submitted /
+                        // UnderReview / Validated reports are locked to preserve the audit trail —
+                        // admins can still edit (e.g. to unlock-and-correct).
+                        var status = (Models.Enums.ReportStatus)existingReport.Status;
+                        bool editable = status == Models.Enums.ReportStatus.Draft
+                                     || status == Models.Enums.ReportStatus.NeedsRevision;
+                        if (!editable && !isAdmin)
+                        {
+                            TempData["ErrorMessage"] = "This report is locked and cannot be edited in its current status.";
+                            return RedirectToAction("Index");
+                        }
+
                         // Set concurrency token from form
                         if (!string.IsNullOrEmpty(formData.RowVersion))
                         {
@@ -620,7 +738,7 @@ namespace RosraApp.Controllers
                         }
 
                         // Track who modified the report
-                        existingReport.LastModifiedByUserId = currentUser?.Id;
+                        existingReport.LastModifiedByUserId = currentUser.Id;
 
                         // Update the existing report
                         existingReport.Title = formData.Title;
@@ -757,6 +875,13 @@ namespace RosraApp.Controllers
                     var existing = await _context.RosraReports.FindAsync(formData.Id);
                     if (existing == null)
                         return Json(new { success = false, message = "Report not found" });
+
+                    // Authorization: the caller must own the report (admins may auto-save any
+                    // report). Without this check the hidden Id field is enough for one
+                    // authenticated user to silently overwrite another's draft. (Audit F-2.)
+                    bool isAdmin = User.IsInRole("Admin");
+                    if (existing.UserId != currentUser.Id && !isAdmin)
+                        return Json(new { success = false, message = "Forbidden" });
 
                     // Only allow auto-save for Draft and NeedsRevision
                     var status = (Models.Enums.ReportStatus)existing.Status;
@@ -896,6 +1021,60 @@ namespace RosraApp.Controllers
             // Compute completion level on creation
             report.CompletionLevel = (int)Services.SubmissionService.ComputeCompletionLevel(report);
             return report;
+        }
+
+        // Clones a sample RosraReport (no UserId) into a new report owned by userId.
+        // Copies the already-serialized JSON columns directly so nothing is lost in
+        // a deserialize/reserialize round-trip.
+        private RosraReport CloneSampleReport(RosraReport source, string userId)
+        {
+            var clone = new RosraReport
+            {
+                Title = source.Title ?? "ROSRA Report",
+                Country = source.Country,
+                Region = source.Region,
+                City = source.City,
+                GovUnitLevel3 = source.GovUnitLevel3,
+                FinalUnitLevel = source.FinalUnitLevel,
+                Currency = source.Currency,
+                CurrencySymbol = source.CurrencySymbol,
+                FinancialYear = source.FinancialYear,
+                ActualOsr = source.ActualOsr,
+                BudgetedOsr = source.BudgetedOsr,
+                Population = source.Population,
+                GdpPerCapita = source.GdpPerCapita,
+                ProjectName = source.ProjectName,
+                EstimatedBudget = source.EstimatedBudget,
+                ProjectDescription = source.ProjectDescription,
+                KeyObjectives = source.KeyObjectives,
+                StartDate = source.StartDate,
+                EndDate = source.EndDate,
+                PropertyTaxData = source.PropertyTaxData,
+                LicenseData = source.LicenseData,
+                ShortTermUserChargeData = source.ShortTermUserChargeData,
+                LongTermUserChargeData = source.LongTermUserChargeData,
+                MixedUserChargeData = source.MixedUserChargeData,
+                TotalEstimateData = source.TotalEstimateData,
+                ProblemStatement = source.ProblemStatement,
+                RootCauses = source.RootCauses,
+                RecommendationSummary = source.RecommendationSummary,
+                ActionItems = source.ActionItems,
+                TopOsrConfigData = source.TopOsrConfigData,
+                GenericStreamsData = source.GenericStreamsData,
+                GovernmentType = source.GovernmentType,
+                IncomeLevel = source.IncomeLevel,
+                OtherRevenue = source.OtherRevenue,
+                PrioritizationData = source.PrioritizationData,
+                SelectedSolutionsData = source.SelectedSolutionsData,
+                ImplementationProgressData = source.ImplementationProgressData,
+                PeerSNGData = source.PeerSNGData,
+                CreatedAt = DateTime.UtcNow,
+                UserId = userId,
+                Status = (int)Models.Enums.ReportStatus.Draft
+            };
+
+            clone.CompletionLevel = (int)Services.SubmissionService.ComputeCompletionLevel(clone);
+            return clone;
         }
 
         [HttpGet]
@@ -1295,6 +1474,8 @@ namespace RosraApp.Controllers
         }
         
         [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public IActionResult ExportAnalysis(RosraFormViewModel formData)
         {
             // Save form data to session
@@ -1312,6 +1493,8 @@ namespace RosraApp.Controllers
         /// Export analysis report as PDF
         /// </summary>
         [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public IActionResult ExportPdf(RosraFormViewModel formData)
         {
             try
@@ -1355,6 +1538,7 @@ namespace RosraApp.Controllers
         /// Headless Chromium navigates to the actual print page, so all CSS/images/charts render properly.
         /// </summary>
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> PrintTopDown()
         {
             var data = GetFormDataFromSession();
@@ -1378,6 +1562,7 @@ namespace RosraApp.Controllers
         /// Internal HTML view for Playwright to navigate to (not exposed to users).
         /// </summary>
         [HttpGet]
+        [Authorize]
         public IActionResult PrintTopDownView()
         {
             var data = GetFormDataFromSession();
@@ -1389,6 +1574,7 @@ namespace RosraApp.Controllers
         /// Generates a PDF from the Full Report print view and returns it as a file download.
         /// </summary>
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> PrintFullReport()
         {
             var data = GetFormDataFromSession();
@@ -1412,6 +1598,7 @@ namespace RosraApp.Controllers
         /// Internal HTML view for Playwright to navigate to.
         /// </summary>
         [HttpGet]
+        [Authorize]
         public IActionResult PrintFullReportView()
         {
             var data = GetFormDataFromSession();
@@ -1423,6 +1610,7 @@ namespace RosraApp.Controllers
         /// Generates a PDF from the Bottom-Up print view and returns it as a file download.
         /// </summary>
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> PrintBottomUp()
         {
             var data = GetFormDataFromSession();
@@ -1446,6 +1634,7 @@ namespace RosraApp.Controllers
         /// Internal HTML view for Playwright to navigate to.
         /// </summary>
         [HttpGet]
+        [Authorize]
         public IActionResult PrintBottomUpView()
         {
             var data = GetFormDataFromSession();
@@ -1457,6 +1646,8 @@ namespace RosraApp.Controllers
         /// Export Top-Down Analysis only as a standalone PDF
         /// </summary>
         [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public IActionResult ExportTopDownPdf(RosraFormViewModel formData)
         {
             try
@@ -1500,6 +1691,8 @@ namespace RosraApp.Controllers
         /// Export analysis report as Excel (placeholder for future implementation)
         /// </summary>
         [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public IActionResult ExportExcel(RosraFormViewModel formData)
         {
             try
@@ -2300,10 +2493,16 @@ namespace RosraApp.Controllers
         }
 
         /// <summary>
-        /// Upload Peer SNG data from CSV for non-Kenya countries
-        /// Format: SNG,OSR,GCP,Population,Include or SNG,OSR,GCP (legacy)
+        /// Upload Peer SNG data from CSV for non-Kenya countries.
+        /// Admin-only and CSRF-protected — was previously anonymous, which let
+        /// anyone on the Internet replace the global benchmark dataset for any
+        /// country (audit F-4). Capped at 2 MB and ~10k rows.
+        /// Format: SNG,OSR,GCP,Population,Include or SNG,OSR,GCP (legacy).
         /// </summary>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        [RequestSizeLimit(2_000_000)]
         public async Task<IActionResult> UploadPeerSNGs([FromForm] IFormFile file, [FromForm] string countryCode)
         {
             try
@@ -2313,11 +2512,25 @@ namespace RosraApp.Controllers
                     return Json(new { success = false, message = "No file uploaded" });
                 }
 
+                // Content-type whitelist — refuse anything that obviously isn't a CSV.
+                // (Browsers vary on the exact value, so we accept the common variants.)
+                var ct = (file.ContentType ?? "").ToLowerInvariant();
+                bool isCsv = ct.Contains("csv") || ct == "application/vnd.ms-excel" || ct == "text/plain";
+                if (!isCsv)
+                {
+                    return Json(new { success = false, message = "Only CSV files are accepted" });
+                }
+
                 if (string.IsNullOrEmpty(countryCode) || countryCode.Length != 3)
                 {
                     return Json(new { success = false, message = "Valid 3-letter country code is required" });
                 }
+                if (!System.Text.RegularExpressions.Regex.IsMatch(countryCode, "^[A-Za-z]{3}$"))
+                {
+                    return Json(new { success = false, message = "Country code must be three letters" });
+                }
 
+                const int MaxRows = 10_000;
                 var peers = new List<PeerSNG>();
                 using (var reader = new StreamReader(file.OpenReadStream()))
                 {
@@ -2327,6 +2540,11 @@ namespace RosraApp.Controllers
                     {
                         var line = await reader.ReadLineAsync();
                         lineNumber++;
+
+                        if (peers.Count >= MaxRows)
+                        {
+                            return Json(new { success = false, message = $"File exceeds maximum of {MaxRows} rows" });
+                        }
 
                         if (string.IsNullOrWhiteSpace(line)) continue;
                         // Skip comment lines (template explanations, notes, etc.)
@@ -2407,17 +2625,26 @@ namespace RosraApp.Controllers
         }
 
         /// <summary>
-        /// Validate peer SNG data for client-side storage (no database write)
-        /// Data will be saved with the report in RosraReport.PeerSNGData
+        /// Validate peer SNG data for client-side storage (no database write).
+        /// Data will be saved with the report in RosraReport.PeerSNGData.
+        /// Requires authentication and a sane peer-array size (audit F-20).
         /// </summary>
         [HttpPost]
+        [Authorize]
         public IActionResult SavePeerSNGs([FromBody] SavePeerSNGsRequest request)
         {
+            const int MaxPeers = 200;
+
             try
             {
                 if (request == null || request.Peers == null || !request.Peers.Any())
                 {
                     return Json(new { success = false, message = "No peer data provided" });
+                }
+
+                if (request.Peers.Count > MaxPeers)
+                {
+                    return Json(new { success = false, message = $"Too many peers (max {MaxPeers})" });
                 }
 
                 if (string.IsNullOrEmpty(request.CountryCode) || request.CountryCode.Length != 3)
@@ -2507,14 +2734,22 @@ namespace RosraApp.Controllers
         }
 
         /// <summary>
-        /// Get Peer SNG Frontier Analysis with custom peers (POST version)
+        /// Get Peer SNG Frontier Analysis with custom peers (POST version).
+        /// Requires authentication and caps custom-peer arrays (audit F-20).
         /// </summary>
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> GetPeerSNGAnalysisWithCustomPeers([FromBody] PeerAnalysisRequest request)
         {
+            const int MaxCustomPeers = 200;
+
             if (request == null || string.IsNullOrEmpty(request.Sng))
             {
                 return Json(new { success = false, message = "Subnational Government is required" });
+            }
+            if (request.CustomPeers != null && request.CustomPeers.Count > MaxCustomPeers)
+            {
+                return Json(new { success = false, message = $"Too many custom peers (max {MaxCustomPeers})" });
             }
             return await PerformPeerSNGAnalysis(request.Sng, request.CountryCode, request.CustomPeers);
         }
@@ -2753,10 +2988,14 @@ namespace RosraApp.Controllers
         }
 
         /// <summary>
-        /// Reset Peers_SNG table to correct Excel data
-        /// Call this endpoint to fix corrupted peer data: /Rosra/ResetPeerSNGData
+        /// Reset Peers_SNG table to correct Excel data.
+        /// Admin-only and CSRF-protected — wipes the global peer benchmark
+        /// dataset and re-seeds it. Was previously a [HttpGet] without auth,
+        /// which made it a one-click DoS / data-corruption primitive (audit F-3).
         /// </summary>
-        [HttpGet]
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPeerSNGData()
         {
             try
@@ -2903,9 +3142,18 @@ namespace RosraApp.Controllers
         // server response with Content-Disposition: attachment, which browsers honor regardless
         // of "automatic downloads" / popup-blocker / extension settings that can silently drop
         // JS-initiated blob downloads.
+        //
+        // Hardened per audit F-21:
+        //  - [Authorize] (was anonymous — domain was abusable for malware/phishing hosting)
+        //  - [ValidateAntiForgeryToken] (was [IgnoreAntiforgeryToken])
+        //  - 5 MB cap (was 50 MB)
+        //  - Content-Type whitelist — refuse anything that could be served inline
+        //    by a browser (text/html, image/svg+xml, application/javascript, …),
+        //    which would otherwise turn the endpoint into a stored-XSS-on-trusted-domain.
         [HttpPost]
-        [IgnoreAntiforgeryToken]
-        [RequestSizeLimit(50_000_000)]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [RequestSizeLimit(5_000_000)]
         public IActionResult DownloadAttachment(string content, string filename, string contentType, string encoding = "utf8")
         {
             if (string.IsNullOrEmpty(content))
@@ -2930,21 +3178,56 @@ namespace RosraApp.Controllers
                 ? "rosra-action-plan"
                 : System.IO.Path.GetFileName(filename);
 
-            var safeContentType = string.IsNullOrWhiteSpace(contentType)
-                ? "application/octet-stream"
-                : contentType;
+            // Whitelist of safe content-types. The recommendations download flow
+            // produces plain HTML / Markdown / CSV / PDF — anything outside this
+            // set is rejected to prevent attacker-controlled content being served
+            // with a content-type that browsers render inline (e.g. image/svg+xml,
+            // application/javascript, text/html-without-charset).
+            //
+            // text/html is allowed because the front-end downloads the report as an
+            // .html file, but Content-Disposition: attachment (set by File()) keeps
+            // the browser from rendering it inline — and authentication is now
+            // required, so the attacker's own session is the only one that can
+            // bounce content through this endpoint.
+            var ct = (contentType ?? "").Split(';')[0].Trim().ToLowerInvariant();
+            var allowedTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "text/html",
+                "text/plain",
+                "text/csv",
+                "text/markdown",
+                "application/pdf",
+                "application/json",
+                "application/octet-stream"
+            };
+            if (string.IsNullOrEmpty(ct) || !allowedTypes.Contains(ct))
+            {
+                return BadRequest("Unsupported content type");
+            }
+
+            // Re-attach the original content-type plus charset (preserved from the
+            // input where present, otherwise utf-8) so the browser renders text correctly.
+            var safeContentType = (contentType ?? "").Contains("charset", StringComparison.OrdinalIgnoreCase)
+                ? contentType!
+                : ct + "; charset=utf-8";
 
             return File(bytes, safeContentType, safeName);
         }
 
         // Accepts a full standalone HTML document built client-side (Recommendations
-        // "Generate Report" modal) and renders it to PDF via headless Chromium. Replaces
-        // the old client-side html2pdf path, which produced blank captures in some browsers.
+        // "Generate Report" modal) and renders it to PDF via headless Chromium.
+        //
+        // Hardened per audit F-9:
+        //  - [Authorize] + [ValidateAntiForgeryToken] (was [AllowAnonymous] + [IgnoreAntiforgeryToken])
+        //  - 5 MB body cap (was 50 MB) — plenty for a self-contained HTML report
+        //  - HtmlToPdfService aborts every outbound network request, so a
+        //    payload like `<img src="http://169.254.169.254/...">` no longer
+        //    causes the headless browser to fetch attacker URLs (SSRF).
         [HttpPost]
-        [AllowAnonymous]
-        [IgnoreAntiforgeryToken]
-        [RequestSizeLimit(50_000_000)]
-        [RequestFormLimits(ValueLengthLimit = 50_000_000, MultipartBodyLengthLimit = 50_000_000)]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [RequestSizeLimit(5_000_000)]
+        [RequestFormLimits(ValueLengthLimit = 5_000_000, MultipartBodyLengthLimit = 5_000_000)]
         public async Task<IActionResult> RenderReportPdf(string html, string filename)
         {
             if (string.IsNullOrWhiteSpace(html))

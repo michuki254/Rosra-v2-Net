@@ -38,10 +38,10 @@
 
   <!-- Instructions -->
   <data name="Instructions_Title" xml:space="preserve"><value>Cómo utilizar este módulo</value></data>
-  <data name="Instructions_Step1" xml:space="preserve"><value>Revise la tabla de &lt;strong&gt;Priorización ajustable de flujos&lt;/strong&gt; que muestra todos los flujos de ingresos analizados, clasificados por brecha funcional total.</value></data>
-  <data name="Instructions_Step2" xml:space="preserve"><value>Utilice el menú desplegable &lt;strong&gt;Incluir/Excluir&lt;/strong&gt; para seleccionar qué flujos incluir en su plan de reforma.</value></data>
-  <data name="Instructions_Step3" xml:space="preserve"><value>Utilice el menú desplegable &lt;strong&gt;Ajustar rango&lt;/strong&gt; para modificar la clasificación predeterminada según las prioridades locales.</value></data>
-  <data name="Instructions_Step4" xml:space="preserve"><value>Consulte la tabla de &lt;strong&gt;Priorización final de flujos&lt;/strong&gt; para ver sus clasificaciones finalizadas y la participación en la brecha total.</value></data>
+  <data name="Instructions_Step1" xml:space="preserve"><value>Revise la tabla de &lt;strong&gt;Priorización de flujos&lt;/strong&gt; — los flujos vienen preclasificados por brecha funcional total y la columna &lt;strong&gt;Participación en la brecha&lt;/strong&gt; muestra el aporte de cada flujo al total.</value></data>
+  <data name="Instructions_Step2" xml:space="preserve"><value>Reordene los flujos arrastrando las filas con el manejador &lt;i class="bi bi-grip-vertical"&gt;&lt;/i&gt;, o utilice los botones &lt;i class="bi bi-arrow-up"&gt;&lt;/i&gt;/&lt;i class="bi bi-arrow-down"&gt;&lt;/i&gt; de la columna &lt;strong&gt;Mover&lt;/strong&gt;.</value></data>
+  <data name="Instructions_Step3" xml:space="preserve"><value>Use el selector de &lt;strong&gt;Estado&lt;/strong&gt; para incluir o excluir cada flujo — los flujos excluidos se eliminan automáticamente del ranking, la participación y el gráfico de barras.</value></data>
+  <data name="Instructions_Step4" xml:space="preserve"><value>Continúe al &lt;strong&gt;Paso 2 (Secuenciación de brechas)&lt;/strong&gt; para elegir un modo (Potencial de ingresos / Cumplimiento primero / Reforma) y seleccionar los tipos de brecha prioritarios por flujo, luego al &lt;strong&gt;Paso 3 (Principales brechas a abordar)&lt;/strong&gt; para ordenar por monto o puntaje de oportunidad.</value></data>
 
   <!-- Adjustable Stream Table -->
   <data name="AdjustableStream_Title" xml:space="preserve"><value>Priorización ajustable de flujos</value></data>
@@ -109,13 +109,13 @@
   <data name="GapSequencing_Col_Priority1" xml:space="preserve"><value>Prioridad 1</value></data>
   <data name="GapSequencing_Col_Priority2" xml:space="preserve"><value>Prioridad 2</value></data>
   <data name="GapSequencing_Col_Priority3" xml:space="preserve"><value>Prioridad 3</value></data>
-  <data name="GapSequencing_Tooltip_Rank" xml:space="preserve"><value>Rango final del flujo desde el paso 1</value></data>
+  <data name="GapSequencing_Tooltip_Rank" xml:space="preserve"><value>Rango final del flujo según la tabla de priorización de flujos</value></data>
   <data name="GapSequencing_Tooltip_Stream" xml:space="preserve"><value>Nombre del flujo de ingresos</value></data>
   <data name="GapSequencing_Tooltip_Mode" xml:space="preserve"><value>Modo de priorización basado en los ratios de indicadores clave</value></data>
   <data name="GapSequencing_Tooltip_Priority1" xml:space="preserve"><value>Primera brecha a abordar</value></data>
   <data name="GapSequencing_Tooltip_Priority2" xml:space="preserve"><value>Segunda brecha a abordar</value></data>
   <data name="GapSequencing_Tooltip_Priority3" xml:space="preserve"><value>Tercera brecha a abordar</value></data>
-  <data name="GapSequencing_Placeholder" xml:space="preserve"><value>Incluya flujos en el paso 1 para ver las opciones de priorización de brechas</value></data>
+  <data name="GapSequencing_Placeholder" xml:space="preserve"><value>Incluya flujos en la tabla de priorización de flujos anterior para ver las opciones de priorización de brechas</value></data>
 
   <!-- Gap Amounts Table -->
   <data name="GapAmounts_Title" xml:space="preserve"><value>Montos de brechas por prioridad</value></data>

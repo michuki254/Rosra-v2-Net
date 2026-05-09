@@ -34,6 +34,8 @@
 
   <!-- Intro Section -->
   <data name="Intro_Text" xml:space="preserve"><value>Remplissez les données requises pour chaque source de recettes propres. Ajoutez ou supprimez des sources selon votre contexte. Une fois toutes les données disponibles saisies, consultez l'onglet Priorisation pour voir les résultats principaux et commencer le séquençage des réformes.</value></data>
+  <data name="FinancialYear_Label" xml:space="preserve"><value>Exercice</value></data>
+  <data name="FinancialYear_Tooltip" xml:space="preserve"><value>L'exercice sélectionné dans l'Analyse Rapide. Tous les montants de cette page concernent cette période.</value></data>
 
   <!-- Tab Management -->
   <data name="RenameTab_Tooltip" xml:space="preserve"><value>Renommer cet onglet</value></data>

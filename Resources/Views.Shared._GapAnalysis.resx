@@ -34,6 +34,8 @@
 
   <!-- Intro Section -->
   <data name="Intro_Text" xml:space="preserve"><value>Fill in the requested inputs for each OSR stream. Add or remove streams as needed to match your context. Once you have entered all available data, go to the Prioritisation tab to see the headline results and start sequencing streams for reform planning.</value></data>
+  <data name="FinancialYear_Label" xml:space="preserve"><value>Financial Year</value></data>
+  <data name="FinancialYear_Tooltip" xml:space="preserve"><value>The financial year selected on the Quick Analysis. All monetary figures on this page are reported for this period.</value></data>
 
   <!-- Tab Management -->
   <data name="RenameTab_Tooltip" xml:space="preserve"><value>Rename this tab</value></data>

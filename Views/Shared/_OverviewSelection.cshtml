@@ -178,6 +178,13 @@
                             <span class="fw-bold">@Localizer["TotalSelected"]</span>
                             <span class="badge bg-success fs-6" id="totalSelected">0</span>
                         </div>
+                        <!-- Shortcut: jump straight to Recommendations.
+                             Hidden by default; revealed by updateProgress() once
+                             the active selection count crosses the threshold. -->
+                        <button type="button" class="btn btn-primary btn-sm w-100 mb-2" id="goToRecommendationsBtn" style="display:none;">
+                            <i class="bi bi-lightning-charge-fill me-1"></i>Go to Recommendations
+                            <i class="bi bi-arrow-right ms-1"></i>
+                        </button>
                         <button class="btn btn-outline-primary btn-sm w-100 mb-2" id="expandAllBtn">
                             <i class="bi bi-arrows-expand me-1"></i>@Localizer["ExpandAll"]
                         </button>
@@ -212,6 +219,42 @@
 </div>
 
 <style>
+    /* =========================================================
+       Theme overrides — replace Bootstrap's default sharp blue (#0d6efd)
+       with the UN-Habitat brand blue used across the rest of the app.
+       Scoped to .overview-selection-module so we don't affect anything else.
+       ========================================================= */
+    .overview-selection-module .bg-primary {
+        background-color: #00B2E3 !important;
+    }
+    .overview-selection-module .text-primary {
+        color: #00B2E3 !important;
+    }
+    .overview-selection-module .btn-primary {
+        background-color: #00B2E3;
+        border-color: #00B2E3;
+        color: #ffffff;
+    }
+    .overview-selection-module .btn-primary:hover,
+    .overview-selection-module .btn-primary:focus,
+    .overview-selection-module .btn-primary:active {
+        background-color: #0095C0;
+        border-color: #0095C0;
+        color: #ffffff;
+    }
+    .overview-selection-module .btn-outline-primary {
+        color: #00B2E3;
+        border-color: #00B2E3;
+    }
+    .overview-selection-module .btn-outline-primary:hover,
+    .overview-selection-module .btn-outline-primary:focus,
+    .overview-selection-module .btn-outline-primary:active {
+        background-color: #00B2E3;
+        border-color: #00B2E3;
+        color: #ffffff;
+    }
+    .overview-selection-module .spinner-border.text-primary { color: #00B2E3 !important; }
+
     /* =========================================================
        Personalise questionnaire (3-question filter for the 82 cards)
        ========================================================= */
@@ -938,6 +981,29 @@
         skipped: new Set()
     };
 
+    // The hidden form field rendered server-side from Model.SelectedSolutionsData.
+    // Treat it as authoritative for *this* report — when it's present-but-empty
+    // we must NOT fall through to localStorage, because localStorage may still
+    // hold selections from a previously-opened report (sample or otherwise) and
+    // those would be resurrected onto the wrong report, producing a phantom
+    // "Total Selected: N" badge with zero cards visibly selected.
+    function isAuthoritativeFormFieldEmpty() {
+        const fld = document.getElementById('selectedSolutionsData');
+        if (!fld) return false; // no field rendered → can't tell, allow fallback
+        const raw = (fld.value || '').trim();
+        if (raw === '') return true;
+        try {
+            const parsed = JSON.parse(raw);
+            const hasSelections = parsed && parsed.selections &&
+                ((Array.isArray(parsed.selections.selected) && parsed.selections.selected.length > 0) ||
+                 (Array.isArray(parsed.selections.skipped) && parsed.selections.skipped.length > 0));
+            const hasMaterialised = Array.isArray(parsed?.selectedSolutions) && parsed.selectedSolutions.length > 0;
+            return !hasSelections && !hasMaterialised;
+        } catch (e) {
+            return false;
+        }
+    }
+
     // Load selections from form field (primary) with localStorage fallback
     function loadSelections() {
         try {
@@ -951,8 +1017,16 @@
                 }
             }
 
-            // Fallback to localStorage for backward compatibility
-            if (selections.selected.size === 0 && selections.skipped.size === 0) {
+            // The server-rendered form field is the authoritative source for the
+            // current report. If it's explicitly empty, skip the localStorage and
+            // materialised-array fallbacks below — those would otherwise pull in
+            // stale selections from a previously-opened report and show a non-zero
+            // count with no matching highlighted cards.
+            const formFieldEmpty = isAuthoritativeFormFieldEmpty();
+
+            // Fallback to localStorage for backward compatibility (only when the
+            // server didn't ship an empty form field saying "no selections").
+            if (!formFieldEmpty && selections.selected.size === 0 && selections.skipped.size === 0) {
                 const saved = localStorage.getItem('rosraOverviewSelections');
                 if (saved) {
                     const data = JSON.parse(saved);
@@ -968,7 +1042,7 @@
             // Overview Selection shows 0 and the counts drift once the user
             // toggles anything. Reconstruct the ID set from the materialised
             // array when the primary store is empty.
-            if (selections.selected.size === 0 && selections.skipped.size === 0) {
+            if (!formFieldEmpty && selections.selected.size === 0 && selections.skipped.size === 0) {
                 try {
                     let materialised = null;
                     if (typeof FormStateManager !== 'undefined') {
@@ -990,6 +1064,16 @@
                 } catch (e) {
                     console.warn('OverviewSelection: Backfill from rosraSelectedSolutions failed:', e);
                 }
+            }
+
+            // If the authoritative form field said "empty" but localStorage still
+            // had stale data, scrub it so the next page load is clean and so other
+            // modules (Recommendations) reading the same key don't get confused.
+            if (formFieldEmpty) {
+                try {
+                    localStorage.removeItem('rosraOverviewSelections');
+                    localStorage.removeItem('rosraSelectedSolutions');
+                } catch (e) { /* ignore */ }
             }
         } catch (e) {
             console.error('Error loading selections:', e);
@@ -1484,6 +1568,11 @@
         // Render all streams
         container.innerHTML = streams.map(s => renderStreamSection(s)).join('');
 
+        // Apply filters immediately so gap-sections whose priority was removed
+        // in Step 2 (and any other current filter selections) are hidden from
+        // first paint instead of flashing in until the user touches a dropdown.
+        applyFilters();
+
         // Update progress
         updateProgress();
         updateSummary();
@@ -1536,16 +1625,51 @@
         card.replaceWith(newCard.firstElementChild);
     }
 
+    // Count solutions whose (stream, gap-type) is still active in Step 2's plan.
+    // Removed gaps don't count toward the visible "Selected" total because their
+    // cards are hidden — counting them produces a confusing mismatch between
+    // the badge and the cards on screen.
+    //
+    // Note on field names: SolutionsDatabase entries expose `stream` and `gap`,
+    // while the saved-selections records (used by Recommendations) carry the
+    // longer `streamName` / `gapType` keys. Read both forms for safety.
+    function countActiveSelected() {
+        const removedGapsByStream = getRemovedGapsByStream();
+        if (removedGapsByStream.size === 0) return selections.selected.size;
+        let count = 0;
+        selections.selected.forEach(id => {
+            const sol = SolutionsDatabase.getSolutionById(id);
+            if (!sol) return;
+            const streamName = sol.streamName || sol.stream;
+            const gapType    = (sol.gap || sol.gapType || '').toLowerCase();
+            const removedSet = removedGapsByStream.get(streamName);
+            if (removedSet && removedSet.has(gapType)) return;
+            count++;
+        });
+        return count;
+    }
+
     // Update progress stats
     function updateProgress() {
         const total = SolutionsDatabase.getAllSolutions().length;
         const reviewed = selections.selected.size + selections.skipped.size;
+        const activeSelected = countActiveSelected();
 
         document.getElementById('progressTotal').textContent = total;
         document.getElementById('progressReviewed').textContent = reviewed;
-        document.getElementById('progressSelected').textContent = selections.selected.size;
+        document.getElementById('progressSelected').textContent = activeSelected;
         document.getElementById('progressSkipped').textContent = selections.skipped.size;
-        document.getElementById('totalSelected').textContent = selections.selected.size;
+        document.getElementById('totalSelected').textContent = activeSelected;
+
+        // Reveal the "Go to Recommendations" shortcut once the user has built up
+        // a non-trivial selection (5+ active picks). Below that threshold the
+        // bottom Next-step button is right there anyway, so the shortcut is
+        // hidden to keep the sidebar uncluttered.
+        const gotoBtn = document.getElementById('goToRecommendationsBtn');
+        if (gotoBtn) {
+            gotoBtn.style.display = activeSelected >= 5 ? '' : 'none';
+            gotoBtn.innerHTML = `<i class="bi bi-lightning-charge-fill me-1"></i>Go to Recommendations (${activeSelected})<i class="bi bi-arrow-right ms-1"></i>`;
+        }
     }
 
     // Update summary sidebar
@@ -1558,33 +1682,48 @@
             return;
         }
 
+        // Honour Step 2 (Remove) decisions — gap-types removed from a stream's
+        // plan should not appear in this sidebar (mirrors the cards filter).
+        const removedGapsByStream = getRemovedGapsByStream();
+        const isGapRemoved = (streamName, gapType) => {
+            const set = removedGapsByStream.get(streamName);
+            return !!(set && set.has((gapType || '').toLowerCase()));
+        };
+
         let html = '';
         streams.forEach(stream => {
-            const streamSolutions = SolutionsDatabase.getSolutionsByStream(stream.name, stream.subgroup);
+            // Gaps for this stream that survive the (Remove) filter
+            const activeGaps = stream.gaps.filter(g => !isGapRemoved(stream.name, g.type));
+            if (activeGaps.length === 0) return; // entire stream's plan was removed
+
+            // Only count selections that still belong to an active gap-type
+            const activeGapNames = new Set(activeGaps.map(g => g.type.toLowerCase()));
+            const streamSolutions = SolutionsDatabase
+                .getSolutionsByStream(stream.name, stream.subgroup)
+                .filter(s => activeGapNames.has((s.gap || '').toLowerCase()));
             const selectedInStream = streamSolutions.filter(s => selections.selected.has(s.solutionId));
+            if (selectedInStream.length === 0) return;
 
-            if (selectedInStream.length > 0) {
-                html += `<div class="summary-stream">`;
-                html += `<div class="summary-stream-name">${stream.name}</div>`;
+            html += `<div class="summary-stream">`;
+            html += `<div class="summary-stream-name">${stream.name}</div>`;
 
-                stream.gaps.forEach(gap => {
-                    const gapSolutions = SolutionsDatabase.getSolutionsByStreamAndGap(stream.name, gap.type, stream.subgroup);
-                    const selectedInGap = gapSolutions.filter(s => selections.selected.has(s.solutionId));
-                    const gapColor = SolutionsDatabase.getGapColor(gap.type);
+            activeGaps.forEach(gap => {
+                const gapSolutions = SolutionsDatabase.getSolutionsByStreamAndGap(stream.name, gap.type, stream.subgroup);
+                const selectedInGap = gapSolutions.filter(s => selections.selected.has(s.solutionId));
+                const gapColor = SolutionsDatabase.getGapColor(gap.type);
 
-                    html += `
-                        <div class="summary-gap">
-                            <span><i class="bi bi-check-circle-fill" style="color: ${gapColor}"></i>${gap.type}:</span>
-                            <span>${selectedInGap.length} of ${gapSolutions.length}</span>
-                        </div>
-                    `;
-                });
+                html += `
+                    <div class="summary-gap">
+                        <span><i class="bi bi-check-circle-fill" style="color: ${gapColor}"></i>${gap.type}:</span>
+                        <span>${selectedInGap.length} of ${gapSolutions.length}</span>
+                    </div>
+                `;
+            });
 
-                html += '</div>';
-            }
+            html += '</div>';
         });
 
-        summaryEl.innerHTML = html;
+        summaryEl.innerHTML = html || '<p class="text-muted small">@Localizer["NoSolutions"]</p>';
     }
 
     // Update hidden form fields
@@ -1658,10 +1797,71 @@
         return true;
     }
 
+    // Build a Map<streamName, Set<lowercase gap-type>> of gaps the user marked
+    // (Remove) in Step 2 Gap Sequencing. Reads from FormStateManager (preferred)
+    // or the localStorage fallback that Prioritization writes to via
+    // savePrioritizationState(). Used by applyFilters() to drop matching cards.
+    //
+    // Note: FormStateManager.getData reads the server-rendered hidden form field
+    // first. For sample / saved reports that field carries a *legacy* shape
+    // ({ streams: [...] }) with no `gapPrioritization` array. We must fall
+    // through to localStorage in that case — that's where the user's
+    // client-side priority changes actually land.
+    function getRemovedGapsByStream() {
+        let priState = null;
+        try {
+            if (typeof FormStateManager !== 'undefined') {
+                priState = FormStateManager.getData('prioritizationState');
+            }
+            if (!priState || !Array.isArray(priState.gapPrioritization)) {
+                const raw = localStorage.getItem('prioritizationState');
+                if (raw) {
+                    const fromLocal = JSON.parse(raw);
+                    if (fromLocal && Array.isArray(fromLocal.gapPrioritization)) {
+                        priState = fromLocal;
+                    }
+                }
+            }
+        } catch (_) { priState = null; }
+
+        if (!priState || !Array.isArray(priState.gapPrioritization)) return new Map();
+        if (typeof RosraStateManager === 'undefined') return new Map();
+
+        // streamId -> streamName lookup so we can match by name in the DOM.
+        const idToName = new Map(RosraStateManager.getStreams().map(s => [s.id, s.name]));
+
+        const removed = new Map();
+        priState.gapPrioritization.forEach(entry => {
+            const name = idToName.get(entry.streamId);
+            if (!name || !Array.isArray(entry.currentSequence)) return;
+
+            const explicitlyRemoved = new Set(
+                entry.currentSequence
+                    .filter(seq => seq && seq.removed)
+                    .map(seq => (seq.type || '').toLowerCase())
+                    .filter(t => t && t !== 'remove')
+            );
+            // A gap-type with no active slot is also effectively removed
+            // (handles the "all 3 priorities = (Remove)" case where the type
+            // never appears in currentSequence at all).
+            const activeTypes = new Set(
+                entry.currentSequence
+                    .filter(seq => seq && !seq.removed && seq.type && seq.type !== 'Remove')
+                    .map(seq => seq.type.toLowerCase())
+            );
+            ['compliance', 'coverage', 'valuation', 'liability'].forEach(t => {
+                if (!activeTypes.has(t)) explicitlyRemoved.add(t);
+            });
+            removed.set(name, explicitlyRemoved);
+        });
+        return removed;
+    }
+
     function applyFilters() {
         const streamFilter = document.getElementById('filterStream').value;
         const gapFilter = document.getElementById('filterGap').value;
         const timelineFilter = document.getElementById('filterTimeline').value;
+        const removedGapsByStream = getRemovedGapsByStream();
 
         // Filter solution cards (combined: existing dropdowns + personalise questionnaire)
         document.querySelectorAll('.solution-card').forEach(card => {
@@ -1671,12 +1871,18 @@
             card.style.display = (matchesTimeline && matchesPersonalise) ? '' : 'none';
         });
 
-        // Filter gap sections — also hide if no visible cards remain inside
+        // Filter gap sections — also hide if no visible cards remain inside,
+        // OR if this stream/gap-type combination was set to (Remove) in Step 2.
         document.querySelectorAll('.gap-section').forEach(section => {
             const gapType = section.dataset.gapType;
+            const streamSection = section.closest('.stream-section');
+            const streamName = streamSection ? streamSection.dataset.stream : null;
+            const removedSet = streamName ? removedGapsByStream.get(streamName) : null;
+            const isRemovedByPriority = !!(removedSet && removedSet.has(gapType));
+
             const matchesGap = gapFilter === 'all' || gapType === gapFilter;
             const visibleCards = section.querySelectorAll('.solution-card:not([style*="display: none"])').length;
-            section.style.display = (matchesGap && visibleCards > 0) ? '' : 'none';
+            section.style.display = (matchesGap && visibleCards > 0 && !isRemovedByPriority) ? '' : 'none';
         });
 
         // Filter stream sections — also hide if no visible gap sections
@@ -1816,6 +2022,29 @@
         loadSelections();
         renderSolutions();
 
+        // Skip the "Personalise these recommendations" questionnaire when there's
+        // nothing to personalise from — i.e. we're viewing an existing report.
+        // Either:
+        //   - the page is in view-only mode (sample report or a saved report
+        //     opened via /Rosra/View/{id}), OR
+        //   - the user has already made selection/skip decisions on this report.
+        // In either case the questionnaire would be redundant — go straight to
+        // the cards.
+        const isExistingReport =
+            (window.isViewMode === true) ||
+            (selections.selected && selections.selected.size > 0) ||
+            (selections.skipped  && selections.skipped.size  > 0);
+        if (isExistingReport) {
+            const personaliseCard = document.getElementById('personaliseCard');
+            if (personaliseCard) personaliseCard.style.display = 'none';
+            const cardsSection = document.getElementById('overviewCardsSection');
+            if (cardsSection) cardsSection.style.display = '';
+            // No personalise filter active — leave `personalise` null so all
+            // cards are visible (subject to the existing stream/gap/timeline
+            // filter dropdowns).
+            personalise = null;
+        }
+
         // Filter event listeners
         document.getElementById('filterStream').addEventListener('change', applyFilters);
         document.getElementById('filterGap').addEventListener('change', applyFilters);
@@ -1860,6 +2089,26 @@
         document.getElementById('clearSelections').addEventListener('click', clearAllSelections);
         document.getElementById('expandAllBtn').addEventListener('click', expandAllCards);
         document.getElementById('collapseAllBtn').addEventListener('click', collapseAllCards);
+
+        // "Go to Recommendations" shortcut — reuse the bottom Next-step button's
+        // tab-switch handler when it's present (handles edit and view modes via
+        // the form POST). Otherwise fall back to a direct GET so it still works
+        // on stripped-down or stand-alone renders.
+        var gotoBtn = document.getElementById('goToRecommendationsBtn');
+        if (gotoBtn) {
+            gotoBtn.addEventListener('click', function () {
+                var bottomNext = document.getElementById('bottomNextStepBtn');
+                if (bottomNext && bottomNext.getAttribute('data-next-tab-id') === 'recommendations') {
+                    bottomNext.click();
+                    return;
+                }
+                // Build a same-path URL with the tab/umbrella query params flipped
+                var url = new URL(window.location.href);
+                url.searchParams.set('activeTab', 'recommendations');
+                url.searchParams.set('umbrellaTab', 'bottom-up');
+                window.location.href = url.toString();
+            });
+        }
 
         // Subscribe to RosraStateManager updates
         if (typeof RosraStateManager !== 'undefined') {

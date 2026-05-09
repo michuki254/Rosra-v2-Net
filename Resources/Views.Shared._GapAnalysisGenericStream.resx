@@ -133,4 +133,25 @@
   <!-- Breakdown Pie Chart -->
   <data name="BreakdownAdminGaps" xml:space="preserve"><value>Breakdown of Administrative Gaps</value></data>
   <data name="BreakdownPieChartDescription" xml:space="preserve"><value>This pie chart illustrates the percentage distribution of the revenue gaps. It visually shows the contribution of each type of gap to the total uncollected revenue, helping to identify which gaps are the most significant.</value></data>
+
+  <!-- Headline KPI card (Total Revenue Gap, sits at the top of the right panel) -->
+  <data name="KpiHeadline_AriaLabel" xml:space="preserve"><value>Total revenue gap</value></data>
+  <data name="KpiHeadline_Eyebrow" xml:space="preserve"><value>HEADLINE METRIC</value></data>
+  <data name="KpiHeadline_Title" xml:space="preserve"><value>Total Revenue Gap</value></data>
+  <data name="KpiHeadline_OfPotential" xml:space="preserve"><value>of potential</value></data>
+  <data name="KpiHeadline_Collected" xml:space="preserve"><value>of potential collected</value></data>
+  <data name="KpiHeadline_Potential" xml:space="preserve"><value>Potential:</value></data>
+
+  <!-- Matrix y-axis methodology tooltips (audit trail for derived counts) -->
+  <data name="Matrix_Estimated_Tooltip" xml:space="preserve"><value>Estimated = Registered × (1 + Est. % Unregistered ÷ 100). The % is applied to the Registered count, not to a total population. If your survey gives % of TOTAL units, the registered count must be re-derived first.</value></data>
+  <data name="Matrix_Registered_Tooltip" xml:space="preserve"><value>Registered = the value you entered above. Direct user input — no calculation.</value></data>
+  <data name="Matrix_Compliant_Tooltip" xml:space="preserve"><value>Compliant = Registered × (Revenue to date ÷ Billed Amount). The collection rate this period applied to the registered base. Assumes the bills that were paid were billed correctly.</value></data>
+
+  <!-- "Mixed" cell tooltips — explains why the cell isn't a double-count of Coverage/Compliance + Liability -->
+  <data name="MixedGapCovLiab_Tooltip" xml:space="preserve"><value>COMPOUND gap: units that are BOTH unregistered AND would owe more at statutory rates. Captured only by doing BOTH: (1) registering them, AND (2) raising their bills to statutory. Formula: (Estimated − Registered) × (Achievable Avg − Avg Billed). It's not double-counted with Coverage or Liability — those isolate one effect at a time; this is the cross-term.</value></data>
+  <data name="MixedGapCompLiab_Tooltip" xml:space="preserve"><value>COMPOUND gap: registered units that are BOTH non-compliant AND would owe more at statutory rates. Captured only by doing BOTH: (1) getting them to pay, AND (2) raising their bills to statutory. Formula: (Registered − Compliant) × (Achievable Avg − Avg Billed). It's not double-counted with Compliance or Liability — those isolate one effect at a time; this is the cross-term.</value></data>
+
+  <!-- Note under the bar chart explaining how to read the two bars -->
+  <data name="RgStackNote_Heading" xml:space="preserve"><value>How to read the two bars:</value></data>
+  <data name="RgStackNote_Body" xml:space="preserve"><value>Bar 1 is what you've already collected. Bar 2 is your realistic target at the Realistic Improvement % you entered above — closing the gap to bar 2 is the actionable reform plan, and the headline KPI uses this number.</value></data>
 </root>

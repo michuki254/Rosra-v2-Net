@@ -34,6 +34,8 @@
 
   <!-- Intro Section -->
   <data name="Intro_Text" xml:space="preserve"><value>Complete los datos requeridos para cada fuente de ingresos propios. Agregue o elimine fuentes según su contexto. Una vez ingresados todos los datos disponibles, consulte la pestaña de Priorización para ver los resultados principales y comenzar la secuenciación de las reformas.</value></data>
+  <data name="FinancialYear_Label" xml:space="preserve"><value>Año fiscal</value></data>
+  <data name="FinancialYear_Tooltip" xml:space="preserve"><value>El año fiscal seleccionado en el Análisis Rápido. Todas las cifras monetarias de esta página corresponden a este período.</value></data>
 
   <!-- Tab Management -->
   <data name="RenameTab_Tooltip" xml:space="preserve"><value>Renombrar esta pestaña</value></data>

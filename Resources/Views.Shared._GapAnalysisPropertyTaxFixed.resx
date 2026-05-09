@@ -145,4 +145,25 @@
 
   <!-- Common -->
   <data name="Description_Label" xml:space="preserve"><value>DESCRIPTION:</value></data>
+
+  <!-- Headline KPI card (Total Revenue Gap, sits at the top of the right panel) -->
+  <data name="KpiHeadline_AriaLabel" xml:space="preserve"><value>Total revenue gap</value></data>
+  <data name="KpiHeadline_Eyebrow" xml:space="preserve"><value>HEADLINE METRIC</value></data>
+  <data name="KpiHeadline_Title" xml:space="preserve"><value>Total Revenue Gap</value></data>
+  <data name="KpiHeadline_OfPotential" xml:space="preserve"><value>of potential</value></data>
+  <data name="KpiHeadline_Collected" xml:space="preserve"><value>of potential collected</value></data>
+  <data name="KpiHeadline_Potential" xml:space="preserve"><value>Potential:</value></data>
+
+  <!-- Matrix y-axis methodology tooltips (audit trail for derived counts) -->
+  <data name="Matrix_Estimated_Tooltip" xml:space="preserve"><value>Estimated = Registered + Non-registered. Both values come directly from your inputs above (cadastre or survey data) — additive, not derived from a percentage.</value></data>
+  <data name="Matrix_Registered_Tooltip" xml:space="preserve"><value>Registered = the value you entered above. Direct user input — no calculation.</value></data>
+  <data name="Matrix_Compliant_Tooltip" xml:space="preserve"><value>Compliant = Registered × (Revenue to date ÷ Billed Amount). The collection rate this period applied to the registered base. Assumes the bills that were paid were billed correctly.</value></data>
+
+  <!-- "Mixed" cell tooltips — explains why these aren't double-counted with Coverage/Compliance + Valuation -->
+  <data name="Matrix_MixedGapUnreg_Tooltip" xml:space="preserve"><value>COMPOUND gap: properties that are BOTH unregistered AND would owe more if revalued at market. Captured only by doing BOTH: (1) adding them to the register, AND (2) revaluing at market. Formula: (Estimated − Registered) × (Potential billing − Avg billed). It's not double-counted with Coverage or Valuation — those isolate one effect at a time; this is the cross-term.</value></data>
+  <data name="Matrix_MixedGapReg_Tooltip" xml:space="preserve"><value>COMPOUND gap: registered but non-compliant properties that are ALSO under-valued. Captured only by doing BOTH: (1) collecting from non-payers, AND (2) revaluing at market. Formula: (Registered − Compliant) × (Potential billing − Avg billed). It's not double-counted with Compliance or Valuation — those isolate one effect at a time; this is the cross-term.</value></data>
+
+  <!-- Note under the bar chart explaining why Property Tax shows 2 bars instead of 3 -->
+  <data name="RgStackNote_Heading" xml:space="preserve"><value>Why only 2 bars here?</value></data>
+  <data name="RgStackNote_Body" xml:space="preserve"><value>Property Tax has no Realistic Improvement % input — its potential is anchored directly to market value, which is a hard ceiling. So there is no realistic-vs-theoretical split to show (as in Business License or other streams with a rate-uplift lever). The Potential bar above already represents the unconstrained ceiling.</value></data>
 </root>

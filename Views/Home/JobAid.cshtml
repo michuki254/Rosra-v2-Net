@@ -10,11 +10,26 @@
 
         /* ── Page Header ── */
         .guide-hero {
-            background: #00689D;
+            background: linear-gradient(135deg, #00689D 0%, #0095C0 60%, #00B2E3 100%);
             color: white;
-            padding: 3rem 0;
+            padding: 3.25rem 0 3rem;
             margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
         }
+
+        /* Subtle dot grid behind the hero copy — keeps it modern without being noisy */
+        .guide-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px);
+            background-size: 22px 22px;
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        .guide-hero > .container { position: relative; z-index: 1; }
 
         .guide-hero h1 {
             font-size: 2.25rem;
@@ -26,6 +41,7 @@
             font-size: 1.1rem;
             opacity: 0.9;
             margin-bottom: 0;
+            max-width: 720px;
         }
 
         .guide-hero .badge-version {
@@ -438,6 +454,121 @@
             margin: 0.85rem 0;
         }
 
+        /* ── Approach comparison cards (Quick Estimate vs Detailed Diagnostic) ── */
+        .approach-compare {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .approach-card {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1.25rem 1.25rem 1.1rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .approach-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        }
+
+        .approach-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: #00689D;
+        }
+
+        .approach-card--macro::before { background: #00689D; }
+        .approach-card--micro::before { background: #00B2E3; }
+
+        .approach-card-head {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .approach-card-head i {
+            font-size: 1.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .approach-card--macro .approach-card-head i { background: #00689D; }
+        .approach-card--micro .approach-card-head i { background: #00B2E3; }
+
+        .approach-card-tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+            color: #868e96;
+            margin-bottom: 0.1rem;
+        }
+
+        .approach-card h4 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #212529;
+            margin: 0;
+        }
+
+        .approach-card-lede {
+            font-size: 0.9rem;
+            color: #495057;
+            line-height: 1.55;
+            margin: 0 0 0.85rem;
+        }
+
+        .approach-card-meta {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border-top: 1px solid #f1f3f5;
+            padding-top: 0.75rem;
+        }
+
+        .approach-card-meta li {
+            font-size: 0.825rem;
+            color: #495057;
+            padding: 0.2rem 0;
+        }
+
+        .approach-card-meta strong {
+            color: #343a40;
+            font-weight: 600;
+        }
+
+        /* ── Section subtag (small pill next to h2 for "macro view" / "micro view") ── */
+        .section-subtag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+            background: #e7f5ff;
+            color: #00689D;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            margin-left: 0.4rem;
+            white-space: nowrap;
+            align-self: center;
+        }
+
         /* ── Print Button ── */
         .btn-print-guide {
             background: white;
@@ -504,8 +635,8 @@
                         <a href="#getting-started" class="toc-link"><i class="bi bi-rocket-takeoff"></i> Getting Started</a>
                         <a href="#navigation" class="toc-link"><i class="bi bi-compass"></i> Navigation</a>
                         <a href="#creating-report" class="toc-link"><i class="bi bi-file-earmark-plus"></i> Creating a Report</a>
-                        <a href="#top-down" class="toc-link"><i class="bi bi-lightning"></i> Top-Down Approach</a>
-                        <a href="#bottom-up" class="toc-link"><i class="bi bi-diagram-3"></i> Bottom-Up Approach</a>
+                        <a href="#quick-estimate" class="toc-link"><i class="bi bi-binoculars"></i> Quick Estimate <small class="text-muted">(macro)</small></a>
+                        <a href="#detailed-diagnostic" class="toc-link"><i class="bi bi-zoom-in"></i> Detailed Diagnostic <small class="text-muted">(micro)</small></a>
                         <div class="toc-sub">
                             <a href="#step1-gap" class="toc-link"><i class="bi bi-1-circle"></i> Gap Analysis</a>
                             <a href="#step2-prioritize" class="toc-link"><i class="bi bi-2-circle"></i> Prioritization</a>
@@ -689,42 +820,70 @@
                 </table>
 
                 <h3>Choosing an Approach</h3>
-                <p>ROSRA offers two analytical approaches. Click the corresponding tab at the top of the editor:</p>
-                <table class="guide-table">
-                    <thead>
-                        <tr><th>Approach</th><th>Best For</th><th>Detail Level</th><th>Estimated Time</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Top-Down</strong></td>
-                            <td>Quick estimates, initial assessments</td>
-                            <td>High-level</td>
-                            <td>15&ndash;30 minutes</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Bottom-Up</strong></td>
-                            <td>Detailed diagnostics, reform planning</td>
-                            <td>Granular, stream-by-stream</td>
-                            <td>1&ndash;3 hours</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <p>
+                    ROSRA offers two analytical approaches that work at different levels of detail.
+                    Pick the one that matches the question you need to answer &mdash; or use both in
+                    the same report. Click the corresponding tab at the top of the editor.
+                </p>
+                <div class="approach-compare">
+                    <div class="approach-card approach-card--macro">
+                        <div class="approach-card-head">
+                            <i class="bi bi-binoculars"></i>
+                            <div>
+                                <span class="approach-card-tag">Macro view</span>
+                                <h4>Quick Estimate</h4>
+                            </div>
+                        </div>
+                        <p class="approach-card-lede">
+                            A high-altitude OSR potential estimate built from aggregate data and
+                            peer benchmarks &mdash; the answer to <em>"how much revenue could we
+                            theoretically be collecting?"</em>
+                        </p>
+                        <ul class="approach-card-meta">
+                            <li><strong>Best for:</strong> initial scoping, leadership briefings</li>
+                            <li><strong>Detail level:</strong> aggregate / headline</li>
+                            <li><strong>Typical time:</strong> 15&ndash;30 minutes</li>
+                        </ul>
+                    </div>
+                    <div class="approach-card approach-card--micro">
+                        <div class="approach-card-head">
+                            <i class="bi bi-zoom-in"></i>
+                            <div>
+                                <span class="approach-card-tag">Micro view</span>
+                                <h4>Detailed Diagnostic</h4>
+                            </div>
+                        </div>
+                        <p class="approach-card-lede">
+                            A stream-by-stream diagnostic that decomposes the revenue gap into its
+                            specific drivers &mdash; the answer to <em>"where exactly is each shilling
+                            slipping through, and what should we do about it?"</em>
+                        </p>
+                        <ul class="approach-card-meta">
+                            <li><strong>Best for:</strong> reform planning, technical analysis</li>
+                            <li><strong>Detail level:</strong> granular, per stream &amp; gap-type</li>
+                            <li><strong>Typical time:</strong> 1&ndash;3 hours</li>
+                        </ul>
+                    </div>
+                </div>
             </section>
 
-            <!-- 5. Top-Down Approach -->
-            <section id="top-down" class="guide-section">
+            <!-- 5. Quick Estimate (formerly Top-Down) -->
+            <section id="quick-estimate" class="guide-section">
                 <h2>
-                    <span class="section-icon"><i class="bi bi-lightning"></i></span>
-                    Top-Down Approach (Quick Estimate)
+                    <span class="section-icon"><i class="bi bi-binoculars"></i></span>
+                    Quick Estimate <span class="section-subtag">macro view</span>
                 </h2>
                 <p>
-                    The Top-Down approach provides a rapid OSR potential estimate based on aggregate data and
-                    peer benchmarking against comparable subnational governments.
+                    The <strong>Quick Estimate</strong> gives you a fast, high-altitude read on how
+                    much own-source revenue your jurisdiction <em>could</em> be collecting. It works
+                    from aggregate inputs &mdash; population, GDP per capita, current OSR &mdash; and
+                    benchmarks them against comparable subnational governments. Think of it as the
+                    headline number you'd put in a briefing slide before any deep analysis.
                 </p>
 
                 <h3>How to Use</h3>
                 <ol>
-                    <li>Navigate to the <strong>Top-Down</strong> tab.</li>
+                    <li>Navigate to the <strong>Quick Estimate</strong> tab.</li>
                     <li>Fill in the <strong>Project Details</strong>:
                         <ul>
                             <li>Project Name, Description, and Key Objectives</li>
@@ -736,7 +895,7 @@
                     <li>Review the estimated revenue potential and gap summary.</li>
                 </ol>
 
-                <h3>When to Use Top-Down</h3>
+                <h3>When to Use the Quick Estimate</h3>
                 <ul>
                     <li>Initial scoping before a detailed study</li>
                     <li>Briefing senior officials on overall revenue gaps</li>
@@ -745,15 +904,19 @@
                 </ul>
             </section>
 
-            <!-- 6. Bottom-Up Approach -->
-            <section id="bottom-up" class="guide-section">
+            <!-- 6. Detailed Diagnostic (formerly Bottom-Up) -->
+            <section id="detailed-diagnostic" class="guide-section">
                 <h2>
-                    <span class="section-icon"><i class="bi bi-diagram-3"></i></span>
-                    Bottom-Up Approach (Detailed Analysis)
+                    <span class="section-icon"><i class="bi bi-zoom-in"></i></span>
+                    Detailed Diagnostic <span class="section-subtag">micro view</span>
                 </h2>
                 <p>
-                    The Bottom-Up approach follows a structured <strong>4-step pipeline</strong> for comprehensive
-                    revenue diagnostics and reform planning.
+                    The <strong>Detailed Diagnostic</strong> drops down from the headline number into
+                    the mechanics. For each revenue stream you enter the underlying inputs, and ROSRA
+                    decomposes the revenue gap into its specific drivers &mdash; <em>are people not
+                    registered, not paying, under-valued, or under-charged?</em> &mdash; then walks
+                    you through a structured <strong>4-step pipeline</strong> from diagnosis to a
+                    concrete reform plan.
                 </p>
 
                 <!-- Step 1 -->
@@ -856,19 +1019,38 @@
 
                 <!-- Step 3 -->
                 <div id="step3-solutions" class="step-card">
-                    <h4><span class="step-number">3</span> Overview & Solutions Selection</h4>
+                    <h4><span class="step-number">3</span> Overview &amp; Solution Selection</h4>
                     <p>Connect your diagnostic findings to proven reform interventions:</p>
                     <ol>
-                        <li>For each prioritized stream, the system shows relevant solutions organized by gap type (Compliance, Coverage, Valuation, Liability).</li>
-                        <li>Solutions are categorized as:
+                        <li>
+                            ROSRA presents a curated library of <strong>82 evidence-based solution
+                            cards</strong>, narrowed automatically to the streams and gap-types you
+                            kept in Step 2.
+                        </li>
+                        <li>
+                            Cards are organised by stream type and gap-type (Compliance, Coverage,
+                            Valuation, Liability), and tagged by:
                             <ul>
-                                <li><strong>Generic</strong> &mdash; applicable to any revenue stream</li>
-                                <li><strong>Property Tax-Specific</strong> &mdash; tailored for property tax reform</li>
-                                <li><strong>Business License-Specific</strong> &mdash; tailored for license reform</li>
+                                <li><strong>Stream type</strong> &mdash; Property Tax, Business License, or non-property streams (subgroups A / B / C)</li>
+                                <li><strong>Timeline</strong> &mdash; Quick Win (&lt;1 yr), Medium Term (1&ndash;3 yr), or Long Term (3+ yr)</li>
+                                <li><strong>Political feasibility</strong> &mdash; higher, moderate, or lower</li>
                             </ul>
                         </li>
-                        <li>Review each solution's description, timeline, and resource requirements.</li>
-                        <li>Click to <strong>select the solutions</strong> you plan to implement.</li>
+                        <li>
+                            Use the <strong>3-question personaliser</strong> at the top to narrow the
+                            list to your context (time horizon, political appetite, focus areas) &mdash;
+                            or browse all 82.
+                        </li>
+                        <li>
+                            Each card explains <em>what the option does</em>, <em>most useful when</em>,
+                            <em>usually not the best first move when</em>, and <em>often works best
+                            alongside</em>. Click <strong>Select</strong> on the cards you plan to implement.
+                        </li>
+                        <li>
+                            The right-hand <strong>Selection Summary</strong> tracks every pick by
+                            stream and gap-type, with a one-click jump to Recommendations once you
+                            have enough.
+                        </li>
                     </ol>
                 </div>
 
@@ -1068,8 +1250,8 @@
                         <tr><th>Option</th><th>Description</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td><strong>Print Top-Down</strong></td><td>Quick estimate analysis only</td></tr>
-                        <tr><td><strong>Print Bottom-Up</strong></td><td>Detailed gap analysis and recommendations</td></tr>
+                        <tr><td><strong>Print Quick Estimate</strong></td><td>Macro-view OSR potential estimate only</td></tr>
+                        <tr><td><strong>Print Detailed Diagnostic</strong></td><td>Stream-by-stream gap analysis, prioritisation, selected solutions, and recommendations</td></tr>
                         <tr><td><strong>Print Full Report</strong></td><td>Complete report with all sections</td></tr>
                     </tbody>
                 </table>
@@ -1157,8 +1339,8 @@
                         <tr><td><strong>Valuation Gap</strong></td><td>Revenue lost because assessed property values are lower than market values</td></tr>
                         <tr><td><strong>Liability Gap</strong></td><td>Revenue lost because fee schedules are lower than statutory/optimal rates</td></tr>
                         <tr><td><strong>Functional Gap</strong></td><td>Total revenue gap combining all gap types for a single stream</td></tr>
-                        <tr><td><strong>Top-Down Analysis</strong></td><td>Quick estimation using aggregate data and benchmarks</td></tr>
-                        <tr><td><strong>Bottom-Up Analysis</strong></td><td>Detailed diagnostic analyzing individual revenue streams</td></tr>
+                        <tr><td><strong>Quick Estimate</strong></td><td>Macro-view OSR potential estimate using aggregate data and peer benchmarks. Formerly called <em>Top-Down</em>.</td></tr>
+                        <tr><td><strong>Detailed Diagnostic</strong></td><td>Micro-view, stream-by-stream gap analysis and reform plan. Formerly called <em>Bottom-Up</em>.</td></tr>
                         <tr><td><strong>SNG</strong></td><td>Subnational Government &mdash; any government below national level (state, county, city)</td></tr>
                         <tr><td><strong>Peer SNG</strong></td><td>Comparable subnational governments used for benchmarking</td></tr>
                         <tr><td><strong>Fiscal Cadastre</strong></td><td>Official register of properties for tax assessment</td></tr>
@@ -1229,11 +1411,11 @@
 
                 <div class="faq-item">
                     <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq6" aria-expanded="false">
-                        Can I use both Top-Down and Bottom-Up approaches in the same report?
+                        Can I use both the Quick Estimate and the Detailed Diagnostic in the same report?
                         <i class="bi bi-chevron-down"></i>
                     </div>
                     <div id="faq6" class="collapse faq-answer">
-                        <p>Yes. Both approaches exist within the same report. You can fill in the Top-Down quick estimate and also complete the detailed Bottom-Up analysis. Switch between them using the tabs.</p>
+                        <p>Yes &mdash; they're two views of the same report, not separate reports. The macro-level Quick Estimate gives you the headline number and peer comparison; the micro-level Detailed Diagnostic decomposes that gap stream-by-stream and turns it into an action plan. Switch between them using the umbrella tabs at the top of the editor.</p>
                     </div>
                 </div>
 

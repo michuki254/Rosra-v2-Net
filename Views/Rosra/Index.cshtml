@@ -1221,8 +1221,11 @@
                     }
                 }
 
-                // Load Peer SNG data for report isolation
-                var savedPeerSNGData = '@Html.Raw(Model.TabContentModel.PeerSNGData?.Replace("'", "\\'") ?? "")';
+                // Load Peer SNG data for report isolation.
+                // Audit F-8: serialize via System.Text.Json so a maliciously-crafted
+                // PeerSNGData (saved into a tampered report) can't break out of the JS
+                // string and inject a script-closing payload.
+                var savedPeerSNGData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TabContentModel.PeerSNGData ?? ""));
                 if (savedPeerSNGData && savedPeerSNGData.trim() !== '') {
                     console.log('Found saved peer SNG data, will load after page initialization');
                     // Wait for _PotentialEstimates.cshtml to initialize, then load the data

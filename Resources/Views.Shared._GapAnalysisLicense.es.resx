@@ -132,4 +132,25 @@
 
   <!-- Common -->
   <data name="Description_Label" xml:space="preserve"><value>DESCRIPCIÓN:</value></data>
+
+  <!-- Headline KPI card -->
+  <data name="KpiHeadline_AriaLabel" xml:space="preserve"><value>Brecha total de ingresos</value></data>
+  <data name="KpiHeadline_Eyebrow" xml:space="preserve"><value>MÉTRICA PRINCIPAL</value></data>
+  <data name="KpiHeadline_Title" xml:space="preserve"><value>Brecha total de ingresos</value></data>
+  <data name="KpiHeadline_OfPotential" xml:space="preserve"><value>del potencial</value></data>
+  <data name="KpiHeadline_Collected" xml:space="preserve"><value>del potencial recaudado</value></data>
+  <data name="KpiHeadline_Potential" xml:space="preserve"><value>Potencial:</value></data>
+
+  <!-- Matrix y-axis methodology tooltips -->
+  <data name="Matrix_Estimated_Tooltip" xml:space="preserve"><value>Estimado = Registrados × (1 + % Estimado No Registrado ÷ 100). El % se aplica al número de Registrados, no a la población total. Si su encuesta utiliza % del TOTAL, debe re-derivar primero el número de registrados.</value></data>
+  <data name="Matrix_Registered_Tooltip" xml:space="preserve"><value>Registrados = el valor ingresado arriba. Entrada directa del usuario — sin cálculo.</value></data>
+  <data name="Matrix_Compliant_Tooltip" xml:space="preserve"><value>Cumplidores = Registrados × (Ingresos a la fecha ÷ Monto facturado). Tasa de recaudación del período aplicada a los registrados. Asume que las facturas pagadas fueron facturadas correctamente.</value></data>
+
+  <!-- Tooltips de celdas "Mixtas" -->
+  <data name="Matrix_MixedCovLiab_Tooltip" xml:space="preserve"><value>Brecha COMPUESTA: empresas que están AMBOS sin registrar Y que pagarían más a tasas estatutarias. Se captura solo haciendo AMBAS: (1) registrarlas, Y (2) elevar sus facturas a la tasa estatutaria. Fórmula: (Estimadas − Registradas) × (Promedio Alcanzable − Promedio Facturado). No se duplica con Cobertura o Responsabilidad — esas aíslan un efecto a la vez; ésta es el término cruzado.</value></data>
+  <data name="Matrix_MixedCompLiab_Tooltip" xml:space="preserve"><value>Brecha COMPUESTA: empresas registradas que están AMBOS incumplidoras Y pagarían más a tasas estatutarias. Se captura solo haciendo AMBAS: (1) lograr que paguen, Y (2) elevar sus facturas a la tasa estatutaria. Fórmula: (Registradas − Cumplidoras) × (Promedio Alcanzable − Promedio Facturado). No se duplica con Cumplimiento o Responsabilidad — esas aíslan un efecto a la vez; ésta es el término cruzado.</value></data>
+
+  <!-- Nota bajo el gráfico de barras: cómo leer las dos barras -->
+  <data name="RgStackNote_Heading" xml:space="preserve"><value>Cómo leer las dos barras:</value></data>
+  <data name="RgStackNote_Body" xml:space="preserve"><value>La barra 1 es lo que ya ha recaudado. La barra 2 es su objetivo realista al % de Mejora Realista que ingresó arriba — cerrar la brecha hasta la barra 2 es el plan de reforma accionable, y el KPI principal usa este número.</value></data>
 </root>

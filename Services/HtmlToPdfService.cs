@@ -101,6 +101,12 @@ namespace RosraApp.Services
         /// Renders a standalone HTML document (as a string) to PDF using headless Chromium.
         /// Used for reports where the client has already built the full HTML and just needs
         /// a reliable server-side rasterizer (e.g. the Recommendations "Generate Report" flow).
+        ///
+        /// Security: every outbound network request is aborted, except inline
+        /// data: URIs. This prevents SSRF via payloads that embed
+        /// <c>&lt;img src="http://internal..."&gt;</c> / external CSS / fonts / etc.
+        /// (Audit F-9.) The HTML must therefore be fully self-contained — any
+        /// images/fonts/CSS must be inlined as data: URIs by the caller.
         /// </summary>
         public async Task<byte[]> RenderHtmlToPdf(string html)
         {
@@ -111,11 +117,26 @@ namespace RosraApp.Services
             });
 
             var context = await browser.NewContextAsync();
+
+            // Block all outbound network requests. Inline data: URIs go through
+            // the renderer without triggering Route, so they still work.
+            await context.RouteAsync("**/*", route =>
+            {
+                var url = route.Request.Url ?? "";
+                if (url.StartsWith("data:", StringComparison.OrdinalIgnoreCase) ||
+                    url.StartsWith("about:", StringComparison.OrdinalIgnoreCase))
+                {
+                    return route.ContinueAsync();
+                }
+                return route.AbortAsync();
+            });
+
             var page = await context.NewPageAsync();
 
+            // With network blocked we won't reach NetworkIdle — switch to DOMContentLoaded.
             await page.SetContentAsync(html, new PageSetContentOptions
             {
-                WaitUntil = WaitUntilState.NetworkIdle,
+                WaitUntil = WaitUntilState.DOMContentLoaded,
                 Timeout = 30000
             });
 

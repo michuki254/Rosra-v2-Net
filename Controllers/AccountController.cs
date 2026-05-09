@@ -38,6 +38,7 @@ namespace RosraApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -85,15 +86,17 @@ namespace RosraApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            
+
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                // Audit F-6: count failures toward the lockout policy configured in Program.cs
+                // (5 attempts → 15 min lockout). Without lockoutOnFailure: true the policy is
+                // configured but never enforced, leaving online brute-force unrestricted.
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
                 
                 if (result.Succeeded)
                 {
@@ -105,6 +108,11 @@ namespace RosraApp.Controllers
                     {
                         return RedirectToAction(nameof(HomeController.Index), "Home");
                     }
+                }
+                else if (result.IsLockedOut)
+                {
+                    ModelState.AddModelError(string.Empty, "Account temporarily locked due to too many failed sign-in attempts. Please try again in a few minutes.");
+                    return View(model);
                 }
                 else
                 {
@@ -140,11 +148,12 @@ namespace RosraApp.Controllers
                 return Json(new { success = false, message = string.Join(" ", errors) });
             }
 
+            // Audit F-6: enforce the configured lockout policy on the AJAX login path too.
             var result = await _signInManager.PasswordSignInAsync(
                 model.Email,
                 model.Password,
                 model.RememberMe,
-                lockoutOnFailure: false);
+                lockoutOnFailure: true);
 
             if (result.Succeeded)
             {
@@ -155,6 +164,11 @@ namespace RosraApp.Controllers
                     userName = user?.FirstName ?? user?.Email,
                     userId = user?.Id
                 });
+            }
+
+            if (result.IsLockedOut)
+            {
+                return Json(new { success = false, message = "Account temporarily locked due to too many failed sign-in attempts. Please try again in a few minutes." });
             }
 
             return Json(new { success = false, message = "Invalid email or password." });

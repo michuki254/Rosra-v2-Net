@@ -145,4 +145,25 @@
 
   <!-- Common -->
   <data name="Description_Label" xml:space="preserve"><value>DESCRIPCIÓN:</value></data>
+
+  <!-- Headline KPI card -->
+  <data name="KpiHeadline_AriaLabel" xml:space="preserve"><value>Brecha total de ingresos</value></data>
+  <data name="KpiHeadline_Eyebrow" xml:space="preserve"><value>MÉTRICA PRINCIPAL</value></data>
+  <data name="KpiHeadline_Title" xml:space="preserve"><value>Brecha total de ingresos</value></data>
+  <data name="KpiHeadline_OfPotential" xml:space="preserve"><value>del potencial</value></data>
+  <data name="KpiHeadline_Collected" xml:space="preserve"><value>del potencial recaudado</value></data>
+  <data name="KpiHeadline_Potential" xml:space="preserve"><value>Potencial:</value></data>
+
+  <!-- Matrix y-axis methodology tooltips -->
+  <data name="Matrix_Estimated_Tooltip" xml:space="preserve"><value>Estimado = Registrados + No Registrados. Ambos valores provienen directamente de las entradas anteriores (catastro o encuesta) — suma directa, no derivada de un porcentaje.</value></data>
+  <data name="Matrix_Registered_Tooltip" xml:space="preserve"><value>Registrados = el valor ingresado arriba. Entrada directa del usuario — sin cálculo.</value></data>
+  <data name="Matrix_Compliant_Tooltip" xml:space="preserve"><value>Cumplidores = Registrados × (Ingresos a la fecha ÷ Monto facturado). Tasa de recaudación del período aplicada a los registrados. Asume que las facturas pagadas fueron facturadas correctamente.</value></data>
+
+  <!-- Tooltips de celdas "Mixtas" -->
+  <data name="Matrix_MixedGapUnreg_Tooltip" xml:space="preserve"><value>Brecha COMPUESTA: propiedades que están AMBAS sin registrar Y que pagarían más si se revaluaran a precio de mercado. Se captura solo haciendo AMBAS: (1) registrarlas, Y (2) revaluar a precio de mercado. Fórmula: (Estimadas − Registradas) × (Facturación potencial − Promedio facturado). No se duplica con Cobertura o Valuación — esas aíslan un efecto a la vez; ésta es el término cruzado.</value></data>
+  <data name="Matrix_MixedGapReg_Tooltip" xml:space="preserve"><value>Brecha COMPUESTA: propiedades registradas pero incumplidoras que TAMBIÉN están sub-valuadas. Se captura solo haciendo AMBAS: (1) cobrar a los incumplidores, Y (2) revaluar a precio de mercado. Fórmula: (Registradas − Cumplidoras) × (Facturación potencial − Promedio facturado). No se duplica con Cumplimiento o Valuación — esas aíslan un efecto a la vez; ésta es el término cruzado.</value></data>
+
+  <!-- Nota bajo el gráfico de barras: por qué Impuesto Predial muestra 2 barras en lugar de 3 -->
+  <data name="RgStackNote_Heading" xml:space="preserve"><value>¿Por qué solo 2 barras aquí?</value></data>
+  <data name="RgStackNote_Body" xml:space="preserve"><value>El Impuesto Predial no tiene un parámetro de % de Mejora Realista — su potencial está anclado directamente al valor de mercado, que es un techo absoluto. Por eso no hay división realista vs. teórica que mostrar (como en Licencia de Negocio u otras fuentes con palanca de tasas). La barra de Potencial mostrada arriba ya representa el techo sin restricciones.</value></data>
 </root>

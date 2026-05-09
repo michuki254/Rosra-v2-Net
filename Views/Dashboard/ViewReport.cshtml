@@ -206,7 +206,26 @@
                         <div class="col-md-12 mb-3">
                             <label class="fw-bold">Problem Statement:</label>
                             <div class="p-3 bg-light rounded">
-                                @Html.Raw(Model.ProblemStatement?.Replace("\n", "<br />") ?? "Not specified")
+                                @{
+                                    // Audit F-7: do not @Html.Raw user-supplied free text. Split on
+                                    // newlines and emit each line as encoded text with a literal <br/>
+                                    // between them, so any HTML/script the user typed is rendered as
+                                    // plain text instead of executed.
+                                    var ps = Model.ProblemStatement;
+                                }
+                                @if (string.IsNullOrEmpty(ps))
+                                {
+                                    @:Not specified
+                                }
+                                else
+                                {
+                                    var psLines = ps.Split('\n');
+                                    for (int i = 0; i < psLines.Length; i++)
+                                    {
+                                        @psLines[i]
+                                        if (i < psLines.Length - 1) { <br /> }
+                                    }
+                                }
                             </div>
                         </div>
                         <div class="col-md-12 mb-3">
@@ -235,7 +254,20 @@
                         <div class="col-md-12 mb-3">
                             <label class="fw-bold">Recommendation Summary:</label>
                             <div class="p-3 bg-light rounded">
-                                @Html.Raw(Model.RecommendationSummary?.Replace("\n", "<br />") ?? "Not specified")
+                                @{ var rs = Model.RecommendationSummary; }
+                                @if (string.IsNullOrEmpty(rs))
+                                {
+                                    @:Not specified
+                                }
+                                else
+                                {
+                                    var rsLines = rs.Split('\n');
+                                    for (int i = 0; i < rsLines.Length; i++)
+                                    {
+                                        @rsLines[i]
+                                        if (i < rsLines.Length - 1) { <br /> }
+                                    }
+                                }
                             </div>
                         </div>
                         <div class="col-md-12 mb-3">

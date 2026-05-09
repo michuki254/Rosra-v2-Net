@@ -978,46 +978,273 @@
         box-shadow: 0 2px 8px rgba(0, 104, 157, 0.3);
     }
 
-    /* Report Modal */
-    .recommendations-container ~ .modal .modal-header {
-        background: var(--un-blue);
-        color: white;
+    /* =========================================================
+       Report Generation Modal — polished, on-brand redesign
+       ========================================================= */
+    #reportModal .modal-dialog { padding: 1rem; }
+
+    #reportModal .modal-content {
+        border: none;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 30px 70px -20px rgba(0, 104, 157, 0.35), 0 8px 24px rgba(15, 23, 42, 0.12);
+    }
+
+    /* ----- Header ----- */
+    #reportModal .modal-header {
+        background: #00B2E3;
+        color: #ffffff;
         border-bottom: none;
+        padding: 1.4rem 1.6rem;
+        align-items: flex-start;
+        gap: 1rem;
     }
 
-    .recommendations-container ~ .modal .modal-title {
+    #reportModal .report-modal-icon {
+        flex-shrink: 0;
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        color: #FD9D24;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+    }
+
+    #reportModal .report-modal-titles { flex: 1; min-width: 0; }
+    #reportModal .modal-title {
+        margin: 0;
+        font-size: 1.15rem;
         font-weight: 700;
+        color: #ffffff;
+        letter-spacing: 0.1px;
     }
-
-    .recommendations-container ~ .modal .modal-title i {
-        color: var(--un-orange);
+    #reportModal .modal-subtitle {
+        margin: 0.2rem 0 0;
+        font-size: 0.82rem;
+        opacity: 0.85;
+        line-height: 1.35;
     }
-
-    .recommendations-container ~ .modal .btn-close {
+    #reportModal .btn-close {
         filter: brightness(0) invert(1);
+        opacity: 0.85;
+        margin: 0 0 auto auto;
+    }
+    #reportModal .btn-close:hover { opacity: 1; }
+
+    /* ----- Body ----- */
+    #reportModal .modal-body {
+        background: #F8FAFC;
+        padding: 1.4rem 1.6rem;
     }
 
+    .report-section-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 0.85rem;
+        flex-wrap: wrap;
+    }
+    .report-section-head h6 {
+        margin: 0;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+    .report-section-help {
+        margin: 0.15rem 0 0;
+        font-size: 0.78rem;
+        color: #64748b;
+        line-height: 1.35;
+    }
+    .report-bulk-toggle {
+        display: flex;
+        gap: 0.25rem;
+        align-items: center;
+    }
+    .report-bulk-toggle .btn-link {
+        color: var(--un-blue, #00B2E3);
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-decoration: none;
+        padding: 0.25rem 0.55rem;
+        border-radius: 6px;
+    }
+    .report-bulk-toggle .btn-link:hover {
+        background: rgba(0, 178, 227, 0.1);
+        text-decoration: none;
+    }
+    .report-bulk-toggle .toggle-divider {
+        width: 1px;
+        height: 14px;
+        background: #cbd5e1;
+    }
+
+    /* ----- Checkbox cards ----- */
     .report-checkboxes {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        gap: 0.65rem;
     }
 
     .report-checkboxes .form-check {
-        padding: 12px 15px;
-        background: #f8fafc;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        transition: var(--transition-fast);
+        position: relative;
+        margin: 0;
+        padding: 0.7rem 0.85rem 0.7rem 2.7rem;
+        background: #ffffff;
+        border-radius: 10px;
+        border: 1px solid #E2E8F0;
+        cursor: pointer;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        min-height: 52px;
     }
-
     .report-checkboxes .form-check:hover {
-        background: #f1f5f9;
+        border-color: #BDE3F0;
+        box-shadow: 0 4px 14px -8px rgba(0, 178, 227, 0.4);
+        transform: translateY(-1px);
+    }
+    .report-checkboxes .form-check:has(.form-check-input:checked) {
+        border-color: var(--un-blue, #00B2E3);
+        background: #F0FAFE;
+        box-shadow: 0 4px 14px -8px rgba(0, 178, 227, 0.55);
+    }
+    .report-checkboxes .form-check-input {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        margin: 0;
+        width: 18px;
+        height: 18px;
+        border: 1.5px solid #cbd5e1;
+        cursor: pointer;
+    }
+    .report-checkboxes .form-check-input:checked {
+        background-color: var(--un-blue, #00B2E3);
+        border-color: var(--un-blue, #00B2E3);
+    }
+    .report-checkboxes .form-check-input:focus {
+        box-shadow: 0 0 0 3px rgba(0, 178, 227, 0.18);
+        border-color: var(--un-blue, #00B2E3);
+    }
+    .report-checkboxes .check-icon {
+        flex-shrink: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: #E6F6FB;
+        color: var(--un-blue, #00B2E3);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        transition: background 0.18s ease, color 0.18s ease;
+    }
+    .report-checkboxes .form-check:has(.form-check-input:checked) .check-icon {
+        background: var(--un-blue, #00B2E3);
+        color: #ffffff;
+    }
+    .report-checkboxes .form-check-label {
+        cursor: pointer;
+        font-size: 0.86rem;
+        font-weight: 600;
+        color: #1f2937;
+        line-height: 1.25;
+        flex: 1;
+        min-width: 0;
     }
 
-    .report-checkboxes .form-check-input:checked {
-        background-color: var(--un-blue);
-        border-color: var(--un-blue);
+    /* ----- Format segmented control ----- */
+    .report-format { padding-top: 0.4rem; }
+    .report-format h6 {
+        margin: 0 0 0.55rem;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+    .report-format-toggle {
+        display: inline-flex;
+        background: #ffffff;
+        border: 1px solid #E2E8F0;
+        border-radius: 999px;
+        padding: 4px;
+        gap: 4px;
+    }
+    .report-format-toggle input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .report-format-toggle label {
+        cursor: pointer;
+        padding: 0.5rem 1.1rem;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #64748b;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        transition: background 0.18s ease, color 0.18s ease;
+    }
+    .report-format-toggle label:hover { color: #00689D; }
+    .report-format-toggle input[type="radio"]:checked + label {
+        background: var(--un-blue, #00B2E3);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 178, 227, 0.35);
+    }
+
+    /* ----- Footer ----- */
+    #reportModal .modal-footer {
+        background: #ffffff;
+        border-top: 1px solid #EEF2F6;
+        padding: 1rem 1.6rem;
+        gap: 0.5rem;
+    }
+    #reportModal .btn-cancel {
+        background: #ffffff;
+        border: 1px solid #E2E8F0;
+        color: #475569;
+        font-weight: 600;
+        padding: 0.55rem 1.1rem;
+        border-radius: 10px;
+    }
+    #reportModal .btn-cancel:hover {
+        background: #F1F5F9;
+        border-color: #CBD5E1;
+        color: #1f2937;
+    }
+    #reportModal .btn-generate {
+        background: #00B2E3;
+        border: none;
+        color: #ffffff;
+        font-weight: 700;
+        padding: 0.55rem 1.4rem;
+        border-radius: 10px;
+        box-shadow: 0 6px 18px -6px rgba(0, 178, 227, 0.55);
+        transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+    #reportModal .btn-generate:hover {
+        background: #0095C0;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px -8px rgba(0, 178, 227, 0.7);
+        color: #ffffff;
+    }
+    #reportModal .btn-generate:active { transform: translateY(0); }
+
+    @@media (max-width: 575.98px) {
+        .report-checkboxes { grid-template-columns: 1fr; }
+        #reportModal .modal-header { padding: 1.1rem 1.2rem; }
+        #reportModal .modal-body { padding: 1.1rem 1.2rem; }
+        #reportModal .modal-footer { padding: 0.85rem 1.2rem; }
     }
 
     /* Responsive */
@@ -1053,9 +1280,6 @@
             </p>
         </div>
         <div class="header-actions">
-            <button type="button" class="btn btn-outline-secondary" onclick="RecommendationsModule.goToOverviewSelection()">
-                <i class="fas fa-arrow-left me-2"></i> @Localizer["Header_BackToOverview"]
-            </button>
             <button type="button" class="btn btn-primary" onclick="RecommendationsModule.openReportModal()">
                 <i class="fas fa-file-pdf me-2"></i> @Localizer["Header_GenerateReport"]
             </button>
@@ -1170,73 +1394,129 @@
 @* Save button is now part of the bottom-step navigation (rendered by _TabNavigation.cshtml on the last step). *@
 
 <!-- Report Generation Modal -->
-<div class="modal fade" id="reportModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-file-pdf me-2"></i> @Localizer["Modal_Title"]</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="report-modal-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <div class="report-modal-titles">
+                    <h5 class="modal-title" id="reportModalLabel">@Localizer["Modal_Title"]</h5>
+                    <p class="modal-subtitle">Pick the sections to include and choose your output format.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="report-options">
-                    <h6>@Localizer["Modal_IncludeInReport"]</h6>
-                    <div class="report-checkboxes">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="includeExecSummary" checked>
-                            <label class="form-check-label" for="includeExecSummary">@Localizer["Modal_ExecSummary"]</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="includeGapAnalysis" checked>
-                            <label class="form-check-label" for="includeGapAnalysis">@Localizer["Modal_GapAnalysis"]</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="includeStreamPrioritization" checked>
-                            <label class="form-check-label" for="includeStreamPrioritization">@Localizer["Modal_StreamPrioritization"]</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="includeGapSequencing" checked>
-                            <label class="form-check-label" for="includeGapSequencing">@Localizer["Modal_GapSequencing"]</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="includeSelectedSolutions" checked>
-                            <label class="form-check-label" for="includeSelectedSolutions">@Localizer["Modal_SelectedSolutions"]</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="includeSkippedSolutions">
-                            <label class="form-check-label" for="includeSkippedSolutions">@Localizer["Modal_SkippedSolutions"]</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="includeTimeline" checked>
-                            <label class="form-check-label" for="includeTimeline">@Localizer["Modal_Timeline"]</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="includeProgressTracker" checked>
-                            <label class="form-check-label" for="includeProgressTracker">Progress Tracker</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="includeResources" checked>
-                            <label class="form-check-label" for="includeResources">@Localizer["Modal_Resources"]</label>
-                        </div>
+                <div class="report-section-head">
+                    <div>
+                        <h6>@Localizer["Modal_IncludeInReport"]</h6>
+                        <p class="report-section-help">All sections are on by default — toggle off anything you want to leave out.</p>
                     </div>
+                    <div class="report-bulk-toggle" role="group" aria-label="Bulk select">
+                        <button type="button" class="btn btn-link" id="reportSelectAll">Select all</button>
+                        <span class="toggle-divider"></span>
+                        <button type="button" class="btn btn-link" id="reportClearAll">Clear all</button>
+                    </div>
+                </div>
 
-                    <div class="report-format mt-4">
-                        <h6>@Localizer["Modal_FormatLabel"]</h6>
-                        <select class="form-select" id="reportFormat">
-                            <option value="pdf">@Localizer["Modal_FormatPdf"]</option>
-                            <option value="html">@Localizer["Modal_FormatHtml"]</option>
-                        </select>
+                <div class="report-checkboxes">
+                    <label class="form-check" for="includeExecSummary">
+                        <input class="form-check-input" type="checkbox" id="includeExecSummary" checked>
+                        <span class="check-icon"><i class="fas fa-clipboard-list"></i></span>
+                        <span class="form-check-label">@Localizer["Modal_ExecSummary"]</span>
+                    </label>
+                    <label class="form-check" for="includeGapAnalysis">
+                        <input class="form-check-input" type="checkbox" id="includeGapAnalysis" checked>
+                        <span class="check-icon"><i class="fas fa-magnifying-glass-chart"></i></span>
+                        <span class="form-check-label">@Localizer["Modal_GapAnalysis"]</span>
+                    </label>
+                    <label class="form-check" for="includeStreamPrioritization">
+                        <input class="form-check-input" type="checkbox" id="includeStreamPrioritization" checked>
+                        <span class="check-icon"><i class="fas fa-list-ol"></i></span>
+                        <span class="form-check-label">@Localizer["Modal_StreamPrioritization"]</span>
+                    </label>
+                    <label class="form-check" for="includeGapSequencing">
+                        <input class="form-check-input" type="checkbox" id="includeGapSequencing" checked>
+                        <span class="check-icon"><i class="fas fa-layer-group"></i></span>
+                        <span class="form-check-label">@Localizer["Modal_GapSequencing"]</span>
+                    </label>
+                    <label class="form-check" for="includeSelectedSolutions">
+                        <input class="form-check-input" type="checkbox" id="includeSelectedSolutions" checked>
+                        <span class="check-icon"><i class="fas fa-check-double"></i></span>
+                        <span class="form-check-label">@Localizer["Modal_SelectedSolutions"]</span>
+                    </label>
+                    <label class="form-check" for="includeSkippedSolutions">
+                        <input class="form-check-input" type="checkbox" id="includeSkippedSolutions">
+                        <span class="check-icon"><i class="fas fa-forward-step"></i></span>
+                        <span class="form-check-label">@Localizer["Modal_SkippedSolutions"]</span>
+                    </label>
+                    <label class="form-check" for="includeTimeline">
+                        <input class="form-check-input" type="checkbox" id="includeTimeline" checked>
+                        <span class="check-icon"><i class="fas fa-clock"></i></span>
+                        <span class="form-check-label">@Localizer["Modal_Timeline"]</span>
+                    </label>
+                    <label class="form-check" for="includeProgressTracker">
+                        <input class="form-check-input" type="checkbox" id="includeProgressTracker" checked>
+                        <span class="check-icon"><i class="fas fa-bullseye"></i></span>
+                        <span class="form-check-label">Progress Tracker</span>
+                    </label>
+                    <label class="form-check" for="includeResources">
+                        <input class="form-check-input" type="checkbox" id="includeResources" checked>
+                        <span class="check-icon"><i class="fas fa-book-open"></i></span>
+                        <span class="form-check-label">@Localizer["Modal_Resources"]</span>
+                    </label>
+                </div>
+
+                <div class="report-format mt-4">
+                    <h6>@Localizer["Modal_FormatLabel"]</h6>
+                    <div class="report-format-toggle" role="radiogroup" aria-label="Output format">
+                        <input type="radio" name="reportFormatRadio" id="reportFormatPdf" value="pdf" checked>
+                        <label for="reportFormatPdf"><i class="fas fa-file-pdf"></i> @Localizer["Modal_FormatPdf"]</label>
+                        <input type="radio" name="reportFormatRadio" id="reportFormatHtml" value="html">
+                        <label for="reportFormatHtml"><i class="fas fa-code"></i> @Localizer["Modal_FormatHtml"]</label>
                     </div>
+                    @* Hidden select preserves the existing reportFormat.value contract used by RecommendationsModule.generateReport(). *@
+                    <select id="reportFormat" hidden aria-hidden="true">
+                        <option value="pdf" selected>@Localizer["Modal_FormatPdf"]</option>
+                        <option value="html">@Localizer["Modal_FormatHtml"]</option>
+                    </select>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Modal_Cancel"]</button>
-                <button type="button" class="btn btn-primary" onclick="RecommendationsModule.generateReport()">
-                    <i class="fas fa-download me-2"></i> @Localizer["Modal_Generate"]
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">@Localizer["Modal_Cancel"]</button>
+                <button type="button" class="btn btn-generate" onclick="RecommendationsModule.generateReport()">
+                    <i class="fas fa-download me-2"></i>@Localizer["Modal_Generate"]
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    (function () {
+        var modal = document.getElementById('reportModal');
+        if (!modal) return;
+
+        // Mirror the segmented PDF/HTML control into the hidden <select id="reportFormat">.
+        modal.querySelectorAll('input[name="reportFormatRadio"]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                if (radio.checked) document.getElementById('reportFormat').value = radio.value;
+            });
+        });
+
+        // Select-all / Clear-all helpers for the section checkboxes.
+        var checkboxes = modal.querySelectorAll('.report-checkboxes .form-check-input');
+        var selectAllBtn = document.getElementById('reportSelectAll');
+        var clearAllBtn = document.getElementById('reportClearAll');
+        if (selectAllBtn) selectAllBtn.addEventListener('click', function () {
+            checkboxes.forEach(function (cb) { cb.checked = true; });
+        });
+        if (clearAllBtn) clearAllBtn.addEventListener('click', function () {
+            checkboxes.forEach(function (cb) { cb.checked = false; });
+        });
+    })();
+</script>
 
 
 <!-- Solutions Data Modules (must load before solutionsDatabase.js) -->

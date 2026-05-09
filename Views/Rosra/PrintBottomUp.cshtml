@@ -425,13 +425,14 @@
     <!-- Seed state data from session model for partial JS to read -->
     <script>
         var isViewMode = true;
-        // Seed localStorage so partial scripts can load data via fallback path
+        // Seed localStorage so partial scripts can load data via fallback path.
+        // Audit F-8: emit via System.Text.Json.JsonSerializer.Serialize for safe escaping.
         (function() {
-            var prioritizationData = '@Html.Raw(Model.PrioritizationData?.Replace("'", "\\'")?.Replace("\n", "") ?? "")';
+            var prioritizationData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.PrioritizationData ?? ""));
             if (prioritizationData) {
                 try { localStorage.setItem('prioritizationData', prioritizationData); } catch(e) {}
             }
-            var selectedSolutions = '@Html.Raw(Model.SelectedSolutionsData?.Replace("'", "\\'")?.Replace("\n", "") ?? "")';
+            var selectedSolutions = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SelectedSolutionsData ?? ""));
             if (selectedSolutions) {
                 try {
                     localStorage.setItem('selectedSolutionsData', selectedSolutions);

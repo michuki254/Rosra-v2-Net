@@ -132,4 +132,25 @@
 
   <!-- Common -->
   <data name="Description_Label" xml:space="preserve"><value>DESCRIPTION :</value></data>
+
+  <!-- Headline KPI card -->
+  <data name="KpiHeadline_AriaLabel" xml:space="preserve"><value>Écart total de recettes</value></data>
+  <data name="KpiHeadline_Eyebrow" xml:space="preserve"><value>INDICATEUR PRINCIPAL</value></data>
+  <data name="KpiHeadline_Title" xml:space="preserve"><value>Écart total de recettes</value></data>
+  <data name="KpiHeadline_OfPotential" xml:space="preserve"><value>du potentiel</value></data>
+  <data name="KpiHeadline_Collected" xml:space="preserve"><value>du potentiel collecté</value></data>
+  <data name="KpiHeadline_Potential" xml:space="preserve"><value>Potentiel :</value></data>
+
+  <!-- Matrix y-axis methodology tooltips -->
+  <data name="Matrix_Estimated_Tooltip" xml:space="preserve"><value>Estimé = Enregistrés × (1 + % Estimé Non Enregistrés ÷ 100). Le % s'applique au nombre d'Enregistrés, pas à la population totale. Si votre enquête utilise % du TOTAL, le nombre d'enregistrés doit d'abord être recalculé.</value></data>
+  <data name="Matrix_Registered_Tooltip" xml:space="preserve"><value>Enregistrés = la valeur saisie ci-dessus. Saisie directe — sans calcul.</value></data>
+  <data name="Matrix_Compliant_Tooltip" xml:space="preserve"><value>Conformes = Enregistrés × (Recettes à ce jour ÷ Montant facturé). Taux de recouvrement de la période appliqué aux enregistrés. Suppose que les factures payées étaient facturées correctement.</value></data>
+
+  <!-- Tooltips des cellules "Mixtes" -->
+  <data name="Matrix_MixedCovLiab_Tooltip" xml:space="preserve"><value>Écart COMPOSÉ : entreprises à la fois non enregistrées ET qui devraient payer plus aux tarifs légaux. Capturé uniquement en faisant LES DEUX : (1) les enregistrer, ET (2) augmenter leurs factures aux tarifs légaux. Formule : (Estimées − Enregistrées) × (Moyenne réalisable − Moyenne facturée). Ce n'est pas un double comptage avec Couverture ou Responsabilité — celles-ci isolent un effet à la fois ; ceci est le terme croisé.</value></data>
+  <data name="Matrix_MixedCompLiab_Tooltip" xml:space="preserve"><value>Écart COMPOSÉ : entreprises enregistrées à la fois non conformes ET qui devraient payer plus aux tarifs légaux. Capturé uniquement en faisant LES DEUX : (1) obtenir leur paiement, ET (2) augmenter leurs factures aux tarifs légaux. Formule : (Enregistrées − Conformes) × (Moyenne réalisable − Moyenne facturée). Ce n'est pas un double comptage avec Conformité ou Responsabilité — celles-ci isolent un effet à la fois ; ceci est le terme croisé.</value></data>
+
+  <!-- Note sous le graphique : comment lire les deux barres -->
+  <data name="RgStackNote_Heading" xml:space="preserve"><value>Comment lire les deux barres :</value></data>
+  <data name="RgStackNote_Body" xml:space="preserve"><value>La barre 1 est ce que vous avez déjà collecté. La barre 2 est votre objectif réaliste au % d'Amélioration Réaliste saisi ci-dessus — combler l'écart jusqu'à la barre 2 est le plan de réforme actionnable, et l'indicateur principal utilise ce chiffre.</value></data>
 </root>

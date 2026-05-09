@@ -145,4 +145,25 @@
 
   <!-- Common -->
   <data name="Description_Label" xml:space="preserve"><value>DESCRIPTION :</value></data>
+
+  <!-- Headline KPI card -->
+  <data name="KpiHeadline_AriaLabel" xml:space="preserve"><value>Écart total de recettes</value></data>
+  <data name="KpiHeadline_Eyebrow" xml:space="preserve"><value>INDICATEUR PRINCIPAL</value></data>
+  <data name="KpiHeadline_Title" xml:space="preserve"><value>Écart total de recettes</value></data>
+  <data name="KpiHeadline_OfPotential" xml:space="preserve"><value>du potentiel</value></data>
+  <data name="KpiHeadline_Collected" xml:space="preserve"><value>du potentiel collecté</value></data>
+  <data name="KpiHeadline_Potential" xml:space="preserve"><value>Potentiel :</value></data>
+
+  <!-- Matrix y-axis methodology tooltips -->
+  <data name="Matrix_Estimated_Tooltip" xml:space="preserve"><value>Estimé = Enregistrés + Non Enregistrés. Les deux valeurs proviennent directement des saisies ci-dessus (cadastre ou enquête) — somme directe, non dérivée d'un pourcentage.</value></data>
+  <data name="Matrix_Registered_Tooltip" xml:space="preserve"><value>Enregistrés = la valeur saisie ci-dessus. Saisie directe — sans calcul.</value></data>
+  <data name="Matrix_Compliant_Tooltip" xml:space="preserve"><value>Conformes = Enregistrés × (Recettes à ce jour ÷ Montant facturé). Taux de recouvrement de la période appliqué aux enregistrés. Suppose que les factures payées étaient facturées correctement.</value></data>
+
+  <!-- Tooltips des cellules "Mixtes" -->
+  <data name="Matrix_MixedGapUnreg_Tooltip" xml:space="preserve"><value>Écart COMPOSÉ : propriétés à la fois non enregistrées ET qui devraient payer plus si réévaluées au marché. Capturé uniquement en faisant LES DEUX : (1) les ajouter au registre, ET (2) les réévaluer au marché. Formule : (Estimées − Enregistrées) × (Facturation potentielle − Moyenne facturée). Ce n'est pas un double comptage avec Couverture ou Évaluation — celles-ci isolent un effet à la fois ; ceci est le terme croisé.</value></data>
+  <data name="Matrix_MixedGapReg_Tooltip" xml:space="preserve"><value>Écart COMPOSÉ : propriétés enregistrées mais non conformes qui sont AUSSI sous-évaluées. Capturé uniquement en faisant LES DEUX : (1) recouvrer auprès des non-payeurs, ET (2) réévaluer au marché. Formule : (Enregistrées − Conformes) × (Facturation potentielle − Moyenne facturée). Ce n'est pas un double comptage avec Conformité ou Évaluation — celles-ci isolent un effet à la fois ; ceci est le terme croisé.</value></data>
+
+  <!-- Note sous le graphique : pourquoi l'Impôt foncier affiche 2 barres au lieu de 3 -->
+  <data name="RgStackNote_Heading" xml:space="preserve"><value>Pourquoi seulement 2 barres ici ?</value></data>
+  <data name="RgStackNote_Body" xml:space="preserve"><value>L'Impôt foncier n'a pas de paramètre % d'Amélioration Réaliste — son potentiel est ancré directement à la valeur de marché, qui constitue un plafond absolu. Il n'y a donc pas de répartition réaliste vs théorique à afficher (contrairement à la Licence d'entreprise ou autres flux avec un levier de taux). La barre Potentiel ci-dessus représente déjà le plafond sans contrainte.</value></data>
 </root>

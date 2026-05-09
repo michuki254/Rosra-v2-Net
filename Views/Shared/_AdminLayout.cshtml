@@ -18,7 +18,7 @@
         :root {
             --sidebar-width: 260px;
             --sidebar-collapsed: 72px;
-            --header-height: 60px;
+            --header-height: 64px;
             --un-blue: #00689D;
             --un-blue-light: rgba(0,104,157,0.06);
             --un-blue-dark: #004d73;
@@ -137,25 +137,91 @@
         .admin-header {
             position: fixed; top: 0; right: 0;
             left: var(--sidebar-width); height: var(--header-height);
-            background: #fff; border-bottom: 1px solid var(--border-color);
+            background: #fff;
+            border-bottom: 1px solid #eef0f3;
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 24px; z-index: 1030; transition: left 0.3s ease;
+            gap: 16px; padding: 0 24px; z-index: 1030; transition: left 0.3s ease;
         }
         .admin-sidebar.collapsed ~ .admin-header { left: var(--sidebar-collapsed); }
-        .admin-header .page-title { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
-        .admin-header .header-actions { display: flex; align-items: center; gap: 12px; }
-        .admin-header .header-btn {
-            background: none; border: none; color: var(--text-secondary); padding: 6px 8px; border-radius: 8px;
-            cursor: pointer; transition: background 0.2s; position: relative;
+
+        .admin-header .header-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+        .admin-header .page-title {
+            font-size: 0.95rem; font-weight: 600; color: var(--text-primary); letter-spacing: -0.01em;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .admin-header .header-btn:hover { background: var(--bg-hover); }
-        .admin-header .user-info { display: flex; align-items: center; gap: 8px; }
+
+        /* Center search */
+        .admin-header .header-search {
+            flex: 1; max-width: 480px; position: relative;
+            display: flex; align-items: center;
+            background: #f3f4f6; border: 1px solid transparent;
+            border-radius: 999px; padding: 0 14px; height: 38px;
+            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+        .admin-header .header-search:focus-within {
+            background: #fff; border-color: var(--un-blue);
+            box-shadow: 0 0 0 3px rgba(0,104,157,0.10);
+        }
+        .admin-header .header-search .search-icon { color: var(--text-muted); font-size: 0.9rem; margin-right: 10px; }
+        .admin-header .header-search input {
+            flex: 1; border: none; outline: none; background: transparent;
+            font-size: 0.85rem; color: var(--text-primary);
+        }
+        .admin-header .header-search input::placeholder { color: var(--text-muted); }
+        .admin-header .header-search kbd {
+            font-family: inherit; font-size: 0.65rem; font-weight: 600;
+            color: var(--text-muted); background: #fff;
+            padding: 3px 7px; border-radius: 6px;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+        }
+
+        /* Right cluster */
+        .admin-header .header-actions { display: flex; align-items: center; gap: 4px; }
+        .admin-header .header-divider {
+            width: 1px; height: 28px; background: var(--border-color); margin: 0 8px;
+        }
+        .admin-header .icon-btn {
+            background: none; border: none; color: var(--text-secondary);
+            width: 36px; height: 36px; border-radius: 10px; font-size: 1rem;
+            cursor: pointer; transition: background 0.2s, color 0.2s; position: relative;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .admin-header .icon-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .admin-header .icon-btn .badge-dot {
+            position: absolute; top: 8px; right: 9px;
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #ef4444; border: 2px solid #fff;
+        }
+
+        /* User chip */
+        .admin-header .user-chip {
+            display: flex; align-items: center; gap: 10px;
+            padding: 4px 6px 4px 10px; border-radius: 12px;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .admin-header .user-chip:hover { background: var(--bg-hover); }
+        .admin-header .user-meta { display: flex; flex-direction: column; line-height: 1.15; text-align: right; }
+        .admin-header .user-name { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
+        .admin-header .user-role { font-size: 0.68rem; color: var(--text-muted); }
         .admin-header .user-avatar {
-            width: 34px; height: 34px; border-radius: 50%; background: var(--un-blue); color: #fff;
-            display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600;
+            width: 36px; height: 36px; border-radius: 50%; background: var(--un-blue); color: #fff;
+            display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 600;
+            flex-shrink: 0; box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(0,104,157,0.15);
         }
-        .admin-header .user-name { font-size: 0.85rem; font-weight: 500; }
-        .admin-header .user-role { font-size: 0.7rem; color: var(--text-muted); }
+
+        @@media (max-width: 991px) {
+            .admin-header { padding: 0 16px; gap: 10px; }
+            .admin-header .header-search { max-width: 320px; }
+        }
+        @@media (max-width: 767px) {
+            .admin-header .page-title { display: none; }
+            .admin-header .header-search kbd { display: none; }
+        }
+        @@media (max-width: 575px) {
+            .admin-header .user-meta { display: none; }
+            .admin-header .header-search { max-width: 100%; }
+            .admin-header .header-divider { display: none; }
+        }
 
         /* ===== MAIN CONTENT ===== */
         .admin-main {
@@ -319,25 +385,40 @@
 
     <!-- Header -->
     <header class="admin-header" id="adminHeader">
-        <div class="d-flex align-items-center gap-3">
+        <div class="header-left">
             <button class="mobile-menu-btn" onclick="openMobileMenu()">
                 <i class="bi bi-list"></i>
             </button>
             <span class="page-title">@ViewData["Title"]</span>
         </div>
+
+        <label class="header-search" for="headerSearch">
+            <i class="bi bi-search search-icon"></i>
+            <input id="headerSearch" type="text" placeholder="Quick search..." oninput="filterNav(this.value)" />
+            <kbd>⌘K</kbd>
+        </label>
+
         <div class="header-actions">
-            <a href="@Url.Action("Index", "Home")" class="header-btn" title="View Site">
-                <i class="bi bi-globe2"></i>
+            <button type="button" class="icon-btn" title="Notifications">
+                <i class="bi bi-bell"></i>
+                <span class="badge-dot"></span>
+            </button>
+            <a href="@Url.Action("AdminGuide", "Home")" class="icon-btn" title="Help">
+                <i class="bi bi-question-circle"></i>
             </a>
-            <div class="user-info">
-                <div>
-                    <div class="user-name">@userName</div>
-                    <div class="user-role">Administrator</div>
+            <a href="@Url.Action("Index", "Home")" class="icon-btn" title="View Site">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+            </a>
+            <div class="header-divider"></div>
+            <div class="user-chip" title="Account">
+                <div class="user-meta">
+                    <span class="user-name">@userName</span>
+                    <span class="user-role">System Admin</span>
                 </div>
                 <div class="user-avatar">@userInitials</div>
             </div>
             <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                <button type="submit" class="header-btn" title="Sign out"><i class="bi bi-box-arrow-right"></i></button>
+                <button type="submit" class="icon-btn" title="Sign out"><i class="bi bi-box-arrow-right"></i></button>
             </form>
         </div>
     </header>
@@ -380,6 +461,15 @@
                 children.classList.toggle('open');
             }
         }
+
+        // ⌘K / Ctrl+K focuses the header search
+        document.addEventListener('keydown', function (e) {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                var input = document.getElementById('headerSearch') || document.getElementById('navSearch');
+                if (input) input.focus();
+            }
+        });
 
         // Search/filter nav items
         function filterNav(query) {

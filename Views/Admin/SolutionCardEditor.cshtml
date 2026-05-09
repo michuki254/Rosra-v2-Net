@@ -7,132 +7,181 @@
 
 @section Styles {
     <style>
-        body { background: #f8f9fa; }
+        :root {
+            --brand: #00689D; --brand-dark: #004d73; --brand-soft: rgba(0,104,157,0.08);
+            --ink-1: #0f172a; --ink-2: #475569; --ink-3: #94a3b8;
+            --line: #e5e7eb; --line-soft: #f1f5f9;
+            --surface: #fff; --surface-2: #f8fafc;
+            --shadow-sm: 0 1px 2px rgba(15,23,42,0.05), 0 2px 8px rgba(15,23,42,0.05), 0 8px 24px rgba(15,23,42,0.04);
+            --shadow-md: 0 2px 4px rgba(15,23,42,0.06), 0 6px 16px rgba(15,23,42,0.08), 0 16px 40px rgba(15,23,42,0.06);
+            --radius: 12px; --radius-sm: 8px;
+        }
+        body, .admin-main { background: #fff !important; }
+        .container.py-4 { padding-top: 1.25rem !important; padding-bottom: 1.25rem !important; }
 
-        /* ── Header ── */
+        /* ── Page header ── */
         .page-header {
-            background: white; border-radius: 12px; padding: 1.75rem 2rem;
-            margin-bottom: 1.75rem; box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1);
+            background: var(--surface); border: 1px solid var(--line-soft);
+            border-radius: var(--radius); padding: 1.1rem 1.4rem;
+            margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);
         }
         .header-icon {
-            width: 44px; height: 44px; border-radius: 10px; background: #00689D;
+            width: 42px; height: 42px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--brand) 0%, #0084c7 100%);
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; color: white; box-shadow: 0 6px 12px -2px rgba(0,104,157,0.25); flex-shrink: 0;
+            color: #fff; font-size: 1.1rem; flex-shrink: 0;
         }
-        .page-header h1 { color: #222222; font-weight: 700; font-size: 1.75rem; margin-bottom: 0.25rem; }
-        .page-header p { color: #6A6A6A; font-size: 0.9375rem; margin: 0; }
+        .page-header h1 {
+            color: var(--ink-1); font-weight: 600; font-size: 1.15rem;
+            margin: 0 0 0.1rem; letter-spacing: -0.01em;
+        }
+        .page-header p { color: var(--ink-2); font-size: 0.82rem; margin: 0; }
         .btn-back {
-            background: white; border: none; color: #222222; border-radius: 10px;
-            font-weight: 500; padding: 0.5rem 1rem; font-size: 0.875rem;
-            box-shadow: 0 1px 6px -1px rgba(0,0,0,0.08); transition: all 0.2s; text-decoration: none;
+            background: var(--surface); border: 1px solid var(--line); color: var(--ink-1);
+            border-radius: var(--radius-sm); font-weight: 500; padding: 0.5rem 0.95rem;
+            font-size: 0.82rem; transition: background 0.15s, border-color 0.15s; text-decoration: none;
         }
-        .btn-back:hover { color: #00689D; box-shadow: 0 4px 16px -4px rgba(0,0,0,0.15); }
+        .btn-back:hover { background: var(--surface-2); border-color: #cbd5e1; color: var(--ink-1); }
 
         /* ── Alerts ── */
         .alert-biz {
-            border: none; border-radius: 10px; padding: 0.875rem 1.25rem;
-            margin-bottom: 1.25rem; font-size: 0.875rem; font-weight: 500;
+            border: 1px solid; border-radius: var(--radius-sm);
+            padding: 0.7rem 1rem; margin-bottom: 1rem;
+            font-size: 0.82rem; font-weight: 500;
+            display: flex; align-items: center;
         }
-        .alert-biz.success { background: #D1FAE5; color: #065F46; }
-        .alert-biz.error { background: #FEE2E2; color: #991B1B; }
+        .alert-biz.success { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
+        .alert-biz.error   { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
 
-        /* ── Section Cards ── */
+        /* ── Section Cards (form sections) ── */
         .section-card {
-            background: white; border-radius: 12px;
-            box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1); margin-bottom: 1.5rem;
-            overflow: hidden;
+            background: var(--surface); border: 1px solid var(--line-soft);
+            border-radius: var(--radius); box-shadow: var(--shadow-sm);
+            margin-bottom: 1.25rem; overflow: hidden;
         }
         .section-card-header {
-            background: #00689D; color: white; padding: 1rem 1.5rem;
-            display: flex; align-items: center; gap: 0.625rem;
+            background: var(--surface-2);
+            color: var(--ink-1);
+            padding: 0.85rem 1.25rem;
+            display: flex; align-items: center; gap: 0.65rem;
+            border-bottom: 1px solid var(--line-soft);
         }
-        .section-card-header i { font-size: 1.1rem; }
-        .section-card-header h5 { color: white; font-weight: 600; margin: 0; font-size: 1rem; }
-        .section-card-body { padding: 1.75rem; }
+        .section-card-header > i {
+            width: 28px; height: 28px; border-radius: 8px;
+            background: linear-gradient(135deg, var(--brand) 0%, #0084c7 100%);
+            color: #fff; font-size: 0.82rem;
+            display: inline-flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .section-card-header h5 { color: var(--ink-1); font-weight: 600; margin: 0; font-size: 0.92rem; letter-spacing: -0.005em; }
+        .section-card-body { padding: 1.4rem 1.5rem; }
 
         /* ── Form Inputs ── */
-        .form-label-biz { font-weight: 600; color: #222222; margin-bottom: 0.375rem; font-size: 0.875rem; }
-        .input-biz {
-            background: #F7F7F7; border: 1px solid #DDDDDD; border-radius: 8px;
-            padding: 0.625rem 1rem; font-size: 0.9375rem; transition: all 0.2s; width: 100%;
+        .form-label-biz {
+            font-weight: 500; color: var(--ink-1);
+            margin-bottom: 0.35rem; font-size: 0.8rem;
         }
-        .input-biz:focus { background: white; border-color: #00689D; box-shadow: 0 0 0 3px rgba(0,104,157,0.1); outline: none; }
+        .input-biz {
+            background: var(--surface-2); border: 1px solid transparent;
+            border-radius: var(--radius-sm);
+            padding: 0.55rem 0.85rem; font-size: 0.85rem; color: var(--ink-1);
+            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+        .input-biz:focus {
+            background: var(--surface); border-color: var(--brand);
+            box-shadow: 0 0 0 3px var(--brand-soft); outline: none;
+        }
+        .input-biz::placeholder { color: var(--ink-3); }
         select.input-biz { cursor: pointer; }
         textarea.input-biz { resize: vertical; min-height: 80px; }
         textarea.input-biz.large { min-height: 140px; }
 
-        .form-check-input:checked { background-color: #00689D; border-color: #00689D; }
-        .form-check-input:focus { box-shadow: 0 0 0 3px rgba(0,104,157,0.15); }
+        .form-check-input:checked { background-color: var(--brand); border-color: var(--brand); }
+        .form-check-input:focus { box-shadow: 0 0 0 3px var(--brand-soft); }
 
         /* ── Auto-filled / Read-only field ── */
         .input-auto {
-            background: #EDF5FA; border: 1px solid #B8D4E5; border-radius: 8px;
-            padding: 0.625rem 1rem; font-size: 0.9375rem; color: #00689D; font-weight: 500;
+            background: var(--brand-soft); border: 1px solid rgba(0,104,157,0.18);
+            border-radius: var(--radius-sm);
+            padding: 0.55rem 0.85rem; font-size: 0.85rem;
+            color: var(--brand); font-weight: 500;
         }
 
         /* ── Dynamic List Widget ── */
         .dynamic-list { margin-top: 0.25rem; }
-        .dynamic-list-items { display: flex; flex-direction: column; gap: 0.5rem; }
-        .dynamic-list-row {
-            display: flex; gap: 0.5rem; align-items: center;
-        }
+        .dynamic-list-items { display: flex; flex-direction: column; gap: 0.45rem; }
+        .dynamic-list-row { display: flex; gap: 0.5rem; align-items: center; }
         .dynamic-list-row input {
-            flex: 1; background: #F7F7F7; border: 1px solid #DDDDDD; border-radius: 8px;
-            padding: 0.5rem 0.75rem; font-size: 0.875rem; transition: all 0.2s;
+            flex: 1; background: var(--surface-2); border: 1px solid transparent;
+            border-radius: var(--radius-sm);
+            padding: 0.45rem 0.75rem; font-size: 0.82rem; color: var(--ink-1);
+            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
         }
-        .dynamic-list-row input:focus { background: white; border-color: #00689D; box-shadow: 0 0 0 3px rgba(0,104,157,0.1); outline: none; }
+        .dynamic-list-row input:focus {
+            background: var(--surface); border-color: var(--brand);
+            box-shadow: 0 0 0 3px var(--brand-soft); outline: none;
+        }
         .btn-remove-item {
-            background: none; border: none; color: #DC3545; font-size: 1rem;
-            padding: 0.375rem; border-radius: 6px; transition: all 0.15s; flex-shrink: 0;
+            background: none; border: 1px solid transparent; color: #dc2626;
+            font-size: 0.95rem; padding: 0.3rem 0.45rem; border-radius: 6px;
+            transition: background 0.15s, border-color 0.15s; flex-shrink: 0;
             line-height: 1; cursor: pointer;
         }
-        .btn-remove-item:hover { background: #FEE2E2; color: #991B1B; }
+        .btn-remove-item:hover { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
         .btn-add-item {
-            background: #EDF5FA; border: 1px dashed #00689D; color: #00689D;
-            border-radius: 8px; padding: 0.4rem 0.75rem; font-size: 0.8125rem; font-weight: 500;
-            cursor: pointer; transition: all 0.15s; margin-top: 0.5rem; display: inline-flex;
-            align-items: center; gap: 0.375rem;
+            background: var(--brand-soft);
+            border: 1px dashed rgba(0,104,157,0.4);
+            color: var(--brand);
+            border-radius: var(--radius-sm);
+            padding: 0.4rem 0.85rem; font-size: 0.78rem; font-weight: 500;
+            cursor: pointer; margin-top: 0.5rem;
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            transition: background 0.15s, border-style 0.15s;
         }
-        .btn-add-item:hover { background: #D6EAF4; border-style: solid; }
+        .btn-add-item:hover { background: rgba(0,104,157,0.14); border-style: solid; }
 
         /* ── Sub-section header ── */
         .subsection-header {
-            font-weight: 600; color: #00689D; font-size: 0.9375rem;
-            border-bottom: 2px solid #EDF5FA; padding-bottom: 0.5rem;
-            margin-bottom: 1rem; margin-top: 1.5rem;
+            font-weight: 600; color: var(--brand); font-size: 0.85rem;
+            border-bottom: 1px solid var(--line-soft);
+            padding-bottom: 0.5rem; margin: 1.25rem 0 0.85rem;
+            text-transform: uppercase; letter-spacing: 0.04em;
         }
-        .subsection-header i { margin-right: 0.375rem; }
+        .subsection-header i { margin-right: 0.4rem; }
 
         /* ── Edit info bar ── */
         .edit-info {
-            background: #FFF8E1; border: 1px solid #FFE082; border-radius: 8px;
-            padding: 0.625rem 1rem; font-size: 0.8125rem; color: #6D5C00;
-            margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;
+            background: #fffbeb; border: 1px solid #fcd34d; border-radius: var(--radius-sm);
+            padding: 0.55rem 0.85rem; font-size: 0.78rem; color: #92400e;
+            margin-bottom: 1.25rem;
+            display: flex; align-items: center; gap: 0.5rem;
         }
 
         /* ── Footer Buttons ── */
         .btn-save {
-            background: #00689D; color: white; border: none; border-radius: 10px;
-            padding: 0.625rem 2rem; font-weight: 600; font-size: 0.9375rem;
-            box-shadow: 0 4px 12px -2px rgba(0,104,157,0.25); transition: all 0.2s;
+            background: var(--brand); color: #fff; border: none;
+            border-radius: var(--radius-sm);
+            padding: 0.55rem 1.5rem; font-weight: 600; font-size: 0.85rem;
+            transition: background 0.15s, transform 0.15s;
         }
-        .btn-save:hover { background: #005580; color: white; transform: translateY(-1px); box-shadow: 0 6px 16px -2px rgba(0,104,157,0.35); }
+        .btn-save:hover { background: var(--brand-dark); color: #fff; transform: translateY(-1px); }
         .btn-cancel {
-            background: white; color: #6A6A6A; border: none; border-radius: 10px;
-            padding: 0.625rem 1.5rem; font-weight: 500; text-decoration: none;
-            box-shadow: 0 1px 4px -1px rgba(0,0,0,0.08); transition: all 0.2s;
+            background: var(--surface); color: var(--ink-1); border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 0.55rem 1.2rem; font-weight: 500; font-size: 0.85rem;
+            text-decoration: none;
+            transition: background 0.15s, border-color 0.15s;
             display: inline-flex; align-items: center;
         }
-        .btn-cancel:hover { color: #222222; box-shadow: 0 2px 8px -2px rgba(0,0,0,0.12); }
+        .btn-cancel:hover { background: var(--surface-2); border-color: #cbd5e1; color: var(--ink-1); }
 
         /* ── Validation ── */
-        .field-validation-error { color: #DC3545; font-size: 0.8125rem; }
-        .input-validation-error { border-color: #DC3545 !important; }
+        .field-validation-error { color: #dc2626; font-size: 0.75rem; margin-top: 0.2rem; display: block; }
+        .input-validation-error { border-color: #dc2626 !important; box-shadow: 0 0 0 3px rgba(220,38,38,0.08) !important; }
 
         /* ── Collapsible section toggle ── */
-        .section-toggle {
-            cursor: pointer; user-select: none;
-        }
+        .section-toggle { cursor: pointer; user-select: none; }
         .section-toggle .collapse-icon { transition: transform 0.2s; }
         .section-toggle.collapsed .collapse-icon { transform: rotate(-90deg); }
 
@@ -622,9 +671,11 @@
             'use strict';
 
             // ─── Configuration ───────────────────────────────────────
+            // Audit F-8: serialize JSON model fields with System.Text.Json so a script-closing
+            // payload in OverviewData / FullDetailsData can't break out of the JS string.
             var isEdit = @(isEdit ? "true" : "false");
-            var rawOverviewData = @Html.Raw(Model.OverviewData != null ? $"'{Model.OverviewData.Replace("'", "\\'").Replace("\n", "\\n").Replace("\r", "")}'" : "null");
-            var rawFullDetailsData = @Html.Raw(Model.FullDetailsData != null ? $"'{Model.FullDetailsData.Replace("'", "\\'").Replace("\n", "\\n").Replace("\r", "")}'" : "null");
+            var rawOverviewData = @Html.Raw(Model.OverviewData == null ? "null" : System.Text.Json.JsonSerializer.Serialize(Model.OverviewData));
+            var rawFullDetailsData = @Html.Raw(Model.FullDetailsData == null ? "null" : System.Text.Json.JsonSerializer.Serialize(Model.FullDetailsData));
 
             // ─── Stream / StreamType / Subgroup logic ────────────────
             var streamSelect = document.getElementById('Stream');

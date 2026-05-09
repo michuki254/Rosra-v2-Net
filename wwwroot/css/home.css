@@ -968,3 +968,83 @@
 @media (min-width: 1200px) {
     .hero-container { padding: 0 140px; }
 }
+
+/* ============================================================
+   How ROSRA Works — methodology section with screenshot rows
+   ============================================================ */
+.rosra-method-row {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    margin: 3.5rem auto;
+    max-width: 1140px;
+}
+
+.rosra-method-row--reverse .rosra-method-img { order: 2; }
+.rosra-method-row--reverse .rosra-method-text { order: 1; }
+
+.rosra-method-img {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 0.75rem;
+    box-shadow: 0 18px 40px -22px rgba(15, 23, 42, 0.45),
+                0 4px 14px -8px rgba(15, 23, 42, 0.12);
+    border: 1px solid #E6EDF3;
+}
+
+.rosra-method-img img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.rosra-method-text { padding: 0.5rem 0; }
+
+.rosra-method-step {
+    display: inline-block;
+    background: #00B2E3;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 0.85rem;
+}
+
+.rosra-method-heading {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: #00689D;
+    margin: 0 0 0.85rem;
+    line-height: 1.2;
+}
+
+.rosra-method-heading i {
+    color: #FD9D24;
+    font-size: 1.3rem;
+}
+
+.rosra-method-text p {
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: #334155;
+    margin: 0;
+}
+
+.rosra-method-text p strong { color: #1f2937; }
+
+@media (max-width: 767.98px) {
+    .rosra-method-row,
+    .rosra-method-row--reverse {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin: 2.25rem auto;
+    }
+    .rosra-method-row--reverse .rosra-method-img { order: 0; }
+    .rosra-method-row--reverse .rosra-method-text { order: 0; }
+    .rosra-method-heading { font-size: 1.3rem; }
+}
