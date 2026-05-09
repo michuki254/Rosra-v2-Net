@@ -48,13 +48,33 @@
 
     .cfg-row {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 1.25rem 1.5rem;
         margin-bottom: 1.1rem;
     }
 
-    .cfg-row-3 { grid-template-columns: 1fr 1fr 1fr; }
-    .cfg-row-4 { grid-template-columns: 0.6fr 1.2fr 1.2fr 1fr; }
+    /* Both modifiers now share the same uniform-width grid as .cfg-row so every
+       cfg-field renders at identical width regardless of how many sit in a row. */
+    .cfg-row-3,
+    .cfg-row-4 { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+
+    /* Logical groups inside the configuration card (Location, Government unit, Fiscal). */
+    .cfg-group .cfg-row,
+    .cfg-group .cfg-row-3,
+    .cfg-group .cfg-row-4 { margin-bottom: 0; }
+    .cfg-group + .cfg-group {
+        margin-top: 1.25rem;
+        padding-top: 1.25rem;
+        border-top: 1px dashed #e5e7eb;
+    }
+    .cfg-group-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #6b7280;
+        margin: 0 0 0.6rem;
+    }
 
     .cfg-field { display: flex; flex-direction: column; min-width: 0; }
     .cfg-field-narrow { max-width: 160px; }
@@ -382,8 +402,8 @@
                 <div class="config-card">
                     <div class="config-header">
                         <div class="config-header-left">
-                            <i class="bi bi-gear-fill"></i>
-                            <span>Configuration</span>
+                            <i class="bi bi-building"></i>
+                            <span>Local government profile</span>
                         </div>
                         <div class="config-header-right">All fields required · ~2 min</div>
                     </div>
@@ -396,28 +416,19 @@
                         <input type="hidden" id="governmentType" name="GovernmentType" value="@Model.GovernmentType">
                         <input type="hidden" id="budgetedOsr" name="BudgetedOsr" value="@(Model.BudgetedOsr?.ToString("#,##0.##"))">
 
-                        <!-- Row 1: Country & Financial Year -->
-                        <div class="cfg-row">
-                            <div class="cfg-field">
-                                <label class="cfg-label">@Localizer["Country"]</label>
-                                <div class="country-select-wrapper">
-                                    <span id="country-flag" class="fi" style="display: none; font-size: 1.25rem; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></span>
-                                    <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="country" name="Country" @(isViewMode ? "disabled" : "")>
-                                        <option value="">@Localizer["SelectCountry"]</option>
-                                    </select>
+                        <!-- Group 1: Location & government unit (merged) -->
+                        <div class="cfg-group">
+                            <div class="cfg-group-label">Location &amp; government unit</div>
+                            <div class="cfg-row" id="govUnitLevel1Row">
+                                <div class="cfg-field">
+                                    <label class="cfg-label">@Localizer["Country"]</label>
+                                    <div class="country-select-wrapper">
+                                        <span id="country-flag" class="fi" style="display: none; font-size: 1.25rem; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></span>
+                                        <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="country" name="Country" @(isViewMode ? "disabled" : "")>
+                                            <option value="">@Localizer["SelectCountry"]</option>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="cfg-field">
-                                <label class="cfg-label">@Localizer["FinancialYear"]</label>
-                                <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="financialYear" name="FinancialYear" @(isViewMode ? "disabled" : "")>
-                                    <option value="">@Localizer["SelectYear"]</option>
-                                </select>
-                                <small class="cfg-help">Period the assessment covers</small>
-                            </div>
-                        </div>
-
-                        <!-- Row 2: Gov Unit L1 / L2 / Add L3 -->
-                        <div class="cfg-row cfg-row-3" id="govUnitLevel1Row">
                             <div class="cfg-field">
                                 <label class="cfg-label">Government Unit — Level 1</label>
                                 <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="region" name="Region" @(isViewMode ? "disabled" : "")>
@@ -449,12 +460,22 @@
                             </div>
                         </div>
 
-                        @* Hierarchy note text removed per request. Empty stub kept so existing JS that toggles #hierarchyNote does not error. *@
-                        <div id="hierarchyNote" style="display: none;" aria-hidden="true"></div>
+                            @* Hierarchy note text removed per request. Empty stub kept so existing JS that toggles #hierarchyNote does not error. *@
+                            <div id="hierarchyNote" style="display: none;" aria-hidden="true"></div>
+                        </div>
 
-                        <!-- Row 3: Currency / OSR / GCP / Population -->
-                        <div class="cfg-row cfg-row-4">
-                            <div class="cfg-field cfg-field-narrow">
+                        <!-- Group 3: Fiscal figures -->
+                        <div class="cfg-group">
+                            <div class="cfg-group-label">Fiscal figures</div>
+                            <div class="cfg-row cfg-row-4">
+                            <div class="cfg-field">
+                                <label class="cfg-label">@Localizer["FinancialYear"]</label>
+                                <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="financialYear" name="FinancialYear" @(isViewMode ? "disabled" : "")>
+                                    <option value="">@Localizer["SelectYear"]</option>
+                                </select>
+                                <small class="cfg-help">Period the assessment covers</small>
+                            </div>
+                            <div class="cfg-field">
                                 <label class="cfg-label">@Localizer["Currency"]</label>
                                 <input type="text" class="form-control cfg-input cfg-readonly"
                                        id="currency" name="Currency" value="@(string.IsNullOrEmpty(Model.CurrencySymbol) ? Model.Currency : Model.CurrencySymbol)"
@@ -482,6 +503,7 @@
                                        id="population" name="Population" value="@(Model.Population?.ToString("#,##0"))"
                                        placeholder="e.g. 4,397,073" @(isViewMode ? "readonly" : "")>
                                 <small class="cfg-help">Optional — most recent census</small>
+                            </div>
                             </div>
                         </div>
 
@@ -537,7 +559,7 @@
                         <!-- PRIMARY CHART: Current OSR vs Potential — Gap to Frontier (above Peer SNGs section) -->
                         <div class="module2-chart-section gap-frontier-section">
                             <div class="gap-frontier-header">
-                                <h6 class="gap-frontier-title">Current OSR vs Potential — Gap to Frontier</h6>
+                                <h6 class="gap-frontier-title">What you collect vs what you could collect</h6>
                                 <span class="gap-frontier-units" id="gapFrontierUnits">AMOUNTS IN LCU (B)</span>
                             </div>
                             <div class="chart-container" style="height: 400px;">
@@ -567,8 +589,8 @@
                             <div class="module2-header">
                                 <span class="module-number">1</span>
                                 <div class="module-title-block">
-                                    <h5 class="module-title">Performance vs. Peer Local Governments <span class="badge bg-primary ms-2" style="font-size: 0.65rem;">Primary Analysis</span></h5>
-                                    <p class="module-subtitle">How your collection stacks up against similar local governments in the same country.</p>
+                                    <h5 class="module-title">How you compare to similar local governments <span class="badge bg-primary ms-2" style="font-size: 0.65rem;">Main analysis</span></h5>
+                                    <p class="module-subtitle">How your local revenue collection stacks up against similar local governments in the same country.</p>
                                 </div>
                             </div>
 
@@ -584,7 +606,7 @@
                             <div id="peerDataInputSection" class="peer-data-input-section" style="display: none;">
                                 <div class="peer-data-alert">
                                     <i class="bi bi-info-circle"></i>
-                                    <span>No peer SNG data found for this country. Choose how you'd like to provide data:</span>
+                                    <span>No comparison data found for this country. Choose how you'd like to provide data:</span>
                                 </div>
 
                                 <!-- Input method tabs -->
@@ -631,7 +653,7 @@
                                                         <th>OSR <span class="text-danger">*</span></th>
                                                         <th>GCP <span class="text-danger">*</span></th>
                                                         <th>Population <span class="text-muted fw-normal" style="font-size: 0.75em;">(optional)</span></th>
-                                                        <th style="width: 70px;" title="Include this SNG in the frontier analysis">Include</th>
+                                                        <th style="width: 70px;" title="Include this local government in the comparison">Include</th>
                                                         <th style="width: 40px;"></th>
                                                     </tr>
                                                 </thead>
@@ -672,7 +694,7 @@
                                     <div class="metric-row">
                                         <span class="metric-label">
                                             @Localizer["Metric_OSR"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="The actual Own Source Revenues this subnational government collected in the reference year. Pulled automatically from the peer-SNG dataset for the SNG you selected.">
+                                            <button type="button" class="formula-tooltip-btn" data-description="How much this local government actually collected in revenue in the reference year. Auto-filled from the comparison dataset for the local government you selected.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -681,7 +703,7 @@
                                     <div class="metric-row">
                                         <span class="metric-label">
                                             @Localizer["Metric_GDP"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="The size of this subnational government's economy (Gross Contribution to Product). Pulled automatically from the peer-SNG dataset for the SNG you selected.">
+                                            <button type="button" class="formula-tooltip-btn" data-description="The size of this local government's economy (Gross Contribution to Product). Auto-filled from the comparison dataset for the local government you selected.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -690,7 +712,7 @@
                                     <div class="metric-row highlight">
                                         <span class="metric-label">
                                             @Localizer["Metric_FrontierMultiplier"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="The average OSR-to-GDP ratio of the top-performing 20% of peer SNGs — the 'frontier' this SNG could realistically reach. Used as the benchmark for what strong peers actually collect.">
+                                            <button type="button" class="formula-tooltip-btn" data-description="The average collection rate (revenue ÷ economy size) of the top 20% of similar local governments. This is what the strongest peers achieve — and what your local government could realistically reach.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -699,7 +721,7 @@
                                     <div class="metric-row">
                                         <span class="metric-label">
                                             @Localizer["Metric_SubjectMultiplier"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="This SNG's current OSR as a share of its GDP — how much it collects today relative to the size of its economy.">
+                                            <button type="button" class="formula-tooltip-btn" data-description="Your local government's current collection rate — how much it collects today as a share of the size of its economy.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -708,7 +730,7 @@
                                     <div class="metric-row result">
                                         <span class="metric-label bold">
                                             @Localizer["Metric_Benchmark"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="The OSR this SNG could collect if it matched the peer frontier — i.e. the frontier multiplier applied to this SNG's GDP.">
+                                            <button type="button" class="formula-tooltip-btn" data-description="The revenue your local government could collect if it matched the top peers — the top-peer collection rate applied to your local economy size.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -717,7 +739,7 @@
                                     <div class="metric-row gap">
                                         <span class="metric-label gap-label">
                                             @Localizer["Metric_Gap"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="The revenue gap — how much more this SNG could raise each year if it performed at the peer frontier. A positive figure indicates untapped revenue potential.">
+                                            <button type="button" class="formula-tooltip-btn" data-description="How much more revenue your local government could raise each year if it collected at the top-peer level. A positive number means there's untapped revenue.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -727,7 +749,7 @@
                                     <div class="metric-row" style="border-top: 1px dashed #dee2e6; margin-top: 4px; padding-top: 4px;">
                                         <span class="metric-label" style="font-size: 0.8rem; color: #6c757d;">
                                             @Localizer["Metric_OSRPerCapita"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="Average OSR collected per resident. Helpful for comparing SNGs of different sizes on a like-for-like basis.">
+                                            <button type="button" class="formula-tooltip-btn" data-description="Average revenue collected per resident. Useful for comparing local governments of different sizes on a like-for-like basis.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -736,7 +758,7 @@
                                     <div class="metric-row">
                                         <span class="metric-label" style="font-size: 0.8rem; color: #6c757d;">
                                             @Localizer["Metric_PotentialOSRPerCapita"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="OSR per resident if this SNG performed at the frontier — the per-capita equivalent of the benchmark.">
+                                            <button type="button" class="formula-tooltip-btn" data-description="Revenue per resident if your local government collected at the top-peer rate — the per-resident equivalent of the benchmark.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -745,7 +767,7 @@
                                     <div class="metric-row">
                                         <span class="metric-label" style="font-size: 0.8rem; color: #6c757d;">
                                             @Localizer["Metric_PerCapitaGap"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="Per-resident revenue gap — the amount each resident could be contributing versus what they currently do, if this SNG matched the frontier.">
+                                            <button type="button" class="formula-tooltip-btn" data-description="Untapped revenue per resident — what each person could be contributing versus what they do today, if your local government matched the top peers.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>
@@ -754,7 +776,7 @@
                                     <div class="metric-row with-bar">
                                         <span class="metric-label accent">
                                             @Localizer["Metric_Performance"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="How close this SNG is to its benchmark. 1.0 means performing at the frontier; 0.5 means collecting about half of what peers suggest is feasible.">
+                                            <button type="button" class="formula-tooltip-btn" data-description="How close your local government is to its benchmark. 1.0 means performing at the top-peer level; 0.5 means collecting about half of what peers suggest is achievable.">
                                                 <i class="bi bi-info-circle"></i>
                                             </button>
                                         </span>

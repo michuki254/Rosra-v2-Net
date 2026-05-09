@@ -32,7 +32,7 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
-  <data name="Intro_Text" xml:space="preserve"><value>Un aperçu rapide comparant les recettes propres du GNS avec des pairs nationaux ou internationaux similaires. Même si l'aperçu semble positif (ou suggère un potentiel limité), l'analyse ascendante reste la référence principale car elle mesure directement les écarts par source de revenus. Si les données de référence ne sont pas disponibles, passez cette étape et allez à l'analyse ascendante.</value></data>
+  <data name="Intro_Text" xml:space="preserve"><value>Un aperçu rapide qui compare votre perception locale avec des collectivités locales similaires dans le pays ou à l'étranger. Même si cet aperçu semble positif (ou suggère peu de marge de progression), l'analyse détaillée par source de recettes reste la référence principale car elle mesure les écarts dans chaque source directement. Si aucune donnée de comparaison n'est disponible, passez cette étape.</value></data>
   <data name="DataInputBlock" xml:space="preserve"><value>Bloc de saisie des données</value></data>
   <data name="EnterInfo" xml:space="preserve"><value>Entrez les informations requises ci-dessous</value></data>
   <data name="Country" xml:space="preserve"><value>Pays</value></data>
@@ -53,26 +53,26 @@
   <data name="CurrencyOverride" xml:space="preserve"><value>Utiliser une devise différente pour les résultats d'analyse</value></data>
   <data name="OverrideCurrency" xml:space="preserve"><value>Devise de remplacement</value></data>
   <data name="CurrencyOverrideHelp" xml:space="preserve"><value>Cela modifie la devise d'affichage pour tous les résultats d'analyse.</value></data>
-  <data name="FrontierTitle" xml:space="preserve"><value>Frontière RPP intra-pays (GNS pairs)</value></data>
-  <data name="FrontierSubtitle" xml:space="preserve"><value>Comparer avec les gouvernements sous-nationaux pairs nationaux</value></data>
-  <data name="SelectCountryForFrontier" xml:space="preserve"><value>Sélectionnez un pays et un gouvernement sous-national pour voir l'analyse de la frontière RPP</value></data>
-  <data name="SubnationalGov" xml:space="preserve"><value>Gouvernement sous-national</value></data>
-  <data name="SelectSng" xml:space="preserve"><value>Sélectionnez un gouvernement sous-national...</value></data>
-  <data name="SelectSngForAnalysis" xml:space="preserve"><value>Sélectionnez un gouvernement sous-national pour voir l'analyse de la frontière RPP</value></data>
+  <data name="FrontierTitle" xml:space="preserve"><value>Comment vous vous comparez à d'autres collectivités locales</value></data>
+  <data name="FrontierSubtitle" xml:space="preserve"><value>Comment votre perception locale se situe par rapport à des collectivités locales similaires dans le même pays.</value></data>
+  <data name="SelectCountryForFrontier" xml:space="preserve"><value>Remplissez le profil de la collectivité locale ci-dessus et cliquez sur « Obtenir l'analyse » pour voir la comparaison.</value></data>
+  <data name="SubnationalGov" xml:space="preserve"><value>Collectivité locale</value></data>
+  <data name="SelectSng" xml:space="preserve"><value>Sélectionnez une collectivité locale...</value></data>
+  <data name="SelectSngForAnalysis" xml:space="preserve"><value>Sélectionnez une collectivité locale pour voir la comparaison</value></data>
   <data name="HierarchyNote" xml:space="preserve"><value>Les exemples sont fournis à titre indicatif et peuvent varier selon les pays. Remplissez le formulaire jusqu'à l'unité gouvernementale pour laquelle l'analyse ROSRA est menée.</value></data>
-  <data name="Metric_OSR" xml:space="preserve"><value>Recettes propres (RPP)</value></data>
-  <data name="Metric_GDP" xml:space="preserve"><value>PIB sous-national</value></data>
-  <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Multiplicateur de frontière (moy. top 20% RPP/PIB)</value></data>
-  <data name="Metric_SubjectMultiplier" xml:space="preserve"><value>Multiplicateur du sujet</value></data>
-  <data name="Metric_Benchmark" xml:space="preserve"><value>Référence de frontière (potentiel RPP)</value></data>
-  <data name="Metric_Gap" xml:space="preserve"><value>Écart par rapport à la référence</value></data>
-  <data name="Metric_Performance" xml:space="preserve"><value>Indice de performance</value></data>
+  <data name="Metric_OSR" xml:space="preserve"><value>Recettes perçues localement (RPP)</value></data>
+  <data name="Metric_GDP" xml:space="preserve"><value>Taille de l'économie locale</value></data>
+  <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Taux de perception des meilleurs pairs</value></data>
+  <data name="Metric_SubjectMultiplier" xml:space="preserve"><value>Votre taux de perception actuel</value></data>
+  <data name="Metric_Benchmark" xml:space="preserve"><value>Recettes que vous pourriez percevoir (niveau meilleurs pairs)</value></data>
+  <data name="Metric_Gap" xml:space="preserve"><value>Recettes inexploitées (vs meilleurs pairs)</value></data>
+  <data name="Metric_Performance" xml:space="preserve"><value>Score de performance</value></data>
   <data name="Metric_PrimaryAnalysis" xml:space="preserve"><value>Analyse principale</value></data>
-  <data name="Metric_OSRPerCapita" xml:space="preserve"><value>RPP par habitant</value></data>
-  <data name="Metric_PotentialOSRPerCapita" xml:space="preserve"><value>RPP par habitant implicite de la frontière</value></data>
-  <data name="Metric_PerCapitaGap" xml:space="preserve"><value>Écart par habitant par rapport à la frontière</value></data>
-  <data name="Chart_ScatterTitle" xml:space="preserve"><value>Comparaison du multiplicateur RPP/PIB</value></data>
-  <data name="Chart_BarTitle" xml:space="preserve"><value>RPP actuel vs référence de frontière</value></data>
+  <data name="Metric_OSRPerCapita" xml:space="preserve"><value>Recettes par habitant</value></data>
+  <data name="Metric_PotentialOSRPerCapita" xml:space="preserve"><value>Recettes par habitant au niveau des meilleurs pairs</value></data>
+  <data name="Metric_PerCapitaGap" xml:space="preserve"><value>Recettes inexploitées par habitant</value></data>
+  <data name="Chart_ScatterTitle" xml:space="preserve"><value>Comparaison des taux de perception</value></data>
+  <data name="Chart_BarTitle" xml:space="preserve"><value>Ce que vous percevez vs ce que vous pourriez percevoir</value></data>
   <data name="Result_Header" xml:space="preserve"><value>Résultat de la frontière RPP intra-pays (GNS pairs) :</value></data>
   <data name="Result_Placeholder" xml:space="preserve"><value>Sélectionnez un gouvernement sous-national pour voir le résultat de l'analyse.</value></data>
   <data name="CrossCountry_Title" xml:space="preserve"><value>Facultatif : Analyse fiscale internationale</value></data>
