@@ -1,0 +1,109 @@
+# Builds RosraApp on every push to main and deploys it to the
+# rosra-dev Azure App Service (RG: UNHAB-PRD-ROSRA, sub: UN-HABITAT-PROD).
+#
+# Prerequisites (one-time, in Azure DevOps):
+#   1. Project Settings > Service connections > New > Azure Resource Manager.
+#      Use Workload identity federation (recommended) or Service principal,
+#      scope it to subscription UN-HABITAT-PROD and resource group
+#      UNHAB-PRD-ROSRA, and name the connection EXACTLY: Azure-RosraDev
+#      (or change `azureServiceConnection` below to match the name you pick).
+#   2. Pipelines > New pipeline > Azure Repos Git > ROSRA Tool > Existing
+#      Azure Pipelines YAML file > /azure-pipelines.yml.
+#   3. First run will prompt you to authorize the service connection.
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - '**/*.md'
+      - 'PROJECT-UPDATE-*.docx'
+      - 'docs/**'
+      - 'Scripts/**'
+
+pr: none
+
+variables:
+  buildConfiguration: Release
+  azureServiceConnection: Azure-RosraDev
+  appName: rosra-dev
+  resourceGroup: UNHAB-PRD-ROSRA
+  dotnetSdkVersion: 8.0.x
+  projectPath: RosraApp.csproj
+
+stages:
+- stage: Build
+  displayName: Build & publish
+  jobs:
+  - job: Build
+    pool:
+      vmImage: windows-latest
+    steps:
+    - task: UseDotNet@2
+      displayName: Install .NET SDK $(dotnetSdkVersion)
+      inputs:
+        packageType: sdk
+        version: $(dotnetSdkVersion)
+
+    - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs:
+        command: restore
+        projects: $(projectPath)
+
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        command: build
+        projects: $(projectPath)
+        arguments: --configuration $(buildConfiguration) --no-restore
+
+    - task: DotNetCoreCLI@2
+      displayName: Publish (framework-dependent, zipped)
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: $(projectPath)
+        arguments: >-
+          --configuration $(buildConfiguration)
+          --no-build
+          --output $(Build.ArtifactStagingDirectory)
+          /p:UseAppHost=false
+          /p:EnvironmentName=Production
+        zipAfterPublish: true
+        modifyOutputPath: false
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish pipeline artifact
+      inputs:
+        targetPath: $(Build.ArtifactStagingDirectory)
+        artifact: webapp
+        publishLocation: pipeline
+
+- stage: Deploy
+  displayName: Deploy to rosra-dev
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  jobs:
+  - deployment: DeployRosraDev
+    displayName: Deploy to App Service rosra-dev
+    pool:
+      vmImage: windows-latest
+    environment: rosra-dev
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: webapp
+
+          - task: AzureWebApp@1
+            displayName: Deploy to Azure App Service
+            inputs:
+              azureSubscription: $(azureServiceConnection)
+              appType: webApp
+              appName: $(appName)
+              resourceGroupName: $(resourceGroup)
+              package: $(Pipeline.Workspace)/webapp/*.zip
+              deploymentMethod: zipDeploy
