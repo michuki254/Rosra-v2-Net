@@ -131,7 +131,7 @@
   <data name="TotalAdminGap" xml:space="preserve"><value>Total Administrative Gap</value></data>
 
   <!-- Breakdown Pie Chart -->
-  <data name="BreakdownAdminGaps" xml:space="preserve"><value>Breakdown of Administrative Gaps</value></data>
+  <data name="BreakdownAdminGaps" xml:space="preserve"><value>Gaps Breakdown</value></data>
   <data name="BreakdownPieChartDescription" xml:space="preserve"><value>This pie chart illustrates the percentage distribution of the revenue gaps. It visually shows the contribution of each type of gap to the total uncollected revenue, helping to identify which gaps are the most significant.</value></data>
 
   <!-- Headline KPI card (Total Revenue Gap, sits at the top of the right panel) -->

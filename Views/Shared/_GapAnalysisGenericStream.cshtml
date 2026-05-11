@@ -370,7 +370,7 @@
                          Property Tax "Why only 2 bars?" note). -->
                     <div class="mb-4 revenue-gap-stack-section">
                         <div class="rg-stack-header">
-                            <h6 class="rg-stack-title">Actual vs potential</h6>
+                            <h6 class="rg-stack-title">@SharedLocalizer["Chart_ActualVsPotential_Title"]</h6>
                             <span class="rg-stack-units">AMOUNTS IN <span class="currency-label">@currencySymbol</span> (B)</span>
                         </div>
                         <div class="chart-container" style="height: 420px;">
@@ -400,42 +400,42 @@
                                          a stray `position: relative;` here was collapsing the container to
                                          zero height, which made the JS that pins Registered/Compliant by
                                          pixel-top stack them all at the top. -->
-                                    <div class="matrix-y-labels position-absolute" id="@(streamId)MatrixYLabelsContainer" style="left: 20px; top: 0; bottom: 30px; width: 55px; font-size: 0.6rem; background: #f8f9fa;">
-                                        <!-- Estimated label at TOP boundary (top of matrix). No translateY because
-                                             the matrix-container has overflow:hidden — centering on the boundary
-                                             would clip the top half of the label off-screen. -->
-                                        <div class="y-label-item" id="@(streamId)YLabelEstimated" style="position: absolute; right: 3px; top: 0; text-align: right; cursor: help;"
+                                    <div class="matrix-y-labels position-absolute" id="@(streamId)MatrixYLabelsContainer" style="left: 20px; top: 0; bottom: 30px; width: 72px; font-size: 0.6rem; background: #f8f9fa;">
+                                        <!-- Estimated label at TOP boundary. No translateY centering so the label
+                                             stays fully inside the matrix; white-space:nowrap + tight line-heights
+                                             keep label + count compact and prevent collision with Registered below. -->
+                                        <div class="y-label-item" id="@(streamId)YLabelEstimated" style="position: absolute; right: 3px; top: 0; text-align: right; cursor: help; white-space: nowrap; line-height: 1;"
                                              data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="@Localizer["Matrix_Estimated_Tooltip"]">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Estimated"]</small>
-                                            <span id="@(streamId)MatrixEstimatedLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
+                                            <small class="d-block fw-bold" style="font-size: 0.5rem; color: #334155; line-height: 1; margin-bottom: 1px;">@Localizer["Estimated"]</small>
+                                            <span id="@(streamId)MatrixEstimatedLabel" class="fw-bold" style="font-size: 0.62rem; line-height: 1;">0</span>
                                         </div>
                                         <!-- Registered label at boundary between Row1 and Row2 -->
-                                        <div class="y-label-item" id="@(streamId)YLabelRegistered" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%); cursor: help;"
+                                        <div class="y-label-item" id="@(streamId)YLabelRegistered" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%); cursor: help; white-space: nowrap; line-height: 1;"
                                              data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="@Localizer["Matrix_Registered_Tooltip"]">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Registered"]</small>
-                                            <span id="@(streamId)MatrixRegisteredLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
+                                            <small class="d-block fw-bold" style="font-size: 0.5rem; color: #334155; line-height: 1; margin-bottom: 1px;">@Localizer["Registered"]</small>
+                                            <span id="@(streamId)MatrixRegisteredLabel" class="fw-bold" style="font-size: 0.62rem; line-height: 1;">0</span>
                                         </div>
                                         <!-- Compliant label at boundary between Row2 and Row3 -->
-                                        <div class="y-label-item" id="@(streamId)YLabelCompliant" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%); cursor: help;"
+                                        <div class="y-label-item" id="@(streamId)YLabelCompliant" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%); cursor: help; white-space: nowrap; line-height: 1;"
                                              data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="@Localizer["Matrix_Compliant_Tooltip"]">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Compliant"]</small>
-                                            <span id="@(streamId)MatrixCompliantLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
+                                            <small class="d-block fw-bold" style="font-size: 0.5rem; color: #334155; line-height: 1; margin-bottom: 1px;">@Localizer["Compliant"]</small>
+                                            <span id="@(streamId)MatrixCompliantLabel" class="fw-bold" style="font-size: 0.62rem; line-height: 1;">0</span>
                                         </div>
                                     </div>
 
                                     <!-- Matrix Grid Area -->
-                                    <div class="matrix-grid position-absolute" id="@(streamId)MatrixGridArea" style="left: 75px; top: 0; right: 0; bottom: 30px; display: flex; flex-direction: column;">
+                                    <div class="matrix-grid position-absolute" id="@(streamId)MatrixGridArea" style="left: 92px; top: 0; right: 0; bottom: 30px; display: flex; flex-direction: column;">
                                         <!-- Row 1: Unregistered (Estimated - Registered) -->
-                                        <div class="matrix-row d-flex" id="@(streamId)MatrixRowUnreg" style="flex: 1; min-height: 12px;">
+                                        <div class="matrix-row d-flex" id="@(streamId)MatrixRowUnreg" style="flex: 1; min-height: 48px;">
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="@(streamId)MatrixCoverageGap"
-                                                 style="background-color: #F28E2B; color: white; flex: 1; min-width: 30px;">
+                                                 style="background-color: #F28E2B; color: white; flex: 1; min-width: 90px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["CoverageGap"]</small><br>
                                                     <span id="@(streamId)MatrixCoverageGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="@(streamId)MatrixMixedCoverage"
-                                                 style="background-color: #B07AA1; color: white; flex: 1; min-width: 30px; cursor: help;"
+                                                 style="background-color: #B07AA1; color: white; flex: 1; min-width: 90px; cursor: help;"
                                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="@Localizer["MixedGapCovLiab_Tooltip"]">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["MixedGapCovLiab"]</small><br>
@@ -444,16 +444,16 @@
                                             </div>
                                         </div>
                                         <!-- Row 2: Non-Compliant Registered (Registered - Compliant) -->
-                                        <div class="matrix-row d-flex" id="@(streamId)MatrixRowNonCompliant" style="flex: 1; min-height: 12px;">
+                                        <div class="matrix-row d-flex" id="@(streamId)MatrixRowNonCompliant" style="flex: 1; min-height: 48px;">
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="@(streamId)MatrixComplianceGap"
-                                                 style="background-color: #E15759; color: white; flex: 1; min-width: 30px;">
+                                                 style="background-color: #E15759; color: white; flex: 1; min-width: 90px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["ComplianceGap"]</small><br>
                                                     <span id="@(streamId)MatrixComplianceGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="@(streamId)MatrixMixedCompliance"
-                                                 style="background-color: #76B7B2; color: white; flex: 1; min-width: 30px; cursor: help;"
+                                                 style="background-color: #76B7B2; color: white; flex: 1; min-width: 90px; cursor: help;"
                                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="@Localizer["MixedGapCompLiab_Tooltip"]">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["MixedGapCompLiab"]</small><br>
@@ -462,16 +462,16 @@
                                             </div>
                                         </div>
                                         <!-- Row 3: Compliant -->
-                                        <div class="matrix-row d-flex" id="@(streamId)MatrixRowCompliant" style="flex: 1; min-height: 12px;">
+                                        <div class="matrix-row d-flex" id="@(streamId)MatrixRowCompliant" style="flex: 1; min-height: 48px;">
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="@(streamId)MatrixActualRevenue"
-                                                 style="background-color: #00B2E3; color: white; flex: 1; min-width: 30px;">
+                                                 style="background-color: #00B2E3; color: white; flex: 1; min-width: 90px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["ActualRevenue"]</small><br>
                                                     <span id="@(streamId)MatrixActualRevenueVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="@(streamId)MatrixLiabilityGap"
-                                                 style="background-color: #4E79A7; color: white; flex: 1; min-width: 30px;">
+                                                 style="background-color: #4E79A7; color: white; flex: 1; min-width: 90px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["LiabilityGap"]</small><br>
                                                     <span id="@(streamId)MatrixLiabilityGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
@@ -481,7 +481,7 @@
                                     </div>
 
                                     <!-- X-axis Labels - positioned at column BOUNDARIES -->
-                                    <div class="matrix-x-axis position-absolute" id="@(streamId)MatrixXAxisContainer" style="left: 75px; right: 0; bottom: 0; height: 30px; background: #f8f9fa;">
+                                    <div class="matrix-x-axis position-absolute" id="@(streamId)MatrixXAxisContainer" style="left: 92px; right: 0; bottom: 0; height: 30px; background: #f8f9fa;">
                                         <!-- X-axis label at left edge (origin = 0) -->
                                         <div class="x-label-item" id="@(streamId)XLabelOrigin" style="position: absolute; left: 0; bottom: 2px; transform: translateX(0%); text-align: left; font-size: 0.6rem;">
                                             <span id="@(streamId)MatrixOriginLabel" class="fw-bold" style="font-size: 0.65rem;">@currencySymbol 0</span>
@@ -874,10 +874,9 @@
                 rev: rgRev, gap: rgGap, total: rgTotal,
                 realisticPct: realisticImprovementPercent
             };
-            // NB: double-at in a Razor view escapes to a single at-sign in rendered output.
             revenueGapStackedBarChart.data.labels = [
-                ['Revenue to date', 'actual collection'],
-                ['Realistic potential', '@@ ' + (realisticImprovementPercent || 0) + '% improvement']
+                '@SharedLocalizer["Chart_ActualRevenue"]',
+                '@SharedLocalizer["Chart_PotentialRevenue"]'
             ];
             revenueGapStackedBarChart.update();
         }
@@ -1076,11 +1075,11 @@
                 type: 'bar',
                 data: {
                     labels: [
-                        ['Revenue to date', 'actual collection'],
-                        ['Realistic potential', 'at your improvement %']
+                        '@SharedLocalizer["Chart_ActualRevenue"]',
+                        '@SharedLocalizer["Chart_PotentialRevenue"]'
                     ],
                     datasets: [
-                        { label: 'Revenue to date', data: [0, 0], backgroundColor: '#00B2E3', stack: 'rg', borderWidth: 0, barThickness: 90, maxBarThickness: 110 },
+                        { label: 'Revenue to date', data: [0, 0], backgroundColor: '#00B2E3', stack: 'rg', borderWidth: 0, barThickness: 90, maxBarThickness: 110 }, // dataset labels appear in tooltips; can be wrapped later if needed
                         { label: 'Gap',             data: [0, 0], backgroundColor: '#FD9D24', stack: 'rg', borderWidth: 0, barThickness: 90, maxBarThickness: 110 }
                     ]
                 },
@@ -1279,7 +1278,7 @@
                         },
                         y: {
                             grid: { display: false, drawBorder: false },
-                            ticks: { font: { size: 11 }, color: '#334155' }
+                            ticks: { font: { size: 11, weight: '700' }, color: '#334155' }
                         }
                     }
                 }
@@ -1374,7 +1373,7 @@
 
         // True Marimekko: cell AREA encodes the underlying count.
         // Floor 5% — small cells stay visible without distorting proportions of larger ones.
-        const minFlex = 0.05;
+        const minFlex = 0.15;
         const unregFlex = rowsEmpty ? 1 : Math.max(minFlex, unregUnits / totalUnits);
         const nonCompliantFlex = rowsEmpty ? 1 : Math.max(minFlex, nonCompliantUnits / totalUnits);
         const compliantFlex = rowsEmpty ? 1 : Math.max(minFlex, compliantUnits / totalUnits);
@@ -1395,7 +1394,7 @@
         const totalBilling = colsEmpty ? 1 : totalBillingRaw;
 
         // Column floor 5% — same Marimekko principle as rows.
-        const minColWidth = 0.05;
+        const minColWidth = 0.15;
         const leftColFlex = colsEmpty ? 1 : Math.max(minColWidth, avgBilled / totalBilling);
         const rightColFlex = colsEmpty ? 1 : Math.max(minColWidth, liabilityDiff / totalBilling);
 

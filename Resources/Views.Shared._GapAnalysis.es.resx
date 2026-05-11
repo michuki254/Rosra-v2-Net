@@ -44,7 +44,19 @@
   <data name="AddStream_Tooltip" xml:space="preserve"><value>Agregar una nueva fuente de ingresos</value></data>
 
   <!-- Add Stream Modal -->
-  <data name="AddStreamModal_Title" xml:space="preserve"><value>Agregar nueva fuente de ingresos</value></data>
+  <data name="AddStreamModal_Title" xml:space="preserve"><value>Agregar fuente de ingresos no inmobiliaria</value></data>
+  <data name="AddStreamModal_Step1Intro" xml:space="preserve"><value>Elija una plantilla para comenzar, o seleccione "Otro" para clasificar manualmente.</value></data>
+  <data name="AddStreamModal_SubgroupLabel" xml:space="preserve"><value>¿Qué tipo de fuente de ingresos no inmobiliaria está analizando?</value></data>
+  <data name="AddStreamModal_SubgroupHelp" xml:space="preserve"><value>Elija la opción que mejor refleje cómo se factura o cobra este ingreso.</value></data>
+  <data name="AddStreamModal_SubgroupNote" xml:space="preserve"><value>Clasifique según cómo se administra el ingreso, no solo por su nombre local. Una tarifa de residuos facturada estaría bajo tarifas de servicio, mientras que un boleto diario de mercado estaría bajo cargos diarios.</value></data>
+  <data name="AddStreamModal_SelectSubgroup" xml:space="preserve"><value>-- Seleccione el tipo de fuente --</value></data>
+  <data name="AddStreamModal_SubtypeLabel" xml:space="preserve"><value>¿Qué tipo de ingreso específico se ajusta mejor a esta fuente?</value></data>
+  <data name="AddStreamModal_SelectSubtype" xml:space="preserve"><value>-- Seleccione el tipo específico (opcional) --</value></data>
+  <data name="AddStreamModal_LocalNameLabel" xml:space="preserve"><value>Nombre local de esta fuente de ingresos</value></data>
+  <data name="AddStreamModal_LocalNamePlaceholder" xml:space="preserve"><value>ej., Tarifa de usuario de gestión de residuos</value></data>
+  <data name="AddStreamModal_LocalNameHelp" xml:space="preserve"><value>Ingrese el nombre que su municipio usa para esta fuente de ingresos.</value></data>
+  <data name="AddStreamModal_Back" xml:space="preserve"><value>Atrás</value></data>
+  <data name="AddStreamModal_Create" xml:space="preserve"><value>Crear fuente</value></data>
   <data name="AddStreamModal_StreamName" xml:space="preserve"><value>Nombre de la fuente</value></data>
   <data name="AddStreamModal_Placeholder" xml:space="preserve"><value>ej., Derechos de estacionamiento, Derechos de mercado, Permisos de publicidad...</value></data>
   <data name="AddStreamModal_Helper" xml:space="preserve"><value>Ingrese un nombre descriptivo para esta fuente de ingresos</value></data>

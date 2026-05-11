@@ -575,9 +575,9 @@
                                         data-prev-tab-id="@prevSubTab.Id">
                                     <span class="bottom-step-cta__arrow"><i class="bi bi-arrow-left"></i></span>
                                     <span class="bottom-step-cta__copy">
-                                        <span class="bottom-step-cta__eyebrow">Previous step</span>
+                                        <span class="bottom-step-cta__eyebrow">@SharedLocalizer["Nav_PreviousStep"]</span>
                                         <span class="bottom-step-cta__title">@prevSubTab.Title</span>
-                                        <span class="bottom-step-cta__sub">Go back to step @(activeStepIndex) of @umbrellaTab.SubTabs.Count.</span>
+                                        <span class="bottom-step-cta__sub">@string.Format(SharedLocalizer["Nav_GoBackToStep"].Value, activeStepIndex, umbrellaTab.SubTabs.Count)</span>
                                     </span>
                                 </button>
                             }
@@ -587,9 +587,9 @@
                                         class="bottom-step-cta bottom-step-cta--back">
                                     <span class="bottom-step-cta__arrow"><i class="bi bi-arrow-left"></i></span>
                                     <span class="bottom-step-cta__copy">
-                                        <span class="bottom-step-cta__eyebrow">Go back</span>
-                                        <span class="bottom-step-cta__title">Back to overview</span>
-                                        <span class="bottom-step-cta__sub">Return to the high-level analysis snapshot.</span>
+                                        <span class="bottom-step-cta__eyebrow">@SharedLocalizer["Nav_GoBack"]</span>
+                                        <span class="bottom-step-cta__title">@SharedLocalizer["Nav_BackToOverview"]</span>
+                                        <span class="bottom-step-cta__sub">@SharedLocalizer["Nav_BackToOverviewSub"]</span>
                                     </span>
                                 </button>
                             }
@@ -600,9 +600,9 @@
                                         class="bottom-step-cta bottom-step-cta--next"
                                         data-next-tab-id="@nextSubTab.Id">
                                     <span class="bottom-step-cta__copy">
-                                        <span class="bottom-step-cta__eyebrow">Next step</span>
+                                        <span class="bottom-step-cta__eyebrow">@SharedLocalizer["Nav_NextStep"]</span>
                                         <span class="bottom-step-cta__title">@nextSubTab.Title</span>
-                                        <span class="bottom-step-cta__sub">Continue to step @(activeStepIndex + 2) of @umbrellaTab.SubTabs.Count.</span>
+                                        <span class="bottom-step-cta__sub">@string.Format(SharedLocalizer["Nav_ContinueToStep"].Value, activeStepIndex + 2, umbrellaTab.SubTabs.Count)</span>
                                     </span>
                                     <span class="bottom-step-cta__arrow"><i class="bi bi-arrow-right"></i></span>
                                 </button>
@@ -619,19 +619,19 @@
                                     @if (!lastStepIsViewMode)
                                     {
                                         <button type="button" id="saveReportBtn" class="bottom-save-btn">
-                                            <i class="bi bi-save me-2"></i>@(lastStepReportId > 0 ? "Update report" : "Save report")
+                                            <i class="bi bi-save me-2"></i>@(lastStepReportId > 0 ? SharedLocalizer["Nav_UpdateReport"] : SharedLocalizer["Nav_SaveReport"])
                                         </button>
                                     }
                                     else if (lastStepIsSample)
                                     {
                                         <a asp-controller="Rosra" asp-action="SaveAsMyReport" class="bottom-save-btn">
-                                            <i class="bi bi-save me-2"></i>Save as my report
+                                            <i class="bi bi-save me-2"></i>@SharedLocalizer["Nav_SaveAsMyReport"]
                                         </a>
                                     }
                                     else
                                     {
                                         <a asp-controller="Rosra" asp-action="Edit" asp-route-id="@lastStepReportPublicId" class="bottom-save-btn">
-                                            <i class="bi bi-save me-2"></i>Save report
+                                            <i class="bi bi-save me-2"></i>@SharedLocalizer["Nav_SaveReport"]
                                         </a>
                                     }
                                 </div>

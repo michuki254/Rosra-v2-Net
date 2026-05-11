@@ -131,7 +131,7 @@
   <data name="TotalAdminGap" xml:space="preserve"><value>Total de brechas administrativas</value></data>
 
   <!-- Breakdown Pie Chart -->
-  <data name="BreakdownAdminGaps" xml:space="preserve"><value>Desglose de brechas administrativas</value></data>
+  <data name="BreakdownAdminGaps" xml:space="preserve"><value>Desglose de brechas</value></data>
   <data name="BreakdownPieChartDescription" xml:space="preserve"><value>Este gr&#225;fico circular ilustra la distribuci&#243;n porcentual de las brechas de ingresos. Muestra visualmente la contribuci&#243;n de cada tipo de brecha al total de ingresos no recaudados, ayudando a identificar cu&#225;les son las brechas m&#225;s significativas.</value></data>
 
   <!-- Headline KPI card -->

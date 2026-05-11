@@ -80,4 +80,32 @@
   <data name="Modal_FormatHtml" xml:space="preserve"><value>HTML (apto para impresión)</value></data>
   <data name="Modal_Cancel" xml:space="preserve"><value>Cancelar</value></data>
   <data name="Modal_Generate" xml:space="preserve"><value>Generar informe</value></data>
+
+  <data name="Personalise_Time" xml:space="preserve"><value>Plazo</value></data>
+  <data name="Personalise_QuickWins" xml:space="preserve"><value>Victorias rápidas</value></data>
+  <data name="Personalise_MediumTerm" xml:space="preserve"><value>Mediano plazo</value></data>
+  <data name="Personalise_LongTerm" xml:space="preserve"><value>Largo plazo</value></data>
+  <data name="Personalise_Risk" xml:space="preserve"><value>Riesgo</value></data>
+  <data name="Personalise_HigherFeasibility" xml:space="preserve"><value>Mayor viabilidad</value></data>
+  <data name="Personalise_Moderate" xml:space="preserve"><value>Moderada</value></data>
+  <data name="Personalise_LowerFeasibility" xml:space="preserve"><value>Menor viabilidad</value></data>
+  <data name="Personalise_Focus" xml:space="preserve"><value>Enfoque</value></data>
+  <data name="Personalise_Compliance" xml:space="preserve"><value>Cumplimiento</value></data>
+  <data name="Personalise_Coverage" xml:space="preserve"><value>Cobertura</value></data>
+  <data name="Personalise_Valuation" xml:space="preserve"><value>Valoración</value></data>
+  <data name="Personalise_Liability" xml:space="preserve"><value>Obligación</value></data>
+  <data name="Personalise_CardsMatch" xml:space="preserve"><value>&lt;strong id="recVisibleCount"&gt;—&lt;/strong&gt; de &lt;strong id="recTotalCount"&gt;—&lt;/strong&gt; fichas coinciden</value></data>
+  <data name="Personalise_ShowAll" xml:space="preserve"><value>Mostrar las 82 fichas</value></data>
+  <data name="Personalise_ShowAllTooltip" xml:space="preserve"><value>Ampliar a las 82 fichas de soluciones</value></data>
+  <data name="Personalise_ResetFilters" xml:space="preserve"><value>Restablecer filtros</value></data>
+  <data name="Personalise_ResetFiltersTooltip" xml:space="preserve"><value>Restaurar la selección de filtros predeterminada</value></data>
+
+  <data name="Empty_NoStreamsPrioritised" xml:space="preserve"><value>Aún no se ha priorizado ningún flujo, por lo que no pudimos derivar automáticamente fichas. Haga clic abajo para ampliar a las 82 fichas de soluciones.</value></data>
+
+  <data name="Modal_Subtitle" xml:space="preserve"><value>Elija las secciones a incluir y seleccione su formato de salida.</value></data>
+  <data name="Modal_IncludeHelp" xml:space="preserve"><value>Todas las secciones están activadas por defecto — desactive las que desee omitir.</value></data>
+  <data name="Modal_SelectAll" xml:space="preserve"><value>Seleccionar todo</value></data>
+  <data name="Modal_ClearAll" xml:space="preserve"><value>Borrar todo</value></data>
+  <data name="Modal_ProgressTracker" xml:space="preserve"><value>Seguimiento del progreso</value></data>
+  <data name="View_AriaLabel" xml:space="preserve"><value>Vista de recomendaciones</value></data>
 </root>

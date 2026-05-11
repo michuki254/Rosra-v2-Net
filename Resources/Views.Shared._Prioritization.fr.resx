@@ -73,7 +73,7 @@
   <data name="FinalStream_Footer_Total" xml:space="preserve"><value>Total (flux inclus)</value></data>
 
   <!-- Charts -->
-  <data name="Chart_BarTitle" xml:space="preserve"><value>Écart fonctionnel total par flux</value></data>
+  <data name="Chart_BarTitle" xml:space="preserve"><value>Écart de revenus par source</value></data>
   <data name="Chart_PieTitle" xml:space="preserve"><value>Part de l'écart total</value></data>
   <data name="Chart_Placeholder" xml:space="preserve"><value>Complétez l'analyse des écarts pour afficher les données graphiques</value></data>
 
@@ -145,4 +145,44 @@
   <data name="MasterPriority_Col_Gap" xml:space="preserve"><value>Écart</value></data>
   <data name="MasterPriority_Col_Amount" xml:space="preserve"><value>Montant</value></data>
   <data name="MasterPriority_Placeholder" xml:space="preserve"><value>La liste générale sera alimentée à partir des priorités des écarts</value></data>
+
+  <data name="Prio_GapByStream_Placeholder" xml:space="preserve"><value>Ajoutez des sources dans l'Analyse des écarts pour voir la ventilation.</value></data>
+  <data name="Prio_StreamPrio_Help" xml:space="preserve"><value>Faites glisser les lignes avec la poignée {0}, ou utilisez les boutons {1}{2} pour réorganiser.</value></data>
+  <data name="Prio_Col_Rank" xml:space="preserve"><value>Rang</value></data>
+  <data name="Prio_Col_Rank_Tooltip" xml:space="preserve"><value>Rang final — numéroté automatiquement de haut en bas pour les sources incluses.</value></data>
+  <data name="Prio_Col_Stream" xml:space="preserve"><value>Source</value></data>
+  <data name="Prio_Col_Stream_Tooltip" xml:space="preserve"><value>Nom de la source de revenus.</value></data>
+  <data name="Prio_Col_TotalGap" xml:space="preserve"><value>Écart total</value></data>
+  <data name="Prio_Col_TotalGap_Tooltip" xml:space="preserve"><value>Écart fonctionnel total provenant de l'onglet Analyse des écarts.</value></data>
+  <data name="Prio_Col_ShareGap" xml:space="preserve"><value>Part de l'écart</value></data>
+  <data name="Prio_Col_ShareGap_Tooltip" xml:space="preserve"><value>Part de l'écart total (sur les sources incluses).</value></data>
+  <data name="Prio_Col_Status" xml:space="preserve"><value>Statut</value></data>
+  <data name="Prio_Col_Status_Tooltip" xml:space="preserve"><value>Inclure dans / exclure de la priorisation.</value></data>
+  <data name="Prio_Col_Move" xml:space="preserve"><value>Déplacer</value></data>
+  <data name="Prio_Col_Move_Tooltip" xml:space="preserve"><value>Déplacer cette source vers le haut ou le bas.</value></data>
+  <data name="Prio_NoStreamData" xml:space="preserve"><value>Aucune donnée de source trouvée. Veuillez d'abord compléter les onglets d'Analyse des écarts.</value></data>
+
+  <data name="Prio_GapSequencing_Help" xml:space="preserve"><value>Chaque cellule affiche le type d'écart (sélectionnable) et son montant.</value></data>
+  <data name="Prio_HowModesChosen" xml:space="preserve"><value>Comment les modes de priorisation sont choisis</value></data>
+  <data name="Prio_HowModesChosen_Hint" xml:space="preserve"><value>3 modes · cliquez pour développer</value></data>
+
+  <data name="Prio_RevenueImpact_Title" xml:space="preserve"><value>Impact sur les revenus et opportunités d'amélioration</value></data>
+  <data name="Prio_RevenueImpact_Sub" xml:space="preserve"><value>Écarts classés par impact absolu sur les revenus et notés selon leur potentiel d'amélioration pour aider à concentrer les efforts de réforme là où cela compte le plus.</value></data>
+  <data name="Prio_TopGaps_Title" xml:space="preserve"><value>Principaux écarts à traiter</value></data>
+  <data name="Prio_TopGaps_Help" xml:space="preserve"><value>Triez par &lt;strong&gt;Montant&lt;/strong&gt; pour le plus gros pactole, par &lt;strong&gt;Score&lt;/strong&gt; pour les gains les plus actionnables.</value></data>
+  <data name="Prio_TopGaps_Col_Rank" xml:space="preserve"><value>#</value></data>
+  <data name="Prio_TopGaps_Col_Rank_Tooltip" xml:space="preserve"><value>Rang selon le tri actuellement sélectionné.</value></data>
+  <data name="Prio_TopGaps_Col_Stream_Tooltip" xml:space="preserve"><value>Source de revenus.</value></data>
+  <data name="Prio_TopGaps_Col_GapType" xml:space="preserve"><value>Type d'écart</value></data>
+  <data name="Prio_TopGaps_Col_GapType_Tooltip" xml:space="preserve"><value>Type d'écart (Conformité / Couverture / Évaluation / Imposition).</value></data>
+  <data name="Prio_TopGaps_Col_Amount" xml:space="preserve"><value>Montant</value></data>
+  <data name="Prio_TopGaps_Col_Amount_Tooltip" xml:space="preserve"><value>Cliquez pour trier par montant absolu d'écart.</value></data>
+  <data name="Prio_TopGaps_Col_Share" xml:space="preserve"><value>Part</value></data>
+  <data name="Prio_TopGaps_Col_Share_Tooltip" xml:space="preserve"><value>Part de l'écart total.</value></data>
+  <data name="Prio_TopGaps_Col_Score" xml:space="preserve"><value>Score</value></data>
+  <data name="Prio_TopGaps_Col_Score_Tooltip" xml:space="preserve"><value>Cliquez pour trier par score d'opportunité d'amélioration (taille + ratio écart/potentiel + solutions disponibles).</value></data>
+  <data name="Prio_TopGaps_Col_Potential" xml:space="preserve"><value>Potentiel</value></data>
+  <data name="Prio_TopGaps_Col_Potential_Tooltip" xml:space="preserve"><value>Tranche de potentiel d'amélioration.</value></data>
+  <data name="Prio_TopGaps_Placeholder" xml:space="preserve"><value>Les principaux écarts seront alimentés à partir des données d'écart.</value></data>
+  <data name="Prio_TopGaps_NoData" xml:space="preserve"><value>Aucune donnée d'écart disponible.</value></data>
 </root>

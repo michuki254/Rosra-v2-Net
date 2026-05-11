@@ -44,7 +44,19 @@
   <data name="AddStream_Tooltip" xml:space="preserve"><value>Ajouter une nouvelle source de revenus</value></data>
 
   <!-- Add Stream Modal -->
-  <data name="AddStreamModal_Title" xml:space="preserve"><value>Ajouter une nouvelle source de revenus</value></data>
+  <data name="AddStreamModal_Title" xml:space="preserve"><value>Ajouter une source de revenus non foncière</value></data>
+  <data name="AddStreamModal_Step1Intro" xml:space="preserve"><value>Choisissez un modèle pour commencer, ou sélectionnez « Autre » pour classifier manuellement.</value></data>
+  <data name="AddStreamModal_SubgroupLabel" xml:space="preserve"><value>Quel type de source de revenus non foncière analysez-vous ?</value></data>
+  <data name="AddStreamModal_SubgroupHelp" xml:space="preserve"><value>Choisissez l'option qui reflète le mieux la manière dont ce revenu est facturé ou collecté.</value></data>
+  <data name="AddStreamModal_SubgroupNote" xml:space="preserve"><value>Classifiez selon la manière dont le revenu est administré, pas seulement selon son nom local. Une redevance déchets facturée relèverait des frais de service, tandis qu'un ticket de marché quotidien relèverait des redevances quotidiennes.</value></data>
+  <data name="AddStreamModal_SelectSubgroup" xml:space="preserve"><value>-- Sélectionner le type de source --</value></data>
+  <data name="AddStreamModal_SubtypeLabel" xml:space="preserve"><value>Quel type de revenu spécifique correspond le mieux à cette source ?</value></data>
+  <data name="AddStreamModal_SelectSubtype" xml:space="preserve"><value>-- Sélectionner le type spécifique (facultatif) --</value></data>
+  <data name="AddStreamModal_LocalNameLabel" xml:space="preserve"><value>Nom local de cette source de revenus</value></data>
+  <data name="AddStreamModal_LocalNamePlaceholder" xml:space="preserve"><value>ex. Redevance d'usagers de gestion des déchets</value></data>
+  <data name="AddStreamModal_LocalNameHelp" xml:space="preserve"><value>Saisissez le nom utilisé par votre municipalité pour cette source de revenus.</value></data>
+  <data name="AddStreamModal_Back" xml:space="preserve"><value>Retour</value></data>
+  <data name="AddStreamModal_Create" xml:space="preserve"><value>Créer la source</value></data>
   <data name="AddStreamModal_StreamName" xml:space="preserve"><value>Nom de la source</value></data>
   <data name="AddStreamModal_Placeholder" xml:space="preserve"><value>ex. Droits de stationnement, Droits de marché, Permis de publicité...</value></data>
   <data name="AddStreamModal_Helper" xml:space="preserve"><value>Saisissez un nom descriptif pour cette source de revenus</value></data>

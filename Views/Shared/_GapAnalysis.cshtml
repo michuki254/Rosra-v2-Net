@@ -982,14 +982,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addStreamModalLabel">
-                    <i class="bi bi-plus-circle me-2"></i>Add Non-Property Revenue Stream
+                    <i class="bi bi-plus-circle me-2"></i>@Localizer["AddStreamModal_Title"]
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <!-- Step 1: Quick Templates -->
                 <div id="addStreamStep1">
-                    <p class="text-muted mb-2">Choose a template to get started, or select "Other" to classify manually.</p>
+                    <p class="text-muted mb-2">@Localizer["AddStreamModal_Step1Intro"]</p>
                     <div class="row g-2" id="quickTemplateGrid">
                         <!-- Templates rendered by JS from StreamClassification.QUICK_TEMPLATES -->
                     </div>
@@ -998,36 +998,36 @@
                 <!-- Step 2: Classification + Name -->
                 <div id="addStreamStep2" style="display: none;">
                     <div class="mb-3">
-                        <label for="newStreamSubgroup" class="form-label fw-bold">Which type of non-property revenue stream are you analysing? <span class="text-danger">*</span></label>
-                        <small class="text-muted d-block mb-2">Choose the option that best reflects how this revenue is billed or collected.</small>
+                        <label for="newStreamSubgroup" class="form-label fw-bold">@Localizer["AddStreamModal_SubgroupLabel"] <span class="text-danger">*</span></label>
+                        <small class="text-muted d-block mb-2">@Localizer["AddStreamModal_SubgroupHelp"]</small>
                         <select class="form-select" id="newStreamSubgroup" onchange="onSubgroupChange()">
-                            <option value="">-- Select stream type --</option>
-                            <option value="A">Business licences and recurrent operating permits</option>
-                            <option value="B">Service fees and billed use charges</option>
-                            <option value="C">Daily or point-of-collection charges</option>
+                            <option value="">@Localizer["AddStreamModal_SelectSubgroup"]</option>
+                            <option value="A">@SharedLocalizer["StreamSubgroupA_Label"]</option>
+                            <option value="B">@SharedLocalizer["StreamSubgroupB_Label"]</option>
+                            <option value="C">@SharedLocalizer["StreamSubgroupC_Label"]</option>
                         </select>
-                        <small class="text-muted mt-1 d-block">Classify by how the revenue is administered, not only by its local name. A billed waste fee would fall under service fees, while a daily market ticket would fall under daily charges.</small>
+                        <small class="text-muted mt-1 d-block">@Localizer["AddStreamModal_SubgroupNote"]</small>
                     </div>
                     <div class="mb-3">
-                        <label for="newStreamSubtype" class="form-label">Which specific revenue type best matches this stream?</label>
+                        <label for="newStreamSubtype" class="form-label">@Localizer["AddStreamModal_SubtypeLabel"]</label>
                         <select class="form-select" id="newStreamSubtype">
-                            <option value="">-- Select specific type (optional) --</option>
+                            <option value="">@Localizer["AddStreamModal_SelectSubtype"]</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="newStreamName" class="form-label fw-bold">Local name of this revenue stream <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="newStreamName" placeholder="e.g., Waste Management User Charge">
-                        <small class="text-muted">Enter the name your municipality uses for this revenue stream.</small>
+                        <label for="newStreamName" class="form-label fw-bold">@Localizer["AddStreamModal_LocalNameLabel"] <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="newStreamName" placeholder="@Localizer["AddStreamModal_LocalNamePlaceholder"]">
+                        <small class="text-muted">@Localizer["AddStreamModal_LocalNameHelp"]</small>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@SharedLocalizer["Common_Cancel"]</button>
                 <button type="button" class="btn btn-outline-secondary" id="addStreamBackBtn" style="display: none;" onclick="showAddStreamStep1()">
-                    <i class="bi bi-arrow-left me-1"></i>Back
+                    <i class="bi bi-arrow-left me-1"></i>@Localizer["AddStreamModal_Back"]
                 </button>
                 <button type="button" class="btn btn-primary" id="addStreamCreateBtn" style="display: none;" onclick="addNewStream()">
-                    <i class="bi bi-plus-circle me-1"></i>Create Stream
+                    <i class="bi bi-plus-circle me-1"></i>@Localizer["AddStreamModal_Create"]
                 </button>
             </div>
         </div>
@@ -1076,10 +1076,10 @@
                 <div class="mb-3">
                     <label for="editMetaSubgroup" class="form-label fw-bold">Stream Type (Subgroup) <span class="text-danger">*</span></label>
                     <select class="form-select" id="editMetaSubgroup" onchange="onEditMetaSubgroupChange()">
-                        <option value="">-- Select stream type --</option>
-                        <option value="A">Business licences and recurrent operating permits</option>
-                        <option value="B">Service fees and billed use charges</option>
-                        <option value="C">Daily or point-of-collection charges</option>
+                        <option value="">@Localizer["AddStreamModal_SelectSubgroup"]</option>
+                        <option value="A">@SharedLocalizer["StreamSubgroupA_Label"]</option>
+                        <option value="B">@SharedLocalizer["StreamSubgroupB_Label"]</option>
+                        <option value="C">@SharedLocalizer["StreamSubgroupC_Label"]</option>
                     </select>
                 </div>
                 <div class="mb-3">
@@ -1127,6 +1127,57 @@
 </div>
 
 <script>
+    // Localized strings used by the "Add Non-Property Revenue Stream" modal.
+    // Keyed by template id / subgroup code so the static streamClassification.js bundle
+    // stays language-neutral while the rendered UI is fully translated.
+    window.streamI18n = {
+        templates: {
+            'general-business-licence': {
+                name: @Json.Serialize(SharedLocalizer["Template_GeneralBusinessLicence_Name"].Value),
+                description: @Json.Serialize(SharedLocalizer["Template_GeneralBusinessLicence_Description"].Value)
+            },
+            'advertising-signage-permit': {
+                name: @Json.Serialize(SharedLocalizer["Template_AdvertisingSignagePermit_Name"].Value),
+                description: @Json.Serialize(SharedLocalizer["Template_AdvertisingSignagePermit_Description"].Value)
+            },
+            'solid-waste-fee': {
+                name: @Json.Serialize(SharedLocalizer["Template_SolidWasteFee_Name"].Value),
+                description: @Json.Serialize(SharedLocalizer["Template_SolidWasteFee_Description"].Value)
+            },
+            'market-stall-rent': {
+                name: @Json.Serialize(SharedLocalizer["Template_MarketStallRent_Name"].Value),
+                description: @Json.Serialize(SharedLocalizer["Template_MarketStallRent_Description"].Value)
+            },
+            'daily-market-fee': {
+                name: @Json.Serialize(SharedLocalizer["Template_DailyMarketFee_Name"].Value),
+                description: @Json.Serialize(SharedLocalizer["Template_DailyMarketFee_Description"].Value)
+            },
+            'parking-fee': {
+                name: @Json.Serialize(SharedLocalizer["Template_ParkingFee_Name"].Value),
+                description: @Json.Serialize(SharedLocalizer["Template_ParkingFee_Description"].Value)
+            },
+            'other': {
+                name: @Json.Serialize(SharedLocalizer["Template_Other_Name"].Value),
+                description: @Json.Serialize(SharedLocalizer["Template_Other_Description"].Value)
+            }
+        },
+        subgroups: {
+            'A': {
+                label: @Json.Serialize(SharedLocalizer["StreamSubgroupA_Label"].Value),
+                shortLabel: @Json.Serialize(SharedLocalizer["StreamSubgroupA_ShortLabel"].Value)
+            },
+            'B': {
+                label: @Json.Serialize(SharedLocalizer["StreamSubgroupB_Label"].Value),
+                shortLabel: @Json.Serialize(SharedLocalizer["StreamSubgroupB_ShortLabel"].Value)
+            },
+            'C': {
+                label: @Json.Serialize(SharedLocalizer["StreamSubgroupC_Label"].Value),
+                shortLabel: @Json.Serialize(SharedLocalizer["StreamSubgroupC_ShortLabel"].Value)
+            }
+        },
+        manualClassification: @Json.Serialize(SharedLocalizer["Template_ManualClassification"].Value)
+    };
+
     // Track the current stream count
     let streamCount = @(Model.GenericStreams?.Count ?? 0);
     let deleteStreamIndex = -1;
@@ -1333,9 +1384,11 @@
         container.setAttribute('data-subgroup', newSubgroup);
         container.setAttribute('data-subtype', newSubtype);
 
-        // Update the subgroup badge in the stream header
+        // Update the subgroup badge in the stream header (prefer localized label).
         const subgroupColor = typeof StreamClassification !== 'undefined' ? StreamClassification.getSubgroupColor(newSubgroup) : '#666';
-        const subgroupLabel = typeof StreamClassification !== 'undefined' ? StreamClassification.getSubgroupShortLabel(newSubgroup) : newSubgroup;
+        const subgroupLabel = (window.streamI18n && window.streamI18n.subgroups && window.streamI18n.subgroups[newSubgroup])
+            ? window.streamI18n.subgroups[newSubgroup].shortLabel
+            : (typeof StreamClassification !== 'undefined' ? StreamClassification.getSubgroupShortLabel(newSubgroup) : newSubgroup);
         const headerEditor = container.querySelector('.stream-name-editor');
         if (headerEditor) {
             const existingBadge = headerEditor.querySelector('.badge');
@@ -1415,10 +1468,16 @@
         const grid = document.getElementById('quickTemplateGrid');
         if (!grid || typeof StreamClassification === 'undefined') return;
         grid.innerHTML = '';
+        const i18n = window.streamI18n || { templates: {}, subgroups: {}, manualClassification: 'Manual classification' };
         StreamClassification.QUICK_TEMPLATES.forEach(function(tpl) {
             const subgroupInfo = tpl.subgroup ? StreamClassification.getSubgroup(tpl.subgroup) : null;
             const badgeColor = subgroupInfo ? subgroupInfo.color : '#666';
-            const badgeLabel = subgroupInfo ? subgroupInfo.shortLabel : 'Manual classification';
+            const subgroupI18n = tpl.subgroup ? i18n.subgroups[tpl.subgroup] : null;
+            const badgeLabel = subgroupI18n ? subgroupI18n.shortLabel
+                              : (subgroupInfo ? subgroupInfo.shortLabel : i18n.manualClassification);
+            const tplI18n = i18n.templates[tpl.id] || {};
+            const localizedName = tplI18n.name || tpl.name;
+            const localizedDescription = tplI18n.description || tpl.description;
             const col = document.createElement('div');
             col.className = 'col-6 col-sm-4 col-md-3';
             col.innerHTML = `
@@ -1428,8 +1487,8 @@
                      onmouseleave="this.style.borderColor='transparent'">
                     <div class="card-body text-center template-card-body">
                         <i class="bi ${tpl.icon} template-card-icon d-block mb-1" style="color:${badgeColor}"></i>
-                        <h6 class="card-title mb-1 template-card-title">${escapeHtml(tpl.name)}</h6>
-                        <small class="text-muted template-card-desc">${escapeHtml(tpl.description)}</small>
+                        <h6 class="card-title mb-1 template-card-title">${escapeHtml(localizedName)}</h6>
+                        <small class="text-muted template-card-desc">${escapeHtml(localizedDescription)}</small>
                         ${tpl.subgroup ? '<div class="mt-1"><span class="badge template-card-badge" style="background-color:' + badgeColor + ';">' + escapeHtml(badgeLabel) + '</span></div>' : ''}
                     </div>
                 </div>

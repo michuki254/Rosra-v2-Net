@@ -100,4 +100,37 @@
   <data name="JS_CC_FundingHighAutLow" xml:space="preserve"><value>Le financement est proche de la frontière des pairs ({0}%), tandis que l'autonomie est sensiblement plus faible ({1}%). Cela suggère que la principale contrainte pourrait résider dans la manière dont les recettes sont partagées et conditionnées, même s'il reste une marge de renforcement administratif au niveau local.</value></data>
   <data name="JS_CC_FundingLowAutHigh" xml:space="preserve"><value>Le financement est inférieur à la frontière des pairs ({0}%) mais l'autonomie est relativement forte ({1}%). Cette combinaison suggère que l'enveloppe globale des GNS est limitée, même si la discrétion locale sur les recettes n'est pas anormalement faible. Les améliorations administratives restent pertinentes, et l'adéquation de l'affectation du financement peut également être discutée si nécessaire.</value></data>
   <data name="JS_CC_BothLow" xml:space="preserve"><value>Le financement ({0}% de la frontière) et l'autonomie ({1}%) sont tous deux inférieurs aux références des pairs. Ce schéma indique que les GNS peuvent faire face à des contraintes tant dans la taille que dans la structure de leurs recettes ; les options administratives doivent être explorées en premier, parallèlement à une discussion sur d'éventuels ajustements intergouvernementaux ou politiques.</value></data>
+  <!-- Local government profile card -->
+  <data name="LgProfile_Title" xml:space="preserve"><value>Profil du gouvernement local</value></data>
+  <data name="LgProfile_AllFieldsRequired" xml:space="preserve"><value>Tous les champs requis · ~2 min</value></data>
+  <data name="LgProfile_LocationGroup" xml:space="preserve"><value>Localisation et unité gouvernementale</value></data>
+  <data name="LgProfile_FiscalGroup" xml:space="preserve"><value>Données fiscales</value></data>
+  <data name="LgProfile_GovUnitLevel1" xml:space="preserve"><value>Unité gouvernementale — Niveau 1</value></data>
+  <data name="LgProfile_GovUnitLevel2" xml:space="preserve"><value>Unité gouvernementale — Niveau 2</value></data>
+  <data name="LgProfile_RegionHelp" xml:space="preserve"><value>Région, province ou comté</value></data>
+  <data name="LgProfile_PeriodHelp" xml:space="preserve"><value>Période couverte par l'évaluation</value></data>
+  <data name="LgProfile_SymbolCode" xml:space="preserve"><value>Symbole · Code</value></data>
+  <data name="LgProfile_OsrLabel" xml:space="preserve"><value>Recettes propres (RPP)</value></data>
+  <data name="LgProfile_OsrHelp" xml:space="preserve"><value>Total des recettes que le gouvernement local collecte directement — taxes, frais, redevances, amendes (DML).</value></data>
+  <data name="LgProfile_OsrPlaceholder" xml:space="preserve"><value>ex. 12 500 000 000</value></data>
+  <data name="LgProfile_GrpLabel" xml:space="preserve"><value>PIB régional</value></data>
+  <data name="LgProfile_GrpHelp" xml:space="preserve"><value>Produit intérieur brut régional (DML)</value></data>
+  <data name="LgProfile_GrpPlaceholder" xml:space="preserve"><value>ex. 480 000 000 000</value></data>
+  <data name="LgProfile_PopulationLabel" xml:space="preserve"><value>Population</value></data>
+  <data name="LgProfile_PopulationHelp" xml:space="preserve"><value>Facultatif — recensement le plus récent</value></data>
+  <data name="LgProfile_PopulationPlaceholder" xml:space="preserve"><value>ex. 4 397 073</value></data>
+  <data name="LgProfile_GetAnalysis" xml:space="preserve"><value>Obtenir l'analyse</value></data>
+  <data name="NextStepCTA_Title" xml:space="preserve"><value>Commencer une analyse plus détaillée</value></data>
+  <data name="NextStepCTA_Sub" xml:space="preserve"><value>Une analyse plus détaillée et précise du potentiel de revenus de chaque source de revenus individuelle.</value></data>
+  <data name="GapFrontier_Title" xml:space="preserve"><value>Ce que vous collectez vs ce que vous pourriez collecter</value></data>
+  <data name="GapFrontier_UnitsFormat" xml:space="preserve"><value>MONTANTS EN {0} (Mds)</value></data>
+  <data name="MoreAnalysis_Question" xml:space="preserve"><value>Vous voulez voir plus d'analyses et la méthodologie derrière ces chiffres ?</value></data>
+  <data name="Common_Expand" xml:space="preserve"><value>Développer</value></data>
+  <data name="Common_Collapse" xml:space="preserve"><value>Réduire</value></data>
+  <data name="LgProfile_L2Help" xml:space="preserve"><value>District, municipalité ou sous-comté</value></data>
+  <data name="LgProfile_AddLevel3" xml:space="preserve"><value>Ajouter Niveau 3</value></data>
+  <data name="LgProfile_L3Help" xml:space="preserve"><value>Quartier, arrondissement ou sous-comté</value></data>
+  <data name="LgProfile_L3Placeholder" xml:space="preserve"><value>Quartier, arrondissement, sous-comté...</value></data>
+  <data name="LgProfile_L2InfoTooltip" xml:space="preserve"><value>Cochez cette case si l'analyse doit être effectuée pour une unité gouvernementale de niveau inférieur dans le pays sélectionné. Cela ouvre un champ supplémentaire pour saisir l'unité (district, municipalité ou sous-comté).</value></data>
+  <data name="LgProfile_L3InfoTooltip" xml:space="preserve"><value>Cochez cette case pour approfondir davantage dans l'unité de niveau inférieur sélectionnée. Cela ouvre un champ supplémentaire pour saisir l'unité (quartier, arrondissement ou sous-comté).</value></data>
 </root>

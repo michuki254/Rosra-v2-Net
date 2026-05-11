@@ -100,4 +100,25 @@
   <!-- SDG Section -->
   <data name="Sdg_Title" xml:space="preserve"><value>Sustainable Development Goals</value></data>
   <data name="Sdg_HoverNote" xml:space="preserve"><value>Hover over an icon to learn more.</value></data>
+
+  <!-- How ROSRA Works — methodology walkthrough -->
+  <data name="Methodology_Title" xml:space="preserve"><value>How ROSRA Works</value></data>
+  <data name="Methodology_Subtitle" xml:space="preserve"><value>A four-step methodology that turns own-source revenue data into a concrete reform plan. Each screenshot below is from the Nairobi sample report.</value></data>
+  <data name="Methodology_Step1_Eyebrow" xml:space="preserve"><value>Step 1</value></data>
+  <data name="Methodology_Step1_Title" xml:space="preserve"><value>Gap Analysis</value></data>
+  <data name="Methodology_Step1_Alt" xml:space="preserve"><value>Step 1 Gap Analysis dashboard showing the property tax matrix and revenue vs potential breakdown</value></data>
+  <data name="Methodology_Step1_Body" xml:space="preserve"><value>For each revenue stream, the city enters only the inputs in the gray-shaded cells — registered units, billed amount, outstanding amount, statutory benchmark — and ROSRA decomposes the gap between current collection and full potential into specific drivers: &lt;strong&gt;Compliance&lt;/strong&gt;, &lt;strong&gt;Coverage&lt;/strong&gt;, &lt;strong&gt;Valuation&lt;/strong&gt; or &lt;strong&gt;Liability&lt;/strong&gt;, and the mixed gaps that combine them. The matrix dashboard on the right makes it instantly visible where each shilling is slipping through. Streams that don't apply to your context (e.g. Solid Waste Fee here) can be excluded.</value></data>
+  <data name="Methodology_Step2_Eyebrow" xml:space="preserve"><value>Step 2</value></data>
+  <data name="Methodology_Step2_Title" xml:space="preserve"><value>Prioritization</value></data>
+  <data name="Methodology_Step2_Alt" xml:space="preserve"><value>Step 2 Stream Prioritization table showing each revenue stream ranked by total functional gap</value></data>
+  <data name="Methodology_Step2_Body" xml:space="preserve"><value>Streams are ranked by their Total Functional Gap and broken down per gap-type — Compliance, Coverage, Valuation/Liability, and the mixed gaps — in a single stacked bar so the city can see at a glance which reforms move the most revenue. Decision-makers can &lt;strong&gt;re-order, exclude, or remove specific gap-types&lt;/strong&gt; that aren't politically feasible. Excluded streams (like Solid Waste Fee here) are dropped from rank, share, the bar chart, and the downstream Recommendations — the plan respects local realities, not just the math.</value></data>
+  <data name="Methodology_Step3_Eyebrow" xml:space="preserve"><value>Step 3</value></data>
+  <data name="Methodology_Step3_Title" xml:space="preserve"><value>Overview Selection</value></data>
+  <data name="Methodology_Step3_Alt" xml:space="preserve"><value>Step 3 Overview Selection — solution cards with implementation guidance</value></data>
+  <data name="Methodology_Step3_Body" xml:space="preserve"><value>From a curated library of &lt;strong&gt;82 evidence-based solution cards&lt;/strong&gt;, ROSRA narrows the list by stream, gap-type, timeline, and political feasibility — and a 3-question personaliser tailors them to the city's context. Each card explains &lt;em&gt;what the option does&lt;/em&gt;, &lt;em&gt;most useful when&lt;/em&gt;, &lt;em&gt;usually not the best first move when&lt;/em&gt;, and &lt;em&gt;often works best alongside&lt;/em&gt;. The right-hand &lt;strong&gt;Selection Summary&lt;/strong&gt; tracks every pick by stream and gap, with a one-click jump straight to Recommendations once you have enough.</value></data>
+  <data name="Methodology_Step4_Eyebrow" xml:space="preserve"><value>Step 4</value></data>
+  <data name="Methodology_Step4_Title" xml:space="preserve"><value>Recommendations</value></data>
+  <data name="Methodology_Step4_Alt" xml:space="preserve"><value>Step 4 Recommendations — consolidated action plan with timelines and quick-win tags</value></data>
+  <data name="Methodology_Step4_Body" xml:space="preserve"><value>The selected solutions are consolidated into a single implementation plan, grouped by stream and ranked by priority, with each card timeline-tagged as a &lt;strong&gt;Quick Win&lt;/strong&gt; (&amp;lt;1 year), &lt;strong&gt;Medium Term&lt;/strong&gt; (1–3 years), or &lt;strong&gt;Long Term&lt;/strong&gt; (3+ years). Switch between Solution Cards, Timeline View, and Progress Tracker views — then export the whole plan to PDF or HTML as the city's tailored Revenue Enhancement Action Plan.</value></data>
+  <data name="Methodology_CTA" xml:space="preserve"><value>Explore the Sample Report</value></data>
 </root>

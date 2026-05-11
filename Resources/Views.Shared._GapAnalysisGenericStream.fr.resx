@@ -131,7 +131,7 @@
   <data name="TotalAdminGap" xml:space="preserve"><value>Total des &#233;carts administratifs</value></data>
 
   <!-- Breakdown Pie Chart -->
-  <data name="BreakdownAdminGaps" xml:space="preserve"><value>Ventilation des &#233;carts administratifs</value></data>
+  <data name="BreakdownAdminGaps" xml:space="preserve"><value>R&#233;partition des &#233;carts</value></data>
   <data name="BreakdownPieChartDescription" xml:space="preserve"><value>Ce diagramme circulaire illustre la r&#233;partition en pourcentage des &#233;carts de recettes. Il montre visuellement la contribution de chaque type d'&#233;cart au total des recettes non collect&#233;es, aidant &#224; identifier les &#233;carts les plus significatifs.</value></data>
 
   <!-- Headline KPI card -->

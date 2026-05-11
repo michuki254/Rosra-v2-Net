@@ -9,12 +9,12 @@
         <div class="col-12">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-light py-3">
-                    <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Total Functional Gap by Stream</h6>
+                    <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>@Localizer["Chart_BarTitle"]</h6>
                 </div>
                 <div class="card-body">
                     <div id="gapParetoPlaceholder" class="chart-placeholder text-center text-muted py-5">
                         <i class="fas fa-chart-bar fa-3x mb-3 opacity-50"></i>
-                        <p class="mb-0">Add streams in Gap Analysis to see the breakdown.</p>
+                        <p class="mb-0">@Localizer["Prio_GapByStream_Placeholder"]</p>
                     </div>
                     <div id="gapParetoWrap" style="display:none;">
                         <canvas id="gapParetoChart"></canvas>
@@ -27,11 +27,13 @@
         <div class="col-12">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-primary text-white py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
-                    <h6 class="mb-0"><i class="fas fa-sort me-2"></i>Stream Prioritization</h6>
+                    <h6 class="mb-0"><i class="fas fa-sort me-2"></i>@Localizer["Step1_Title"]</h6>
                     <small class="combined-priority-help">
                         <i class="bi bi-info-circle me-1"></i>
-                        Drag rows by the <i class="bi bi-grip-vertical mx-1"></i> handle, or use the
-                        <i class="bi bi-arrow-up mx-1"></i><i class="bi bi-arrow-down mx-1"></i> buttons to re-order.
+                        @Html.Raw(string.Format(Localizer["Prio_StreamPrio_Help"].Value,
+                            "<i class=\"bi bi-grip-vertical mx-1\"></i>",
+                            "<i class=\"bi bi-arrow-up mx-1\"></i>",
+                            "<i class=\"bi bi-arrow-down mx-1\"></i>"))
                     </small>
                 </div>
                 <div class="card-body p-0">
@@ -40,12 +42,12 @@
                             <thead class="table-light">
                                 <tr>
                                     <th style="width: 36px;" aria-label="Drag handle"></th>
-                                    <th class="text-center" style="width: 80px;" data-bs-toggle="tooltip" title="Final rank — auto-numbered top to bottom for included streams.">Rank</th>
-                                    <th data-bs-toggle="tooltip" title="Revenue stream name.">Stream</th>
-                                    <th class="text-end" data-bs-toggle="tooltip" title="Total Functional Gap from the Gap Analysis tab.">Total Gap</th>
-                                    <th class="text-center" data-bs-toggle="tooltip" title="Share of total gap (across included streams).">Share of Gap</th>
-                                    <th class="text-center" style="width: 130px;" data-bs-toggle="tooltip" title="Include in / exclude from the prioritization.">Status</th>
-                                    <th class="text-center" style="width: 110px;" data-bs-toggle="tooltip" title="Move this stream up or down.">Move</th>
+                                    <th class="text-center" style="width: 80px;" data-bs-toggle="tooltip" title="@Localizer["Prio_Col_Rank_Tooltip"]">@Localizer["Prio_Col_Rank"]</th>
+                                    <th data-bs-toggle="tooltip" title="@Localizer["Prio_Col_Stream_Tooltip"]">@Localizer["Prio_Col_Stream"]</th>
+                                    <th class="text-end" data-bs-toggle="tooltip" title="@Localizer["Prio_Col_TotalGap_Tooltip"]">@Localizer["Prio_Col_TotalGap"]</th>
+                                    <th class="text-center" data-bs-toggle="tooltip" title="@Localizer["Prio_Col_ShareGap_Tooltip"]">@Localizer["Prio_Col_ShareGap"]</th>
+                                    <th class="text-center" style="width: 130px;" data-bs-toggle="tooltip" title="@Localizer["Prio_Col_Status_Tooltip"]">@Localizer["Prio_Col_Status"]</th>
+                                    <th class="text-center" style="width: 110px;" data-bs-toggle="tooltip" title="@Localizer["Prio_Col_Move_Tooltip"]">@Localizer["Prio_Col_Move"]</th>
                                 </tr>
                             </thead>
                             <tbody id="combinedStreamBody">
@@ -156,7 +158,7 @@
                     <h6 class="mb-0"><i class="fas fa-sort-numeric-down me-2"></i>@Localizer["GapSequencing_Title"] &amp; @Localizer["GapAmounts_Title"]</h6>
                     <small class="combined-priority-help">
                         <i class="bi bi-info-circle me-1"></i>
-                        Each cell shows the gap type (selectable) and its amount.
+                        @Localizer["Prio_GapSequencing_Help"]
                     </small>
                 </div>
                 <div class="card-body p-0">
@@ -215,8 +217,8 @@
                         data-bs-toggle="collapse" data-bs-target="#collapsePrioritizationModes"
                         aria-expanded="false" aria-controls="collapsePrioritizationModes">
                     <i class="bi bi-info-circle me-2"></i>
-                    <span class="fw-semibold">How prioritization modes are chosen</span>
-                    <span class="text-muted small ms-2">3 modes &middot; click to expand</span>
+                    <span class="fw-semibold">@Localizer["Prio_HowModesChosen"]</span>
+                    <span class="text-muted small ms-2">@Localizer["Prio_HowModesChosen_Hint"]</span>
                 </button>
             </h2>
             <div id="collapsePrioritizationModes" class="accordion-collapse collapse"
@@ -257,9 +259,9 @@
     <hr class="my-5 border-2">
 
     <div class="prioritization-header mb-4">
-        <h5 class="mb-2"><i class="fas fa-chart-line me-2"></i>Revenue Impact &amp; Improvement Opportunities</h5>
+        <h5 class="mb-2"><i class="fas fa-chart-line me-2"></i>@Localizer["Prio_RevenueImpact_Title"]</h5>
         <p class="text-muted mb-0">
-            Gaps ranked by absolute revenue impact and scored by improvement potential to help focus reform effort where it matters most.
+            @Localizer["Prio_RevenueImpact_Sub"]
         </p>
     </div>
 
@@ -269,33 +271,33 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-header text-white py-3 d-flex align-items-center justify-content-between flex-wrap gap-2"
                      style="background: #334155;">
-                    <h6 class="mb-0"><i class="fas fa-bullseye me-2"></i>Top Gaps to Tackle</h6>
+                    <h6 class="mb-0"><i class="fas fa-bullseye me-2"></i>@Localizer["Prio_TopGaps_Title"]</h6>
                     <small class="combined-priority-help">
                         <i class="bi bi-info-circle me-1"></i>
-                        Sort by <strong>Amount</strong> for biggest pile of money, by <strong>Score</strong> for the most actionable wins.
+                        @Html.Raw(Localizer["Prio_TopGaps_Help"].Value)
                     </small>
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-sm table-hover mb-0" id="topGapsTable">
                         <thead class="table-light sticky-top">
                             <tr>
-                                <th class="text-center" style="width: 50px;" data-bs-toggle="tooltip" title="Rank by the currently-selected sort.">#</th>
-                                <th data-bs-toggle="tooltip" title="Revenue stream.">Stream</th>
-                                <th data-bs-toggle="tooltip" title="Type of gap (Compliance / Coverage / Valuation / Liability).">Gap Type</th>
-                                <th class="text-end top-gaps-sort" data-sort-by="amount" data-bs-toggle="tooltip" title="Click to sort by absolute gap amount.">
-                                    Amount <i class="bi bi-arrow-down-up ms-1 small"></i>
+                                <th class="text-center" style="width: 50px;" data-bs-toggle="tooltip" title="@Localizer["Prio_TopGaps_Col_Rank_Tooltip"]">@Localizer["Prio_TopGaps_Col_Rank"]</th>
+                                <th data-bs-toggle="tooltip" title="@Localizer["Prio_TopGaps_Col_Stream_Tooltip"]">@Localizer["Prio_Col_Stream"]</th>
+                                <th data-bs-toggle="tooltip" title="@Localizer["Prio_TopGaps_Col_GapType_Tooltip"]">@Localizer["Prio_TopGaps_Col_GapType"]</th>
+                                <th class="text-end top-gaps-sort" data-sort-by="amount" data-bs-toggle="tooltip" title="@Localizer["Prio_TopGaps_Col_Amount_Tooltip"]">
+                                    @Localizer["Prio_TopGaps_Col_Amount"] <i class="bi bi-arrow-down-up ms-1 small"></i>
                                 </th>
-                                <th class="text-center" style="width: 110px;" data-bs-toggle="tooltip" title="Share of total gap.">Share</th>
-                                <th class="text-center top-gaps-sort" style="width: 80px;" data-sort-by="score" data-bs-toggle="tooltip" title="Click to sort by improvement opportunity score (size + gap/potential ratio + solutions available).">
-                                    Score <i class="bi bi-arrow-down-up ms-1 small"></i>
+                                <th class="text-center" style="width: 110px;" data-bs-toggle="tooltip" title="@Localizer["Prio_TopGaps_Col_Share_Tooltip"]">@Localizer["Prio_TopGaps_Col_Share"]</th>
+                                <th class="text-center top-gaps-sort" style="width: 80px;" data-sort-by="score" data-bs-toggle="tooltip" title="@Localizer["Prio_TopGaps_Col_Score_Tooltip"]">
+                                    @Localizer["Prio_TopGaps_Col_Score"] <i class="bi bi-arrow-down-up ms-1 small"></i>
                                 </th>
-                                <th class="text-center" style="width: 130px;" data-bs-toggle="tooltip" title="Improvement potential bracket.">Potential</th>
+                                <th class="text-center" style="width: 130px;" data-bs-toggle="tooltip" title="@Localizer["Prio_TopGaps_Col_Potential_Tooltip"]">@Localizer["Prio_TopGaps_Col_Potential"]</th>
                             </tr>
                         </thead>
                         <tbody id="topGapsBody">
                             <tr class="placeholder-row">
                                 <td colspan="7" class="text-center text-muted py-3">
-                                    <small>Top gaps will populate from gap data.</small>
+                                    <small>@Localizer["Prio_TopGaps_Placeholder"]</small>
                                 </td>
                             </tr>
                         </tbody>
@@ -1343,7 +1345,7 @@ document.addEventListener('DOMContentLoaded', function() {
             tbody.innerHTML = `
                 <tr class="placeholder-row">
                     <td colspan="7" class="text-center text-muted py-4">
-                        <i class="fas fa-exclamation-circle me-2"></i>No stream data found. Please complete the Gap Analysis tabs first.
+                        <i class="fas fa-exclamation-circle me-2"></i>@Html.Raw(Localizer["Prio_NoStreamData"].Value)
                     </td>
                 </tr>`;
             if (footer) footer.style.display = 'none';
@@ -2355,7 +2357,7 @@ document.addEventListener('DOMContentLoaded', function() {
             tbody.innerHTML = `
                 <tr class="placeholder-row">
                     <td colspan="6" class="text-center text-muted py-4">
-                        <i class="fas fa-info-circle me-2"></i>Include streams in the Stream Prioritization table above to see gap prioritization options
+                        <i class="fas fa-info-circle me-2"></i>@Html.Raw(Localizer["GapSequencing_Placeholder"].Value)
                     </td>
                 </tr>
             `;
@@ -2643,7 +2645,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const gaps = buildImprovementScores();
 
         if (gaps.length === 0) {
-            tbody.innerHTML = '<tr class="placeholder-row"><td colspan="7" class="text-center text-muted py-3"><small>No gap data available.</small></td></tr>';
+            tbody.innerHTML = '<tr class="placeholder-row"><td colspan="7" class="text-center text-muted py-3"><small>@Html.Raw(Localizer["Prio_TopGaps_NoData"].Value)</small></td></tr>';
             return;
         }
 

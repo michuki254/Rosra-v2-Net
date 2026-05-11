@@ -140,7 +140,7 @@
   <data name="TotalAdmGap" xml:space="preserve"><value>Total Administrative Gap</value></data>
 
   <!-- Administrative Gaps Pie Chart -->
-  <data name="AdmGapsPie_Title" xml:space="preserve"><value>Breakdown of Administrative Gaps</value></data>
+  <data name="AdmGapsPie_Title" xml:space="preserve"><value>Gaps Breakdown</value></data>
   <data name="AdmGapsPie_Description" xml:space="preserve"><value>This pie chart illustrates the percentage distribution of the revenue gaps. It visually shows the contribution of each type of gap to the total uncollected revenue, helping to identify which gaps are the most significant.</value></data>
 
   <!-- Common -->

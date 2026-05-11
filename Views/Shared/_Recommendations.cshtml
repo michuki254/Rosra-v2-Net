@@ -1342,35 +1342,35 @@
     <div class="rec-personalise-bar" id="recPersonaliseBar">
         <div class="rec-personalise-row">
             <div class="rec-chip-group">
-                <span class="rec-group-label">Time</span>
+                <span class="rec-group-label">@Localizer["Personalise_Time"]</span>
                 <div class="rec-q-chips" data-question="time">
-                    <label class="rec-q-chip"><input type="checkbox" name="qTime" value="quick" checked><span>Quick wins</span></label>
-                    <label class="rec-q-chip"><input type="checkbox" name="qTime" value="medium" checked><span>Medium-term</span></label>
-                    <label class="rec-q-chip"><input type="checkbox" name="qTime" value="long" checked><span>Long-term</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qTime" value="quick" checked><span>@Localizer["Personalise_QuickWins"]</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qTime" value="medium" checked><span>@Localizer["Personalise_MediumTerm"]</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qTime" value="long" checked><span>@Localizer["Personalise_LongTerm"]</span></label>
                 </div>
             </div>
             <div class="rec-chip-group">
-                <span class="rec-group-label">Risk</span>
+                <span class="rec-group-label">@Localizer["Personalise_Risk"]</span>
                 <div class="rec-q-chips" data-question="political">
-                    <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="higher" checked><span>Higher feasibility</span></label>
-                    <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="moderate" checked><span>Moderate</span></label>
-                    <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="sensitive"><span>Lower feasibility</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="higher" checked><span>@Localizer["Personalise_HigherFeasibility"]</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="moderate" checked><span>@Localizer["Personalise_Moderate"]</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="sensitive"><span>@Localizer["Personalise_LowerFeasibility"]</span></label>
                 </div>
             </div>
             <div class="rec-chip-group">
-                <span class="rec-group-label">Focus</span>
+                <span class="rec-group-label">@Localizer["Personalise_Focus"]</span>
                 <div class="rec-q-chips" data-question="focus" id="recFocusChips">
-                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="compliance" checked><span>Compliance</span></label>
-                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="coverage" checked><span>Coverage</span></label>
-                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="valuation" checked><span>Valuation</span></label>
-                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="liability" checked><span>Liability</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="compliance" checked><span>@Localizer["Personalise_Compliance"]</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="coverage" checked><span>@Localizer["Personalise_Coverage"]</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="valuation" checked><span>@Localizer["Personalise_Valuation"]</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="liability" checked><span>@Localizer["Personalise_Liability"]</span></label>
                 </div>
             </div>
         </div>
         <div class="rec-personalise-status">
-            <span><strong id="recVisibleCount">—</strong> of <strong id="recTotalCount">—</strong> cards match</span>
-            <button type="button" class="btn btn-link btn-sm p-0" id="recShowAllBtn" title="Broaden the pool to all 82 solution cards">Show all 82 cards</button>
-            <button type="button" class="btn btn-link btn-sm p-0 text-muted" id="recResetChipsBtn" title="Restore default chip selection">Reset filters</button>
+            <span>@Html.Raw(Localizer["Personalise_CardsMatch"].Value)</span>
+            <button type="button" class="btn btn-link btn-sm p-0" id="recShowAllBtn" title="@Localizer["Personalise_ShowAllTooltip"]">@Localizer["Personalise_ShowAll"]</button>
+            <button type="button" class="btn btn-link btn-sm p-0 text-muted" id="recResetChipsBtn" title="@Localizer["Personalise_ResetFiltersTooltip"]">@Localizer["Personalise_ResetFilters"]</button>
         </div>
     </div>
 
@@ -1408,7 +1408,7 @@
 
     <!-- View Toggle -->
     <div class="view-toggle-container">
-        <div class="view-toggle" role="tablist" aria-label="Recommendations view">
+        <div class="view-toggle" role="tablist" aria-label="@Localizer["View_AriaLabel"]">
             <button type="button" class="view-toggle-btn active" data-view="cards" onclick="RecommendationsModule.switchView('cards')" role="tab" aria-selected="true">
                 <i class="bi bi-grid-3x3-gap-fill"></i>
                 <span>@Localizer["View_SolutionCards"]</span>
@@ -1432,9 +1432,9 @@
                 <div class="empty-state">
                     <i class="fas fa-clipboard-list empty-icon"></i>
                     <h3>@Localizer["Empty_Title"]</h3>
-                    <p>No streams have been prioritized yet, so we couldn't auto-derive any cards. Click below to broaden the pool to all 82 solution cards.</p>
+                    <p>@Localizer["Empty_NoStreamsPrioritised"]</p>
                     <button type="button" class="btn btn-primary" id="recEmptyShowAllBtn">
-                        <i class="fas fa-th me-2"></i> Show all 82 cards
+                        <i class="fas fa-th me-2"></i> @Localizer["Personalise_ShowAll"]
                     </button>
                 </div>
             </div>
@@ -1491,7 +1491,7 @@
                 </div>
                 <div class="report-modal-titles">
                     <h5 class="modal-title" id="reportModalLabel">@Localizer["Modal_Title"]</h5>
-                    <p class="modal-subtitle">Pick the sections to include and choose your output format.</p>
+                    <p class="modal-subtitle">@Localizer["Modal_Subtitle"]</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -1499,12 +1499,12 @@
                 <div class="report-section-head">
                     <div>
                         <h6>@Localizer["Modal_IncludeInReport"]</h6>
-                        <p class="report-section-help">All sections are on by default — toggle off anything you want to leave out.</p>
+                        <p class="report-section-help">@Localizer["Modal_IncludeHelp"]</p>
                     </div>
                     <div class="report-bulk-toggle" role="group" aria-label="Bulk select">
-                        <button type="button" class="btn btn-link" id="reportSelectAll">Select all</button>
+                        <button type="button" class="btn btn-link" id="reportSelectAll">@Localizer["Modal_SelectAll"]</button>
                         <span class="toggle-divider"></span>
-                        <button type="button" class="btn btn-link" id="reportClearAll">Clear all</button>
+                        <button type="button" class="btn btn-link" id="reportClearAll">@Localizer["Modal_ClearAll"]</button>
                     </div>
                 </div>
 
@@ -1547,7 +1547,7 @@
                     <label class="form-check" for="includeProgressTracker">
                         <input class="form-check-input" type="checkbox" id="includeProgressTracker" checked>
                         <span class="check-icon"><i class="fas fa-bullseye"></i></span>
-                        <span class="form-check-label">Progress Tracker</span>
+                        <span class="form-check-label">@Localizer["Modal_ProgressTracker"]</span>
                     </label>
                     <label class="form-check" for="includeResources">
                         <input class="form-check-input" type="checkbox" id="includeResources" checked>

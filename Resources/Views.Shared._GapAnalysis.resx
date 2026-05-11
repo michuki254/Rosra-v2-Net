@@ -44,7 +44,19 @@
   <data name="AddStream_Tooltip" xml:space="preserve"><value>Add a new revenue stream</value></data>
 
   <!-- Add Stream Modal -->
-  <data name="AddStreamModal_Title" xml:space="preserve"><value>Add New Revenue Stream</value></data>
+  <data name="AddStreamModal_Title" xml:space="preserve"><value>Add Non-Property Revenue Stream</value></data>
+  <data name="AddStreamModal_Step1Intro" xml:space="preserve"><value>Choose a template to get started, or select "Other" to classify manually.</value></data>
+  <data name="AddStreamModal_SubgroupLabel" xml:space="preserve"><value>Which type of non-property revenue stream are you analysing?</value></data>
+  <data name="AddStreamModal_SubgroupHelp" xml:space="preserve"><value>Choose the option that best reflects how this revenue is billed or collected.</value></data>
+  <data name="AddStreamModal_SubgroupNote" xml:space="preserve"><value>Classify by how the revenue is administered, not only by its local name. A billed waste fee would fall under service fees, while a daily market ticket would fall under daily charges.</value></data>
+  <data name="AddStreamModal_SelectSubgroup" xml:space="preserve"><value>-- Select stream type --</value></data>
+  <data name="AddStreamModal_SubtypeLabel" xml:space="preserve"><value>Which specific revenue type best matches this stream?</value></data>
+  <data name="AddStreamModal_SelectSubtype" xml:space="preserve"><value>-- Select specific type (optional) --</value></data>
+  <data name="AddStreamModal_LocalNameLabel" xml:space="preserve"><value>Local name of this revenue stream</value></data>
+  <data name="AddStreamModal_LocalNamePlaceholder" xml:space="preserve"><value>e.g., Waste Management User Charge</value></data>
+  <data name="AddStreamModal_LocalNameHelp" xml:space="preserve"><value>Enter the name your municipality uses for this revenue stream.</value></data>
+  <data name="AddStreamModal_Back" xml:space="preserve"><value>Back</value></data>
+  <data name="AddStreamModal_Create" xml:space="preserve"><value>Create Stream</value></data>
   <data name="AddStreamModal_StreamName" xml:space="preserve"><value>Stream Name</value></data>
   <data name="AddStreamModal_Placeholder" xml:space="preserve"><value>e.g., Parking Fees, Market Stall Fees, Advertising Permits...</value></data>
   <data name="AddStreamModal_Helper" xml:space="preserve"><value>Enter a descriptive name for this revenue stream</value></data>

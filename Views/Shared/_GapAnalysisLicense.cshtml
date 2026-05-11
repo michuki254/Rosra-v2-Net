@@ -367,7 +367,7 @@
                          Property Tax "Why only 2 bars?" note). -->
                     <div class="mb-4 revenue-gap-stack-section">
                         <div class="rg-stack-header">
-                            <h6 class="rg-stack-title">Actual vs potential</h6>
+                            <h6 class="rg-stack-title">@SharedLocalizer["Chart_ActualVsPotential_Title"]</h6>
                             <span class="rg-stack-units">AMOUNTS IN <span class="currency-label">@currencySymbol</span> (B)</span>
                         </div>
                         <div class="chart-container" style="height: 420px;">
@@ -393,40 +393,43 @@
                                     </div>
 
                                     <!-- Y-axis Labels Container - labels positioned at row BOUNDARIES -->
-                                    <div class="matrix-y-labels position-absolute" id="blMatrixYLabelsContainer" style="left: 20px; top: 0; bottom: 30px; width: 55px; font-size: 0.6rem; background: #f8f9fa;">
-                                        <!-- Estimated label at TOP boundary (top of matrix) -->
-                                        <div class="y-label-item" id="blYLabelEstimated" style="position: absolute; right: 3px; top: 0; text-align: right; transform: translateY(-50%); cursor: help;"
+                                    <div class="matrix-y-labels position-absolute" id="blMatrixYLabelsContainer" style="left: 20px; top: 0; bottom: 30px; width: 72px; font-size: 0.6rem; background: #f8f9fa;">
+                                        <!-- Estimated label at TOP boundary (top of matrix). translateY(0) so the
+                                             whole label sits inside the matrix and isn't clipped by the card header.
+                                             white-space:nowrap + tight line-heights keep label + count compact and
+                                             prevent collision with the Registered label below. -->
+                                        <div class="y-label-item" id="blYLabelEstimated" style="position: absolute; right: 3px; top: 0; text-align: right; transform: translateY(0); cursor: help; white-space: nowrap; line-height: 1;"
                                              data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="@Localizer["Matrix_Estimated_Tooltip"]">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Matrix_Estimated"]</small>
-                                            <span id="blMatrixEstimatedLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
+                                            <small class="d-block fw-bold" style="font-size: 0.5rem; color: #334155; line-height: 1; margin-bottom: 1px;">@Localizer["Matrix_Estimated"]</small>
+                                            <span id="blMatrixEstimatedLabel" class="fw-bold" style="font-size: 0.62rem; line-height: 1;">0</span>
                                         </div>
                                         <!-- Registered label at boundary between Row1 and Row2 -->
-                                        <div class="y-label-item" id="blYLabelRegistered" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%); cursor: help;"
+                                        <div class="y-label-item" id="blYLabelRegistered" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%); cursor: help; white-space: nowrap; line-height: 1;"
                                              data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="@Localizer["Matrix_Registered_Tooltip"]">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Matrix_Registered"]</small>
-                                            <span id="blMatrixRegisteredLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
+                                            <small class="d-block fw-bold" style="font-size: 0.5rem; color: #334155; line-height: 1; margin-bottom: 1px;">@Localizer["Matrix_Registered"]</small>
+                                            <span id="blMatrixRegisteredLabel" class="fw-bold" style="font-size: 0.62rem; line-height: 1;">0</span>
                                         </div>
                                         <!-- Compliant label at boundary between Row2 and Row3 -->
-                                        <div class="y-label-item" id="blYLabelCompliant" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%); cursor: help;"
+                                        <div class="y-label-item" id="blYLabelCompliant" style="position: absolute; right: 3px; text-align: right; transform: translateY(-50%); cursor: help; white-space: nowrap; line-height: 1;"
                                              data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="@Localizer["Matrix_Compliant_Tooltip"]">
-                                            <small class="text-muted d-block" style="font-size: 0.55rem;">@Localizer["Matrix_Compliant"]</small>
-                                            <span id="blMatrixCompliantLabel" class="fw-bold" style="font-size: 0.65rem;">0</span>
+                                            <small class="d-block fw-bold" style="font-size: 0.5rem; color: #334155; line-height: 1; margin-bottom: 1px;">@Localizer["Matrix_Compliant"]</small>
+                                            <span id="blMatrixCompliantLabel" class="fw-bold" style="font-size: 0.62rem; line-height: 1;">0</span>
                                         </div>
                                     </div>
 
                                     <!-- Matrix Grid Area -->
-                                    <div class="matrix-grid position-absolute" id="blMatrixGridArea" style="left: 75px; top: 0; right: 0; bottom: 30px; display: flex; flex-direction: column;">
+                                    <div class="matrix-grid position-absolute" id="blMatrixGridArea" style="left: 92px; top: 0; right: 0; bottom: 30px; display: flex; flex-direction: column;">
                                         <!-- Row 1: Unregistered (Estimated - Registered) -->
-                                        <div class="matrix-row d-flex" id="blMatrixRowUnreg" style="flex: 1; min-height: 12px;">
+                                        <div class="matrix-row d-flex" id="blMatrixRowUnreg" style="flex: 1; min-height: 48px;">
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixCoverageGap"
-                                                 style="background-color: #F28E2B; color: white; flex: 1; min-width: 30px;">
+                                                 style="background-color: #F28E2B; color: white; flex: 1; min-width: 90px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["Matrix_CoverageGap"]</small><br>
                                                     <span id="blMatrixCoverageGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixMixedCoverage"
-                                                 style="background-color: #B07AA1; color: white; flex: 1; min-width: 30px; cursor: help;"
+                                                 style="background-color: #B07AA1; color: white; flex: 1; min-width: 90px; cursor: help;"
                                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="@Localizer["Matrix_MixedCovLiab_Tooltip"]">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["Matrix_MixedCovLiab"]</small><br>
@@ -435,16 +438,16 @@
                                             </div>
                                         </div>
                                         <!-- Row 2: Non-Compliant Registered (Registered - Compliant) -->
-                                        <div class="matrix-row d-flex" id="blMatrixRowNonCompliant" style="flex: 1; min-height: 12px;">
+                                        <div class="matrix-row d-flex" id="blMatrixRowNonCompliant" style="flex: 1; min-height: 48px;">
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixComplianceGap"
-                                                 style="background-color: #E15759; color: white; flex: 1; min-width: 30px;">
+                                                 style="background-color: #E15759; color: white; flex: 1; min-width: 90px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["Matrix_ComplianceGap"]</small><br>
                                                     <span id="blMatrixComplianceGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixMixedCompliance"
-                                                 style="background-color: #76B7B2; color: white; flex: 1; min-width: 30px; cursor: help;"
+                                                 style="background-color: #76B7B2; color: white; flex: 1; min-width: 90px; cursor: help;"
                                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" title="@Localizer["Matrix_MixedCompLiab_Tooltip"]">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["Matrix_MixedCompLiab"]</small><br>
@@ -453,16 +456,16 @@
                                             </div>
                                         </div>
                                         <!-- Row 3: Compliant -->
-                                        <div class="matrix-row d-flex" id="blMatrixRowCompliant" style="flex: 1; min-height: 12px;">
+                                        <div class="matrix-row d-flex" id="blMatrixRowCompliant" style="flex: 1; min-height: 48px;">
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixActualRevenue"
-                                                 style="background-color: #00B2E3; color: white; flex: 1; min-width: 30px;">
+                                                 style="background-color: #00B2E3; color: white; flex: 1; min-width: 90px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["Matrix_ActualRevenue"]</small><br>
                                                     <span id="blMatrixActualRevenueVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
                                                 </div>
                                             </div>
                                             <div class="matrix-cell d-flex align-items-center justify-content-center" id="blMatrixLiabilityGap"
-                                                 style="background-color: #4E79A7; color: white; flex: 1; min-width: 30px;">
+                                                 style="background-color: #4E79A7; color: white; flex: 1; min-width: 90px;">
                                                 <div class="text-center p-1">
                                                     <small style="font-size: 0.7rem;">@Localizer["Matrix_LiabilityGap"]</small><br>
                                                     <span id="blMatrixLiabilityGapVal" class="fw-bold" style="font-size: 0.8rem;">@currencySymbol 0</span>
@@ -472,7 +475,7 @@
                                     </div>
 
                                     <!-- X-axis Labels - positioned at column BOUNDARIES -->
-                                    <div class="matrix-x-axis position-absolute" id="blMatrixXAxisContainer" style="left: 75px; right: 0; bottom: 0; height: 30px; background: #f8f9fa;">
+                                    <div class="matrix-x-axis position-absolute" id="blMatrixXAxisContainer" style="left: 92px; right: 0; bottom: 0; height: 30px; background: #f8f9fa;">
                                         <!-- X-axis label at left edge (origin = 0) -->
                                         <div class="x-label-item" id="blXLabelOrigin" style="position: absolute; left: 0; bottom: 2px; transform: translateX(0%); text-align: left; font-size: 0.6rem;">
                                             <span id="blMatrixOriginLabel" class="fw-bold" style="font-size: 0.65rem;">@currencySymbol 0</span>
@@ -836,8 +839,8 @@
                     type: 'bar',
                     data: {
                         labels: [
-                            ['Revenue to date', 'actual collection'],
-                            ['Realistic potential', 'at your improvement %']
+                            '@SharedLocalizer["Chart_ActualRevenue"]',
+                            '@SharedLocalizer["Chart_PotentialRevenue"]'
                         ],
                         datasets: [
                             { label: 'Revenue to date', data: [0, 0], backgroundColor: '#00B2E3', stack: 'rg', borderWidth: 0, barThickness: 90, maxBarThickness: 110 },
@@ -1016,7 +1019,7 @@
                             },
                             y: {
                                 grid: { display: false, drawBorder: false },
-                                ticks: { font: { size: 11 }, color: '#334155' }
+                                ticks: { font: { size: 11, weight: '700' }, color: '#334155' }
                             }
                         }
                     }
@@ -1199,10 +1202,9 @@
                     rev: rgRev, gap: rgGap, total: rgTotal,
                     realisticPct: realisticImprovementPercent
                 };
-                // NB: double-at in a Razor view escapes to a single at-sign in rendered output.
                 blRevenueGapStackedBarChart.data.labels = [
-                    ['Revenue to date', 'actual collection'],
-                    ['Realistic potential', '@@ ' + (realisticImprovementPercent || 0) + '% improvement']
+                    '@SharedLocalizer["Chart_ActualRevenue"]',
+                    '@SharedLocalizer["Chart_PotentialRevenue"]'
                 ];
                 blRevenueGapStackedBarChart.update();
             }
@@ -1373,23 +1375,24 @@
             // Clamp all segment counts to valid ranges
             const clampedRegistered = Math.max(0, Math.min(data.registeredBusinesses, data.totalEstimatedBusinesses));
             const clampedCompliant = Math.max(0, Math.min(data.compliantBusinesses, clampedRegistered));
-            const totalBiz = Math.max(1, data.totalEstimatedBusinesses);
-            const unregBiz = Math.max(0, data.totalEstimatedBusinesses - clampedRegistered);
+            const totalBizRaw = data.totalEstimatedBusinesses || 0;
+            const unregBiz = Math.max(0, totalBizRaw - clampedRegistered);
             const nonCompliantBiz = Math.max(0, clampedRegistered - clampedCompliant);
             const compliantBiz = Math.max(0, clampedCompliant);
 
+            // Empty state: no data entered yet. Render a clean even 2×3 grid so all six
+            // cells are legible — otherwise the Marimekko rows collapse to min-height
+            // and cluster at the top, hiding the labels. Mirrors the Property Tax matrix.
+            const rowsEmpty = totalBizRaw === 0 || (unregBiz + nonCompliantBiz + compliantBiz === 0);
+            const totalBiz = rowsEmpty ? 1 : totalBizRaw;
+
             // True Marimekko: cell AREA encodes the underlying count, not a fixed grid.
             // Floor is 5% (down from 30%) — small cells stay visible (~16px on a 320px
-            // container) without distorting the proportions of larger ones. Was 30%
-            // before, which made a 5%-of-total cell look identical to a 30%-of-total cell.
-            const minFlex = 0.05;
-            const unregRatio = unregBiz / totalBiz;
-            const nonCompliantRatio = nonCompliantBiz / totalBiz;
-            const compliantRatio = compliantBiz / totalBiz;
-
-            const unregFlex = Math.max(minFlex, unregRatio);
-            const nonCompliantFlex = Math.max(minFlex, nonCompliantRatio);
-            const compliantFlex = Math.max(minFlex, compliantRatio);
+            // container) without distorting the proportions of larger ones.
+            const minFlex = 0.15;
+            const unregFlex = rowsEmpty ? 1 : Math.max(minFlex, unregBiz / totalBiz);
+            const nonCompliantFlex = rowsEmpty ? 1 : Math.max(minFlex, nonCompliantBiz / totalBiz);
+            const compliantFlex = rowsEmpty ? 1 : Math.max(minFlex, compliantBiz / totalBiz);
 
             const rowUnreg = document.getElementById('blMatrixRowUnreg');
             const rowNonCompliant = document.getElementById('blMatrixRowNonCompliant');
@@ -1400,19 +1403,16 @@
             if (rowCompliant) rowCompliant.style.flex = compliantFlex.toString();
 
             // === DYNAMIC COLUMN WIDTHS (proportional to billing amounts) ===
-            const totalBilling = data.achievableAvgBill || 1;
+            const totalBillingRaw = data.achievableAvgBill || 0;
             const avgBilled = data.avgBilledAmount || 0;
-            const liabilityDiff = Math.max(0, data.achievableAvgBill - data.avgBilledAmount);
+            const liabilityDiff = Math.max(0, (data.achievableAvgBill || 0) - (data.avgBilledAmount || 0));
+            const colsEmpty = totalBillingRaw === 0 || (avgBilled + liabilityDiff === 0);
+            const totalBilling = colsEmpty ? 1 : totalBillingRaw;
 
-            // Column floor 5% — same Marimekko principle as rows. The right column
-            // (rate-uplift gap) often holds small absolute values; without lowering the
-            // floor it gets inflated to look as wide as the left column.
-            const minColWidth = 0.05;
-            const leftColRatio = avgBilled / totalBilling;
-            const rightColRatio = liabilityDiff / totalBilling;
-
-            const leftColFlex = Math.max(minColWidth, leftColRatio);
-            const rightColFlex = Math.max(minColWidth, rightColRatio);
+            // Column floor 5% — same Marimekko principle as rows.
+            const minColWidth = 0.15;
+            const leftColFlex = colsEmpty ? 1 : Math.max(minColWidth, avgBilled / totalBilling);
+            const rightColFlex = colsEmpty ? 1 : Math.max(minColWidth, liabilityDiff / totalBilling);
 
             // Apply to all row cells
             const allRows = document.querySelectorAll('#blMatrixGridArea .matrix-row');

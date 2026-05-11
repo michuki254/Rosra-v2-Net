@@ -80,4 +80,35 @@
   <data name="Modal_FormatHtml" xml:space="preserve"><value>HTML (Print-friendly)</value></data>
   <data name="Modal_Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="Modal_Generate" xml:space="preserve"><value>Generate Report</value></data>
+
+  <!-- Personalisation chip bar -->
+  <data name="Personalise_Time" xml:space="preserve"><value>Time</value></data>
+  <data name="Personalise_QuickWins" xml:space="preserve"><value>Quick wins</value></data>
+  <data name="Personalise_MediumTerm" xml:space="preserve"><value>Medium-term</value></data>
+  <data name="Personalise_LongTerm" xml:space="preserve"><value>Long-term</value></data>
+  <data name="Personalise_Risk" xml:space="preserve"><value>Risk</value></data>
+  <data name="Personalise_HigherFeasibility" xml:space="preserve"><value>Higher feasibility</value></data>
+  <data name="Personalise_Moderate" xml:space="preserve"><value>Moderate</value></data>
+  <data name="Personalise_LowerFeasibility" xml:space="preserve"><value>Lower feasibility</value></data>
+  <data name="Personalise_Focus" xml:space="preserve"><value>Focus</value></data>
+  <data name="Personalise_Compliance" xml:space="preserve"><value>Compliance</value></data>
+  <data name="Personalise_Coverage" xml:space="preserve"><value>Coverage</value></data>
+  <data name="Personalise_Valuation" xml:space="preserve"><value>Valuation</value></data>
+  <data name="Personalise_Liability" xml:space="preserve"><value>Liability</value></data>
+  <data name="Personalise_CardsMatch" xml:space="preserve"><value>&lt;strong id="recVisibleCount"&gt;—&lt;/strong&gt; of &lt;strong id="recTotalCount"&gt;—&lt;/strong&gt; cards match</value></data>
+  <data name="Personalise_ShowAll" xml:space="preserve"><value>Show all 82 cards</value></data>
+  <data name="Personalise_ShowAllTooltip" xml:space="preserve"><value>Broaden the pool to all 82 solution cards</value></data>
+  <data name="Personalise_ResetFilters" xml:space="preserve"><value>Reset filters</value></data>
+  <data name="Personalise_ResetFiltersTooltip" xml:space="preserve"><value>Restore default chip selection</value></data>
+
+  <!-- Empty state (cards view) -->
+  <data name="Empty_NoStreamsPrioritised" xml:space="preserve"><value>No streams have been prioritized yet, so we couldn't auto-derive any cards. Click below to broaden the pool to all 82 solution cards.</value></data>
+
+  <!-- Report modal extras -->
+  <data name="Modal_Subtitle" xml:space="preserve"><value>Pick the sections to include and choose your output format.</value></data>
+  <data name="Modal_IncludeHelp" xml:space="preserve"><value>All sections are on by default — toggle off anything you want to leave out.</value></data>
+  <data name="Modal_SelectAll" xml:space="preserve"><value>Select all</value></data>
+  <data name="Modal_ClearAll" xml:space="preserve"><value>Clear all</value></data>
+  <data name="Modal_ProgressTracker" xml:space="preserve"><value>Progress Tracker</value></data>
+  <data name="View_AriaLabel" xml:space="preserve"><value>Recommendations view</value></data>
 </root>

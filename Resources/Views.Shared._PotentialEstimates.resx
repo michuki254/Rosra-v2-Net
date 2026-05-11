@@ -105,4 +105,37 @@
   <data name="JS_CC_FundingHighAutLow" xml:space="preserve"><value>Funding is close to the peer frontier ({0}%), while autonomy is noticeably lower ({1}%). This suggests that the main constraint may lie in how revenues are shared and conditioned, even though there is still scope for administrative strengthening at the local level.</value></data>
   <data name="JS_CC_FundingLowAutHigh" xml:space="preserve"><value>Funding is below the peer frontier ({0}%) but autonomy is relatively strong ({1}%). This combination suggests that the overall SNG envelope is tight, even if local discretion over revenues is not unusually low. Administrative improvements remain relevant, and the adequacy of the funding assignment can also be discussed where needed.</value></data>
   <data name="JS_CC_BothLow" xml:space="preserve"><value>Both funding ({0}% of the frontier) and autonomy ({1}%) are below peer benchmarks. This pattern indicates that SNGs may face constraints in both the size and the structure of their revenue; administrative options should be explored first, alongside a careful discussion of possible intergov. or policy adjust.</value></data>
+  <!-- Local government profile card -->
+  <data name="LgProfile_Title" xml:space="preserve"><value>Local government profile</value></data>
+  <data name="LgProfile_AllFieldsRequired" xml:space="preserve"><value>All fields required · ~2 min</value></data>
+  <data name="LgProfile_LocationGroup" xml:space="preserve"><value>Location &amp; government unit</value></data>
+  <data name="LgProfile_FiscalGroup" xml:space="preserve"><value>Fiscal figures</value></data>
+  <data name="LgProfile_GovUnitLevel1" xml:space="preserve"><value>Government Unit — Level 1</value></data>
+  <data name="LgProfile_GovUnitLevel2" xml:space="preserve"><value>Government Unit — Level 2</value></data>
+  <data name="LgProfile_RegionHelp" xml:space="preserve"><value>Region, province or county</value></data>
+  <data name="LgProfile_PeriodHelp" xml:space="preserve"><value>Period the assessment covers</value></data>
+  <data name="LgProfile_SymbolCode" xml:space="preserve"><value>Symbol · Code</value></data>
+  <data name="LgProfile_OsrLabel" xml:space="preserve"><value>Own-Source Revenue (OSR)</value></data>
+  <data name="LgProfile_OsrHelp" xml:space="preserve"><value>Total revenue the local government collects directly — taxes, fees, charges, fines (LCU).</value></data>
+  <data name="LgProfile_OsrPlaceholder" xml:space="preserve"><value>e.g. 12,500,000,000</value></data>
+  <data name="LgProfile_GrpLabel" xml:space="preserve"><value>GRP</value></data>
+  <data name="LgProfile_GrpHelp" xml:space="preserve"><value>Gross Regional Product (LCU)</value></data>
+  <data name="LgProfile_GrpPlaceholder" xml:space="preserve"><value>e.g. 480,000,000,000</value></data>
+  <data name="LgProfile_PopulationLabel" xml:space="preserve"><value>Population</value></data>
+  <data name="LgProfile_PopulationHelp" xml:space="preserve"><value>Optional — most recent census</value></data>
+  <data name="LgProfile_PopulationPlaceholder" xml:space="preserve"><value>e.g. 4,397,073</value></data>
+  <data name="LgProfile_GetAnalysis" xml:space="preserve"><value>Get Analysis</value></data>
+  <data name="NextStepCTA_Title" xml:space="preserve"><value>Start a more detailed analysis</value></data>
+  <data name="NextStepCTA_Sub" xml:space="preserve"><value>A more detailed and accurate analysis of the revenue potential of each individual revenue stream.</value></data>
+  <data name="GapFrontier_Title" xml:space="preserve"><value>What you collect vs what you could collect</value></data>
+  <data name="GapFrontier_UnitsFormat" xml:space="preserve"><value>AMOUNTS IN {0} (B)</value></data>
+  <data name="MoreAnalysis_Question" xml:space="preserve"><value>Want to see more analysis &amp; methodology behind these numbers?</value></data>
+  <data name="Common_Expand" xml:space="preserve"><value>Expand</value></data>
+  <data name="Common_Collapse" xml:space="preserve"><value>Collapse</value></data>
+  <data name="LgProfile_L2Help" xml:space="preserve"><value>District, municipality or sub-county</value></data>
+  <data name="LgProfile_AddLevel3" xml:space="preserve"><value>Add Level 3</value></data>
+  <data name="LgProfile_L3Help" xml:space="preserve"><value>Ward, borough or sub-county</value></data>
+  <data name="LgProfile_L3Placeholder" xml:space="preserve"><value>Ward, borough, sub-county...</value></data>
+  <data name="LgProfile_L2InfoTooltip" xml:space="preserve"><value>Tick this box if the analysis should be conducted for a lower-level government unit within the selected country. This opens an additional field to enter the unit (district, municipality or sub-county).</value></data>
+  <data name="LgProfile_L3InfoTooltip" xml:space="preserve"><value>Tick this box to drill further down within the selected lower-level unit. This opens an additional field to enter the unit (ward, borough or sub-county).</value></data>
 </root>

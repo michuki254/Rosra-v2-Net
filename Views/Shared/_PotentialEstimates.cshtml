@@ -479,13 +479,13 @@
                     <div class="config-header">
                         <div class="config-header-left">
                             <i class="bi bi-building"></i>
-                            <span>Local government profile</span>
+                            <span>@Localizer["LgProfile_Title"]</span>
                             <span id="config-header-country" class="config-header-country" hidden>
                                 <img id="config-header-flag" class="config-header-flag" alt="" loading="lazy">
                                 <span id="config-header-country-name"></span>
                             </span>
                         </div>
-                        <div class="config-header-right">All fields required · ~2 min</div>
+                        <div class="config-header-right">@Localizer["LgProfile_AllFieldsRequired"]</div>
                     </div>
                     <div class="config-body">
                         @* CurrencySymbol is now rendered as a visible field below (paired with the code). *@
@@ -498,7 +498,7 @@
 
                         <!-- Group 1: Location & government unit (merged) -->
                         <div class="cfg-group">
-                            <div class="cfg-group-label">Location &amp; government unit</div>
+                            <div class="cfg-group-label">@Localizer["LgProfile_LocationGroup"]</div>
                             <div class="cfg-row" id="govUnitLevel1Row">
                                 <div class="cfg-field">
                                     <label class="cfg-label">@Localizer["Country"]</label>
@@ -510,44 +510,44 @@
                                     </div>
                                 </div>
                             <div class="cfg-field">
-                                <label class="cfg-label">Government Unit — Level 1</label>
+                                <label class="cfg-label">@Localizer["LgProfile_GovUnitLevel1"]</label>
                                 <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="region" name="Region" @(isViewMode ? "disabled" : "")>
                                     <option value="">@Localizer["SelectLevel1"]</option>
                                 </select>
-                                <small class="cfg-help">Region, province or county</small>
+                                <small class="cfg-help">@Localizer["LgProfile_RegionHelp"]</small>
                                 <input class="d-none" type="checkbox" id="level1IsFinal" @(isViewMode ? "disabled" : "")>
                             </div>
                             <div class="cfg-field" id="govUnitLevel2Row" style="display:@(string.IsNullOrEmpty(Model.Region) ? "none" : "")">
                                 <label class="cfg-label cfg-label-check">
                                     <input type="checkbox" id="level2Toggle" class="cfg-check" @(isViewMode ? "disabled" : "") />
-                                    <span>Government Unit — Level 2</span>
+                                    <span>@Localizer["LgProfile_GovUnitLevel2"]</span>
                                     <button type="button" class="cfg-info-btn" data-bs-toggle="tooltip" data-bs-placement="top"
                                             aria-label="What is Level 2?"
-                                            title="Tick this box if the analysis should be conducted for a lower-level government unit within the selected country. This opens an additional field to enter the unit (district, municipality or sub-county).">
+                                            title="@Localizer["LgProfile_L2InfoTooltip"]">
                                         <i class="bi bi-info-circle"></i>
                                     </button>
                                 </label>
                                 <input type="text" class="form-control cfg-input @(isViewMode ? "readonly" : "")"
                                        id="city" name="City" value="@Model.City"
                                        placeholder="@Localizer["EnterLevel2"]" @(isViewMode ? "readonly" : "")>
-                                <small class="cfg-help">District, municipality or sub-county</small>
+                                <small class="cfg-help">@Localizer["LgProfile_L2Help"]</small>
                                 <input class="d-none" type="checkbox" id="level2IsFinal" @(isViewMode ? "disabled" : "")>
                             </div>
                             <div class="cfg-field" id="govUnitLevel3Row" style="display:@(string.IsNullOrEmpty(Model.Region) ? "none" : "")">
                                 <label class="cfg-label cfg-label-check">
                                     <input type="checkbox" id="addLevel3Toggle" class="cfg-check" />
-                                    <span>Add Level 3</span>
+                                    <span>@Localizer["LgProfile_AddLevel3"]</span>
                                     <button type="button" class="cfg-info-btn" data-bs-toggle="tooltip" data-bs-placement="top"
                                             aria-label="What is Level 3?"
-                                            title="Tick this box to drill further down within the selected lower-level unit. This opens an additional field to enter the unit (ward, borough or sub-county).">
+                                            title="@Localizer["LgProfile_L3InfoTooltip"]">
                                         <i class="bi bi-info-circle"></i>
                                     </button>
                                 </label>
                                 <input type="text" class="form-control cfg-input @(isViewMode ? "readonly" : "")"
                                        id="govUnitLevel3" name="GovUnitLevel3" value="@Model.GovUnitLevel3"
-                                       placeholder="Ward, borough, sub-county..." @(isViewMode ? "readonly" : "")
+                                       placeholder="@Localizer["LgProfile_L3Placeholder"]" @(isViewMode ? "readonly" : "")
                                        style="display:@(string.IsNullOrEmpty(Model.GovUnitLevel3) ? "none" : "block");">
-                                <small class="cfg-help">Ward, borough or sub-county</small>
+                                <small class="cfg-help">@Localizer["LgProfile_L3Help"]</small>
                             </div>
                         </div>
 
@@ -557,14 +557,14 @@
 
                         <!-- Group 3: Fiscal figures -->
                         <div class="cfg-group">
-                            <div class="cfg-group-label">Fiscal figures</div>
+                            <div class="cfg-group-label">@Localizer["LgProfile_FiscalGroup"]</div>
                             <div class="cfg-row cfg-row-4">
                             <div class="cfg-field">
                                 <label class="cfg-label">@Localizer["FinancialYear"]</label>
                                 <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="financialYear" name="FinancialYear" @(isViewMode ? "disabled" : "")>
                                     <option value="">@Localizer["SelectYear"]</option>
                                 </select>
-                                <small class="cfg-help">Period the assessment covers</small>
+                                <small class="cfg-help">@Localizer["LgProfile_PeriodHelp"]</small>
                             </div>
                             <div class="cfg-field">
                                 <label class="cfg-label">@Localizer["Currency"]</label>
@@ -576,29 +576,29 @@
                                            id="currency" name="Currency" value="@Model.Currency"
                                            placeholder="-" readonly aria-label="Currency code" title="Code">
                                 </div>
-                                <small class="cfg-help">Symbol · Code</small>
+                                <small class="cfg-help">@Localizer["LgProfile_SymbolCode"]</small>
                                 <span id="currency-symbol" class="d-none">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "-" : Model.CurrencySymbol)</span>
                             </div>
                             <div class="cfg-field">
-                                <label class="cfg-label">Own-Source Revenue (OSR) <span class="cfg-req">*</span></label>
+                                <label class="cfg-label">@Localizer["LgProfile_OsrLabel"] <span class="cfg-req">*</span></label>
                                 <input type="text" class="form-control cfg-input number-format @(isViewMode ? "readonly" : "")"
                                        id="actualOsr" name="ActualOsr" value="@(Model.ActualOsr?.ToString("#,##0.##"))"
-                                       placeholder="e.g. 12,500,000,000" @(isViewMode ? "readonly" : "")>
-                                <small class="cfg-help">Total revenue the local government collects directly — taxes, fees, charges, fines (LCU).</small>
+                                       placeholder="@Localizer["LgProfile_OsrPlaceholder"]" @(isViewMode ? "readonly" : "")>
+                                <small class="cfg-help">@Localizer["LgProfile_OsrHelp"]</small>
                             </div>
                             <div class="cfg-field">
-                                <label class="cfg-label">GRP <span class="cfg-req">*</span></label>
+                                <label class="cfg-label">@Localizer["LgProfile_GrpLabel"] <span class="cfg-req">*</span></label>
                                 <input type="text" class="form-control cfg-input number-format @(isViewMode ? "readonly" : "")"
                                        id="gdpPerCapita" name="GdpPerCapita" value="@(Model.GdpPerCapita?.ToString("#,##0.##"))"
-                                       placeholder="e.g. 480,000,000,000" @(isViewMode ? "readonly" : "")>
-                                <small class="cfg-help">Gross Regional Product (LCU)</small>
+                                       placeholder="@Localizer["LgProfile_GrpPlaceholder"]" @(isViewMode ? "readonly" : "")>
+                                <small class="cfg-help">@Localizer["LgProfile_GrpHelp"]</small>
                             </div>
                             <div class="cfg-field">
-                                <label class="cfg-label">Population</label>
+                                <label class="cfg-label">@Localizer["LgProfile_PopulationLabel"]</label>
                                 <input type="text" class="form-control cfg-input number-format @(isViewMode ? "readonly" : "")"
                                        id="population" name="Population" value="@(Model.Population?.ToString("#,##0"))"
-                                       placeholder="e.g. 4,397,073" @(isViewMode ? "readonly" : "")>
-                                <small class="cfg-help">Optional — most recent census</small>
+                                       placeholder="@Localizer["LgProfile_PopulationPlaceholder"]" @(isViewMode ? "readonly" : "")>
+                                <small class="cfg-help">@Localizer["LgProfile_PopulationHelp"]</small>
                             </div>
                             </div>
                         </div>
@@ -621,7 +621,7 @@
                         <!-- Action: Get Analysis -->
                         <div class="cfg-actions">
                             <button type="button" id="getAnalysisBtn" class="btn-get-analysis">
-                                Get Analysis <i class="bi bi-arrow-right ms-1"></i>
+                                @Localizer["LgProfile_GetAnalysis"] <i class="bi bi-arrow-right ms-1"></i>
                             </button>
                         </div>
                     </div>
@@ -655,8 +655,8 @@
                         <!-- PRIMARY CHART: Current OSR vs Potential — Gap to Frontier (above Peer SNGs section) -->
                         <div class="module2-chart-section gap-frontier-section">
                             <div class="gap-frontier-header">
-                                <h6 class="gap-frontier-title">What you collect vs what you could collect</h6>
-                                <span class="gap-frontier-units" id="gapFrontierUnits">AMOUNTS IN LCU (B)</span>
+                                <h6 class="gap-frontier-title">@Localizer["GapFrontier_Title"]</h6>
+                                <span class="gap-frontier-units" id="gapFrontierUnits" data-units-format="@Localizer["GapFrontier_UnitsFormat"].Value">@string.Format(Localizer["GapFrontier_UnitsFormat"].Value, "LCU")</span>
                             </div>
                             <div class="chart-container" style="height: 400px;">
                                 <canvas id="actualVsPotentialChart"></canvas>
@@ -666,13 +666,15 @@
                         <!-- Collapsible "More Analysis & Methodology" wrapper — collapsed by default -->
                         <div class="more-analysis-toggle-wrap">
                             <button type="button" id="moreAnalysisToggle" class="more-analysis-toggle"
-                                    aria-expanded="false" aria-controls="moreAnalysisContent">
+                                    aria-expanded="false" aria-controls="moreAnalysisContent"
+                                    data-label-expand="@Localizer["Common_Expand"]"
+                                    data-label-collapse="@Localizer["Common_Collapse"]">
                                 <span class="more-analysis-toggle__text">
                                     <i class="bi bi-info-circle me-2"></i>
-                                    Want to see more analysis &amp; methodology behind these numbers?
+                                    @Localizer["MoreAnalysis_Question"]
                                 </span>
                                 <span class="more-analysis-toggle__cta">
-                                    <span class="more-analysis-toggle__label">Expand</span>
+                                    <span class="more-analysis-toggle__label">@Localizer["Common_Expand"]</span>
                                     <i class="bi bi-chevron-down more-analysis-toggle__chevron"></i>
                                 </span>
                             </button>
@@ -1109,9 +1111,9 @@
                         <div class="next-step-cta-wrap">
                             <button type="button" id="goToStreamAnalysisBtn" class="next-step-cta">
                                 <span class="next-step-cta__copy">
-                                    <span class="next-step-cta__eyebrow">Next step</span>
-                                    <span class="next-step-cta__title">Start a more detailed analysis</span>
-                                    <span class="next-step-cta__sub">A more detailed and accurate analysis of the revenue potential of each individual revenue stream.</span>
+                                    <span class="next-step-cta__eyebrow">@SharedLocalizer["Nav_NextStep"]</span>
+                                    <span class="next-step-cta__title">@Localizer["NextStepCTA_Title"]</span>
+                                    <span class="next-step-cta__sub">@Localizer["NextStepCTA_Sub"]</span>
                                 </span>
                                 <span class="next-step-cta__arrow">
                                     <i class="bi bi-arrow-right"></i>
@@ -2892,8 +2894,8 @@
             const level2Filled = cityInput.value.trim() !== '';
             const level2Checked = level2IsFinal.checked;
 
-            // Show/hide Level 1 row
-            govUnitLevel1Row.style.display = countrySelected ? '' : 'none';
+            // Level 1 row (Country + Level 1 selects) must stay visible — it CONTAINS the country
+            // select itself, so hiding it would prevent the user from re-selecting after clearing.
 
             // Show/hide Level 2 row
             govUnitLevel2Row.style.display = (countrySelected && level1Selected && !level1Checked) ? '' : 'none';
@@ -4972,11 +4974,13 @@
             const rawSymbol = (symbolEl ? symbolEl.textContent : '').trim();
             const symbol    = (!rawSymbol || rawSymbol === '-') ? '' : rawSymbol;
 
-            // Update header units indicator (e.g. "AMOUNTS IN KSH (B)")
+            // Update header units indicator (e.g. "AMOUNTS IN KSH (B)").
+            // Format string comes from the data-units-format attribute so the prefix/suffix are localised.
             const unitsEl = document.getElementById('gapFrontierUnits');
             if (unitsEl) {
                 const unitText = symbol ? symbol.toUpperCase() : 'LCU';
-                unitsEl.textContent = 'AMOUNTS IN ' + unitText + ' (B)';
+                const fmt = unitsEl.getAttribute('data-units-format') || 'AMOUNTS IN {0} (B)';
+                unitsEl.textContent = fmt.replace('{0}', unitText);
             }
 
             const fmtShort = function (v) {
@@ -5468,18 +5472,20 @@
         var moreContent = document.getElementById('moreAnalysisContent');
         if (moreToggle && moreContent) {
             var labelEl = moreToggle.querySelector('.more-analysis-toggle__label');
+            var labelExpand   = moreToggle.getAttribute('data-label-expand')   || 'Expand';
+            var labelCollapse = moreToggle.getAttribute('data-label-collapse') || 'Collapse';
             moreToggle.addEventListener('click', function () {
                 var isOpen = moreContent.style.display !== 'none';
                 if (isOpen) {
                     moreContent.style.display = 'none';
                     moreToggle.classList.remove('is-expanded');
                     moreToggle.setAttribute('aria-expanded', 'false');
-                    if (labelEl) labelEl.textContent = 'Expand';
+                    if (labelEl) labelEl.textContent = labelExpand;
                 } else {
                     moreContent.style.display = '';
                     moreToggle.classList.add('is-expanded');
                     moreToggle.setAttribute('aria-expanded', 'true');
-                    if (labelEl) labelEl.textContent = 'Collapse';
+                    if (labelEl) labelEl.textContent = labelCollapse;
                     // any embedded Chart.js charts may need a resize after their container becomes visible
                     if (window.Chart && Chart.instances) {
                         Object.values(Chart.instances).forEach(function (ch) { try { ch.resize(); } catch (e) {} });

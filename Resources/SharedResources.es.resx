@@ -132,4 +132,38 @@
   <data name="Chart_Frontier" xml:space="preserve"><value>Frontera (prom. top 20%)</value></data>
   <data name="Chart_Actual" xml:space="preserve"><value>Real</value></data>
   <data name="Chart_Estimated" xml:space="preserve"><value>Estimado</value></data>
+  <data name="Chart_ActualVsPotential_Title" xml:space="preserve"><value>Real vs potencial</value></data>
+  <data name="Chart_ActualRevenue" xml:space="preserve"><value>Ingresos reales</value></data>
+  <data name="Chart_PotentialRevenue" xml:space="preserve"><value>Ingresos potenciales</value></data>
+  <data name="Nav_PreviousStep" xml:space="preserve"><value>Paso anterior</value></data>
+  <data name="Nav_GoBack" xml:space="preserve"><value>Atrás</value></data>
+  <data name="Nav_BackToOverview" xml:space="preserve"><value>Volver al resumen</value></data>
+  <data name="Nav_BackToOverviewSub" xml:space="preserve"><value>Volver al panorama del análisis de alto nivel.</value></data>
+  <data name="Nav_NextStep" xml:space="preserve"><value>Paso siguiente</value></data>
+  <data name="Nav_GoBackToStep" xml:space="preserve"><value>Volver al paso {0} de {1}.</value></data>
+  <data name="Nav_ContinueToStep" xml:space="preserve"><value>Continuar al paso {0} de {1}.</value></data>
+  <data name="StreamSubgroupA_Label" xml:space="preserve"><value>Licencias comerciales y permisos operativos recurrentes</value></data>
+  <data name="StreamSubgroupA_ShortLabel" xml:space="preserve"><value>Licencias y permisos</value></data>
+  <data name="StreamSubgroupB_Label" xml:space="preserve"><value>Tarifas de servicio y cargos de uso facturados</value></data>
+  <data name="StreamSubgroupB_ShortLabel" xml:space="preserve"><value>Tarifas y cargos facturados</value></data>
+  <data name="StreamSubgroupC_Label" xml:space="preserve"><value>Cargos diarios o en el punto de cobro</value></data>
+  <data name="StreamSubgroupC_ShortLabel" xml:space="preserve"><value>Diario / Punto de cobro</value></data>
+  <data name="Template_GeneralBusinessLicence_Name" xml:space="preserve"><value>Licencia comercial general</value></data>
+  <data name="Template_GeneralBusinessLicence_Description" xml:space="preserve"><value>Registro y licencia comercial anual o periódica</value></data>
+  <data name="Template_AdvertisingSignagePermit_Name" xml:space="preserve"><value>Permiso de publicidad / señalización</value></data>
+  <data name="Template_AdvertisingSignagePermit_Description" xml:space="preserve"><value>Permisos para señalización, vallas y publicidad</value></data>
+  <data name="Template_SolidWasteFee_Name" xml:space="preserve"><value>Tarifa de residuos sólidos</value></data>
+  <data name="Template_SolidWasteFee_Description" xml:space="preserve"><value>Facturación periódica de servicios de recolección de residuos</value></data>
+  <data name="Template_MarketStallRent_Name" xml:space="preserve"><value>Alquiler de puesto de mercado</value></data>
+  <data name="Template_MarketStallRent_Description" xml:space="preserve"><value>Alquiler periódico de puestos de mercado asignados</value></data>
+  <data name="Template_DailyMarketFee_Name" xml:space="preserve"><value>Tarifa diaria de mercado</value></data>
+  <data name="Template_DailyMarketFee_Description" xml:space="preserve"><value>Tarifa diaria cobrada en el sitio a los vendedores del mercado</value></data>
+  <data name="Template_ParkingFee_Name" xml:space="preserve"><value>Tarifa de estacionamiento</value></data>
+  <data name="Template_ParkingFee_Description" xml:space="preserve"><value>Cargos de estacionamiento por uso o diarios cobrados en el sitio</value></data>
+  <data name="Template_Other_Name" xml:space="preserve"><value>Otra fuente no inmobiliaria</value></data>
+  <data name="Template_Other_Description" xml:space="preserve"><value>Clasificar manualmente cualquier otra fuente de ingresos no inmobiliaria</value></data>
+  <data name="Template_ManualClassification" xml:space="preserve"><value>Clasificación manual</value></data>
+  <data name="Nav_SaveReport" xml:space="preserve"><value>Guardar informe</value></data>
+  <data name="Nav_UpdateReport" xml:space="preserve"><value>Actualizar informe</value></data>
+  <data name="Nav_SaveAsMyReport" xml:space="preserve"><value>Guardar como mi informe</value></data>
 </root>

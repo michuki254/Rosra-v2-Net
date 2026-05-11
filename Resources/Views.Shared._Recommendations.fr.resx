@@ -80,4 +80,32 @@
   <data name="Modal_FormatHtml" xml:space="preserve"><value>HTML (adapté à l'impression)</value></data>
   <data name="Modal_Cancel" xml:space="preserve"><value>Annuler</value></data>
   <data name="Modal_Generate" xml:space="preserve"><value>Générer le rapport</value></data>
+
+  <data name="Personalise_Time" xml:space="preserve"><value>Délai</value></data>
+  <data name="Personalise_QuickWins" xml:space="preserve"><value>Gains rapides</value></data>
+  <data name="Personalise_MediumTerm" xml:space="preserve"><value>Moyen terme</value></data>
+  <data name="Personalise_LongTerm" xml:space="preserve"><value>Long terme</value></data>
+  <data name="Personalise_Risk" xml:space="preserve"><value>Risque</value></data>
+  <data name="Personalise_HigherFeasibility" xml:space="preserve"><value>Faisabilité élevée</value></data>
+  <data name="Personalise_Moderate" xml:space="preserve"><value>Modérée</value></data>
+  <data name="Personalise_LowerFeasibility" xml:space="preserve"><value>Faisabilité faible</value></data>
+  <data name="Personalise_Focus" xml:space="preserve"><value>Axe</value></data>
+  <data name="Personalise_Compliance" xml:space="preserve"><value>Conformité</value></data>
+  <data name="Personalise_Coverage" xml:space="preserve"><value>Couverture</value></data>
+  <data name="Personalise_Valuation" xml:space="preserve"><value>Évaluation</value></data>
+  <data name="Personalise_Liability" xml:space="preserve"><value>Imposition</value></data>
+  <data name="Personalise_CardsMatch" xml:space="preserve"><value>&lt;strong id="recVisibleCount"&gt;—&lt;/strong&gt; sur &lt;strong id="recTotalCount"&gt;—&lt;/strong&gt; fiches correspondent</value></data>
+  <data name="Personalise_ShowAll" xml:space="preserve"><value>Afficher les 82 fiches</value></data>
+  <data name="Personalise_ShowAllTooltip" xml:space="preserve"><value>Élargir l'éventail à toutes les 82 fiches de solutions</value></data>
+  <data name="Personalise_ResetFilters" xml:space="preserve"><value>Réinitialiser les filtres</value></data>
+  <data name="Personalise_ResetFiltersTooltip" xml:space="preserve"><value>Restaurer la sélection de filtres par défaut</value></data>
+
+  <data name="Empty_NoStreamsPrioritised" xml:space="preserve"><value>Aucune source n'a encore été priorisée, nous n'avons donc pas pu dériver automatiquement de fiches. Cliquez ci-dessous pour élargir l'éventail à toutes les 82 fiches de solutions.</value></data>
+
+  <data name="Modal_Subtitle" xml:space="preserve"><value>Sélectionnez les sections à inclure et choisissez votre format de sortie.</value></data>
+  <data name="Modal_IncludeHelp" xml:space="preserve"><value>Toutes les sections sont activées par défaut — désactivez celles que vous souhaitez exclure.</value></data>
+  <data name="Modal_SelectAll" xml:space="preserve"><value>Tout sélectionner</value></data>
+  <data name="Modal_ClearAll" xml:space="preserve"><value>Tout effacer</value></data>
+  <data name="Modal_ProgressTracker" xml:space="preserve"><value>Suivi des progrès</value></data>
+  <data name="View_AriaLabel" xml:space="preserve"><value>Vue des recommandations</value></data>
 </root>

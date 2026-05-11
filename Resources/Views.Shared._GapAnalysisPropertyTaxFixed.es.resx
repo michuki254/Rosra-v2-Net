@@ -140,7 +140,7 @@
   <data name="TotalAdmGap" xml:space="preserve"><value>Total de brechas administrativas</value></data>
 
   <!-- Administrative Gaps Pie Chart -->
-  <data name="AdmGapsPie_Title" xml:space="preserve"><value>Desglose de brechas administrativas</value></data>
+  <data name="AdmGapsPie_Title" xml:space="preserve"><value>Desglose de brechas</value></data>
   <data name="AdmGapsPie_Description" xml:space="preserve"><value>Este gráfico circular ilustra la distribución porcentual de las brechas de ingresos. Muestra visualmente la contribución de cada tipo de brecha al total de ingresos no recaudados, ayudando a identificar cuáles brechas son las más significativas.</value></data>
 
   <!-- Common -->
