@@ -148,6 +148,15 @@
 
   <!-- Step 1: Stream Prioritization (Pareto chart placeholder + combined table) -->
   <data name="Prio_GapByStream_Placeholder" xml:space="preserve"><value>Add streams in Gap Analysis to see the breakdown.</value></data>
+  <data name="Prio_WhatIs_Title" xml:space="preserve"><value>What is Stream Prioritization?</value></data>
+  <data name="Prio_WhatIs_Hint" xml:space="preserve"><value>click to expand</value></data>
+  <data name="Prio_WhatIs_Body" xml:space="preserve"><value>&lt;p&gt;Stream Prioritization ranks your revenue streams by their &lt;strong&gt;Total Functional Gap&lt;/strong&gt; — the difference between current collection and what could realistically be collected if administration were strengthened.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Why it matters:&lt;/strong&gt; Most cities have several revenue streams but limited reform capacity. Tackling the streams with the biggest gaps first generates the largest revenue uplift per unit of effort.&lt;/p&gt;
+&lt;p class="mb-0"&gt;&lt;strong&gt;How to use this table:&lt;/strong&gt; Rows come pre-ranked from largest gap to smallest. Use the drag handle or up/down arrows to override the order if local priorities or political feasibility demand a different sequence. Toggle the Status switch to &lt;strong&gt;exclude&lt;/strong&gt; any stream that doesn't apply (e.g. a service your municipality doesn't provide) — excluded streams are dropped from share calculations and the downstream recommendations.&lt;/p&gt;</value></data>
+  <data name="Prio_WhatIsGap_Title" xml:space="preserve"><value>What is Gap Prioritization?</value></data>
+  <data name="Prio_WhatIsGap_Body" xml:space="preserve"><value>&lt;p&gt;Gap Prioritization breaks each prioritized revenue stream down by the &lt;strong&gt;type of gap&lt;/strong&gt; driving its underperformance — Compliance, Coverage, Valuation/Liability, or the mixed combinations — and lets you sequence which gaps to tackle first within each stream.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Why it matters:&lt;/strong&gt; A stream's overall gap may look the same on the surface, but a Compliance gap (people billed but not paying) needs very different reforms from a Coverage gap (units not even on the books) or a Valuation gap (assessed below market value). Sequencing tells the reform team where to start.&lt;/p&gt;
+&lt;p class="mb-0"&gt;Pick one of three &lt;strong&gt;modes&lt;/strong&gt; per stream — Revenue Potential (biggest dollar gap first), Compliance First (collect what's already billed), or Overhaul (re-engineer the whole stream) — and ROSRA suggests an opening priority order. You can override any cell to fit local capacity and politics, or remove a gap-type that's not feasible.&lt;/p&gt;</value></data>
   <data name="Prio_StreamPrio_Help" xml:space="preserve"><value>Drag rows by the {0} handle, or use the {1}{2} buttons to re-order.</value></data>
   <data name="Prio_Col_Rank" xml:space="preserve"><value>Rank</value></data>
   <data name="Prio_Col_Rank_Tooltip" xml:space="preserve"><value>Final rank — auto-numbered top to bottom for included streams.</value></data>

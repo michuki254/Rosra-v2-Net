@@ -67,6 +67,10 @@
   <!-- Report Modal -->
   <data name="Modal_Title" xml:space="preserve"><value>Générer le plan d'action d'amélioration des recettes</value></data>
   <data name="Modal_IncludeInReport" xml:space="preserve"><value>Inclure dans le rapport :</value></data>
+  <data name="Modal_QuickAnalysis" xml:space="preserve"><value>Analyse rapide</value></data>
+  <data name="Modal_GapAnalysisSummary" xml:space="preserve"><value>Résumé de l'analyse des écarts</value></data>
+  <data name="Modal_Prioritization" xml:space="preserve"><value>Priorisation</value></data>
+  <data name="Modal_RecommendationsSummary" xml:space="preserve"><value>Résumé des recommandations</value></data>
   <data name="Modal_ExecSummary" xml:space="preserve"><value>Résumé exécutif</value></data>
   <data name="Modal_GapAnalysis" xml:space="preserve"><value>Résultats de l'analyse des écarts</value></data>
   <data name="Modal_StreamPrioritization" xml:space="preserve"><value>Priorisation des flux</value></data>
@@ -81,6 +85,7 @@
   <data name="Modal_Cancel" xml:space="preserve"><value>Annuler</value></data>
   <data name="Modal_Generate" xml:space="preserve"><value>Générer le rapport</value></data>
 
+  <data name="Personalise_FilterHelp" xml:space="preserve"><value>Filtrez les fiches selon votre calendrier et vos préférences de faisabilité.</value></data>
   <data name="Personalise_Time" xml:space="preserve"><value>Délai</value></data>
   <data name="Personalise_QuickWins" xml:space="preserve"><value>Gains rapides</value></data>
   <data name="Personalise_MediumTerm" xml:space="preserve"><value>Moyen terme</value></data>

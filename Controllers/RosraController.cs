@@ -3220,15 +3220,18 @@ namespace RosraApp.Controllers
         // Accepts a full standalone HTML document built client-side (Recommendations
         // "Generate Report" modal) and renders it to PDF via headless Chromium.
         //
-        // Hardened per audit F-9:
-        //  - [Authorize] + [ValidateAntiForgeryToken] (was [AllowAnonymous] + [IgnoreAntiforgeryToken])
+        // Hardened per audit F-9 (with view-mode relaxation):
+        //  - [ValidateAntiForgeryToken] keeps CSRF protection
+        //  - [EnableRateLimiting("api")] mitigates DoS in lieu of [Authorize], so
+        //    anonymous users viewing sample / shared reports can still download
+        //    them (Index allows anonymous, so the download path should too).
         //  - 5 MB body cap (was 50 MB) — plenty for a self-contained HTML report
         //  - HtmlToPdfService aborts every outbound network request, so a
         //    payload like `<img src="http://169.254.169.254/...">` no longer
         //    causes the headless browser to fetch attacker URLs (SSRF).
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("api")]
         [RequestSizeLimit(5_000_000)]
         [RequestFormLimits(ValueLengthLimit = 5_000_000, MultipartBodyLengthLimit = 5_000_000)]
         public async Task<IActionResult> RenderReportPdf(string html, string filename)

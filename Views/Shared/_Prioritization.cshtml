@@ -23,6 +23,30 @@
             </div>
         </div>
 
+        <!-- "What is Stream Prioritization?" explainer — collapsed by default. Mirrors the
+             "How prioritization modes are chosen" accordion further down so the page has
+             a consistent disclosure pattern for orientation copy. -->
+        <div class="col-12">
+            <div class="accordion mb-2" id="whatIsPrioritizationAccordion">
+                <div class="accordion-item border-0 shadow-sm">
+                    <h2 class="accordion-header" id="headingWhatIsPrio">
+                        <button class="accordion-button" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#collapseWhatIsPrio"
+                                aria-expanded="true" aria-controls="collapseWhatIsPrio">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <span class="fw-semibold">@Localizer["Prio_WhatIs_Title"]</span>
+                        </button>
+                    </h2>
+                    <div id="collapseWhatIsPrio" class="accordion-collapse collapse show"
+                         aria-labelledby="headingWhatIsPrio" data-bs-parent="#whatIsPrioritizationAccordion">
+                        <div class="accordion-body">
+                            @Html.Raw(Localizer["Prio_WhatIs_Body"].Value)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Combined Stream Prioritization (drag-and-drop OR arrow buttons to re-rank) -->
         <div class="col-12">
             <div class="card border-0 shadow-sm">
@@ -148,6 +172,27 @@
     <!-- Gap Prioritization Section Header -->
     <div class="prioritization-header mb-4">
         <h5 class="mb-2"><i class="fas fa-layer-group me-2"></i>@Localizer["Step2_Title"]</h5>
+    </div>
+
+    <!-- "What is Gap Prioritization?" explainer — expanded by default. Mirrors the
+         Stream Prioritization explainer pattern at the top of the page. -->
+    <div class="accordion mb-3" id="whatIsGapPrioAccordion">
+        <div class="accordion-item border-0 shadow-sm">
+            <h2 class="accordion-header" id="headingWhatIsGapPrio">
+                <button class="accordion-button" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapseWhatIsGapPrio"
+                        aria-expanded="true" aria-controls="collapseWhatIsGapPrio">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <span class="fw-semibold">@Localizer["Prio_WhatIsGap_Title"]</span>
+                </button>
+            </h2>
+            <div id="collapseWhatIsGapPrio" class="accordion-collapse collapse show"
+                 aria-labelledby="headingWhatIsGapPrio" data-bs-parent="#whatIsGapPrioAccordion">
+                <div class="accordion-body">
+                    @Html.Raw(Localizer["Prio_WhatIsGap_Body"].Value)
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Combined Gap Sequencing + Amounts Table -->

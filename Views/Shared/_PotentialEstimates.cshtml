@@ -3458,12 +3458,41 @@
                 img.srcset = 'https://flagcdn.com/w80/' + code + '.png 2x';
                 label.textContent = countryName;
                 wrap.hidden = false;
+                // Pre-cache a base64 data URL of the flag so the PDF report (rendered
+                // server-side by HtmlToPdfService, which blocks all outbound network)
+                // can embed the flag without needing to fetch it. Done via an offscreen
+                // <img crossorigin="anonymous"> + canvas.drawImage instead of fetch(),
+                // because the page CSP allows img-src but blocks connect-src to flagcdn.
+                prefetchFlagDataUrl(code);
             } else {
                 wrap.hidden = true;
                 img.removeAttribute('src');
                 img.removeAttribute('srcset');
                 label.textContent = '';
+                window._cachedCountryFlag = null;
             }
+        }
+
+        // Load the flag into an offscreen <img crossOrigin="anonymous">, paint it
+        // onto a canvas, and read the data URL. flagcdn.com sends permissive CORS
+        // headers so the canvas is not tainted — pixel reads succeed.
+        function prefetchFlagDataUrl(code) {
+            // Skip if we already have the data URL for this code.
+            const cached = window._cachedCountryFlag;
+            if (cached && cached.code === code && cached.dataUrl) return;
+            const loader = new Image();
+            loader.crossOrigin = 'anonymous';
+            loader.onload = function () {
+                try {
+                    const c = document.createElement('canvas');
+                    c.width = loader.naturalWidth;
+                    c.height = loader.naturalHeight;
+                    c.getContext('2d').drawImage(loader, 0, 0);
+                    window._cachedCountryFlag = { code: code, dataUrl: c.toDataURL('image/png') };
+                } catch (_) { /* canvas tainted — abort */ }
+            };
+            loader.onerror = function () { /* swallow */ };
+            loader.src = 'https://flagcdn.com/w160/' + code + '.png';
         }
 
         // Fetch GDP per capita from World Bank API based on selected year

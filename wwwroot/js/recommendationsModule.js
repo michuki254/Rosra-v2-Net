@@ -2,6 +2,35 @@
         const RecommendationsModule = (function() {
             'use strict';
 
+            // Pre-cache branding assets as base64 data URLs so the PDF cover page
+            // works even when HtmlToPdfService blocks outbound network. Logos are
+            // served from the same origin so canvas reads are not tainted. PNG/JPG
+            // go through canvas; SVG is fetched as text and inlined directly so the
+            // crisp vector survives PDF rasterisation.
+            const _reportAssets = {};
+            function _cacheRasterAsset(key, url) {
+                const img = new Image();
+                img.onload = function () {
+                    try {
+                        const c = document.createElement('canvas');
+                        c.width = img.naturalWidth;
+                        c.height = img.naturalHeight;
+                        c.getContext('2d').drawImage(img, 0, 0);
+                        _reportAssets[key] = c.toDataURL('image/png');
+                    } catch (_) { /* skip on failure */ }
+                };
+                img.onerror = function () { /* skip */ };
+                img.src = url;
+            }
+            function _cacheSvgAsset(key, url) {
+                fetch(url).then(r => r.ok ? r.text() : '')
+                    .then(svg => { if (svg) _reportAssets[key] = svg; })
+                    .catch(() => { /* skip */ });
+            }
+            _cacheSvgAsset('unHabitatLogo', '/images/logo-white.svg');     // centered brand mark at top
+            _cacheRasterAsset('sdg11Logo',     '/images/SDG_11.png');     // alignment chip
+            _cacheRasterAsset('cityBg',        '/images/cities/nairobi.jpg'); // silhouette background
+
             // Currency symbol from AppContext (single source of truth)
             let currencySymbol = '$';
 
@@ -173,20 +202,25 @@
                 priState.gapPrioritization.forEach(entry => {
                     const name = idToName.get(entry.streamId);
                     if (!name || !Array.isArray(entry.currentSequence)) return;
+                    // Lowercase everything we put in the Set — the lookup at the call
+                    // site uses .toLowerCase() to compare against saved selectedSolutions
+                    // (which carry capitalised gapType like "Compliance"). If we left
+                    // the values capitalised, the lookup would always miss and removed
+                    // gap-types would silently still appear in Recommendations.
                     const removedTypes = new Set(
                         entry.currentSequence
                             .filter(seq => seq && seq.removed)
-                            .map(seq => seq.type)
-                            .filter(t => t && t !== 'Remove')
+                            .map(seq => String(seq.type || '').toLowerCase())
+                            .filter(t => t && t !== 'remove')
                     );
                     // Also infer "this gap-type isn't planned" from the active set:
                     // a gap-type is removed if it doesn't appear in any non-removed slot.
                     const activeTypes = new Set(
                         entry.currentSequence
                             .filter(seq => seq && !seq.removed && seq.type && seq.type !== 'Remove')
-                            .map(seq => seq.type)
+                            .map(seq => String(seq.type).toLowerCase())
                     );
-                    ['Compliance', 'Coverage', 'Valuation', 'Liability'].forEach(t => {
+                    ['compliance', 'coverage', 'valuation', 'liability'].forEach(t => {
                         if (!activeTypes.has(t)) removedTypes.add(t);
                     });
                     removed.set(name, removedTypes);
@@ -1428,8 +1462,122 @@
                     h3 { color: #1a3a52; margin-top: 22px; margin-bottom: 6px; }
                     h4 { color: #2c4a63; margin: 14px 0 4px 0; font-size: 1rem; }
                     h5 { color: #5d7a8f; margin: 10px 0 4px 0; font-size: 0.9rem; }
-                    .cover { padding-bottom: 16px; border-bottom: 3px solid #00689D; margin-bottom: 16px; }
-                    .cover .subtitle { color: #5d7a8f; font-size: 0.95rem; }
+                    /* ======================= COVER PAGE ======================= */
+                    /* Sized to its content + page-break-after so it occupies exactly
+                       one PDF page. A previous min-height + flex layout pushed the
+                       footer past the page boundary into a phantom second page. */
+                    .cover-page {
+                        position: relative;
+                        margin: -40px -40px 40px;
+                        padding: 48px 60px 36px;
+                        background: linear-gradient(135deg, #00689D 0%, #00B2E3 55%, #2BB8E2 100%);
+                        color: #ffffff;
+                        overflow: hidden;
+                        page-break-after: always;
+                        break-after: page;
+                        page-break-inside: avoid;
+                        break-inside: avoid;
+                    }
+                    .cover-page::before {
+                        content: ''; position: absolute; inset: 0;
+                        background:
+                            radial-gradient(ellipse at top right, rgba(253, 157, 36, 0.18), transparent 55%),
+                            radial-gradient(ellipse at bottom left, rgba(255, 255, 255, 0.10), transparent 50%);
+                        pointer-events: none;
+                    }
+                    .cover-skyline {
+                        position: absolute; left: 0; right: 0; bottom: 130px;
+                        width: 100%; height: 180px; opacity: 0.16;
+                        pointer-events: none;
+                    }
+                    /* City photo silhouette overlay — sits under the gradient but above
+                       the base color so the cityscape reads as a faint texture. */
+                    .cover-bg-photo {
+                        position: absolute; inset: 0;
+                        background-size: cover; background-position: center;
+                        opacity: 0.22;
+                        filter: grayscale(40%) contrast(1.05) brightness(0.9);
+                        mix-blend-mode: luminosity;
+                        pointer-events: none;
+                        z-index: 0;
+                    }
+                    .cover-top {
+                        display: flex; justify-content: center; align-items: center;
+                        position: relative; z-index: 2;
+                        margin-bottom: 12px;
+                    }
+                    .cover-logo { height: 140px; width: auto; display: block; }
+                    .cover-logo svg { height: 140px; width: auto; display: block; }
+                    .cover-body {
+                        position: relative; z-index: 2;
+                        padding: 24px 0;
+                    }
+                    .cover-tag {
+                        display: inline-block; font-size: 0.72rem; letter-spacing: 0.2em;
+                        text-transform: uppercase; font-weight: 700;
+                        background: rgba(255, 255, 255, 0.18); padding: 6px 14px; border-radius: 999px;
+                        margin-bottom: 22px; align-self: flex-start;
+                    }
+                    .cover-title {
+                        font-size: 3.4rem; font-weight: 800; line-height: 1.05; margin: 0;
+                        letter-spacing: -0.01em; max-width: 720px;
+                        color: #ffffff; border: none; padding: 0;
+                        text-shadow: 0 1px 2px rgba(0,0,0,0.08);
+                    }
+                    .cover-sub {
+                        font-size: 1.1rem; font-weight: 500; line-height: 1.5;
+                        margin-top: 14px; max-width: 640px; opacity: 0.94;
+                    }
+                    .cover-country {
+                        display: flex; align-items: center; gap: 18px; margin-top: 42px;
+                        background: rgba(255, 255, 255, 0.14);
+                        backdrop-filter: blur(6px);
+                        border-radius: 14px; padding: 16px 22px;
+                        align-self: flex-start; max-width: 460px;
+                        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+                    }
+                    .cover-country .flag {
+                        width: 80px; height: 60px; object-fit: cover; border-radius: 8px;
+                        box-shadow: 0 0 0 1px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.18);
+                        flex-shrink: 0;
+                    }
+                    .cover-country .placeholder {
+                        width: 80px; height: 60px; border-radius: 8px;
+                        background: rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center;
+                        font-size: 32px; flex-shrink: 0;
+                    }
+                    .cover-country .name {
+                        font-size: 1.7rem; font-weight: 700; line-height: 1.1;
+                    }
+                    .cover-country .region {
+                        font-size: 1rem; opacity: 0.9; margin-top: 4px;
+                    }
+                    .cover-meta {
+                        display: flex; gap: 28px; flex-wrap: wrap;
+                        margin-top: 32px; font-size: 0.9rem; opacity: 0.92;
+                    }
+                    .cover-meta-item .l { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.75; }
+                    .cover-meta-item .v { font-size: 1.05rem; font-weight: 700; margin-top: 2px; }
+                    .cover-footer {
+                        position: relative; z-index: 2;
+                        margin-top: 28px; padding-top: 20px;
+                        border-top: 1px solid rgba(255, 255, 255, 0.28);
+                    }
+                    .cover-footer-text { font-size: 0.85rem; line-height: 1.45; opacity: 0.9; max-width: 720px; }
+                    /* SDG 11 alignment chip — bottom of the body section so it sits
+                       just above the footer rule. */
+                    .cover-sdg {
+                        display: inline-flex; align-items: center; gap: 14px;
+                        margin-top: 32px; padding: 12px 18px;
+                        background: rgba(255, 255, 255, 0.14); border-radius: 12px;
+                        align-self: flex-start; max-width: 460px;
+                    }
+                    .cover-sdg img { height: 56px; width: 56px; border-radius: 6px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.18); }
+                    .cover-sdg .l { font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.85; font-weight: 700; }
+                    .cover-sdg .v { font-size: 0.95rem; font-weight: 600; margin-top: 2px; line-height: 1.3; }
+                    /* Legacy class kept so older code that references .cover still compiles */
+                    .cover { display: none; }
+                    .cover .subtitle { display: none; }
                     .stat-grid { display: flex; flex-wrap: nowrap; gap: 10px; margin: 14px 0 4px 0; }
                     .stat { flex: 1 1 0; min-width: 0; background: #f0f7fc; border: 1px solid #cce1ee; border-radius: 8px; padding: 10px 14px; }
                     .stat .v { font-size: 1.4rem; font-weight: 700; color: #00689D; line-height: 1.1; word-break: break-word; }
@@ -1547,23 +1695,288 @@
 <title>Revenue Enhancement Action Plan</title>
 <style>${styles}</style>
 </head>
-<body>
-<div class="cover">
-    <h1>Revenue Enhancement Action Plan</h1>
-    <div class="subtitle">Generated ${esc(new Date().toLocaleDateString())} &middot; ROSRA &middot; UN-Habitat</div>
-</div>`;
+<body>`;
+
+                // ===== Branded cover page =====
+                // First page of the report: full-bleed cyan gradient with UN-Habitat
+                // branding, big report title, country/region card (with flag), and a
+                // Norad supporter logo in the footer. Renders before everything else.
+                (function () {
+                    const covCountrySel = document.getElementById('country');
+                    const covOpt = covCountrySel ? covCountrySel.options[covCountrySel.selectedIndex] : null;
+                    const covFlagCode = covOpt ? (covOpt.dataset.flag || '') : '';
+                    const covCountryName = (document.getElementById('country')?.value || '').trim();
+                    const covRegionName = (document.getElementById('region')?.value || '').trim();
+                    const covFinYear = (document.getElementById('financialYear')?.value || '').trim();
+
+                    // Prefer cached flag data URL (works in PDF), else fall back to CDN.
+                    const covCached = window._cachedCountryFlag;
+                    const covFlagSrc = (covCached && covCached.code === covFlagCode && covCached.dataUrl)
+                        ? covCached.dataUrl
+                        : (covFlagCode ? `https://flagcdn.com/w160/${covFlagCode}.png` : '');
+                    const covFlagHtml = covFlagSrc
+                        ? `<img class="flag" src="${covFlagSrc}" alt="${esc(covCountryName)}">`
+                        : `<div class="placeholder">🏛</div>`;
+
+                    const covDate = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+                    // UN-Habitat white SVG inlined directly so the crisp vector survives
+                    // PDF rasterisation (raster logos blur a touch at high DPI).
+                    const covLogoUn = _reportAssets.unHabitatLogo
+                        ? `<div class="cover-logo" aria-label="UN-Habitat">${_reportAssets.unHabitatLogo}</div>`
+                        : `<div style="font-weight:800;letter-spacing:0.04em;font-size:1.2rem;">UN ✦ HABITAT</div>`;
+                    // Nairobi-style city photo as a faint silhouette behind the gradient.
+                    const covBgPhoto = _reportAssets.cityBg
+                        ? `<div class="cover-bg-photo" style="background-image:url('${_reportAssets.cityBg}');"></div>`
+                        : '';
+                    // SDG 11 — "Sustainable Cities and Communities" alignment chip.
+                    const covSdgChip = _reportAssets.sdg11Logo
+                        ? `<div class="cover-sdg">
+            <img src="${_reportAssets.sdg11Logo}" alt="SDG 11">
+            <div>
+                <div class="l">Aligned with SDG</div>
+                <div class="v">Sustainable Cities &amp; Communities</div>
+            </div>
+        </div>`
+                        : '';
+
+                    html += `<section class="cover-page">
+    ${covBgPhoto}
+    <div class="cover-top">
+        ${covLogoUn}
+    </div>
+    <div class="cover-body">
+        <span class="cover-tag">Revenue Optimization</span>
+        <h1 class="cover-title">Revenue Enhancement<br>Action Plan</h1>
+        <p class="cover-sub">A tailored, evidence-based plan to close the gap between current own-source revenue collection and what your local government could realistically collect.</p>
+        <div class="cover-country">
+            ${covFlagHtml}
+            <div>
+                <div class="name">${esc(covCountryName) || 'Country not selected'}</div>
+                ${covRegionName ? `<div class="region">${esc(covRegionName)}</div>` : ''}
+            </div>
+        </div>
+        <div class="cover-meta">
+            <div class="cover-meta-item"><div class="l">Generated</div><div class="v">${esc(covDate)}</div></div>
+            ${covFinYear ? `<div class="cover-meta-item"><div class="l">Financial Year</div><div class="v">${esc(covFinYear)}</div></div>` : ''}
+        </div>
+        ${covSdgChip}
+    </div>
+    <div class="cover-footer">
+        <div class="cover-footer-text">Prepared with ROSRA — a UN-Habitat assessment tool for sub-national governments. Outputs in this report reflect the inputs and prioritisation decisions captured during the assessment.</div>
+    </div>
+</section>`;
+                })();
+                html += ``;
 
                 // Shared helper for the gap-related sections below
                 const pct = (part, whole) => whole > 0 ? Math.round((part / whole) * 100) : 0;
 
+                // ===== Quick Analysis =====
+                // Local Government Profile (card with country flag + key fields)
+                // plus the "What you collect vs what you could collect" chart.
+                // Mirrors the snapshot the user sees on the first analysis tab.
                 if (options.includeExecSummary) {
-                    html += `<h2>Executive Summary</h2>
-<div class="stat-grid">
-    <div class="stat"><div class="v">${total}</div><div class="l">Solutions Selected</div></div>
-    <div class="stat"><div class="v">${quickWins.length}</div><div class="l">Quick Wins (&lt;1 year)</div></div>
-    <div class="stat"><div class="v">${mediumTerm.length}</div><div class="l">Medium Term (1-3 years)</div></div>
-    <div class="stat"><div class="v">${longTerm.length}</div><div class="l">Long Term (3+ years)</div></div>
+                    const val = id => {
+                        const el = document.getElementById(id);
+                        return el && el.value && el.value.trim() ? el.value : '—';
+                    };
+                    // Read the 2-letter ISO flag code from the selected <option>'s dataset
+                    // (loadCountries() stores it via countryFlagCodes[name]).
+                    const countrySel = document.getElementById('country');
+                    const selectedOpt = countrySel ? countrySel.options[countrySel.selectedIndex] : null;
+                    const flagCode = selectedOpt ? (selectedOpt.dataset.flag || '') : '';
+                    const countryName = val('country');
+                    const regionName  = val('region');
+                    // Prefer the pre-cached base64 flag (set by updateHeaderCountryChip
+                    // when the country was selected) — that survives the server-side
+                    // PDF render, which blocks outbound network for SSRF reasons.
+                    // Fall back to the live CDN URL for HTML downloads / browsers.
+                    const cachedFlag = window._cachedCountryFlag;
+                    const flagSrc = (cachedFlag && cachedFlag.code === flagCode && cachedFlag.dataUrl)
+                        ? cachedFlag.dataUrl
+                        : (flagCode ? `https://flagcdn.com/w160/${flagCode}.png` : '');
+                    const flagHtml = flagSrc
+                        ? `<img src="${flagSrc}" alt="${countryName}" style="width:64px;height:48px;object-fit:cover;border-radius:6px;box-shadow:0 0 0 1px rgba(0,0,0,0.12),0 2px 4px rgba(0,0,0,0.08);flex-shrink:0;">`
+                        : `<div style="width:64px;height:48px;border-radius:6px;background:#e6f9fc;display:flex;align-items:center;justify-content:center;color:#00689D;font-size:24px;flex-shrink:0;">🏛</div>`;
+
+                    const symbol = val('currencySymbol');
+                    const code = val('currency');
+                    const currencyDisplay = (symbol !== '—' && code !== '—') ? `${symbol} · ${code}`
+                        : (symbol !== '—' ? symbol : (code !== '—' ? code : '—'));
+
+                    const statCells = [
+                        { label: 'Financial Year',           value: val('financialYear') },
+                        { label: 'Currency',                 value: currencyDisplay },
+                        { label: 'Own-Source Revenue (OSR)', value: val('actualOsr') },
+                        { label: 'Gross Regional Product',   value: val('gdpPerCapita') },
+                        { label: 'Population',               value: val('population') }
+                    ].map(s => `<div style="flex:1 1 30%;min-width:140px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:10px 14px;">
+        <div style="font-size:0.72rem;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;font-weight:600;margin-bottom:4px;">${s.label}</div>
+        <div style="font-size:1.05rem;font-weight:700;color:#1f2937;">${s.value}</div>
+    </div>`).join('');
+
+                    const lgpCard = `<div style="margin:0 0 18px;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+    <div style="background:linear-gradient(90deg,#2BB8E2 0%,#00B2E3 100%);padding:16px 20px;color:#ffffff;display:flex;align-items:center;gap:14px;">
+        ${flagHtml}
+        <div style="flex:1;min-width:0;">
+            <div style="font-size:0.75rem;letter-spacing:0.5px;text-transform:uppercase;opacity:0.85;font-weight:600;">Local Government Profile</div>
+            <div style="font-size:1.4rem;font-weight:700;line-height:1.2;margin-top:2px;">${countryName !== '—' ? countryName : 'Country not selected'}</div>
+            ${regionName !== '—' ? `<div style="font-size:0.95rem;opacity:0.95;font-weight:500;margin-top:2px;">${regionName}</div>` : ''}
+        </div>
+    </div>
+    <div style="padding:14px;display:flex;flex-wrap:wrap;gap:10px;">
+        ${statCells}
+    </div>
 </div>`;
+
+                    // Capture the "What you collect vs what you could collect" view.
+                    // Two strategies (in order):
+                    //   1. Chart.js registered instance via window.RosraChartRegistry —
+                    //      best result, but only present when the user has triggered the
+                    //      peer-SNG analysis at least once.
+                    //   2. CSS fallback chart built from the #m2*Top KPI DOM elements
+                    //      (Actual OSR / Potential OSR / Gap). These get populated by the
+                    //      same JS that renders the Chart.js chart, so they're available
+                    //      whenever the chart would have been.
+                    let chartImg = '';
+                    const reg = window.RosraChartRegistry || {};
+                    const chartInstance = reg['actualVsPotentialChart'];
+                    if (chartInstance && typeof chartInstance.toBase64Image === 'function') {
+                        try {
+                            const dataUrl = chartInstance.toBase64Image('image/png', 1.0);
+                            if (dataUrl && dataUrl.length > 2500) {
+                                chartImg = `<div style="margin-top:18px;"><h3 style="margin-bottom:8px;">What you collect vs what you could collect</h3><img src="${dataUrl}" alt="What you collect vs what you could collect" style="max-width:100%;height:auto;display:block;border:1px solid #e5e7eb;border-radius:6px;"></div>`;
+                            }
+                        } catch (_) { /* skip */ }
+                    }
+
+                    // SVG fallback if Chart.js instance was unavailable / empty.
+                    // Renders a vertical stacked-bar chart that visually mirrors the
+                    // Performance vs Peers chart: cyan Actual bar + cyan/orange stacked
+                    // Potential bar, with y-axis gridlines, value labels above each bar,
+                    // a dashed connector at the Actual level, a gap bracket on the right,
+                    // and a "AMOUNTS IN <CUR> (B)" header. SVG is preferred over <img>
+                    // because PDF renderers preserve vector fidelity at any zoom.
+                    if (!chartImg) {
+                        const text = id => {
+                            const el = document.getElementById(id);
+                            return el ? (el.textContent || '').trim() : '';
+                        };
+                        const parseShort = s => {
+                            if (!s || s === '-') return null;
+                            const m = String(s).replace(/[\s,]/g, '').match(/([\d.]+)\s*([KMB]?)/i);
+                            if (!m) return null;
+                            const n = parseFloat(m[1]);
+                            if (isNaN(n)) return null;
+                            const suf = (m[2] || '').toUpperCase();
+                            return suf === 'B' ? n * 1e9 : suf === 'M' ? n * 1e6 : suf === 'K' ? n * 1e3 : n;
+                        };
+                        const actualText = text('m2ActualOSRTop');
+                        const potentialText = text('m2OSRPotentialTop');
+                        const gapText = text('m2OSRGapTop');
+                        const perfText = text('m2PerformanceIndexTop');
+                        const actualN = parseShort(actualText);
+                        const potentialN = parseShort(potentialText);
+
+                        if (actualN != null && potentialN != null && potentialN > 0) {
+                            // Round the y-axis max up to the next nice tick so the bars don't
+                            // touch the top edge of the chart area.
+                            const niceMax = (() => {
+                                const v = potentialN * 1.2;
+                                const mag = Math.pow(10, Math.floor(Math.log10(v)));
+                                const norm = v / mag;
+                                const niceNorm = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 2.5 ? 2.5 : norm <= 5 ? 5 : 10;
+                                return niceNorm * mag;
+                            })();
+                            // 5 horizontal gridlines, spaced evenly between 0 and niceMax.
+                            const ticks = 5;
+                            const W = 760, H = 380;
+                            const padL = 80, padR = 170, padT = 50, padB = 50;
+                            const chartW = W - padL - padR;
+                            const chartH = H - padT - padB;
+                            const yFor = v => padT + chartH - (v / niceMax) * chartH;
+                            // Match the website's number formatting: 2 decimals for B/M.
+                            const fmtShort = n => {
+                                if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+                                if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+                                if (n >= 1e3) return (n / 1e3).toFixed(0) + 'K';
+                                return Math.round(n).toLocaleString();
+                            };
+                            // Currency symbol from the form (fall back to LCU)
+                            const curSym = document.getElementById('currencySymbol')?.value || '';
+                            const curPrefix = curSym ? curSym + ' ' : '';
+                            const unitsLabel = 'AMOUNTS IN ' + (curSym ? curSym.toUpperCase() : 'LCU') + ' (B)';
+                            // Gap as a percentage of potential — same calc as the website's
+                            // "X% of top-peer level" label on the gap bracket.
+                            const gapN = potentialN - actualN;
+                            const gapPctOfPotential = potentialN > 0
+                                ? Math.round((gapN / potentialN) * 100) + '%'
+                                : null;
+
+                            // Build y-axis tick lines + labels
+                            let gridSvg = '';
+                            for (let i = 0; i <= ticks; i++) {
+                                const v = (i / ticks) * niceMax;
+                                const y = yFor(v);
+                                gridSvg += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="#eef0f3" stroke-width="1"/>`;
+                                gridSvg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="11" font-weight="700" fill="#1f2937">${fmtShort(v)}</text>`;
+                            }
+
+                            const barW = 120;
+                            const xActual = padL + chartW * 0.28 - barW / 2;
+                            const xPotential = padL + chartW * 0.72 - barW / 2;
+
+                            const yActualTop = yFor(actualN);
+                            const yPotentialTop = yFor(potentialN);
+                            const yPotentialGapBottom = yFor(actualN);
+
+                            // Gap bracket on the right of the Potential bar
+                            const bracketX = xPotential + barW + 18;
+                            const bracketTop = yPotentialTop;
+                            const bracketBot = yPotentialGapBottom;
+                            const bracketMid = (bracketTop + bracketBot) / 2;
+                            const pctText = gapPctOfPotential ? `${gapPctOfPotential} of top-peer level` : '';
+
+                            // Dashed connector from Actual top across to Potential cyan top
+                            const connectorY = yActualTop;
+                            const connector = `<line x1="${xActual + barW}" y1="${connectorY}" x2="${xPotential}" y2="${connectorY}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 4"/>`;
+
+                            chartImg = `<div style="margin-top:18px;">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+        <h3 style="margin:0;">What you collect vs what you could collect</h3>
+        <span style="font-size:0.72rem;font-weight:700;letter-spacing:0.5px;color:#64748b;">${unitsLabel}</span>
+    </div>
+    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:12px;background:#fff;">
+        <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;font-family:Roboto,'Segoe UI',Arial,sans-serif;">
+            ${gridSvg}
+            ${connector}
+            <!-- Actual bar (cyan, full height) -->
+            <rect x="${xActual}" y="${yActualTop}" width="${barW}" height="${chartH - (yActualTop - padT)}" fill="#00b2e3"/>
+            <text x="${xActual + barW / 2}" y="${yActualTop - 8}" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2937">${curPrefix}${fmtShort(actualN)}</text>
+            <text x="${xActual + barW / 2}" y="${(yActualTop + (padT + chartH)) / 2 + 5}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">${fmtShort(actualN)}</text>
+            <!-- Potential bar: cyan base + orange gap on top -->
+            <rect x="${xPotential}" y="${yPotentialGapBottom}" width="${barW}" height="${chartH - (yPotentialGapBottom - padT)}" fill="#00b2e3"/>
+            <rect x="${xPotential}" y="${yPotentialTop}" width="${barW}" height="${yPotentialGapBottom - yPotentialTop}" fill="#FD9D24"/>
+            <text x="${xPotential + barW / 2}" y="${yPotentialTop - 8}" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2937">${curPrefix}${fmtShort(potentialN)}</text>
+            <text x="${xPotential + barW / 2}" y="${(yPotentialTop + yPotentialGapBottom) / 2 + 5}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">${fmtShort(gapN)}</text>
+            <text x="${xPotential + barW / 2}" y="${(yPotentialGapBottom + (padT + chartH)) / 2 + 5}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">${fmtShort(actualN)}</text>
+            <!-- Gap bracket -->
+            <path d="M ${bracketX - 6} ${bracketTop} L ${bracketX} ${bracketTop} L ${bracketX} ${bracketBot} L ${bracketX - 6} ${bracketBot}" stroke="#FD9D24" stroke-width="1.5" fill="none"/>
+            <text x="${bracketX + 8}" y="${bracketMid - 6}" font-size="12" font-weight="700" fill="#FD9D24">Gap</text>
+            <text x="${bracketX + 8}" y="${bracketMid + 12}" font-size="14" font-weight="700" fill="#FD9D24">${fmtShort(gapN)}</text>
+            ${pctText ? `<text x="${bracketX + 8}" y="${bracketMid + 32}" font-size="11" font-weight="500" fill="#94a3b8">${pctText}</text>` : ''}
+            <!-- X-axis baseline -->
+            <line x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}" stroke="#1f2937" stroke-width="1"/>
+            <!-- X-axis labels -->
+            <text x="${xActual + barW / 2}" y="${padT + chartH + 22}" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Actual revenue</text>
+            <text x="${xPotential + barW / 2}" y="${padT + chartH + 22}" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Potential revenue</text>
+        </svg>
+    </div>
+</div>`;
+                        }
+                    }
+
+                    html += `${lgpCard}${chartImg}`;
                 }
 
                 // ===== Gap Analysis Results =====
