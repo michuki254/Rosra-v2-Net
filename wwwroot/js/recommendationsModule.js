@@ -27,9 +27,54 @@
                     .then(svg => { if (svg) _reportAssets[key] = svg; })
                     .catch(() => { /* skip */ });
             }
+            // Fonts must be inlined as data: URIs in the PDF HTML because
+            // HtmlToPdfService blocks all outbound network. Fetch each woff2,
+            // convert to base64 once, stash on _reportAssets.fonts[key].
+            _reportAssets.fonts = {};
+            function _cacheFontAsset(key, url) {
+                fetch(url).then(r => r.ok ? r.arrayBuffer() : null)
+                    .then(buf => {
+                        if (!buf) return;
+                        let bin = '';
+                        const bytes = new Uint8Array(buf);
+                        for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+                        _reportAssets.fonts[key] = 'data:font/woff2;base64,' + btoa(bin);
+                    })
+                    .catch(() => { /* skip */ });
+            }
             _cacheSvgAsset('unHabitatLogo', '/images/logo-white.svg');     // centered brand mark at top
             _cacheRasterAsset('sdg11Logo',     '/images/SDG_11.png');     // alignment chip
             _cacheRasterAsset('cityBg',        '/images/cities/nairobi.jpg'); // silhouette background
+            // Editorial type system for the PDF: Playfair Display (display)
+            // + Inter (body / UI / tabular numbers).
+            _cacheFontAsset('inter400',    '/fonts/inter-400.woff2');
+            _cacheFontAsset('inter500',    '/fonts/inter-500.woff2');
+            _cacheFontAsset('inter600',    '/fonts/inter-600.woff2');
+            _cacheFontAsset('inter700',    '/fonts/inter-700.woff2');
+            _cacheFontAsset('inter800',    '/fonts/inter-800.woff2');
+            _cacheFontAsset('playfair600', '/fonts/playfair-600.woff2');
+            _cacheFontAsset('playfair700', '/fonts/playfair-700.woff2');
+            _cacheFontAsset('playfair800', '/fonts/playfair-800.woff2');
+
+            // Builds the @font-face CSS block from whatever fonts loaded.
+            // Returns '' if nothing was cached so we fall back to system fonts.
+            function _buildFontFaceCss() {
+                const f = _reportAssets.fonts || {};
+                const face = (family, weight, key) => {
+                    if (!f[key]) return '';
+                    return `@font-face{font-family:'${family}';font-style:normal;font-weight:${weight};font-display:swap;src:url('${f[key]}') format('woff2');}`;
+                };
+                return [
+                    face('Inter', 400, 'inter400'),
+                    face('Inter', 500, 'inter500'),
+                    face('Inter', 600, 'inter600'),
+                    face('Inter', 700, 'inter700'),
+                    face('Inter', 800, 'inter800'),
+                    face('Playfair Display', 600, 'playfair600'),
+                    face('Playfair Display', 700, 'playfair700'),
+                    face('Playfair Display', 800, 'playfair800')
+                ].join('');
+            }
 
             // Currency symbol from AppContext (single source of truth)
             let currencySymbol = '$';
@@ -1455,13 +1500,16 @@
                 const mediumTerm = selectedSolutions.filter(s => s.timeline === '1-3 years');
                 const longTerm = selectedSolutions.filter(s => s.timeline === '3+ years');
 
+                const fontFaceCss = _buildFontFaceCss();
                 const styles = `
-                    body { font-family: 'Segoe UI', Roboto, Arial, sans-serif; color: #243746; margin: 0; padding: 40px; max-width: 1040px; margin-left: auto; margin-right: auto; line-height: 1.5; }
-                    h1 { color: #00689D; margin: 0 0 4px 0; font-size: 1.9rem; }
-                    h2 { color: #00689D; border-bottom: 2px solid #00689D; padding-bottom: 6px; margin-top: 34px; }
-                    h3 { color: #1a3a52; margin-top: 22px; margin-bottom: 6px; }
-                    h4 { color: #2c4a63; margin: 14px 0 4px 0; font-size: 1rem; }
-                    h5 { color: #5d7a8f; margin: 10px 0 4px 0; font-size: 0.9rem; }
+                    ${fontFaceCss}
+                    body { font-family: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif; color: #243746; margin: 0; padding: 40px; max-width: 1040px; margin-left: auto; margin-right: auto; line-height: 1.55; font-feature-settings: 'tnum' 1, 'kern' 1, 'liga' 1; -webkit-font-smoothing: antialiased; }
+                    h1, h2, h3, .qa-section-title, .qa-block-title, .cover-title, .cover-country .name { font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; }
+                    h1 { color: #00689D; margin: 0 0 4px 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.01em; }
+                    h2 { color: #00689D; border-bottom: 2px solid #00689D; padding-bottom: 6px; margin-top: 34px; font-weight: 700; letter-spacing: -0.005em; }
+                    h3 { color: #1a3a52; margin-top: 22px; margin-bottom: 6px; font-weight: 700; }
+                    h4 { color: #2c4a63; margin: 14px 0 4px 0; font-size: 1rem; font-weight: 600; }
+                    h5 { color: #5d7a8f; margin: 10px 0 4px 0; font-size: 0.9rem; font-weight: 600; }
                     /* ======================= COVER PAGE ======================= */
                     /* Sized to its content + page-break-after so it occupies exactly
                        one PDF page. A previous min-height + flex layout pushed the
@@ -1519,14 +1567,17 @@
                         margin-bottom: 22px; align-self: flex-start;
                     }
                     .cover-title {
-                        font-size: 3.4rem; font-weight: 800; line-height: 1.05; margin: 0;
-                        letter-spacing: -0.01em; max-width: 720px;
+                        font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+                        font-size: 3.2rem; font-weight: 700; line-height: 1.06; margin: 0;
+                        letter-spacing: -0.01em; max-width: 700px;
                         color: #ffffff; border: none; padding: 0;
                         text-shadow: 0 1px 2px rgba(0,0,0,0.08);
                     }
                     .cover-sub {
-                        font-size: 1.1rem; font-weight: 500; line-height: 1.5;
-                        margin-top: 14px; max-width: 640px; opacity: 0.94;
+                        font-family: 'Inter', 'Segoe UI', sans-serif;
+                        font-size: 1.05rem; font-weight: 400; line-height: 1.5;
+                        margin-top: 12px; max-width: 640px; opacity: 0.94;
+                        letter-spacing: 0;
                     }
                     .cover-country {
                         display: flex; align-items: center; gap: 18px; margin-top: 42px;
@@ -1547,7 +1598,9 @@
                         font-size: 32px; flex-shrink: 0;
                     }
                     .cover-country .name {
-                        font-size: 1.7rem; font-weight: 700; line-height: 1.1;
+                        font-family: 'Playfair Display', Georgia, serif;
+                        font-size: 1.6rem; font-weight: 700; line-height: 1.1;
+                        letter-spacing: -0.005em;
                     }
                     .cover-country .region {
                         font-size: 1rem; opacity: 0.9; margin-top: 4px;
@@ -1578,6 +1631,66 @@
                     /* Legacy class kept so older code that references .cover still compiles */
                     .cover { display: none; }
                     .cover .subtitle { display: none; }
+
+                    /* ======================= PAGE-2 (Quick Analysis) ======================= */
+                    /* Wraps the Local Government Profile + the Actual vs Potential chart
+                       as a single branded page that visually echoes the cover. Forces a
+                       page break after so subsequent sections (Gap Analysis etc.) land on
+                       page 3+. */
+                    .qa-page {
+                        position: relative;
+                        margin: 0 -40px 36px;
+                        padding: 28px 60px 36px;
+                        background: linear-gradient(180deg, #f8fbfd 0%, #ffffff 320px);
+                        page-break-after: always;
+                        break-after: page;
+                    }
+                    .qa-section-label {
+                        display: inline-flex; align-items: center; gap: 12px;
+                        font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+                        font-weight: 700; color: #00689D;
+                        margin-bottom: 8px;
+                    }
+                    .qa-section-label::before {
+                        content: ''; display: inline-block;
+                        width: 36px; height: 2px; background: #00B2E3;
+                    }
+                    .qa-section-title {
+                        font-family: 'Playfair Display', Georgia, serif;
+                        font-size: 2.4rem; font-weight: 700; color: #0f2742;
+                        margin: 0 0 6px; line-height: 1.12; letter-spacing: -0.015em;
+                        border: none; padding: 0;
+                    }
+                    .qa-section-sub {
+                        font-family: 'Inter', 'Segoe UI', sans-serif;
+                        color: #5d7a8f; font-size: 1rem; max-width: 720px; margin: 0 0 28px;
+                        line-height: 1.55;
+                    }
+                    .qa-block-title {
+                        font-family: 'Playfair Display', Georgia, serif;
+                        font-size: 1.35rem; font-weight: 700; color: #0f2742;
+                        margin: 28px 0 4px; letter-spacing: -0.01em;
+                    }
+                    .qa-block-sub {
+                        color: #64748b; font-size: 0.88rem; margin: 0 0 14px;
+                    }
+                    .qa-chart-card {
+                        border-radius: 14px;
+                        padding: 18px 22px 14px;
+                        background: #f8fafc;
+                        page-break-inside: avoid; break-inside: avoid;
+                    }
+                    .qa-chart-card .units-strip {
+                        display: flex; justify-content: space-between; align-items: baseline;
+                        margin-bottom: 8px;
+                    }
+                    .qa-chart-card .units-strip .title {
+                        font-size: 1rem; font-weight: 700; color: #0f2742;
+                    }
+                    .qa-chart-card .units-strip .units {
+                        font-size: 0.7rem; font-weight: 700; letter-spacing: 0.18em;
+                        text-transform: uppercase; color: #64748b;
+                    }
                     .stat-grid { display: flex; flex-wrap: nowrap; gap: 10px; margin: 14px 0 4px 0; }
                     .stat { flex: 1 1 0; min-width: 0; background: #f0f7fc; border: 1px solid #cce1ee; border-radius: 8px; padding: 10px 14px; }
                     .stat .v { font-size: 1.4rem; font-weight: 700; color: #00689D; line-height: 1.1; word-break: break-word; }
@@ -1640,6 +1753,61 @@
                     .share-bar { flex: 1; height: 8px; background: #eef3f8; border-radius: 4px; overflow: hidden; min-width: 60px; }
                     .share-bar-fill { height: 100%; background: #00689D; border-radius: 4px; }
                     .share-pct { font-size: 0.82rem; color: #55697a; min-width: 36px; text-align: right; font-variant-numeric: tabular-nums; }
+
+                    /* === Stream Prioritization (page 4) — uses .report-table to match page 3's gap breakdown === */
+                    .prio-explainer {
+                        background: #f0f7fc;
+                        border-radius: 10px; padding: 16px 20px;
+                        margin: 18px 0 8px;
+                    }
+                    .prio-explainer-title {
+                        color: #00689D; font-weight: 700; font-size: 1rem;
+                        margin-bottom: 10px;
+                    }
+                    .prio-explainer p { margin: 0 0 8px; font-size: 0.88rem; line-height: 1.55; color: #475569; }
+                    .prio-explainer p:last-child { margin-bottom: 0; }
+
+                    .report-table tr.row-excluded td { color: #94a3b8; }
+                    .prio-rank {
+                        display: inline-flex; align-items: center; justify-content: center;
+                        width: 28px; height: 28px; border-radius: 50%;
+                        color: #ffffff; font-weight: 700; font-size: 0.85rem; line-height: 1;
+                    }
+                    .prio-rank-1 { background: #F59E0B; }
+                    .prio-rank-2 { background: #94A3B8; }
+                    .prio-rank-3 { background: #EA580C; }
+                    .prio-rank-n { background: #00689D; }
+                    .prio-stream-dot {
+                        display: inline-block; width: 10px; height: 10px;
+                        border-radius: 2px; margin-right: 10px;
+                        vertical-align: middle;
+                    }
+                    .prio-em { color: #cbd5e1; font-weight: 600; }
+                    .prio-status {
+                        display: inline-flex; align-items: center;
+                        padding: 4px 12px; border: 1px solid #e2e8f0;
+                        border-radius: 6px; background: #ffffff;
+                        font-size: 0.78rem; color: #475569; font-weight: 500;
+                    }
+                    .prio-status.status-exclude { color: #94a3b8; background: #f8fafc; }
+
+                    /* Gap Prioritization (page 5) — priority cell uses a small
+                       coloured circle (P1 green / P2 grey / P3 red) plus the
+                       gap-type name and the amount in cyan beneath. */
+                    .prio-pb {
+                        display: inline-flex; align-items: center; justify-content: center;
+                        width: 22px; height: 22px; border-radius: 50%;
+                        color: #ffffff; font-weight: 700; font-size: 0.72rem;
+                        line-height: 1; margin-right: 8px; flex-shrink: 0;
+                    }
+                    .prio-pb-1 { background: #10B981; }
+                    .prio-pb-2 { background: #94A3B8; }
+                    .prio-pb-3 { background: #EF4444; }
+                    .prio-pcell { display: flex; align-items: center; }
+                    .prio-pcell-body { display: flex; flex-direction: column; line-height: 1.3; }
+                    .prio-pcell-type { font-weight: 600; color: #1f2937; font-size: 0.85rem; }
+                    .prio-pcell-amount { font-size: 0.78rem; color: #00689D; font-weight: 600; }
+                    .mode-chip-upper { text-transform: uppercase; letter-spacing: 0.02em; }
                     .mode-chip { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 0.76rem; font-weight: 600; border: 1px solid transparent; }
                     .mode-rp { background: #e2fbe8; color: #1f8a3a; border-color: #bfe8c8; }
                     .mode-cf { background: #fff4e0; color: #c26500; border-color: #f5d6a8; }
@@ -1810,21 +1978,32 @@
                         { label: 'Own-Source Revenue (OSR)', value: val('actualOsr') },
                         { label: 'Gross Regional Product',   value: val('gdpPerCapita') },
                         { label: 'Population',               value: val('population') }
-                    ].map(s => `<div style="flex:1 1 30%;min-width:140px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:10px 14px;">
+                    ].map(s => `<div style="flex:1 1 30%;min-width:140px;background:#f8fafc;border-radius:8px;padding:10px 14px;">
         <div style="font-size:0.72rem;letter-spacing:0.5px;text-transform:uppercase;color:#64748b;font-weight:600;margin-bottom:4px;">${s.label}</div>
         <div style="font-size:1.05rem;font-weight:700;color:#1f2937;">${s.value}</div>
     </div>`).join('');
 
-                    const lgpCard = `<div style="margin:0 0 18px;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-    <div style="background:linear-gradient(90deg,#2BB8E2 0%,#00B2E3 100%);padding:16px 20px;color:#ffffff;display:flex;align-items:center;gap:14px;">
+                    // Build a single-line breadcrumb of the gov-unit hierarchy: country
+                    // first, then Level 1 (region), Level 2 (city), Level 3 (extra unit).
+                    // Each subsequent token only appears if filled.
+                    const cityName = val('city');
+                    const lvl3Name = val('govUnitLevel3');
+                    const hierarchy = [
+                        countryName !== '—' ? countryName : null,
+                        regionName !== '—' ? regionName : null,
+                        cityName !== '—' ? cityName : null,
+                        lvl3Name !== '—' ? lvl3Name : null
+                    ].filter(Boolean);
+                    const hierarchyLine = hierarchy.length
+                        ? hierarchy.join(' &middot; ')
+                        : 'Country not selected';
+
+                    const lgpCard = `<div style="margin:0 0 18px;background:#ffffff;border-radius:12px;overflow:hidden;">
+    <div style="background:linear-gradient(90deg,#2BB8E2 0%,#00B2E3 100%);padding:20px 24px;color:#ffffff;display:flex;align-items:center;gap:18px;">
         ${flagHtml}
-        <div style="flex:1;min-width:0;">
-            <div style="font-size:0.75rem;letter-spacing:0.5px;text-transform:uppercase;opacity:0.85;font-weight:600;">Local Government Profile</div>
-            <div style="font-size:1.4rem;font-weight:700;line-height:1.2;margin-top:2px;">${countryName !== '—' ? countryName : 'Country not selected'}</div>
-            ${regionName !== '—' ? `<div style="font-size:0.95rem;opacity:0.95;font-weight:500;margin-top:2px;">${regionName}</div>` : ''}
-        </div>
+        <div style="flex:1;min-width:0;font-family:'Playfair Display',Georgia,serif;font-size:1.65rem;font-weight:700;line-height:1.15;letter-spacing:-0.005em;">${hierarchyLine}</div>
     </div>
-    <div style="padding:14px;display:flex;flex-wrap:wrap;gap:10px;">
+    <div style="padding:14px 0 0;display:flex;flex-wrap:wrap;gap:10px;">
         ${statCells}
     </div>
 </div>`;
@@ -1845,7 +2024,12 @@
                         try {
                             const dataUrl = chartInstance.toBase64Image('image/png', 1.0);
                             if (dataUrl && dataUrl.length > 2500) {
-                                chartImg = `<div style="margin-top:18px;"><h3 style="margin-bottom:8px;">What you collect vs what you could collect</h3><img src="${dataUrl}" alt="What you collect vs what you could collect" style="max-width:100%;height:auto;display:block;border:1px solid #e5e7eb;border-radius:6px;"></div>`;
+                                chartImg = `<div class="qa-chart-card">
+    <div class="units-strip">
+        <div class="title">What you collect vs what you could collect</div>
+    </div>
+    <img src="${dataUrl}" alt="What you collect vs what you could collect" style="max-width:100%;height:auto;display:block;">
+</div>`;
                             }
                         } catch (_) { /* skip */ }
                     }
@@ -1941,13 +2125,13 @@
                             const connectorY = yActualTop;
                             const connector = `<line x1="${xActual + barW}" y1="${connectorY}" x2="${xPotential}" y2="${connectorY}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 4"/>`;
 
-                            chartImg = `<div style="margin-top:18px;">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-        <h3 style="margin:0;">What you collect vs what you could collect</h3>
-        <span style="font-size:0.72rem;font-weight:700;letter-spacing:0.5px;color:#64748b;">${unitsLabel}</span>
+                            chartImg = `<div class="qa-chart-card">
+    <div class="units-strip">
+        <div class="title">What you collect vs what you could collect</div>
+        <div class="units">${unitsLabel}</div>
     </div>
-    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:12px;background:#fff;">
-        <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;font-family:Roboto,'Segoe UI',Arial,sans-serif;">
+    <div>
+        <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;font-family:'Inter','Segoe UI',Arial,sans-serif;font-feature-settings:'tnum';">
             ${gridSvg}
             ${connector}
             <!-- Actual bar (cyan, full height) -->
@@ -1976,255 +2160,459 @@
                         }
                     }
 
-                    html += `${lgpCard}${chartImg}`;
+                    html += `<section class="qa-page">
+    <div class="qa-section-label">Section 01 &middot; Snapshot</div>
+    <h2 class="qa-section-title">Local Government Profile</h2>
+    <p class="qa-section-sub">A snapshot of the assessment context — the city, its fiscal indicators, and the headline gap between current and potential own-source revenue.</p>
+    ${lgpCard}
+    ${chartImg}
+</section>`;
                 }
 
                 // ===== Gap Analysis Results =====
+                // Section page (page 3): branded section header, "Revenue Gap by
+                // Stream" horizontal-stacked-bar chart (mirrors the Prioritization
+                // tab's first chart), then a streams × gap-type breakdown table.
+                // Wrapped in .qa-page so it forces a page-break after.
                 if (options.includeGapAnalysis) {
-                    const streams = (typeof RosraStateManager !== 'undefined') ? RosraStateManager.getStreams() : [];
-                    html += `<h2>Gap Analysis Results</h2>`;
+                    const rawStreams = (typeof RosraStateManager !== 'undefined') ? RosraStateManager.getStreams() : [];
+                    // Drop empty placeholder streams: every generic stream gets a
+                    // unique internal id but users can leave a slot unfilled,
+                    // which produces a row with no gap data anywhere. Hide those
+                    // here so the chart + table aren't padded with zero-rows.
+                    const streams = rawStreams.filter(s =>
+                        (s.totalFunctionalGap || 0) > 0 ||
+                        (s.complianceGap     || 0) > 0 ||
+                        (s.coverageGap       || 0) > 0 ||
+                        (s.valuationGap      || 0) > 0 ||
+                        (s.liabilityGap      || 0) > 0 ||
+                        (s.currentRevenue    || 0) > 0 ||
+                        (s.potentialRevenue  || 0) > 0
+                    );
+                    html += `<div class="qa-page">
+    <div class="qa-section-label">SECTION 02 &middot; GAP ANALYSIS</div>
+    <h1 class="qa-section-title">Gap Analysis Results</h1>`;
+
                     if (!streams.length) {
-                        html += `<p><em>No revenue stream data captured.</em></p>`;
+                        html += `<p class="qa-section-sub">No revenue stream data captured.</p></div>`;
                     } else {
-                        // Aggregate totals across all streams
-                        const thirdOf = s => (s.type === 'property-tax') ? (s.valuationGap || 0) : (s.liabilityGap || 0);
+                        const thirdOf      = s => (s.type === 'property-tax') ? (s.valuationGap || 0) : (s.liabilityGap || 0);
+                        const thirdLabelOf = s => (s.type === 'property-tax') ? 'Valuation' : 'Liability';
                         const totals = streams.reduce((a, s) => ({
-                            currentRevenue: a.currentRevenue + (s.currentRevenue || 0),
+                            currentRevenue:   a.currentRevenue   + (s.currentRevenue   || 0),
                             potentialRevenue: a.potentialRevenue + (s.potentialRevenue || 0),
-                            totalGap: a.totalGap + (s.totalFunctionalGap || 0),
-                            compliance: a.compliance + (s.complianceGap || 0),
-                            coverage: a.coverage + (s.coverageGap || 0),
-                            third: a.third + thirdOf(s)
+                            totalGap:         a.totalGap         + (s.totalFunctionalGap || 0),
+                            compliance:       a.compliance       + (s.complianceGap    || 0),
+                            coverage:         a.coverage         + (s.coverageGap      || 0),
+                            third:            a.third            + thirdOf(s)
                         }), { currentRevenue: 0, potentialRevenue: 0, totalGap: 0, compliance: 0, coverage: 0, third: 0 });
 
-                        const collectionRate = pct(totals.currentRevenue, totals.potentialRevenue);
+                        const curSym = getCurrencyFromContext() || '$';
 
-                        // --- Top-line KPI strip ---
-                        html += `<div class="stat-grid">
-    <div class="stat"><div class="v">${esc(formatCurrencyCompact(totals.currentRevenue))}</div><div class="l">Current Revenue</div></div>
-    <div class="stat"><div class="v">${esc(formatCurrencyCompact(totals.potentialRevenue))}</div><div class="l">Potential Revenue</div></div>
-    <div class="stat"><div class="v">${esc(formatCurrencyCompact(totals.totalGap))}</div><div class="l">Total Functional Gap</div></div>
-    <div class="stat"><div class="v">${collectionRate}%</div><div class="l">Collection Rate</div></div>
+                        // Compact "B/M/K" formatter with 2 decimals — matches the
+                        // Quick Analysis chart so values read consistently across pages.
+                        const fmtGap = n => {
+                            const v = Number(n) || 0;
+                            if (Math.abs(v) >= 1e9) return (v/1e9).toFixed(2) + 'B';
+                            if (Math.abs(v) >= 1e6) return (v/1e6).toFixed(2) + 'M';
+                            if (Math.abs(v) >= 1e3) return (v/1e3).toFixed(2) + 'K';
+                            return Math.round(v).toString();
+                        };
+
+                        html += `<p class="qa-section-sub">Streams ranked by total functional gap, broken out by gap type. Each bar's length is the stream's share of the largest gap; colour segments show how that gap composes across Compliance, Coverage, and Valuation / Liability.</p>`;
+
+                        // --- SVG horizontal stacked bar chart (editorial) ---
+                        // Mirrors the Prioritization tab's gapParetoChart but is
+                        // rendered as inline SVG so it survives the network-blocked
+                        // PDF pipeline. Polished with x-axis gridlines, per-row
+                        // % share, larger bars, and totals in the legend.
+                        const sortedStreams = [...streams].sort((a, b) => (b.totalFunctionalGap || 0) - (a.totalFunctionalGap || 0));
+                        const maxGap = Math.max(1, ...sortedStreams.map(s => s.totalFunctionalGap || 0));
+
+                        const W         = 720;
+                        const padX      = 18;
+                        const padTop    = 68;   // legend + sublegend totals
+                        const xAxisH    = 32;   // tick labels + axis line
+                        const labelColW = 200;
+                        const valueColW = 110;
+                        const rowH      = 52;   // tall rows: stream name + % subtitle + bar
+                        const barH      = 22;   // chunkier bars
+                        const chartW    = W - labelColW - valueColW - padX * 2;
+                        const H         = padTop + xAxisH + sortedStreams.length * rowH;
+                        const xBarStart = padX + labelColW;
+                        const yAxisBase = padTop + sortedStreams.length * rowH;
+
+                        const colCompliance = '#00689D';
+                        const colCoverage   = '#10b981';
+                        const colThird      = '#f59e0b';
+
+                        // --- Legend with totals (matches the breakdown table footer) ---
+                        const legendEntry = (x, color, label, amount) => `
+        <rect x="${x}"       y="16"  width="11" height="11" fill="${color}" rx="2"/>
+        <text x="${x + 17}"  y="25"  font-size="11" font-weight="600" fill="#1f2937">${esc(label)}</text>
+        <text x="${x + 17}"  y="40"  font-size="10" font-weight="500" fill="#64748b">${esc(curSym)} ${esc(fmtGap(amount))}</text>`;
+
+                        const legend = `<g font-family="'Inter','Segoe UI',sans-serif">
+        ${legendEntry(padX,        colCompliance, 'Compliance',           totals.compliance)}
+        ${legendEntry(padX + 150,  colCoverage,   'Coverage',             totals.coverage)}
+        ${legendEntry(padX + 290,  colThird,      'Valuation / Liability', totals.third)}
+    </g>`;
+
+                        // --- X-axis: 5 evenly spaced ticks (0, 25%, 50%, 75%, 100%) ---
+                        const tickCount = 5;
+                        const niceMax   = maxGap;
+                        const axisTicks = Array.from({ length: tickCount }, (_, i) => {
+                            const frac = i / (tickCount - 1);
+                            return {
+                                x: xBarStart + frac * chartW,
+                                val: niceMax * frac
+                            };
+                        });
+
+                        const gridLines = axisTicks.map(t => `
+        <line x1="${t.x.toFixed(2)}" y1="${padTop - 6}" x2="${t.x.toFixed(2)}" y2="${yAxisBase}" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="2,3"/>`).join('');
+
+                        const axisLabels = axisTicks.map(t => `
+        <text x="${t.x.toFixed(2)}" y="${yAxisBase + 18}" text-anchor="middle" font-size="10" font-weight="500" fill="#94a3b8">${esc(curSym)} ${esc(fmtGap(t.val))}</text>`).join('');
+
+                        const axisLine = `<line x1="${xBarStart}" y1="${yAxisBase + 2}" x2="${xBarStart + chartW}" y2="${yAxisBase + 2}" stroke="#cbd5e1" stroke-width="1"/>`;
+
+                        // --- Rows ---
+                        const rows = sortedStreams.map((s, i) => {
+                            const y          = padTop + i * rowH;
+                            const total      = s.totalFunctionalGap || 0;
+                            const cw         = (s.complianceGap || 0) / maxGap * chartW;
+                            const ow         = (s.coverageGap   || 0) / maxGap * chartW;
+                            const tw         = thirdOf(s)             / maxGap * chartW;
+                            const sharePct   = totals.totalGap > 0 ? Math.round(total / totals.totalGap * 100) : 0;
+                            const xLabel     = padX + labelColW - 12;
+                            const xValue     = padX + labelColW + chartW + 8;
+                            const yName      = y + 14;
+                            const yShare     = y + 28;
+                            const yBar       = y + 32;
+                            const rawLabel   = s.name || s.id || '';
+                            const labelText  = rawLabel.length > 30 ? rawLabel.slice(0, 29) + '…' : rawLabel;
+                            const excluded   = s.included === false;
+
+                            // Inline segment labels (only if segment is wide enough)
+                            const inlineLabel = (x, w, value, color) => {
+                                if (w < 42) return '';
+                                return `<text x="${(x + w/2).toFixed(2)}" y="${yBar + barH/2 + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">${esc(fmtGap(value))}</text>`;
+                            };
+
+                            return `<g font-family="'Inter','Segoe UI',sans-serif">
+        <text x="${xLabel}" y="${yName}"  text-anchor="end" font-size="13" font-weight="700" fill="#0f2742">${esc(labelText)}${excluded ? ' <tspan font-size="9" fill="#94a3b8" font-weight="600"> · EXCL.</tspan>' : ''}</text>
+        <text x="${xLabel}" y="${yShare}" text-anchor="end" font-size="10" font-weight="500" fill="#64748b">${sharePct}% of total gap</text>
+
+        <rect x="${xBarStart}"            y="${yBar}" width="${cw.toFixed(2)}" height="${barH}" fill="${colCompliance}" rx="3"/>
+        <rect x="${xBarStart + cw}"       y="${yBar}" width="${ow.toFixed(2)}" height="${barH}" fill="${colCoverage}"   rx="3"/>
+        <rect x="${xBarStart + cw + ow}"  y="${yBar}" width="${tw.toFixed(2)}" height="${barH}" fill="${colThird}"      rx="3"/>
+        ${inlineLabel(xBarStart,           cw, s.complianceGap || 0)}
+        ${inlineLabel(xBarStart + cw,      ow, s.coverageGap   || 0)}
+        ${inlineLabel(xBarStart + cw + ow, tw, thirdOf(s))}
+
+        <text x="${xValue}" y="${yBar + barH/2 + 5}" font-size="13" font-weight="700" fill="#0f2742">${esc(curSym)} ${esc(fmtGap(total))}</text>
+    </g>`;
+                        }).join('');
+
+                        html += `<div class="qa-chart-card">
+    <div class="units-strip">
+        <div class="title">Revenue Gap by Stream</div>
+        <div class="units">AMOUNTS IN ${esc(curSym)}</div>
+    </div>
+    <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;font-family:'Inter','Segoe UI',Arial,sans-serif;font-feature-settings:'tnum';">
+        ${gridLines}
+        ${legend}
+        ${rows}
+        ${axisLine}
+        ${axisLabels}
+    </svg>
 </div>`;
 
-                        // --- Overview table with Potential + % of Potential + totals row ---
-                        html += `<h3>Stream Overview</h3>
+                        // --- Streams × Gap-type breakdown table ---
+                        // Type column was redundant with Stream (every stream
+                        // already carries a self-describing name like "ParkingFee"
+                        // or "BusinessLicense"), so we dropped it. The third
+                        // gap column is labelled per-row as "Valuation" for
+                        // property tax and "Liability" for everything else.
+                        html += `<h3 class="qa-block-title">Streams &amp; Gaps Breakdown</h3>
 <table class="report-table">
 <thead><tr>
     <th style="text-align:left">Stream</th>
-    <th style="text-align:left">Type</th>
-    <th style="text-align:right">Current</th>
-    <th style="text-align:right">Potential</th>
-    <th style="text-align:right">Gap</th>
-    <th style="text-align:right">Gap % of Potential</th>
+    <th style="text-align:right">Compliance</th>
+    <th style="text-align:right">Coverage</th>
+    <th style="text-align:right">Valuation / Liability</th>
+    <th style="text-align:right">Total Gap</th>
 </tr></thead><tbody>`;
-                        streams.forEach(s => {
-                            const gapPct = pct(s.totalFunctionalGap || 0, s.potentialRevenue || 0);
-                            const typeLabel = (s.type || '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                        sortedStreams.forEach(s => {
                             html += `<tr>
     <td>${esc(s.name || s.id || '')}${s.included === false ? ' <span class="badge">excluded</span>' : ''}</td>
-    <td>${esc(typeLabel)}</td>
-    <td style="text-align:right">${esc(formatCurrencyCompact(s.currentRevenue || 0))}</td>
-    <td style="text-align:right">${esc(formatCurrencyCompact(s.potentialRevenue || 0))}</td>
+    <td style="text-align:right">${esc(formatCurrencyCompact(s.complianceGap || 0))}</td>
+    <td style="text-align:right">${esc(formatCurrencyCompact(s.coverageGap   || 0))}</td>
+    <td style="text-align:right">${esc(formatCurrencyCompact(thirdOf(s)))} <span style="color:#7a8a99;font-size:0.78rem;">(${esc(thirdLabelOf(s))})</span></td>
     <td style="text-align:right"><strong>${esc(formatCurrencyCompact(s.totalFunctionalGap || 0))}</strong></td>
-    <td style="text-align:right">${gapPct}%</td>
 </tr>`;
                         });
                         html += `<tr class="tr-totals">
-    <td colspan="2"><strong>Total</strong></td>
-    <td style="text-align:right"><strong>${esc(formatCurrencyCompact(totals.currentRevenue))}</strong></td>
-    <td style="text-align:right"><strong>${esc(formatCurrencyCompact(totals.potentialRevenue))}</strong></td>
+    <td><strong>Total</strong></td>
+    <td style="text-align:right"><strong>${esc(formatCurrencyCompact(totals.compliance))}</strong></td>
+    <td style="text-align:right"><strong>${esc(formatCurrencyCompact(totals.coverage))}</strong></td>
+    <td style="text-align:right"><strong>${esc(formatCurrencyCompact(totals.third))}</strong></td>
     <td style="text-align:right"><strong>${esc(formatCurrencyCompact(totals.totalGap))}</strong></td>
-    <td style="text-align:right"><strong>${pct(totals.totalGap, totals.potentialRevenue)}%</strong></td>
 </tr>
 </tbody></table>`;
 
-                        // --- Per-stream gap breakdown with proportional bars + KPI ratios ---
-                        html += `<h3>Gap Breakdown by Stream</h3>`;
-                        streams.forEach(s => {
-                            const thirdLabel = (s.type === 'property-tax') ? 'Valuation' : 'Liability';
-                            const third = thirdOf(s);
-                            const streamGapTotal = (s.complianceGap || 0) + (s.coverageGap || 0) + third;
-                            const ofGap = v => pct(v, streamGapTotal);
-
-                            const bar = (label, amount, color) => `
-        <div class="gap-bar-row">
-            <div class="gap-bar-label">${esc(label)}</div>
-            <div class="gap-bar"><div class="gap-bar-fill" style="width:${ofGap(amount)}%;background:${color}"></div></div>
-            <div class="gap-bar-amount">${esc(formatCurrencyCompact(amount))} <span class="gap-bar-pct">(${ofGap(amount)}%)</span></div>
-        </div>`;
-
-                            const ratioChip = (label, value, suffix) =>
-                                value != null && !isNaN(value)
-                                    ? `<span class="gap-ratio"><span class="gap-ratio-l">${esc(label)}</span><strong>${Math.round(value)}${esc(suffix || '%')}</strong></span>`
-                                    : '';
-
-                            html += `<div class="gap-card">
-    <div class="gap-card-head">
-        <div class="gap-card-title">${esc(s.name || '')}${s.included === false ? ' <span class="badge">excluded</span>' : ''}</div>
-        <div class="gap-card-headline">Total Gap: <strong>${esc(formatCurrencyCompact(s.totalFunctionalGap || 0))}</strong></div>
-    </div>
-    <div class="gap-bars">
-        ${bar('Compliance', s.complianceGap || 0, '#00689D')}
-        ${bar('Coverage', s.coverageGap || 0, '#10b981')}
-        ${bar(thirdLabel, third, '#f59e0b')}
-    </div>
-    <div class="gap-ratios">
-        ${ratioChip('Compliance Ratio', s.complianceRatio)}
-        ${ratioChip('Coverage Ratio', s.coverageRatio)}
-        ${s.type === 'property-tax' ? ratioChip('Valuation Ratio', s.valuationRatio) : ''}
-    </div>
-</div>`;
-                        });
+                        html += `</div>`; // close .qa-page
                     }
                 }
 
                 // ===== Stream Prioritization =====
+                // Section page (page 4): same editorial wrapper as pages 2 & 3.
+                // Shows each included stream with its final rank, mode chip,
+                // gap share bar, and any manual override marker.
+                //
+                // IMPORTANT: ranks here MUST match the website's Prioritization
+                // tab. The state manager's getStreamsByGapRanking() sets
+                // finalRank = adjustedRank || defaultRank, which produces wrong
+                // (and sometimes duplicate) ranks when any stream is manually
+                // adjusted. We replicate _Prioritization.cshtml's
+                // calculateFinalRankings() logic here: weave adjusted streams
+                // into their adjusted slots first, then fill the remaining
+                // ranks with auto-sorted streams.
                 if (options.includeStreamPrioritization) {
-                    const ranked = (typeof RosraStateManager !== 'undefined') ? RosraStateManager.getStreamsByGapRanking() : [];
-                    html += `<h2>Stream Prioritization</h2>`;
+                    const allStreams = (typeof RosraStateManager !== 'undefined') ? RosraStateManager.getStreams() : [];
+                    // Faithful port of _Prioritization.cshtml's render pipeline:
+                    //
+                    //   1. assignDefaultRanks() — sort the full populated stream set
+                    //      by totalFunctionalGap desc, write defaultRank = idx+1 on
+                    //      every stream (including excluded ones). (cshtml line ~1316)
+                    //   2. For included streams, manualRank = adjustedRank || defaultRank.
+                    //      (cshtml line 1403)
+                    //   3. Stable-sort the included streams by manualRank — ties keep
+                    //      original-array order. This is the key step that makes a
+                    //      manually-set rank tie with an auto stream's default rank,
+                    //      and the original order wins. (cshtml line 1410)
+                    //   4. Renumber sequentially 1..N for display. (cshtml line 1412)
+                    const populated = allStreams.filter(s => (parseFloat(s.totalFunctionalGap) || 0) > 0);
+                    const byGap = populated.slice().sort((a, b) => (b.totalFunctionalGap || 0) - (a.totalFunctionalGap || 0));
+                    byGap.forEach((s, i) => { s._defaultRank = i + 1; });
+
+                    const includedStreams = populated.filter(s => s.included !== false);
+                    includedStreams.forEach(s => {
+                        s._manualRank = (s.adjustedRank != null) ? s.adjustedRank : s._defaultRank;
+                    });
+
+                    const ordered = includedStreams.slice().sort((a, b) => (a._manualRank || 999) - (b._manualRank || 999));
+                    const ranked = ordered.map((s, i) => ({ ...s, finalRank: i + 1 }));
+
+                    html += `<div class="qa-page">
+    <div class="qa-section-label">SECTION 03 &middot; STREAM PRIORITIZATION</div>
+    <h1 class="qa-section-title">Stream Prioritization</h1>`;
+
                     if (!ranked.length) {
-                        html += `<p><em>No streams included for prioritization.</em></p>`;
+                        html += `<p class="qa-section-sub">No streams included for prioritization.</p></div>`;
+                    } else {
+                        const totalRankedGap = ranked.reduce((a, s) => a + (s.totalFunctionalGap || 0), 0);
+                        const maxGap = Math.max(1, ...ranked.map(s => s.totalFunctionalGap || 0));
+                        // 1-decimal share so the table reads identically to the website.
+                        const share1 = (part, whole) => whole > 0 ? (part / whole * 100).toFixed(1) : '0.0';
+
+                        // Stream colour-dot palette mirrors _Prioritization.cshtml's
+                        // streamColors map + generic palette (fixed cyan for property
+                        // tax, orange for business license, cycling palette for
+                        // generic streams).
+                        const genericPalette = ['#00689D', '#10b981', '#EF4444', '#A855F7'];
+                        const streamDotColor = (s) => {
+                            if (s.id === 'property-tax')     return '#2BB8E2';
+                            if (s.id === 'business-license') return '#F59E0B';
+                            if (s.id && s.id.startsWith('generic-stream-')) {
+                                const idx = parseInt(s.id.split('-').pop(), 10) || 0;
+                                return genericPalette[idx % genericPalette.length];
+                            }
+                            return '#94a3b8';
+                        };
+                        // Podium colours for the first three ranks (gold / silver /
+                        // bronze) — matches the website's coloured rank pills.
+                        const rankClass = (r) => r === 1 ? 'prio-rank-1' : r === 2 ? 'prio-rank-2' : r === 3 ? 'prio-rank-3' : 'prio-rank-n';
+
+                        // --- "What is Stream Prioritization?" explainer ---
+                        html += `<div class="prio-explainer">
+    <div class="prio-explainer-title">What is Stream Prioritization?</div>
+    <p>Stream Prioritization ranks your revenue streams by their <strong>Total Functional Gap</strong> &mdash; the difference between current collection and what could realistically be collected if administration were strengthened.</p>
+    <p><strong>Why it matters:</strong> Most cities have several revenue streams but limited reform capacity. Tackling the streams with the biggest gaps first generates the largest revenue uplift per unit of effort.</p>
+    <p><strong>How to read this table:</strong> Rows are pre-ranked from largest gap to smallest. Streams marked <em>Excluded</em> have been dropped from share calculations and the downstream recommendations because they don't apply to this local government (e.g. a service the municipality doesn't provide).</p>
+</div>`;
+
+                        // --- Prioritization table — uses .report-table (same as
+                        // page 3's Streams & Gaps Breakdown) for a consistent look ---
+                        const renderIncludedRow = (s) => {
+                            const share  = share1(s.totalFunctionalGap || 0, totalRankedGap);
+                            const barPct = Math.max(2, Math.round(((s.totalFunctionalGap || 0) / maxGap) * 100));
+                            return `<tr>
+    <td style="text-align:center;width:50px"><span class="prio-rank ${rankClass(s.finalRank)}">${esc(String(s.finalRank))}</span></td>
+    <td><span class="prio-stream-dot" style="background:${streamDotColor(s)}"></span><strong>${esc(s.name || '')}</strong></td>
+    <td style="text-align:right"><strong>${esc(formatCurrencyCompact(s.totalFunctionalGap || 0))}</strong></td>
+    <td style="text-align:right;width:60px">${share}%</td>
+    <td style="width:170px">
+        <div class="share-bar" style="min-width:120px"><div class="share-bar-fill" style="width:${barPct}%"></div></div>
+    </td>
+    <td style="width:90px"><span class="prio-status">Include</span></td>
+</tr>`;
+                        };
+
+                        // Excluded streams (still populated, just dropped from prioritization)
+                        const excludedPopulated = populated.filter(s => s.included === false);
+                        const renderExcludedRow = (s) => `<tr class="row-excluded">
+    <td style="text-align:center"><span class="prio-em">&mdash;</span></td>
+    <td><span class="prio-stream-dot" style="background:${streamDotColor(s)};opacity:0.5"></span>${esc(s.name || '')}</td>
+    <td style="text-align:right">${esc(formatCurrencyCompact(s.totalFunctionalGap || 0))}</td>
+    <td style="text-align:right"><span class="prio-em">&mdash;</span></td>
+    <td><span class="prio-em">&mdash;</span></td>
+    <td><span class="prio-status status-exclude">Exclude</span></td>
+</tr>`;
+
+                        html += `<table class="report-table">
+<thead><tr>
+    <th style="width:50px;text-align:center">Rank</th>
+    <th>Stream</th>
+    <th style="text-align:right;width:110px">Total Gap</th>
+    <th style="text-align:right;width:60px">Share</th>
+    <th style="width:170px">&nbsp;</th>
+    <th style="width:90px">Status</th>
+</tr></thead>
+<tbody>
+    ${ranked.map(renderIncludedRow).join('')}
+    ${excludedPopulated.map(renderExcludedRow).join('')}
+    <tr class="tr-totals">
+        <td style="text-align:center"><span class="prio-em">&mdash;</span></td>
+        <td><strong>Total (Included Streams)</strong></td>
+        <td style="text-align:right"><strong>${esc(formatCurrencyCompact(totalRankedGap))}</strong></td>
+        <td style="text-align:right"><strong>100%</strong></td>
+        <td>&nbsp;</td>
+        <td><span class="prio-em">&mdash;</span></td>
+    </tr>
+</tbody>
+</table>`;
+
+                        html += `</div>`; // close .qa-page
+                    }
+                }
+
+                // ===== Gap Prioritization =====
+                // Section page (page 5): editorial header + explainer card + a
+                // streams × priorities matrix that mirrors the website's
+                // "Gap Sequencing by Stream & Gap Amounts by Priority" table.
+                // (Internally still gated by includeGapSequencing; the user-
+                // facing name is "Gap Prioritization" to match the site.)
+                if (options.includeGapSequencing) {
+                    const priority = (typeof RosraStateManager !== 'undefined') ? RosraStateManager.getMasterPriorityList() : [];
+
+                    // Re-rank streams with the same algorithm as page 4 so the
+                    // ranks shown here stay consistent across pages.
+                    const allStreamsGP = (typeof RosraStateManager !== 'undefined') ? RosraStateManager.getStreams() : [];
+                    const populatedGP = allStreamsGP.filter(s => (parseFloat(s.totalFunctionalGap) || 0) > 0);
+                    populatedGP.slice().sort((a, b) => (b.totalFunctionalGap || 0) - (a.totalFunctionalGap || 0))
+                        .forEach((s, i) => { s._defaultRank = i + 1; });
+                    const includedGP = populatedGP.filter(s => s.included !== false);
+                    includedGP.forEach(s => { s._manualRank = (s.adjustedRank != null) ? s.adjustedRank : s._defaultRank; });
+                    const rankedGP = includedGP.slice().sort((a, b) => (a._manualRank || 999) - (b._manualRank || 999))
+                        .map((s, i) => ({ ...s, finalRank: i + 1 }));
+
+                    // Group priority items by streamId, then map onto each ranked stream.
+                    const byStreamId = new Map();
+                    priority.forEach(p => {
+                        if (!byStreamId.has(p.streamId)) byStreamId.set(p.streamId, []);
+                        byStreamId.get(p.streamId).push(p);
+                    });
+
+                    const streamRows = rankedGP.map(s => {
+                        const items = byStreamId.get(s.id) || [];
+                        const byPri = {};
+                        items.forEach(it => { byPri[it.gapPriority] = it; });
+                        return {
+                            id: s.id,
+                            name: s.name,
+                            rank: s.finalRank,
+                            mode: RosraStateManager.getStreamMode(s.id),
+                            p1: byPri[1] || null,
+                            p2: byPri[2] || null,
+                            p3: byPri[3] || null
+                        };
+                    });
+
+                    html += `<div class="qa-page">
+    <div class="qa-section-label">SECTION 04 &middot; GAP PRIORITIZATION</div>
+    <h1 class="qa-section-title">Gap Prioritization</h1>`;
+
+                    if (!streamRows.length || !priority.length) {
+                        html += `<p class="qa-section-sub">No sequenced gaps available.</p></div>`;
                     } else {
                         const modeLabel = {
                             'revenue-potential': 'Revenue Potential',
-                            'compliance-first': 'Compliance First',
-                            'overhaul': 'Overhaul'
+                            'compliance-first':  'Compliance First',
+                            'overhaul':          'Overhaul'
                         };
                         const modeClass = {
                             'revenue-potential': 'mode-rp',
-                            'compliance-first': 'mode-cf',
-                            'overhaul': 'mode-oh'
+                            'compliance-first':  'mode-cf',
+                            'overhaul':          'mode-oh'
                         };
-                        const modeCounts = ranked.reduce((acc, s) => {
-                            const m = RosraStateManager.getStreamMode(s.id);
-                            acc[m] = (acc[m] || 0) + 1;
-                            return acc;
-                        }, {});
-                        const totalRankedGap = ranked.reduce((a, s) => a + (s.totalFunctionalGap || 0), 0);
-                        const topStream = ranked[0];
-                        const dominantMode = Object.keys(modeCounts).sort((a, b) => modeCounts[b] - modeCounts[a])[0];
-                        const maxGap = Math.max(1, ...ranked.map(s => s.totalFunctionalGap || 0));
+                        const genericPaletteGP = ['#00689D', '#10b981', '#EF4444', '#A855F7'];
+                        const streamDotColorGP = (id) => {
+                            if (id === 'property-tax')     return '#2BB8E2';
+                            if (id === 'business-license') return '#F59E0B';
+                            if (id && id.startsWith('generic-stream-')) {
+                                const idx = parseInt(id.split('-').pop(), 10) || 0;
+                                return genericPaletteGP[idx % genericPaletteGP.length];
+                            }
+                            return '#94a3b8';
+                        };
+                        const rankClassGP = (r) => r === 1 ? 'prio-rank-1' : r === 2 ? 'prio-rank-2' : r === 3 ? 'prio-rank-3' : 'prio-rank-n';
+                        const cap = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 
-                        // KPI strip
-                        html += `<div class="stat-grid">
-    <div class="stat"><div class="v">${ranked.length}</div><div class="l">Streams Prioritized</div></div>
-    <div class="stat"><div class="v">${esc(formatCurrencyCompact(totalRankedGap))}</div><div class="l">Total Gap To Address</div></div>
-    <div class="stat"><div class="v">${esc(topStream?.name || '—')}</div><div class="l">Top Priority</div></div>
-    <div class="stat"><div class="v">${esc(modeLabel[dominantMode] || '—')}</div><div class="l">Dominant Mode</div></div>
+                        // --- "What is Gap Prioritization?" explainer ---
+                        html += `<div class="prio-explainer">
+    <div class="prio-explainer-title">What is Gap Prioritization?</div>
+    <p>Gap Prioritization breaks each prioritized revenue stream down by the <strong>type of gap</strong> driving its underperformance &mdash; Compliance, Coverage, Valuation/Liability, or the mixed combinations &mdash; and lets you sequence which gaps to tackle first within each stream.</p>
+    <p><strong>Why it matters:</strong> A stream's overall gap may look the same on the surface, but a Compliance gap (people billed but not paying) needs very different reforms from a Coverage gap (units not even on the books) or a Valuation gap (assessed below market value). Sequencing tells the reform team where to start.</p>
+    <p>Pick one of three <strong>modes</strong> per stream &mdash; Revenue Potential (biggest dollar gap first), Compliance First (collect what's already billed), or Overhaul (re-engineer the whole stream) &mdash; and ROSRA suggests an opening priority order. The team can override any cell to fit local capacity and politics, or remove a gap-type that's not feasible.</p>
 </div>`;
 
-                        // Ranked table with visual rank pill, gap share, and adjustment flag
-                        html += `<h3>Prioritized Streams</h3>
-<table class="report-table">
-<thead><tr>
-    <th style="text-align:center;width:50px">#</th>
-    <th style="text-align:left">Stream</th>
-    <th style="text-align:left">Type</th>
-    <th style="text-align:right">Total Gap</th>
-    <th style="text-align:left;min-width:140px">Share of Gap</th>
-    <th style="text-align:left">Mode</th>
-</tr></thead><tbody>`;
-                        ranked.forEach(s => {
-                            const mode = RosraStateManager.getStreamMode(s.id);
-                            const share = pct(s.totalFunctionalGap || 0, totalRankedGap);
-                            const barPct = Math.max(2, Math.round(((s.totalFunctionalGap || 0) / maxGap) * 100));
-                            const typeLabel = (s.type || '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-                            const adjusted = (s.adjustedRank && s.adjustedRank !== s.defaultRank)
-                                ? ` <span class="badge" title="Manually adjusted from rank ${s.defaultRank}">adjusted</span>`
-                                : '';
-                            html += `<tr>
-    <td style="text-align:center"><span class="rank-pill">${esc(String(s.finalRank))}</span></td>
-    <td><strong>${esc(s.name || '')}</strong>${adjusted}</td>
-    <td>${esc(typeLabel)}</td>
-    <td style="text-align:right"><strong>${esc(formatCurrencyCompact(s.totalFunctionalGap || 0))}</strong></td>
-    <td>
-        <div class="share-row">
-            <div class="share-bar"><div class="share-bar-fill" style="width:${barPct}%"></div></div>
-            <div class="share-pct">${share}%</div>
+                        // --- Streams × Priorities table (uses .report-table) ---
+                        const renderPriCell = (priNum, item) => {
+                            if (!item) return '<span class="prio-em">&mdash;</span>';
+                            return `<div class="prio-pcell">
+        <span class="prio-pb prio-pb-${priNum}">${priNum}</span>
+        <div class="prio-pcell-body">
+            <div class="prio-pcell-type">${esc(cap(item.gapType || ''))}</div>
+            <div class="prio-pcell-amount">${esc(formatCurrencyCompact(item.gapAmount || 0))}</div>
         </div>
-    </td>
-    <td><span class="mode-chip ${modeClass[mode] || ''}">${esc(modeLabel[mode] || mode || '')}</span></td>
+    </div>`;
+                        };
+
+                        html += `<table class="report-table">
+<thead><tr>
+    <th style="width:50px;text-align:center">Rank</th>
+    <th>Stream</th>
+    <th style="width:130px">Mode</th>
+    <th>Priority 1</th>
+    <th>Priority 2</th>
+    <th>Priority 3</th>
+</tr></thead>
+<tbody>`;
+                        streamRows.forEach(row => {
+                            html += `<tr>
+    <td style="text-align:center"><span class="prio-rank ${rankClassGP(row.rank)}">${row.rank}</span></td>
+    <td><span class="prio-stream-dot" style="background:${streamDotColorGP(row.id)}"></span><strong>${esc(row.name)}</strong></td>
+    <td><span class="mode-chip mode-chip-upper ${modeClass[row.mode] || ''}">${esc(modeLabel[row.mode] || row.mode || '')}</span></td>
+    <td>${renderPriCell(1, row.p1)}</td>
+    <td>${renderPriCell(2, row.p2)}</td>
+    <td>${renderPriCell(3, row.p3)}</td>
 </tr>`;
                         });
                         html += `</tbody></table>`;
 
-                        // Mode legend
-                        html += `<div class="mode-legend">
-    <strong>Prioritization modes:</strong>
-    <span><span class="mode-chip mode-rp">Revenue Potential</span> compliance already ≥ 75%</span>
-    <span><span class="mode-chip mode-cf">Compliance First</span> coverage ≥ 60% but compliance low</span>
-    <span><span class="mode-chip mode-oh">Overhaul</span> both coverage and compliance need work</span>
-</div>`;
-                    }
-                }
-
-                // ===== Gap Sequencing =====
-                if (options.includeGapSequencing) {
-                    const priority = (typeof RosraStateManager !== 'undefined') ? RosraStateManager.getMasterPriorityList() : [];
-                    html += `<h2>Gap Sequencing</h2>`;
-                    if (!priority.length) {
-                        html += `<p><em>No sequenced gaps available.</em></p>`;
-                    } else {
-                        const gapTypeColor = {
-                            compliance: '#00689D',
-                            coverage: '#10b981',
-                            valuation: '#f59e0b',
-                            liability: '#f59e0b'
-                        };
-                        const totalGap = priority.reduce((a, p) => a + (p.gapAmount || 0), 0);
-                        const topThree = priority.slice(0, 3).reduce((a, p) => a + (p.gapAmount || 0), 0);
-                        const largest = priority.reduce((m, p) => (p.gapAmount || 0) > (m.gapAmount || 0) ? p : m, priority[0]);
-                        const maxAmount = Math.max(1, ...priority.map(p => p.gapAmount || 0));
-
-                        // KPI strip
-                        html += `<div class="stat-grid">
-    <div class="stat"><div class="v">${priority.length}</div><div class="l">Gaps in Sequence</div></div>
-    <div class="stat"><div class="v">${esc(formatCurrencyCompact(totalGap))}</div><div class="l">Cumulative Gap</div></div>
-    <div class="stat"><div class="v">${esc(formatCurrencyCompact(topThree))}</div><div class="l">Top 3 Combined</div></div>
-    <div class="stat"><div class="v">${esc(formatCurrencyCompact(largest?.gapAmount || 0))}</div><div class="l">Largest Single Gap</div></div>
-</div>`;
-
-                        // Grouped by stream, preserving the overall sequence order
-                        const grouped = [];
-                        const byStreamId = new Map();
-                        priority.forEach(p => {
-                            if (!byStreamId.has(p.streamId)) {
-                                const group = { streamId: p.streamId, streamName: p.streamName, streamRank: p.streamRank, items: [] };
-                                byStreamId.set(p.streamId, group);
-                                grouped.push(group);
-                            }
-                            byStreamId.get(p.streamId).items.push(p);
-                        });
-
-                        html += `<h3>Sequence by Stream</h3>`;
-                        let runningIndex = 0;
-                        let runningTotal = 0;
-                        grouped.forEach(group => {
-                            const groupTotal = group.items.reduce((a, p) => a + (p.gapAmount || 0), 0);
-                            html += `<div class="seq-group">
-    <div class="seq-group-head">
-        <span class="rank-pill">${esc(String(group.streamRank))}</span>
-        <div class="seq-group-title">${esc(group.streamName || '')}</div>
-        <div class="seq-group-total">Stream Gap Total: <strong>${esc(formatCurrencyCompact(groupTotal))}</strong></div>
-    </div>`;
-                            group.items.forEach(p => {
-                                runningIndex++;
-                                runningTotal += (p.gapAmount || 0);
-                                const barPct = Math.max(3, Math.round(((p.gapAmount || 0) / maxAmount) * 100));
-                                const color = gapTypeColor[p.gapType] || '#55697a';
-                                const cumulativePct = pct(runningTotal, totalGap);
-                                html += `<div class="seq-item">
-    <div class="seq-item-index">#${runningIndex}</div>
-    <div class="seq-item-priority">P${esc(String(p.gapPriority || ''))}</div>
-    <div class="seq-item-type" style="text-transform:capitalize">${esc(p.gapType || '')}</div>
-    <div class="seq-item-bar"><div class="seq-item-bar-fill" style="width:${barPct}%;background:${color}"></div></div>
-    <div class="seq-item-amount">${esc(formatCurrencyCompact(p.gapAmount || 0))}</div>
-    <div class="seq-item-cum">${cumulativePct}% cum.</div>
-</div>`;
-                            });
-                            html += `</div>`;
-                        });
+                        html += `</div>`; // close .qa-page
                     }
                 }
 
