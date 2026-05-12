@@ -99,6 +99,7 @@ App_Data/
 
 # Playwright artifacts
 .playwright-mcp/
+.playwright/
 snapshot-initial.yml
 
 # UI iteration screenshots (root-level only; assets under wwwroot/ are tracked)

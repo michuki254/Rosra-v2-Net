@@ -1342,8 +1342,33 @@
             // Download the report as a standalone .html file via the server,
             // so browsers honor the Content-Disposition: attachment response.
             function downloadReportHtml(html) {
-                const dateStamp = new Date().toISOString().slice(0, 10);
-                downloadViaServer(html, `rosra-action-plan-${dateStamp}.html`, 'text/html; charset=utf-8', 'utf8');
+                downloadViaServer(html, _brandedReportFilename('html'), 'text/html; charset=utf-8', 'utf8');
+            }
+
+            // Build a branded report filename from the Local Government Profile fields.
+            // Format: ROSRA_Revenue-Action-Plan_<City>_<Country>_<YYYY-MM-DD>.<ext>
+            // Falls back gracefully if the user hasn't filled in those fields.
+            function _brandedReportFilename(ext) {
+                const get = id => {
+                    const el = document.getElementById(id);
+                    return el && el.value && el.value.trim() ? el.value.trim() : '';
+                };
+                const slug = s => (s || '')
+                    .replace(/[^a-zA-Z0-9\s-]/g, '')   // strip punctuation
+                    .replace(/\s+/g, '-')              // spaces → hyphens
+                    .replace(/-+/g, '-')               // collapse repeats
+                    .replace(/^-|-$/g, '')             // trim leading/trailing hyphens
+                    .substring(0, 30);                 // cap each segment
+
+                const dateStamp    = new Date().toISOString().slice(0, 10);
+                const cityOrRegion = slug(get('city') || get('region'));
+                const country      = slug(get('country'));
+
+                const parts = ['ROSRA', 'Revenue-Action-Plan'];
+                if (cityOrRegion) parts.push(cityOrRegion);
+                if (country)      parts.push(country);
+                parts.push(dateStamp);
+                return parts.join('_') + '.' + (ext || 'pdf');
             }
 
             // ----- Centered intro popup + bottom-right progress toast -----
@@ -1432,12 +1457,12 @@
 }
 #rosraReportProgressToast .rosra-progress-bar {
     height: 100%; width: 0%;
-    background: linear-gradient(90deg, #2BB8E2 0%, #00B2E3 100%);
+    background: #00B2E3;
     transition: width 0.4s ease-out;
     border-radius: 3px;
 }
 #rosraReportProgressToast.is-done .rosra-progress-bar {
-    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    background: #10b981;
 }
 #rosraReportProgressToast .rosra-toast-sub {
     font-size: 0.78rem; color: #64748b;
@@ -1557,8 +1582,7 @@
             // progress card while the server renders.
             async function downloadReportPdf(html, onDone) {
                 console.log('[Report] downloadReportPdf() start, html length=', html.length);
-                const dateStamp = new Date().toISOString().slice(0, 10);
-                const filename = `rosra-action-plan-${dateStamp}.pdf`;
+                const filename = _brandedReportFilename('pdf');
                 const finish = () => { try { if (typeof onDone === 'function') onDone(); } catch (_) {} };
 
                 // Close the Bootstrap modal first so the overlay/toast is unobstructed.
@@ -1744,6 +1768,11 @@
                 const fontFaceCss = _buildFontFaceCss();
                 const styles = `
                     ${fontFaceCss}
+                    /* Drop the root font size from the browser default (16 px) to a
+                       conventional report scale of 14 px. Every rem in the report
+                       inherits this base, so the entire hierarchy scales down
+                       proportionally without per-rule tweaks. */
+                    html { font-size: 14px; }
                     body { font-family: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif; color: #243746; margin: 0; padding: 40px; max-width: 1040px; margin-left: auto; margin-right: auto; line-height: 1.55; font-feature-settings: 'tnum' 1, 'kern' 1, 'liga' 1; -webkit-font-smoothing: antialiased; }
                     h1, h2, h3, .qa-section-title, .qa-block-title, .cover-title, .cover-country .name { font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; }
                     h1 { color: #00689D; margin: 0 0 4px 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.01em; }
@@ -1759,20 +1788,13 @@
                         position: relative;
                         margin: -40px -40px 40px;
                         padding: 48px 60px 36px;
-                        background: linear-gradient(135deg, #00689D 0%, #00B2E3 55%, #2BB8E2 100%);
+                        background: #00B2E3;
                         color: #ffffff;
                         overflow: hidden;
                         page-break-after: always;
                         break-after: page;
                         page-break-inside: avoid;
                         break-inside: avoid;
-                    }
-                    .cover-page::before {
-                        content: ''; position: absolute; inset: 0;
-                        background:
-                            radial-gradient(ellipse at top right, rgba(253, 157, 36, 0.18), transparent 55%),
-                            radial-gradient(ellipse at bottom left, rgba(255, 255, 255, 0.10), transparent 50%);
-                        pointer-events: none;
                     }
                     .cover-skyline {
                         position: absolute; left: 0; right: 0; bottom: 130px;
@@ -1882,7 +1904,7 @@
                         position: relative;
                         margin: 0 -40px 36px;
                         padding: 28px 60px 36px;
-                        background: linear-gradient(180deg, #f8fbfd 0%, #ffffff 320px);
+                        background: #ffffff;
                         page-break-after: always;
                         break-after: page;
                     }
@@ -1945,9 +1967,9 @@
                     .r-section { margin: 10px 0; }
                     .r-section p, .r-section li { font-size: 0.92rem; }
                     .r-section ul { margin: 4px 0 8px 0; padding-left: 22px; }
-                    .tl-block { border-left: 4px solid #10b981; padding: 12px 14px; margin: 12px 0; background: #f0fdf4; border-radius: 0 8px 8px 0; page-break-inside: avoid; }
-                    .tl-block.medium { border-color: #f59e0b; background: #fffbeb; }
-                    .tl-block.long { border-color: #0369a1; background: #f0f7fc; }
+                    .tl-block { padding: 12px 14px; margin: 12px 0; background: #f0fdf4; border-radius: 8px; page-break-inside: avoid; }
+                    .tl-block.medium { background: #fffbeb; }
+                    .tl-block.long { background: #f0f7fc; }
                     .tl-title { font-weight: 700; color: #1a3a52; margin: 0 0 6px 0; font-size: 1rem; }
                     .tl-sub { font-size: 0.82rem; color: #55697a; margin-bottom: 8px; }
                     .tl-item { padding: 6px 0; border-top: 1px dashed #d9e2ea; font-size: 0.9rem; }
@@ -2047,7 +2069,7 @@
                     }
                     .rec-card-no {
                         flex: 0 0 36px; height: 36px;
-                        background: linear-gradient(135deg, #00689D 0%, #00B2E3 100%);
+                        background: #00689D;
                         color: #ffffff; font-weight: 700; font-size: 1rem;
                         border-radius: 50%; line-height: 36px; text-align: center;
                     }
@@ -2088,7 +2110,6 @@
                         font-size: 0.92rem; line-height: 1.55; color: #243746;
                         background: #f8fafc; border-radius: 8px;
                         padding: 12px 16px; margin: 10px 0 14px;
-                        border-left: 3px solid #00B2E3;
                     }
                     .rec-card .r-section { margin: 10px 0 6px; }
                     .rec-card .r-section h4 {
@@ -2321,7 +2342,7 @@
                         : 'Country not selected';
 
                     const lgpCard = `<div style="margin:0 0 18px;background:#ffffff;border-radius:12px;overflow:hidden;">
-    <div style="background:linear-gradient(90deg,#2BB8E2 0%,#00B2E3 100%);padding:20px 24px;color:#ffffff;display:flex;align-items:center;gap:18px;">
+    <div style="background:#00B2E3;padding:20px 24px;color:#ffffff;display:flex;align-items:center;gap:18px;">
         ${flagHtml}
         <div style="flex:1;min-width:0;font-family:'Playfair Display',Georgia,serif;font-size:1.65rem;font-weight:700;line-height:1.15;letter-spacing:-0.005em;">${hierarchyLine}</div>
     </div>
@@ -2972,7 +2993,6 @@
 <table class="report-table">
 <thead><tr>
     <th style="width:40px;text-align:center">#</th>
-    <th style="width:90px">ID</th>
     <th>Solution</th>
     <th>Stream</th>
     <th>Gap</th>
@@ -2980,11 +3000,9 @@
 </tr></thead><tbody>`;
                         selectedSolutions.forEach((s, i) => {
                             const fs = getCompleteSolution(s.solutionId);
-                            const fullId = buildFullIdLabel(s.solutionId, fs);
                             const title = (fs && fs.title) || s.title || '';
                             html += `<tr>
     <td style="text-align:center">${i + 1}</td>
-    <td><span class="r-card-id">${esc(fullId)}</span></td>
     <td><strong>${esc(title)}</strong></td>
     <td>${esc(s.streamName || '—')}</td>
     <td>${esc(s.gapType || '—')}</td>
