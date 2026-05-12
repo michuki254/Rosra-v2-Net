@@ -1346,9 +1346,12 @@
                 downloadViaServer(html, `rosra-action-plan-${dateStamp}.html`, 'text/html; charset=utf-8', 'utf8');
             }
 
-            // ----- Full-screen "Generating PDF report…" overlay -----
-            // Injects styles once + creates a modal-style overlay shown while the
-            // server renders. Returns the overlay element so the caller can remove it.
+            // ----- Centered intro popup + bottom-right progress toast -----
+            // UX: clicking "Generate Report" first shows a centered popup so the
+            // user is sure their click registered. After ~3 s the popup slides
+            // out and a small progress card slides into the bottom-right corner
+            // with an animated bar (fake-easing because the server doesn't stream
+            // progress; jumps to 100% when the PDF blob actually arrives).
             function _ensureReportOverlayStyles() {
                 if (document.getElementById('rosraReportLoadingStyles')) return;
                 const s = document.createElement('style');
@@ -1362,6 +1365,7 @@
     display: flex; align-items: center; justify-content: center;
     animation: rosra-fade-in 0.2s ease-out;
 }
+#rosraReportLoadingOverlay.is-hiding { animation: rosra-fade-out 0.3s ease-in forwards; }
 #rosraReportLoadingOverlay .rosra-loading-card {
     background: #ffffff; border-radius: 14px;
     padding: 32px 40px; text-align: center;
@@ -1383,8 +1387,68 @@
 #rosraReportLoadingOverlay .rosra-loading-sub {
     font-size: 0.88rem; color: #64748b; line-height: 1.5;
 }
+
+/* Bottom-right progress card — appears after the centred popup hides */
+#rosraReportProgressToast {
+    position: fixed; right: 24px; bottom: 24px;
+    width: 340px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 14px 18px 16px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+    z-index: 19000;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    animation: rosra-slide-up 0.3s ease-out;
+}
+#rosraReportProgressToast.is-hiding { animation: rosra-slide-down 0.3s ease-in forwards; }
+#rosraReportProgressToast .rosra-toast-head {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+}
+#rosraReportProgressToast .rosra-toast-spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid #e0f2fe;
+    border-top-color: #00B2E3;
+    border-radius: 50%;
+    animation: rosra-spin 0.8s linear infinite;
+    flex-shrink: 0;
+}
+#rosraReportProgressToast.is-done .rosra-toast-spinner {
+    border-color: #10b981; border-top-color: #10b981;
+    animation: none;
+}
+#rosraReportProgressToast .rosra-toast-title {
+    font-weight: 700; color: #0f2742; font-size: 0.92rem;
+    flex: 1; line-height: 1.2;
+}
+#rosraReportProgressToast .rosra-progress-pct {
+    font-size: 0.82rem; font-weight: 600; color: #00689D;
+    font-variant-numeric: tabular-nums; min-width: 36px; text-align: right;
+}
+#rosraReportProgressToast.is-done .rosra-progress-pct { color: #10b981; }
+#rosraReportProgressToast .rosra-progress-track {
+    background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden;
+}
+#rosraReportProgressToast .rosra-progress-bar {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #2BB8E2 0%, #00B2E3 100%);
+    transition: width 0.4s ease-out;
+    border-radius: 3px;
+}
+#rosraReportProgressToast.is-done .rosra-progress-bar {
+    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+}
+#rosraReportProgressToast .rosra-toast-sub {
+    font-size: 0.78rem; color: #64748b;
+    margin-top: 8px; line-height: 1.4;
+}
+
 @keyframes rosra-spin { to { transform: rotate(360deg); } }
-@keyframes rosra-fade-in { from { opacity: 0; } to { opacity: 1; } }`;
+@keyframes rosra-fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rosra-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes rosra-slide-up   { from { transform: translateY(28px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes rosra-slide-down { from { transform: translateY(0); opacity: 1; } to { transform: translateY(28px); opacity: 0; } }`;
                 document.head.appendChild(s);
             }
 
@@ -1407,25 +1471,116 @@
 
             function _hideReportOverlay() {
                 const el = document.getElementById('rosraReportLoadingOverlay');
-                if (el) el.remove();
+                if (!el) return;
+                el.classList.add('is-hiding');
+                setTimeout(() => { if (el.parentNode) el.remove(); }, 300);
+            }
+
+            // ---- Bottom-right progress toast ----
+            let _progressInterval = null;
+            let _progressPct = 0;
+
+            function _showReportProgressToast(sub) {
+                _ensureReportOverlayStyles();
+                const existing = document.getElementById('rosraReportProgressToast');
+                if (existing) existing.remove();
+                const el = document.createElement('div');
+                el.id = 'rosraReportProgressToast';
+                el.setAttribute('role', 'status');
+                el.setAttribute('aria-live', 'polite');
+                el.innerHTML = `
+                    <div class="rosra-toast-head">
+                        <span class="rosra-toast-spinner"></span>
+                        <span class="rosra-toast-title">Generating PDF report</span>
+                        <span class="rosra-progress-pct">0%</span>
+                    </div>
+                    <div class="rosra-progress-track"><div class="rosra-progress-bar"></div></div>
+                    <div class="rosra-toast-sub">${sub || 'Almost there…'}</div>`;
+                document.body.appendChild(el);
+                return el;
+            }
+
+            function _updateReportProgress(pct) {
+                _progressPct = Math.max(0, Math.min(100, pct));
+                const el = document.getElementById('rosraReportProgressToast');
+                if (!el) return;
+                const bar = el.querySelector('.rosra-progress-bar');
+                const label = el.querySelector('.rosra-progress-pct');
+                if (bar) bar.style.width = _progressPct + '%';
+                if (label) label.textContent = Math.round(_progressPct) + '%';
+            }
+
+            function _startReportProgressAnimation() {
+                _progressPct = 0;
+                _updateReportProgress(0);
+                // Fake-ease from 0 to 85% over ~30 s — slow start, faster middle,
+                // taper off so we don't pin at 100% before the PDF is actually ready.
+                _progressInterval = setInterval(() => {
+                    let inc = 0;
+                    if (_progressPct < 25)      inc = 1.6;
+                    else if (_progressPct < 55) inc = 0.9;
+                    else if (_progressPct < 75) inc = 0.45;
+                    else if (_progressPct < 85) inc = 0.18;
+                    else                        return;
+                    _updateReportProgress(_progressPct + inc);
+                }, 400);
+            }
+
+            function _completeReportProgress(title, sub) {
+                if (_progressInterval) { clearInterval(_progressInterval); _progressInterval = null; }
+                _updateReportProgress(100);
+                const el = document.getElementById('rosraReportProgressToast');
+                if (el) {
+                    el.classList.add('is-done');
+                    if (title) {
+                        const t = el.querySelector('.rosra-toast-title');
+                        if (t) t.textContent = title;
+                    }
+                    if (sub) {
+                        const s = el.querySelector('.rosra-toast-sub');
+                        if (s) s.textContent = sub;
+                    }
+                }
+            }
+
+            function _hideReportProgressToast() {
+                if (_progressInterval) { clearInterval(_progressInterval); _progressInterval = null; }
+                const el = document.getElementById('rosraReportProgressToast');
+                if (!el) return;
+                el.classList.add('is-hiding');
+                setTimeout(() => { if (el.parentNode) el.remove(); }, 300);
             }
 
             // POST the built HTML to the server (Playwright renders it to PDF),
-            // wait for the PDF blob, trigger download. While we wait we show a
-            // "Generating PDF report…" overlay so the user knows something is
-            // happening — Chromium cold-launch on App Service S1 takes a while.
+            // wait for the PDF blob, trigger download. UX: centered popup for
+            // ~3 s for click confirmation, then transitions to a bottom-right
+            // progress card while the server renders.
             async function downloadReportPdf(html, onDone) {
                 console.log('[Report] downloadReportPdf() start, html length=', html.length);
                 const dateStamp = new Date().toISOString().slice(0, 10);
                 const filename = `rosra-action-plan-${dateStamp}.pdf`;
                 const finish = () => { try { if (typeof onDone === 'function') onDone(); } catch (_) {} };
 
-                // Close the modal first so the overlay is the only thing visible.
+                // Close the Bootstrap modal first so the overlay/toast is unobstructed.
                 finish();
                 _showReportOverlay(
                     'Generating your PDF report…',
-                    'Building cover, charts and tables. This usually takes 5–10 seconds; the first report after a fresh deploy can take up to a minute.'
+                    'Building cover, charts and tables. Progress will continue in the bottom-right corner.'
                 );
+
+                let fetchDone = false;
+                let toastShown = false;
+
+                // After 3 s, hand off from the centered popup to the corner toast
+                // — but only if the fetch is still in flight. If the server was
+                // fast and we already finished, skip the toast entirely.
+                const handoffTimer = setTimeout(() => {
+                    if (fetchDone) return;
+                    _hideReportOverlay();
+                    _showReportProgressToast('Rendering the report on the server. This usually takes 5–10 seconds.');
+                    _startReportProgressAnimation();
+                    toastShown = true;
+                }, 3000);
 
                 const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
                 const fd = new FormData();
@@ -1447,6 +1602,15 @@
                         throw new Error(`Server returned ${res.status} ${res.statusText}${body ? ' — ' + body.slice(0, 200) : ''}`);
                     }
                     const blob = await res.blob();
+                    fetchDone = true;
+                    clearTimeout(handoffTimer);
+
+                    if (toastShown) {
+                        _completeReportProgress('Report ready', 'Your download is starting…');
+                    } else {
+                        _hideReportOverlay();
+                    }
+
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
@@ -1458,12 +1622,21 @@
                         try { URL.revokeObjectURL(url); } catch (_) {}
                         try { a.remove(); } catch (_) {}
                     }, 2000);
+
+                    // Let the user see the 100% / "Report ready" state briefly
+                    // before the toast disappears.
+                    if (toastShown) {
+                        setTimeout(_hideReportProgressToast, 1500);
+                    }
+
                     console.log('[Report] PDF download triggered', { bytes: blob.size });
                 } catch (err) {
+                    fetchDone = true;
+                    clearTimeout(handoffTimer);
                     console.error('[Report] PDF generation failed', err);
-                    alert('Failed to generate PDF report.\n\n' + (err && err.message ? err.message : err));
-                } finally {
                     _hideReportOverlay();
+                    _hideReportProgressToast();
+                    alert('Failed to generate PDF report.\n\n' + (err && err.message ? err.message : err));
                 }
             }
 
