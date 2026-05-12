@@ -2032,6 +2032,87 @@
                     }
                     .prio-status.status-exclude { color: #94a3b8; background: #f8fafc; }
 
+                    /* === Recommendations Summary (page 6) === */
+                    .rec-detail-header { margin: 28px 0 12px; }
+
+                    .rec-card {
+                        background: #ffffff; border-radius: 12px;
+                        padding: 18px 22px 14px; margin: 14px 0 18px;
+                        border: 1px solid #e5e7eb;
+                        page-break-inside: avoid; break-inside: avoid;
+                    }
+                    .rec-card-head {
+                        display: flex; align-items: flex-start; gap: 14px;
+                        margin-bottom: 8px;
+                    }
+                    .rec-card-no {
+                        flex: 0 0 36px; height: 36px;
+                        background: linear-gradient(135deg, #00689D 0%, #00B2E3 100%);
+                        color: #ffffff; font-weight: 700; font-size: 1rem;
+                        border-radius: 50%; line-height: 36px; text-align: center;
+                    }
+                    .rec-card-titleblock { flex: 1; min-width: 0; }
+                    .rec-card-id {
+                        display: inline-block;
+                        font-family: 'Roboto Mono', Consolas, monospace;
+                        background: #e0f2fe; color: #00689D;
+                        font-weight: 700; font-size: 0.72rem;
+                        padding: 2px 8px; border-radius: 5px;
+                        margin-bottom: 4px;
+                    }
+                    .rec-card-title {
+                        font-family: 'Playfair Display', Georgia, serif;
+                        font-size: 1.25rem; font-weight: 700; color: #0f2742;
+                        line-height: 1.25; letter-spacing: -0.005em;
+                    }
+                    .rec-card-meta {
+                        display: flex; flex-wrap: wrap; gap: 6px;
+                        margin: 6px 0 12px;
+                    }
+                    .rec-pill {
+                        display: inline-block; padding: 3px 10px;
+                        border-radius: 12px; font-size: 0.72rem;
+                        font-weight: 600; letter-spacing: 0.02em;
+                        background: #f1f5f9; color: #475569;
+                        border: 1px solid #e2e8f0;
+                    }
+                    .rec-pill-quick  { background: #e2fbe8; color: #1f8a3a; border-color: #bfe8c8; }
+                    .rec-pill-mid    { background: #fff4e0; color: #c26500; border-color: #f5d6a8; }
+                    .rec-pill-long   { background: #fde7e7; color: #b52626; border-color: #f5c1c1; }
+                    .rec-pill-diff   { background: #f1f5f9; color: #334155; }
+                    .rec-pill-pol    { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+                    .rec-pill-stream { background: #e0f2fe; color: #00689D; border-color: #cce1ee; }
+                    .rec-pill-gap    { background: #f0f9ff; color: #0f2742; border-color: #cce1ee; }
+
+                    .rec-card-overview {
+                        font-size: 0.92rem; line-height: 1.55; color: #243746;
+                        background: #f8fafc; border-radius: 8px;
+                        padding: 12px 16px; margin: 10px 0 14px;
+                        border-left: 3px solid #00B2E3;
+                    }
+                    .rec-card .r-section { margin: 10px 0 6px; }
+                    .rec-card .r-section h4 {
+                        font-family: 'Playfair Display', Georgia, serif;
+                        font-size: 0.95rem; font-weight: 700; color: #0f2742;
+                        margin: 8px 0 4px;
+                    }
+                    .rec-card .r-section h5 {
+                        font-size: 0.78rem; font-weight: 700; color: #00689D;
+                        text-transform: uppercase; letter-spacing: 0.04em;
+                        margin: 10px 0 4px;
+                    }
+                    .rec-card .r-section ul, .rec-card .r-section ol {
+                        margin: 4px 0 4px 18px; padding-left: 4px;
+                    }
+                    .rec-card .r-section li {
+                        font-size: 0.88rem; color: #243746;
+                        margin: 2px 0; line-height: 1.5;
+                    }
+                    .rec-card .r-section p {
+                        font-size: 0.88rem; color: #243746;
+                        line-height: 1.55; margin: 4px 0;
+                    }
+
                     /* Gap Prioritization (page 5) — priority cell uses a small
                        coloured circle (P1 green / P2 grey / P3 red) plus the
                        gap-type name and the amount in cyan beneath. */
@@ -2857,46 +2938,110 @@
                     }
                 }
 
-                // ===== Solution Cards =====
+                // ===== Recommendations Summary =====
+                // Section page (page 6): editorial header + at-a-glance KPI + a
+                // summary table listing every selected solution + a compact
+                // polished card per solution with the key reform info. We
+                // deliberately drop the encyclopedic "Capacity, Systems &
+                // Partnerships" / "Legal & Institutional" deep dumps — those
+                // remain on the website cards.
                 if (options.includeSelectedSolutions) {
-                    html += `<h2>Solution Cards</h2>`;
+                    html += `<div class="qa-page">
+    <div class="qa-section-label">SECTION 05 &middot; RECOMMENDATIONS</div>
+    <h1 class="qa-section-title">Recommended Solutions</h1>`;
+
                     if (!selectedSolutions.length) {
-                        html += `<p><em>No solutions selected.</em></p>`;
+                        html += `<p class="qa-section-sub">No solutions selected.</p></div>`;
                     } else {
-                        selectedSolutions.forEach(solution => {
+                        const quickWinsArr  = selectedSolutions.filter(s => s.timeline === '<1 year');
+                        const mediumTermArr = selectedSolutions.filter(s => s.timeline === '1-3 years');
+                        const longTermArr   = selectedSolutions.filter(s => s.timeline === '3+ years');
+                        const distinctStreams = new Set(selectedSolutions.map(s => s.streamName || '').filter(Boolean));
+
+                        html += `<p class="qa-section-sub">${selectedSolutions.length} solution${selectedSolutions.length !== 1 ? 's' : ''} selected across ${distinctStreams.size} stream${distinctStreams.size !== 1 ? 's' : ''}. Each card below outlines what the option does, when it's a strong fit, and the implementation path your reform team should follow.</p>`;
+
+                        // --- At-a-glance explainer ---
+                        html += `<div class="prio-explainer">
+    <div class="prio-explainer-title">At a glance</div>
+    <p>The recommended action plan combines <strong>${quickWinsArr.length}</strong> quick win${quickWinsArr.length !== 1 ? 's' : ''} (under 1 year), <strong>${mediumTermArr.length}</strong> medium-term reform${mediumTermArr.length !== 1 ? 's' : ''} (1&ndash;3 years), and <strong>${longTermArr.length}</strong> long-term programme${longTermArr.length !== 1 ? 's' : ''} (3+ years).</p>
+    <p><strong>How to read each card:</strong> the cyan ID code maps back to the website catalogue. The metadata strip shows the stream, the gap type the solution addresses, the expected delivery timeline, and any political-feasibility flags. The card body is the editorial summary &mdash; the full implementation details remain available on the website.</p>
+</div>`;
+
+                        // --- Summary table (one row per selected solution) ---
+                        html += `<h3 class="qa-block-title">Selected solutions at a glance</h3>
+<table class="report-table">
+<thead><tr>
+    <th style="width:40px;text-align:center">#</th>
+    <th style="width:90px">ID</th>
+    <th>Solution</th>
+    <th>Stream</th>
+    <th>Gap</th>
+    <th style="width:90px">Timeline</th>
+</tr></thead><tbody>`;
+                        selectedSolutions.forEach((s, i) => {
+                            const fs = getCompleteSolution(s.solutionId);
+                            const fullId = buildFullIdLabel(s.solutionId, fs);
+                            const title = (fs && fs.title) || s.title || '';
+                            html += `<tr>
+    <td style="text-align:center">${i + 1}</td>
+    <td><span class="r-card-id">${esc(fullId)}</span></td>
+    <td><strong>${esc(title)}</strong></td>
+    <td>${esc(s.streamName || '—')}</td>
+    <td>${esc(s.gapType || '—')}</td>
+    <td>${esc(s.timeline || '—')}</td>
+</tr>`;
+                        });
+                        html += `</tbody></table>`;
+
+                        html += `</div>`; // close .qa-page for the section header / table
+
+                        // --- Detailed cards (compact editorial format) ---
+                        // Renders after the summary page break. Each card uses
+                        // page-break-inside: avoid so it won't split.
+                        const timelinePillClass = (tl) => {
+                            if (tl === '<1 year')   return 'rec-pill-quick';
+                            if (tl === '1-3 years') return 'rec-pill-mid';
+                            if (tl === '3+ years')  return 'rec-pill-long';
+                            return '';
+                        };
+
+                        html += `<h2 class="qa-block-title rec-detail-header">Solution detail cards</h2>`;
+                        selectedSolutions.forEach((solution, i) => {
                             const fs = getCompleteSolution(solution.solutionId);
                             if (!fs) return;
                             const fullId = buildFullIdLabel(solution.solutionId, fs);
                             const ov = fs.overview || {};
                             const fd = fs.fullDetails || {};
                             const overviewText = ov.whatThisOptionDoes || ov.whatThisSolves || fd.whyThisMatters || '';
-                            const diff = fs.deliveryDifficulty ? `<span class="badge">Difficulty: ${esc(fs.deliveryDifficulty)}</span>` : '';
-                            const pol = fs.politicalSensitivity ? `<span class="badge">Political: ${esc(fs.politicalSensitivity)}</span>` : '';
-                            const time = solution.timeline ? `<span class="badge">Timeline: ${esc(solution.timeline)}</span>` : '';
 
-                            html += `<div class="r-card">
-    <div class="r-card-head">
-        <div class="r-card-id">${esc(fullId)}</div>
-        <div class="r-card-title">${esc(fs.title || '')}</div>
-        <div class="r-meta">${time}${diff}${pol}<span class="badge">${esc(solution.streamName || fs.stream || '')}</span><span class="badge">${esc(solution.gapType || fs.gap || '')}</span></div>
-    </div>`;
-                            if (overviewText) html += `<div class="r-section"><h4>Overview</h4><p>${esc(overviewText)}</p></div>`;
-                            html += renderReportSection('Why This Matters', fd.whyThisMatters);
-                            html += renderReportSection('When This Is A Strong Fit', fd.whenStrongFit || ov.mostUsefulWhen);
-                            html += renderReportSection('What To Line Up First', fd.whatToLineUpFirst);
-                            html += renderReportSection('Design Choices To Settle Early', fd.designChoices);
-                            html += renderPracticalPath(fd.practicalPath);
-                            html += renderReportSection('Legal & Institutional Points', fd.legalInstitutional || fs.legalEssentials);
-                            html += renderReportSection('Capacity, Systems & Partnerships', fd.capacitySystemsPartnerships || fs.administrativeEssentials);
-                            html += renderReportSection('Main Risks & Safeguards', fd.risksAndSafeguards || fs.whenNotApplicable);
-                            html += renderReportSection('What To Monitor', fd.whatToMonitor);
-                            html += renderReportSection('Connections To Other Cards', fd.connectionsToOtherCards);
-                            html += renderReportSection('Questions To Settle Before Launch', fd.questionsBeforeLaunch);
-                            // Fallback to any legacy fields
-                            if (!fd.practicalPath && fs.implementationMilestones?.length) {
-                                html += renderReportSection('Implementation Milestones', fs.implementationMilestones);
+                            const meta = [];
+                            if (solution.timeline)        meta.push(`<span class="rec-pill ${timelinePillClass(solution.timeline)}">${esc(solution.timeline)}</span>`);
+                            if (fs.deliveryDifficulty)    meta.push(`<span class="rec-pill rec-pill-diff">${esc(fs.deliveryDifficulty)} difficulty</span>`);
+                            if (fs.politicalSensitivity)  meta.push(`<span class="rec-pill rec-pill-pol">${esc(fs.politicalSensitivity)} political</span>`);
+                            if (solution.streamName || fs.stream) meta.push(`<span class="rec-pill rec-pill-stream">${esc(solution.streamName || fs.stream)}</span>`);
+                            if (solution.gapType   || fs.gap)    meta.push(`<span class="rec-pill rec-pill-gap">${esc(solution.gapType || fs.gap)}</span>`);
+
+                            html += `<div class="rec-card">
+    <div class="rec-card-head">
+        <div class="rec-card-no">${i + 1}</div>
+        <div class="rec-card-titleblock">
+            <div class="rec-card-id">${esc(fullId)}</div>
+            <div class="rec-card-title">${esc(fs.title || '')}</div>
+        </div>
+    </div>
+    <div class="rec-card-meta">${meta.join('')}</div>`;
+
+                            if (overviewText) {
+                                html += `<div class="rec-card-overview">${esc(overviewText)}</div>`;
                             }
-                            html += `</div>`;
+
+                            html += renderReportSection('Why this matters', fd.whyThisMatters);
+                            html += renderReportSection('When this is a strong fit', fd.whenStrongFit || ov.mostUsefulWhen);
+                            html += renderPracticalPath(fd.practicalPath);
+                            html += renderReportSection('Main risks & safeguards', fd.risksAndSafeguards || fs.whenNotApplicable);
+                            html += renderReportSection('What to monitor', fd.whatToMonitor);
+
+                            html += `</div>`; // close .rec-card
                         });
                     }
                 }
