@@ -93,7 +93,10 @@ builder.Services.AddScoped<RosraApp.Services.ExcelExportService>();
 // Register assessment review services
 builder.Services.AddScoped<RosraApp.Services.SnapshotService>();
 builder.Services.AddScoped<RosraApp.Services.ArtifactService>();
-builder.Services.AddScoped<RosraApp.Services.HtmlToPdfService>();
+// HtmlToPdfService is registered as a singleton on purpose — it owns a
+// long-lived Playwright IBrowser to avoid relaunching Chromium per request
+// (saves ~30+ seconds per call on Azure App Service). See the class docstring.
+builder.Services.AddSingleton<RosraApp.Services.HtmlToPdfService>();
 builder.Services.AddScoped<RosraApp.Services.IEmailService, RosraApp.Services.EmailService>();
 builder.Services.AddSingleton<RosraApp.Services.DataRetentionService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<RosraApp.Services.DataRetentionService>());

@@ -1,16 +1,83 @@
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 
 namespace RosraApp.Services
 {
-    public class HtmlToPdfService
+    /// <summary>
+    /// Renders HTML / Razor pages to PDF using headless Chromium (Playwright).
+    ///
+    /// This service holds a **singleton** IPlaywright + IBrowser instance for
+    /// the lifetime of the process. Each PDF render spins up a fresh
+    /// BrowserContext (cheap, ~200 ms) instead of relaunching Chromium
+    /// (expensive, ~30+ s on Azure App Service S1). The singleton is registered
+    /// in Program.cs.
+    ///
+    /// Thread-safety: the browser launch is guarded by a SemaphoreSlim; multiple
+    /// concurrent first requests will all wait for the same launch to finish.
+    /// IBrowser itself is documented as safe for concurrent use across contexts.
+    /// </summary>
+    public class HtmlToPdfService : IAsyncDisposable
     {
         private readonly IServer _server;
+        private readonly ILogger<HtmlToPdfService> _logger;
+        private readonly SemaphoreSlim _initLock = new(1, 1);
+        private IPlaywright? _playwright;
+        private IBrowser? _browser;
 
-        public HtmlToPdfService(IServer server)
+        public HtmlToPdfService(IServer server, ILogger<HtmlToPdfService> logger)
         {
             _server = server;
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Returns the shared IBrowser, lazily launching Chromium on first use
+        /// and re-launching if the previous browser has crashed/disconnected.
+        /// </summary>
+        private async Task<IBrowser> GetBrowserAsync()
+        {
+            if (_browser is { IsConnected: true })
+                return _browser;
+
+            await _initLock.WaitAsync();
+            try
+            {
+                if (_browser is { IsConnected: true })
+                    return _browser;
+
+                // Previous browser died — clean it up before relaunching.
+                if (_browser != null)
+                {
+                    try { await _browser.CloseAsync(); }
+                    catch (Exception ex) { _logger.LogWarning(ex, "Error closing dead browser"); }
+                    _browser = null;
+                }
+
+                _playwright ??= await Playwright.CreateAsync();
+
+                _logger.LogInformation("Launching Playwright Chromium (singleton)");
+                _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+                {
+                    Headless = true,
+                    // Standard headless-Chrome flags for low-memory App Service
+                    // containers — disables /dev/shm usage and several
+                    // GPU/sandbox features that aren't available there.
+                    Args = new[]
+                    {
+                        "--disable-dev-shm-usage",
+                        "--disable-gpu",
+                        "--no-sandbox"
+                    }
+                });
+                _logger.LogInformation("Playwright Chromium launched and ready.");
+                return _browser;
+            }
+            finally
+            {
+                _initLock.Release();
+            }
         }
 
         /// <summary>
@@ -54,47 +121,45 @@ namespace RosraApp.Services
                 });
             }
 
-            using var playwright = await Playwright.CreateAsync();
-            await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-            {
-                Headless = true
-            });
-
+            var browser = await GetBrowserAsync();
             var context = await browser.NewContextAsync();
-
-            // Add session and auth cookies so the page can access session data
-            if (cookies.Count > 0)
+            try
             {
-                await context.AddCookiesAsync(cookies);
-            }
-
-            var page = await context.NewPageAsync();
-
-            // Navigate to the actual page URL — all CSS, images, fonts, charts load normally
-            await page.GotoAsync(fullUrl, new PageGotoOptions
-            {
-                WaitUntil = WaitUntilState.NetworkIdle,
-                Timeout = 30000
-            });
-
-            // Wait for JS-rendered charts and images to finish
-            await page.WaitForTimeoutAsync(3000);
-
-            var pdfBytes = await page.PdfAsync(new PagePdfOptions
-            {
-                Format = "A4",
-                PrintBackground = true,
-                Margin = new Margin
+                // Add session and auth cookies so the page can access session data
+                if (cookies.Count > 0)
                 {
-                    Top = "10mm",
-                    Bottom = "10mm",
-                    Left = "10mm",
-                    Right = "10mm"
+                    await context.AddCookiesAsync(cookies);
                 }
-            });
 
-            await browser.CloseAsync();
-            return pdfBytes;
+                var page = await context.NewPageAsync();
+
+                // Navigate to the actual page URL — all CSS, images, fonts, charts load normally
+                await page.GotoAsync(fullUrl, new PageGotoOptions
+                {
+                    WaitUntil = WaitUntilState.NetworkIdle,
+                    Timeout = 30000
+                });
+
+                // Wait for JS-rendered charts and images to finish
+                await page.WaitForTimeoutAsync(3000);
+
+                return await page.PdfAsync(new PagePdfOptions
+                {
+                    Format = "A4",
+                    PrintBackground = true,
+                    Margin = new Margin
+                    {
+                        Top = "10mm",
+                        Bottom = "10mm",
+                        Left = "10mm",
+                        Right = "10mm"
+                    }
+                });
+            }
+            finally
+            {
+                await context.CloseAsync();
+            }
         }
 
         /// <summary>
@@ -110,51 +175,62 @@ namespace RosraApp.Services
         /// </summary>
         public async Task<byte[]> RenderHtmlToPdf(string html)
         {
-            using var playwright = await Playwright.CreateAsync();
-            await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-            {
-                Headless = true
-            });
-
+            var browser = await GetBrowserAsync();
             var context = await browser.NewContextAsync();
-
-            // Block all outbound network requests. Inline data: URIs go through
-            // the renderer without triggering Route, so they still work.
-            await context.RouteAsync("**/*", route =>
+            try
             {
-                var url = route.Request.Url ?? "";
-                if (url.StartsWith("data:", StringComparison.OrdinalIgnoreCase) ||
-                    url.StartsWith("about:", StringComparison.OrdinalIgnoreCase))
+                // Block all outbound network requests. Inline data: URIs go through
+                // the renderer without triggering Route, so they still work.
+                await context.RouteAsync("**/*", route =>
                 {
-                    return route.ContinueAsync();
-                }
-                return route.AbortAsync();
-            });
+                    var url = route.Request.Url ?? "";
+                    if (url.StartsWith("data:", StringComparison.OrdinalIgnoreCase) ||
+                        url.StartsWith("about:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return route.ContinueAsync();
+                    }
+                    return route.AbortAsync();
+                });
 
-            var page = await context.NewPageAsync();
+                var page = await context.NewPageAsync();
 
-            // With network blocked we won't reach NetworkIdle — switch to DOMContentLoaded.
-            await page.SetContentAsync(html, new PageSetContentOptions
-            {
-                WaitUntil = WaitUntilState.DOMContentLoaded,
-                Timeout = 30000
-            });
-
-            var pdfBytes = await page.PdfAsync(new PagePdfOptions
-            {
-                Format = "A4",
-                PrintBackground = true,
-                Margin = new Margin
+                // With network blocked we won't reach NetworkIdle — switch to DOMContentLoaded.
+                await page.SetContentAsync(html, new PageSetContentOptions
                 {
-                    Top = "10mm",
-                    Bottom = "10mm",
-                    Left = "10mm",
-                    Right = "10mm"
-                }
-            });
+                    WaitUntil = WaitUntilState.DOMContentLoaded,
+                    Timeout = 30000
+                });
 
-            await browser.CloseAsync();
-            return pdfBytes;
+                return await page.PdfAsync(new PagePdfOptions
+                {
+                    Format = "A4",
+                    PrintBackground = true,
+                    Margin = new Margin
+                    {
+                        Top = "10mm",
+                        Bottom = "10mm",
+                        Left = "10mm",
+                        Right = "10mm"
+                    }
+                });
+            }
+            finally
+            {
+                await context.CloseAsync();
+            }
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_browser != null)
+            {
+                try { await _browser.CloseAsync(); }
+                catch (Exception ex) { _logger.LogWarning(ex, "Error closing browser on dispose"); }
+                _browser = null;
+            }
+            _playwright?.Dispose();
+            _playwright = null;
+            _initLock.Dispose();
         }
 
         private static string NormalizeLoopback(string url)
