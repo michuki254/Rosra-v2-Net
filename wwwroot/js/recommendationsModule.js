@@ -1346,57 +1346,125 @@
                 downloadViaServer(html, `rosra-action-plan-${dateStamp}.html`, 'text/html; charset=utf-8', 'utf8');
             }
 
-            // Post the built HTML to the server, which renders it to PDF via headless
-            // Chromium (Playwright) and returns the file as a normal attachment download.
-            // This replaces the earlier client-side html2pdf path, which silently produced
-            // blank captures in some browsers.
-            function downloadReportPdf(html, onDone) {
+            // ----- Full-screen "Generating PDF report…" overlay -----
+            // Injects styles once + creates a modal-style overlay shown while the
+            // server renders. Returns the overlay element so the caller can remove it.
+            function _ensureReportOverlayStyles() {
+                if (document.getElementById('rosraReportLoadingStyles')) return;
+                const s = document.createElement('style');
+                s.id = 'rosraReportLoadingStyles';
+                s.textContent = `
+#rosraReportLoadingOverlay {
+    position: fixed; inset: 0;
+    background: rgba(15, 39, 66, 0.55);
+    backdrop-filter: blur(2px);
+    z-index: 20000;
+    display: flex; align-items: center; justify-content: center;
+    animation: rosra-fade-in 0.2s ease-out;
+}
+#rosraReportLoadingOverlay .rosra-loading-card {
+    background: #ffffff; border-radius: 14px;
+    padding: 32px 40px; text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    max-width: 440px;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+#rosraReportLoadingOverlay .rosra-loading-spinner {
+    width: 48px; height: 48px; margin: 0 auto 18px;
+    border: 4px solid #e0f2fe;
+    border-top-color: #00B2E3;
+    border-radius: 50%;
+    animation: rosra-spin 0.8s linear infinite;
+}
+#rosraReportLoadingOverlay .rosra-loading-title {
+    font-size: 1.15rem; font-weight: 700; color: #0f2742;
+    margin-bottom: 6px;
+}
+#rosraReportLoadingOverlay .rosra-loading-sub {
+    font-size: 0.88rem; color: #64748b; line-height: 1.5;
+}
+@keyframes rosra-spin { to { transform: rotate(360deg); } }
+@keyframes rosra-fade-in { from { opacity: 0; } to { opacity: 1; } }`;
+                document.head.appendChild(s);
+            }
+
+            function _showReportOverlay(title, sub) {
+                _ensureReportOverlayStyles();
+                const existing = document.getElementById('rosraReportLoadingOverlay');
+                if (existing) existing.remove();
+                const el = document.createElement('div');
+                el.id = 'rosraReportLoadingOverlay';
+                el.setAttribute('role', 'alert');
+                el.setAttribute('aria-live', 'assertive');
+                el.innerHTML = `<div class="rosra-loading-card">
+                    <div class="rosra-loading-spinner"></div>
+                    <div class="rosra-loading-title">${title}</div>
+                    <div class="rosra-loading-sub">${sub}</div>
+                </div>`;
+                document.body.appendChild(el);
+                return el;
+            }
+
+            function _hideReportOverlay() {
+                const el = document.getElementById('rosraReportLoadingOverlay');
+                if (el) el.remove();
+            }
+
+            // POST the built HTML to the server (Playwright renders it to PDF),
+            // wait for the PDF blob, trigger download. While we wait we show a
+            // "Generating PDF report…" overlay so the user knows something is
+            // happening — Chromium cold-launch on App Service S1 takes a while.
+            async function downloadReportPdf(html, onDone) {
                 console.log('[Report] downloadReportPdf() start, html length=', html.length);
                 const dateStamp = new Date().toISOString().slice(0, 10);
                 const filename = `rosra-action-plan-${dateStamp}.pdf`;
                 const finish = () => { try { if (typeof onDone === 'function') onDone(); } catch (_) {} };
 
-                const FRAME_ID = 'rosraServerDownloadFrame';
-                let iframe = document.getElementById(FRAME_ID);
-                if (!iframe) {
-                    iframe = document.createElement('iframe');
-                    iframe.id = FRAME_ID;
-                    iframe.name = FRAME_ID;
-                    iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;left:-9999px;';
-                    document.body.appendChild(iframe);
-                }
+                // Close the modal first so the overlay is the only thing visible.
+                finish();
+                _showReportOverlay(
+                    'Generating your PDF report…',
+                    'Building cover, charts and tables. This usually takes 5–10 seconds; the first report after a fresh deploy can take up to a minute.'
+                );
 
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '/Rosra/RenderReportPdf';
-                form.target = FRAME_ID;
-                form.enctype = 'application/x-www-form-urlencoded';
-                form.acceptCharset = 'UTF-8';
-                form.style.display = 'none';
-
-                const fields = { html: html, filename: filename };
-                // RenderReportPdf is now [Authorize] + [ValidateAntiForgeryToken] (audit F-9),
-                // so include the per-page antiforgery token rendered by the layout.
                 const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+                const fd = new FormData();
                 if (tokenInput && tokenInput.value) {
-                    fields['__RequestVerificationToken'] = tokenInput.value;
+                    fd.append('__RequestVerificationToken', tokenInput.value);
                 }
-                for (const k in fields) {
-                    const i = document.createElement('input');
-                    i.type = 'hidden';
-                    i.name = k;
-                    i.value = fields[k];
-                    form.appendChild(i);
-                }
+                fd.append('html', html);
+                fd.append('filename', filename);
 
-                document.body.appendChild(form);
                 console.log('[Report] posting HTML to /Rosra/RenderReportPdf for Playwright render');
-                form.submit();
-                setTimeout(() => { try { form.remove(); } catch (_) {} }, 30000);
-
-                // Close the modal once the request is committed; the attachment download
-                // proceeds in the hidden iframe without interrupting the page.
-                setTimeout(finish, 400);
+                try {
+                    const res = await fetch('/Rosra/RenderReportPdf', {
+                        method: 'POST',
+                        body: fd,
+                        credentials: 'same-origin'
+                    });
+                    if (!res.ok) {
+                        const body = await res.text().catch(() => '');
+                        throw new Error(`Server returned ${res.status} ${res.statusText}${body ? ' — ' + body.slice(0, 200) : ''}`);
+                    }
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        try { URL.revokeObjectURL(url); } catch (_) {}
+                        try { a.remove(); } catch (_) {}
+                    }, 2000);
+                    console.log('[Report] PDF download triggered', { bytes: blob.size });
+                } catch (err) {
+                    console.error('[Report] PDF generation failed', err);
+                    alert('Failed to generate PDF report.\n\n' + (err && err.message ? err.message : err));
+                } finally {
+                    _hideReportOverlay();
+                }
             }
 
             // Print via a hidden iframe (no popup window, not blocked)
