@@ -105,3 +105,45 @@ h1, h2, h3, h4, h5, h6 {
 .rounded-custom {
   border-radius: 8px !important;
 }
+
+/* ---- Gap-analysis matrix interactions ----
+   Every tile lifts slightly + brightens on hover so the user can probe
+   any cell tactilely. The Actual Revenue tile gets a stronger treatment
+   (white border, taller lift, deeper cyan shadow) so it stays the
+   visual anchor whether the cursor is on it or on a sibling. */
+.matrix-cell {
+  cursor: pointer;
+  transition: transform 0.22s ease-out,
+              box-shadow 0.22s ease-out,
+              filter 0.22s ease-out;
+}
+.matrix-cell:hover {
+  z-index: 1;
+  transform: translateY(-1px) scale(1.006);
+  filter: brightness(1.06);
+  box-shadow: 0 6px 16px rgba(15, 39, 66, 0.18);
+}
+
+/* Property Tax (#matrixActualRevenue), Business License
+   (#blMatrixActualRevenue) and Generic Stream (#<id>MatrixActualRevenue)
+   all end in "atrixActualRevenue" — the attribute selector below catches
+   all three without needing to touch each view. */
+.matrix-cell[id$="atrixActualRevenue"] {
+  position: relative;
+  z-index: 2;
+  border: 2px solid #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 4px 14px rgba(0, 105, 157, 0.28),
+              0 1px 3px rgba(0, 105, 157, 0.18);
+  cursor: pointer;
+  transition: transform 0.22s ease-out,
+              box-shadow 0.22s ease-out,
+              border-color 0.22s ease-out;
+}
+.matrix-cell[id$="atrixActualRevenue"]:hover {
+  z-index: 3;
+  transform: translateY(-2px) scale(1.012);
+  border-color: #2BB8E2;
+  box-shadow: 0 10px 24px rgba(0, 105, 157, 0.34),
+              0 3px 6px rgba(0, 105, 157, 0.22);
+}
