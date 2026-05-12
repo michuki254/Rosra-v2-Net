@@ -48,6 +48,7 @@
   <data name="View_SolutionCards" xml:space="preserve"><value>Fichas de soluciones</value></data>
   <data name="View_TimelineView" xml:space="preserve"><value>Vista cronológica</value></data>
   <data name="View_ProgressTracker" xml:space="preserve"><value>Seguimiento del progreso</value></data>
+  <data name="View_ExpandHint" xml:space="preserve"><value>Haga clic en una ficha para expandirla y ver todos los detalles de la solución.</value></data>
 
   <!-- Empty State -->
   <data name="Empty_Title" xml:space="preserve"><value>No se han seleccionado soluciones</value></data>
