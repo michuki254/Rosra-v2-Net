@@ -113,31 +113,6 @@ header.scrolled .main-navbar {
     opacity: 0.95;
 }
 
-/* Right logo (Norad) — keep small/inline, override the new square-panel styling */
-.logo-container.logo-right {
-    width: auto;
-    height: auto;
-    background: transparent;
-    border-radius: 0;
-    box-shadow: none;
-    padding: 0;
-    margin: 0 0 0 1.5rem;
-    position: static;
-    display: flex;
-    align-items: center;
-}
-
-.logo-container.logo-right a {
-    width: auto;
-    height: auto;
-}
-
-.logo-container.logo-right img {
-    height: 40px;
-    max-height: none;
-    width: auto;
-}
-
 header.scrolled .logo-container {
     width: 92px;
     height: 92px;

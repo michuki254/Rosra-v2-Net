@@ -2210,8 +2210,8 @@
 
                 // ===== Branded cover page =====
                 // First page of the report: full-bleed cyan gradient with UN-Habitat
-                // branding, big report title, country/region card (with flag), and a
-                // Norad supporter logo in the footer. Renders before everything else.
+                // branding, big report title, country/region card (with flag),
+                // and an SDG 11 alignment chip. Renders before everything else.
                 (function () {
                     const covCountrySel = document.getElementById('country');
                     const covOpt = covCountrySel ? covCountrySel.options[covCountrySel.selectedIndex] : null;
