@@ -139,6 +139,47 @@ else
     app.UseHsts();
 }
 
+// ---------------------------------------------------------------------------
+// Ensure Playwright Chromium is installed for HtmlToPdfService.
+//
+// The Microsoft.Playwright NuGet package only ships the .NET driver; the
+// actual Chromium binary (~150 MB) must be fetched separately. On a fresh
+// Azure App Service the binary doesn't exist, so RenderReportPdf throws
+// "Executable doesn't exist" and we surface a generic 500 to the client.
+//
+// We pin the install location to a path we control (App Service's persistent
+// %HOME% on Azure, otherwise ContentRootPath) so the binary survives between
+// requests. The install runs on a background task so cold-start isn't
+// blocked; if a user clicks Generate Report before the first install
+// finishes they'll get a 500 once, then it works on retry.
+// ---------------------------------------------------------------------------
+var browsersDir = Environment.GetEnvironmentVariable("HOME") is { Length: > 0 } homeDir
+    ? Path.Combine(homeDir, ".playwright")
+    : Path.Combine(app.Environment.ContentRootPath, ".playwright");
+Environment.SetEnvironmentVariable("PLAYWRIGHT_BROWSERS_PATH", browsersDir);
+
+_ = Task.Run(() =>
+{
+    var startupLogger = app.Services.GetRequiredService<ILogger<Program>>();
+    try
+    {
+        startupLogger.LogInformation("Installing Playwright Chromium to {Dir}", browsersDir);
+        var exitCode = Microsoft.Playwright.Program.Main(new[] { "install", "chromium" });
+        if (exitCode == 0)
+        {
+            startupLogger.LogInformation("Playwright Chromium install complete.");
+        }
+        else
+        {
+            startupLogger.LogWarning("Playwright Chromium install exited with code {Code}", exitCode);
+        }
+    }
+    catch (Exception ex)
+    {
+        startupLogger.LogError(ex, "Failed to install Playwright Chromium — PDF report generation will fail until this is resolved.");
+    }
+});
+
 // Initialize the database with roles and admin user
 using (var scope = app.Services.CreateScope())
 {
