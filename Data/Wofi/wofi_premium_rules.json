@@ -1,0 +1,37 @@
+[
+  {
+    "profile_name": "Smaller or less active local economy",
+    "when_to_use": "Mostly rural, residential, remote, conflict-affected, or with limited formal jobs, firms, markets, tourism, services, or taxable commercial activity.",
+    "factor": 0.65,
+    "observed_band": "< 0.75",
+    "calibration_note": "Rounded from local-admin GDP/pop calibration, with conservative cap for the hub category."
+  },
+  {
+    "profile_name": "Typical local government",
+    "when_to_use": "Use when the area does not clearly stand out as richer or poorer than the country average. This is the safest default.",
+    "factor": 0.95,
+    "observed_band": "0.75 - 1.1",
+    "calibration_note": "Rounded from local-admin GDP/pop calibration, with conservative cap for the hub category."
+  },
+  {
+    "profile_name": "Regional service centre",
+    "when_to_use": "Use for a county/municipal hub, regional market town, administrative centre, university/health centre, logistics node, or diversified secondary city.",
+    "factor": 1.15,
+    "observed_band": "1.1 - 1.35",
+    "calibration_note": "Rounded from local-admin GDP/pop calibration, with conservative cap for the hub category."
+  },
+  {
+    "profile_name": "Large city with strong local economy",
+    "when_to_use": "Use for a large urban jurisdiction with many firms, formal jobs, services, real estate, industry, tourism, or major markets, but not the country’s dominant hub.",
+    "factor": 1.45,
+    "observed_band": "1.35 - 1.8",
+    "calibration_note": "Rounded from local-admin GDP/pop calibration, with conservative cap for the hub category."
+  },
+  {
+    "profile_name": "Main national hub, capital, or port",
+    "when_to_use": "Use only when the jurisdiction concentrates a very large share of national firms, jobs, trade, finance, government, logistics, port activity, tourism, or strategic assets.",
+    "factor": 2,
+    "observed_band": ">= 1.8",
+    "calibration_note": "Rounded from local-admin GDP/pop calibration, with conservative cap for the hub category."
+  }
+]

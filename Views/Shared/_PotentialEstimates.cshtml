@@ -1,8 +1,10 @@
 @model RosraApp.Models.ViewModels.RosraFormViewModel
 @inject IHtmlLocalizer<RosraApp.RosraResources> RosraLocalizer
+@inject RosraApp.Services.WofiPotentialEstimator WofiEstimator
 @{
     bool isViewMode = ViewData["ViewMode"] != null && (bool)ViewData["ViewMode"];
     int currentYear = DateTime.Now.Year;
+    var economicProfiles = WofiEstimator.EconomicProfiles;
 }
 
 <style>
@@ -97,6 +99,8 @@
        cfg-field renders at identical width regardless of how many sit in a row. */
     .cfg-row-3,
     .cfg-row-4 { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+    /* Fixed 5-column layout used by the compacted 2-row LG Profile card. */
+    .cfg-row-5 { grid-template-columns: repeat(5, 1fr); gap: 1rem 1rem; }
 
     /* Logical groups inside the configuration card (Location, Government unit, Fiscal). */
     .cfg-group .cfg-row,
@@ -228,6 +232,33 @@
         margin-top: 0.3rem;
     }
 
+    .cfg-help-detail {
+        color: #6b7280;
+        font-style: italic;
+    }
+
+    /* "Auto" badge next to fields that are auto-populated from the WoFi
+       reference dataset (e.g. national GDP per capita). */
+    .cfg-auto-badge {
+        display: inline-block;
+        margin-left: 0.4rem;
+        padding: 0.05rem 0.4rem;
+        background: rgba(0, 178, 227, 0.12);
+        color: #00689D;
+        border-radius: 999px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        vertical-align: middle;
+        cursor: help;
+    }
+
+    /* Field that fills the full Estimation context row. */
+    .cfg-field-wide {
+        flex: 1 1 100%;
+    }
+
     .cfg-field-add {
         border: 1px dashed #d1d5db;
         border-radius: 8px;
@@ -278,11 +309,11 @@
 
     /* Responsive */
     @@media (max-width: 992px) {
-        .cfg-row, .cfg-row-3, .cfg-row-4 { grid-template-columns: 1fr 1fr; }
+        .cfg-row, .cfg-row-3, .cfg-row-4, .cfg-row-5 { grid-template-columns: 1fr 1fr; }
         .cfg-field-narrow { max-width: none; }
     }
     @@media (max-width: 600px) {
-        .cfg-row, .cfg-row-3, .cfg-row-4 { grid-template-columns: 1fr; }
+        .cfg-row, .cfg-row-3, .cfg-row-4, .cfg-row-5 { grid-template-columns: 1fr; }
         .config-header { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
     }
 
@@ -459,6 +490,179 @@
         .next-step-cta { flex-direction: column; align-items: flex-start; gap: 0.85rem; }
         .next-step-cta__arrow { align-self: flex-end; }
     }
+
+    /* ============================================================
+       WoFi Top-Down OSR Potential Estimator — output panel
+       ============================================================ */
+    .wofi-estimator-card {
+        background: #ffffff;
+        border: 1px solid #E6EDF3;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px -8px rgba(0, 0, 0, 0.08);
+        margin-bottom: 1.5rem;
+    }
+
+    .wofi-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        background: #00689D;
+        color: #ffffff;
+    }
+    .wofi-header-icon i { font-size: 1.6rem; opacity: 0.95; }
+    .wofi-header-content { flex: 1 1 auto; }
+    .wofi-title { margin: 0; font-size: 1.05rem; font-weight: 700; line-height: 1.2; }
+    .wofi-subtitle { margin: 0.2rem 0 0; font-size: 0.78rem; opacity: 0.92; max-width: 60ch; }
+    .wofi-header-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        font-size: 0.72rem;
+        text-align: right;
+        min-width: 14rem;
+    }
+    .wofi-meta-row { display: flex; justify-content: space-between; gap: 0.75rem; opacity: 0.95; }
+    .wofi-meta-label { opacity: 0.7; font-weight: 500; }
+
+    .wofi-placeholder {
+        text-align: center;
+        padding: 2.4rem 1.5rem;
+        color: #6b7280;
+    }
+    .wofi-placeholder i { font-size: 2rem; color: #cbd5e1; display: block; margin-bottom: 0.6rem; }
+    .wofi-placeholder p { margin: 0; font-size: 0.85rem; }
+
+    .wofi-content { padding: 1.25rem 1.25rem 1.5rem; }
+
+    .wofi-tiles {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+    .wofi-tile {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+    .wofi-tile-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748B;
+        font-weight: 600;
+    }
+    .wofi-tile-value {
+        font-size: 1.45rem;
+        font-weight: 700;
+        color: #0F172A;
+        line-height: 1.1;
+    }
+    .wofi-tile-caption {
+        font-size: 0.72rem;
+        color: #64748B;
+        line-height: 1.35;
+    }
+    .wofi-tile-potential { border-top: 3px solid #00B2E3; }
+    .wofi-tile-gap { border-top: 3px solid #FD9D24; }
+    .wofi-tile-index { border-top: 3px solid #10B981; }
+    .wofi-tile-potential .wofi-tile-value { color: #00689D; }
+    .wofi-tile-gap .wofi-tile-value { color: #B45309; }
+    .wofi-tile-index .wofi-tile-value { color: #047857; }
+
+    .wofi-bar-block { margin-bottom: 1.25rem; }
+    .wofi-bar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 0.6rem;
+    }
+    .wofi-bar-title { margin: 0; font-size: 0.95rem; font-weight: 600; color: #0F172A; }
+    .wofi-bar-units {
+        font-size: 0.7rem;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .wofi-chart-container {
+        position: relative;
+        height: 360px;
+        padding: 0.25rem 0.25rem 0.5rem;
+    }
+
+    .wofi-warning {
+        display: flex;
+        gap: 0.65rem;
+        align-items: flex-start;
+        padding: 0.7rem 1rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+    .wofi-warning i { font-size: 1.05rem; flex-shrink: 0; margin-top: 0.05rem; }
+    .wofi-warning[data-level="AMBER"] {
+        background: #FFFBEB;
+        color: #92400E;
+        border: 1px solid #FDE68A;
+    }
+    .wofi-warning[data-level="RED"] {
+        background: #FEF2F2;
+        color: #B91C1C;
+        border: 1px solid #FECACA;
+    }
+    .wofi-warning[data-level="SEVERE"] {
+        background: #7F1D1D;
+        color: #FFFFFF;
+        border: 1px solid #7F1D1D;
+    }
+
+    .wofi-methodology {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.82rem;
+        color: #475569;
+    }
+    .wofi-methodology summary {
+        cursor: pointer;
+        font-weight: 600;
+        color: #00689D;
+        padding: 0.35rem 0;
+        list-style: revert;
+    }
+    .wofi-methodology summary:hover { color: #00B2E3; }
+    .wofi-methodology-content { padding: 0.4rem 0 0.6rem; }
+    .wofi-methodology-content p { margin: 0 0 0.6rem; }
+    .wofi-methodology-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 0.6rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.35rem 1rem;
+    }
+    .wofi-methodology-list li { font-size: 0.78rem; color: #334155; }
+    .wofi-methodology-caveat {
+        margin: 0;
+        font-style: italic;
+        color: #64748B;
+        font-size: 0.78rem;
+    }
+
+    @@media (max-width: 768px) {
+        .wofi-header { flex-direction: column; align-items: flex-start; }
+        .wofi-header-meta { text-align: left; min-width: 0; }
+        .wofi-tiles { grid-template-columns: 1fr; }
+        .wofi-chart-container { height: 320px; }
+    }
 </style>
 
 <div class="potential-estimates-container">
@@ -496,25 +700,22 @@
                         <input type="hidden" id="governmentType" name="GovernmentType" value="@Model.GovernmentType">
                         <input type="hidden" id="budgetedOsr" name="BudgetedOsr" value="@(Model.BudgetedOsr?.ToString("#,##0.##"))">
 
-                        <!-- Group 1: Location & government unit (merged) -->
-                        <div class="cfg-group">
-                            <div class="cfg-group-label">@Localizer["LgProfile_LocationGroup"]</div>
-                            <div class="cfg-row" id="govUnitLevel1Row">
-                                <div class="cfg-field">
-                                    <label class="cfg-label">@Localizer["Country"]</label>
-                                    <div class="country-select-wrapper">
-                                        <span id="country-flag" class="fi" style="display: none; font-size: 1.25rem; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></span>
-                                        <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="country" name="Country" @(isViewMode ? "disabled" : "")>
-                                            <option value="">@Localizer["SelectCountry"]</option>
-                                        </select>
-                                    </div>
+                        <!-- Row 1 — Location & period (5 cells) -->
+                        <div class="cfg-row cfg-row-5" id="govUnitLevel1Row">
+                            <div class="cfg-field">
+                                <label class="cfg-label">@Localizer["Country"]</label>
+                                <div class="country-select-wrapper">
+                                    <span id="country-flag" class="fi" style="display: none; font-size: 1.25rem; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></span>
+                                    <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="country" name="Country" @(isViewMode ? "disabled" : "")>
+                                        <option value="">@Localizer["SelectCountry"]</option>
+                                    </select>
                                 </div>
+                            </div>
                             <div class="cfg-field">
                                 <label class="cfg-label">@Localizer["LgProfile_GovUnitLevel1"]</label>
                                 <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="region" name="Region" @(isViewMode ? "disabled" : "")>
                                     <option value="">@Localizer["SelectLevel1"]</option>
                                 </select>
-                                <small class="cfg-help">@Localizer["LgProfile_RegionHelp"]</small>
                                 <input class="d-none" type="checkbox" id="level1IsFinal" @(isViewMode ? "disabled" : "")>
                             </div>
                             <div class="cfg-field" id="govUnitLevel2Row" style="display:@(string.IsNullOrEmpty(Model.Region) ? "none" : "")">
@@ -530,7 +731,6 @@
                                 <input type="text" class="form-control cfg-input @(isViewMode ? "readonly" : "")"
                                        id="city" name="City" value="@Model.City"
                                        placeholder="@Localizer["EnterLevel2"]" @(isViewMode ? "readonly" : "")>
-                                <small class="cfg-help">@Localizer["LgProfile_L2Help"]</small>
                                 <input class="d-none" type="checkbox" id="level2IsFinal" @(isViewMode ? "disabled" : "")>
                             </div>
                             <div class="cfg-field" id="govUnitLevel3Row" style="display:@(string.IsNullOrEmpty(Model.Region) ? "none" : "")">
@@ -547,25 +747,20 @@
                                        id="govUnitLevel3" name="GovUnitLevel3" value="@Model.GovUnitLevel3"
                                        placeholder="@Localizer["LgProfile_L3Placeholder"]" @(isViewMode ? "readonly" : "")
                                        style="display:@(string.IsNullOrEmpty(Model.GovUnitLevel3) ? "none" : "block");">
-                                <small class="cfg-help">@Localizer["LgProfile_L3Help"]</small>
                             </div>
-                        </div>
-
-                            @* Hierarchy note text removed per request. Empty stub kept so existing JS that toggles #hierarchyNote does not error. *@
-                            <div id="hierarchyNote" style="display: none;" aria-hidden="true"></div>
-                        </div>
-
-                        <!-- Group 3: Fiscal figures -->
-                        <div class="cfg-group">
-                            <div class="cfg-group-label">@Localizer["LgProfile_FiscalGroup"]</div>
-                            <div class="cfg-row cfg-row-4">
                             <div class="cfg-field">
                                 <label class="cfg-label">@Localizer["FinancialYear"]</label>
                                 <select class="form-select cfg-input @(isViewMode ? "readonly" : "")" id="financialYear" name="FinancialYear" @(isViewMode ? "disabled" : "")>
                                     <option value="">@Localizer["SelectYear"]</option>
                                 </select>
-                                <small class="cfg-help">@Localizer["LgProfile_PeriodHelp"]</small>
                             </div>
+                        </div>
+
+                        @* Hierarchy note text removed per request. Empty stub kept so existing JS that toggles #hierarchyNote does not error. *@
+                        <div id="hierarchyNote" style="display: none;" aria-hidden="true"></div>
+
+                        <!-- Row 2 — Fiscal figures + estimation context (5 cells) -->
+                        <div class="cfg-row cfg-row-5">
                             <div class="cfg-field">
                                 <label class="cfg-label">@Localizer["Currency"]</label>
                                 <div class="cfg-currency-pair">
@@ -576,7 +771,6 @@
                                            id="currency" name="Currency" value="@Model.Currency"
                                            placeholder="-" readonly aria-label="Currency code" title="Code">
                                 </div>
-                                <small class="cfg-help">@Localizer["LgProfile_SymbolCode"]</small>
                                 <span id="currency-symbol" class="d-none">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "-" : Model.CurrencySymbol)</span>
                             </div>
                             <div class="cfg-field">
@@ -584,22 +778,38 @@
                                 <input type="text" class="form-control cfg-input number-format @(isViewMode ? "readonly" : "")"
                                        id="actualOsr" name="ActualOsr" value="@(Model.ActualOsr?.ToString("#,##0.##"))"
                                        placeholder="@Localizer["LgProfile_OsrPlaceholder"]" @(isViewMode ? "readonly" : "")>
-                                <small class="cfg-help">@Localizer["LgProfile_OsrHelp"]</small>
-                            </div>
-                            <div class="cfg-field">
-                                <label class="cfg-label">@Localizer["LgProfile_GrpLabel"] <span class="cfg-req">*</span></label>
-                                <input type="text" class="form-control cfg-input number-format @(isViewMode ? "readonly" : "")"
-                                       id="gdpPerCapita" name="GdpPerCapita" value="@(Model.GdpPerCapita?.ToString("#,##0.##"))"
-                                       placeholder="@Localizer["LgProfile_GrpPlaceholder"]" @(isViewMode ? "readonly" : "")>
-                                <small class="cfg-help">@Localizer["LgProfile_GrpHelp"]</small>
                             </div>
                             <div class="cfg-field">
                                 <label class="cfg-label">@Localizer["LgProfile_PopulationLabel"]</label>
                                 <input type="text" class="form-control cfg-input number-format @(isViewMode ? "readonly" : "")"
                                        id="population" name="Population" value="@(Model.Population?.ToString("#,##0"))"
                                        placeholder="@Localizer["LgProfile_PopulationPlaceholder"]" @(isViewMode ? "readonly" : "")>
-                                <small class="cfg-help">@Localizer["LgProfile_PopulationHelp"]</small>
                             </div>
+                            <div class="cfg-field cfg-field-readonly">
+                                <label class="cfg-label">
+                                    @Localizer["LgProfile_GrpLabel"]
+                                    <span class="cfg-auto-badge" title="@Localizer["LgProfile_Grp_AutoTooltip"]">@Localizer["LgProfile_Grp_AutoBadge"]</span>
+                                </label>
+                                <input type="text" class="form-control cfg-input cfg-readonly number-format"
+                                       id="gdpPerCapita" name="GdpPerCapita" value="@(Model.GdpPerCapita?.ToString("#,##0.##"))"
+                                       readonly aria-readonly="true" placeholder="—">
+                                <small class="cfg-help cfg-help-detail" id="gdpPerCapitaSource">@Localizer["LgProfile_Grp_AutoHelp"]</small>
+                            </div>
+                            <div class="cfg-field">
+                                <label class="cfg-label" for="economicProfile">
+                                    @Localizer["LgProfile_EconomicProfileLabel"] <span class="cfg-req">*</span>
+                                </label>
+                                <select class="form-select cfg-input @(isViewMode ? "readonly" : "")"
+                                        id="economicProfile" name="EconomicProfile"
+                                        @(isViewMode ? "disabled" : "")>
+                                    <option value="">@Localizer["LgProfile_EconomicProfilePlaceholder"]</option>
+                                    @foreach (var rule in economicProfiles)
+                                    {
+                                        var selected = string.Equals(Model.EconomicProfile, rule.ProfileName, StringComparison.OrdinalIgnoreCase);
+                                        <option value="@rule.ProfileName" title="@rule.WhenToUse" selected="@selected">@rule.ProfileName</option>
+                                    }
+                                </select>
+                                <small class="cfg-help cfg-help-detail" id="economicProfileDescription"></small>
                             </div>
                         </div>
 
@@ -629,498 +839,103 @@
             </div>
         </div>
 
-        <!-- Bottom Panel - Frontier Analysis (Full Width) — hidden until "Get Analysis" is clicked -->
+        <!-- Bottom Panel - WoFi Top-Down OSR Potential Estimator — hidden until "Get Analysis" is clicked -->
         <div class="col-12" id="analysisPanelWrap" style="display:none;">
             <div class="analysis-panel">
-                <!-- Within-Country OSR Frontier Header (PRIMARY) -->
-                <div class="frontier-card">
-                    <div class="frontier-header">
-                        <div class="frontier-header-icon">
-                            <i class="bi bi-building"></i>
+                <div class="wofi-estimator-card" id="wofiEstimatorCard">
+
+                    <!-- Header strip -->
+                    <div class="wofi-header">
+                        <div class="wofi-header-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                        <div class="wofi-header-content">
+                            <h4 class="wofi-title">@Localizer["Wofi_Title"]</h4>
+                            <p class="wofi-subtitle">@Localizer["Wofi_Subtitle"]</p>
                         </div>
-                        <div class="frontier-header-content">
-                            <h4 class="frontier-title">@Localizer["FrontierTitle"]</h4>
-                            <p class="frontier-subtitle">@Localizer["FrontierSubtitle"]</p>
-                        </div>
-                    </div>
-
-                    <!-- Placeholder when no country selected -->
-                    <div class="frontier-placeholder" id="frontierPlaceholder">
-                        <i class="bi bi-geo-alt"></i>
-                        <p>@Localizer["SelectCountryForFrontier"]</p>
-                    </div>
-
-                    <!-- Frontier Analysis Content -->
-                    <div class="frontier-content" id="frontierContent" style="display: none;">
-                        <!-- PRIMARY CHART: Current OSR vs Potential — Gap to Frontier (above Peer SNGs section) -->
-                        <div class="module2-chart-section gap-frontier-section">
-                            <div class="gap-frontier-header">
-                                <h6 class="gap-frontier-title">@Localizer["GapFrontier_Title"]</h6>
-                                <span class="gap-frontier-units" id="gapFrontierUnits" data-units-format="@Localizer["GapFrontier_UnitsFormat"].Value">@string.Format(Localizer["GapFrontier_UnitsFormat"].Value, "LCU")</span>
-                            </div>
-                            <div class="chart-container" style="height: 400px;">
-                                <canvas id="actualVsPotentialChart"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Collapsible "More Analysis & Methodology" wrapper — collapsed by default -->
-                        <div class="more-analysis-toggle-wrap">
-                            <button type="button" id="moreAnalysisToggle" class="more-analysis-toggle"
-                                    aria-expanded="false" aria-controls="moreAnalysisContent"
-                                    data-label-expand="@Localizer["Common_Expand"]"
-                                    data-label-collapse="@Localizer["Common_Collapse"]">
-                                <span class="more-analysis-toggle__text">
-                                    <i class="bi bi-info-circle me-2"></i>
-                                    @Localizer["MoreAnalysis_Question"]
-                                </span>
-                                <span class="more-analysis-toggle__cta">
-                                    <span class="more-analysis-toggle__label">@Localizer["Common_Expand"]</span>
-                                    <i class="bi bi-chevron-down more-analysis-toggle__chevron"></i>
-                                </span>
-                            </button>
-                        </div>
-
-                        <div id="moreAnalysisContent" class="more-analysis-content" style="display:none;">
-
-                        <!-- PRIMARY ANALYSIS: Within-Country OSR Frontier -->
-                        <div class="module2-section" id="withinCountryModuleTop">
-                            <div class="module2-header">
-                                <span class="module-number">1</span>
-                                <div class="module-title-block">
-                                    <h5 class="module-title">How you compare to similar local governments <span class="badge bg-primary ms-2" style="font-size: 0.65rem;">Main analysis</span></h5>
-                                    <p class="module-subtitle">How your local revenue collection stacks up against similar local governments in the same country.</p>
-                                </div>
-                            </div>
-
-                            <!-- SNG Selection -->
-                            <div class="module2-selection">
-                                <label class="compact-label">@Localizer["SubnationalGov"]</label>
-                                <select class="form-select form-select-sm" id="peerSngSelectTop">
-                                    <option value="">@Localizer["SelectSng"]</option>
-                                </select>
-                            </div>
-
-                            <!-- Peer Data Input Section (for non-Kenya countries) -->
-                            <div id="peerDataInputSection" class="peer-data-input-section" style="display: none;">
-                                <div class="peer-data-alert">
-                                    <i class="bi bi-info-circle"></i>
-                                    <span>No comparison data found for this country. Choose how you'd like to provide data:</span>
-                                </div>
-
-                                <!-- Input method tabs -->
-                                <ul class="nav nav-tabs peer-input-tabs" id="peerInputTabs" role="tablist">
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" id="peer-upload-tab" data-bs-toggle="tab" data-bs-target="#peerUploadPane" type="button" role="tab" aria-controls="peerUploadPane" aria-selected="true">
-                                            <i class="bi bi-file-earmark-arrow-up me-1"></i> Upload CSV
-                                        </button>
-                                    </li>
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="peer-manual-tab" data-bs-toggle="tab" data-bs-target="#peerManualPane" type="button" role="tab" aria-controls="peerManualPane" aria-selected="false">
-                                            <i class="bi bi-pencil-square me-1"></i> Manual Entry
-                                        </button>
-                                    </li>
-                                </ul>
-
-                                <div class="tab-content peer-input-tab-content">
-                                    <!-- Upload CSV pane -->
-                                    <div class="tab-pane fade show active" id="peerUploadPane" role="tabpanel" aria-labelledby="peer-upload-tab">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <small class="text-muted mb-0">Upload a CSV file with your peer SNG data.</small>
-                                            <button type="button" class="btn btn-sm btn-link p-0" onclick="downloadPeerTemplate()" title="Download a sample CSV template with column headers and example rows">
-                                                <i class="bi bi-download"></i> Download Template
-                                            </button>
-                                        </div>
-                                        <div class="input-group input-group-sm mb-2">
-                                            <input type="file" class="form-control" id="peerCsvUpload" accept=".csv">
-                                            <button type="button" class="btn btn-primary" onclick="uploadPeerCSV()">
-                                                <i class="bi bi-upload"></i> Upload
-                                            </button>
-                                        </div>
-                                        <small class="text-muted d-block">CSV columns: <strong>SNG, OSR, GCP</strong>, Population <em>(optional)</em>, Include <em>(optional, defaults to 1)</em>.</small>
-                                        <small class="text-muted d-block"><i class="bi bi-info-circle"></i> Population is only needed for <strong>OSR-per-capita</strong> analysis.</small>
-                                    </div>
-
-                                    <!-- Manual Entry pane -->
-                                    <div class="tab-pane fade" id="peerManualPane" role="tabpanel" aria-labelledby="peer-manual-tab">
-                                        <small class="text-muted d-block mb-2"><i class="bi bi-info-circle"></i> <strong>SNG Name, OSR, and GCP</strong> are required. <strong>Population</strong> is optional (needed only for per-capita analysis).</small>
-                                        <div class="table-responsive">
-                                            <table class="table table-sm table-bordered" id="peerManualEntryTable">
-                                                <thead class="table-light">
-                                                    <tr>
-                                                        <th>SNG Name <span class="text-danger">*</span></th>
-                                                        <th>OSR <span class="text-danger">*</span></th>
-                                                        <th>GCP <span class="text-danger">*</span></th>
-                                                        <th>Population <span class="text-muted fw-normal" style="font-size: 0.75em;">(optional)</span></th>
-                                                        <th style="width: 70px;" title="Include this local government in the comparison">Include</th>
-                                                        <th style="width: 40px;"></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="peerManualEntryBody">
-                                                    <tr>
-                                                        <td><input type="text" class="form-control form-control-sm" placeholder="Name" data-field="sng"></td>
-                                                        <td><input type="text" class="form-control form-control-sm text-end" placeholder="0" inputmode="decimal" data-field="osr" oninput="formatNumberInput(this)"></td>
-                                                        <td><input type="text" class="form-control form-control-sm text-end" placeholder="0" inputmode="decimal" data-field="gcp" oninput="formatNumberInput(this)"></td>
-                                                        <td><input type="text" class="form-control form-control-sm text-end" placeholder="optional" inputmode="numeric" data-field="population" title="Optional — only needed for OSR-per-capita analysis" oninput="formatNumberInput(this, true)"></td>
-                                                        <td class="text-center align-middle"><input type="checkbox" class="form-check-input" data-field="include" checked></td>
-                                                        <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removePeerRow(this)"><i class="bi bi-trash"></i></button></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div class="d-flex gap-2 mt-2">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addPeerRow()">
-                                                <i class="bi bi-plus"></i> Add Row
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-primary ms-auto" onclick="savePeerDataManually()">
-                                                <i class="bi bi-save"></i> Save Peer Data
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Module Placeholder -->
-                            <div class="module2-placeholder" id="module2PlaceholderTop">
-                                <i class="bi bi-geo-alt"></i>
-                                <p>@Localizer["SelectSngForAnalysis"]</p>
-                            </div>
-
-                            <!-- Module Content (hidden by default) -->
-                            <div class="module2-content" id="module2ContentTop" style="display: none;">
-                                <!-- Metrics Section -->
-                                <div class="module2-metrics">
-                                    <div class="metric-row">
-                                        <span class="metric-label">
-                                            @Localizer["Metric_OSR"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="How much this local government actually collected in revenue in the reference year. Auto-filled from the comparison dataset for the local government you selected.">
-                                                <i class="bi bi-info-circle"></i>
-                                            </button>
-                                        </span>
-                                        <span class="metric-value" id="m2ActualOSRTop" style="font-size: 0.9rem;">-</span>
-                                    </div>
-                                    <div class="metric-row">
-                                        <span class="metric-label">
-                                            @Localizer["Metric_GDP"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="The size of this local government's economy (Gross Contribution to Product). Auto-filled from the comparison dataset for the local government you selected.">
-                                                <i class="bi bi-info-circle"></i>
-                                            </button>
-                                        </span>
-                                        <span class="metric-value" id="m2SubnationalGDPTop" style="font-size: 0.9rem;">-</span>
-                                    </div>
-                                    <div class="metric-row highlight">
-                                        <span class="metric-label">
-                                            @Localizer["Metric_FrontierMultiplier"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="The average collection rate (revenue ÷ economy size) of the top 20% of similar local governments. This is what the strongest peers achieve — and what your local government could realistically reach.">
-                                                <i class="bi bi-info-circle"></i>
-                                            </button>
-                                        </span>
-                                        <span class="metric-value" id="m2FrontierMultiplierTop" style="font-size: 0.9rem;">-</span>
-                                    </div>
-                                    <div class="metric-row">
-                                        <span class="metric-label">
-                                            @Localizer["Metric_SubjectMultiplier"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="Your local government's current collection rate — how much it collects today as a share of the size of its economy.">
-                                                <i class="bi bi-info-circle"></i>
-                                            </button>
-                                        </span>
-                                        <span class="metric-value" id="m2SubjectMultiplierTop" style="font-size: 0.9rem;">-</span>
-                                    </div>
-                                    <div class="metric-row result">
-                                        <span class="metric-label bold">
-                                            @Localizer["Metric_Benchmark"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="The revenue your local government could collect if it matched the top peers — the top-peer collection rate applied to your local economy size.">
-                                                <i class="bi bi-info-circle"></i>
-                                            </button>
-                                        </span>
-                                        <span class="metric-value bold" id="m2OSRPotentialTop" style="font-size: 0.9rem;">-</span>
-                                    </div>
-                                    <div class="metric-row gap">
-                                        <span class="metric-label gap-label">
-                                            @Localizer["Metric_Gap"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="How much more revenue your local government could raise each year if it collected at the top-peer level. A positive number means there's untapped revenue.">
-                                                <i class="bi bi-info-circle"></i>
-                                            </button>
-                                        </span>
-                                        <span class="metric-value gap-value" id="m2OSRGapTop" style="font-size: 0.9rem;">-</span>
-                                    </div>
-                                    <!-- Per Capita Diagnostics (secondary) -->
-                                    <div class="metric-row" style="border-top: 1px dashed #dee2e6; margin-top: 4px; padding-top: 4px;">
-                                        <span class="metric-label" style="font-size: 0.8rem; color: #6c757d;">
-                                            @Localizer["Metric_OSRPerCapita"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="Average revenue collected per resident. Useful for comparing local governments of different sizes on a like-for-like basis.">
-                                                <i class="bi bi-info-circle"></i>
-                                            </button>
-                                        </span>
-                                        <span class="metric-value" id="m2OSRPerCapitaTop" style="font-size: 0.8rem; color: #6c757d;">-</span>
-                                    </div>
-                                    <div class="metric-row">
-                                        <span class="metric-label" style="font-size: 0.8rem; color: #6c757d;">
-                                            @Localizer["Metric_PotentialOSRPerCapita"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="Revenue per resident if your local government collected at the top-peer rate — the per-resident equivalent of the benchmark.">
-                                                <i class="bi bi-info-circle"></i>
-                                            </button>
-                                        </span>
-                                        <span class="metric-value" id="m2PotentialOSRPerCapitaTop" style="font-size: 0.8rem; color: #6c757d;">-</span>
-                                    </div>
-                                    <div class="metric-row">
-                                        <span class="metric-label" style="font-size: 0.8rem; color: #6c757d;">
-                                            @Localizer["Metric_PerCapitaGap"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="Untapped revenue per resident — what each person could be contributing versus what they do today, if your local government matched the top peers.">
-                                                <i class="bi bi-info-circle"></i>
-                                            </button>
-                                        </span>
-                                        <span class="metric-value" id="m2PerCapitaGapTop" style="font-size: 0.8rem; color: #6c757d;">-</span>
-                                    </div>
-                                    <div class="metric-row with-bar">
-                                        <span class="metric-label accent">
-                                            @Localizer["Metric_Performance"]
-                                            <button type="button" class="formula-tooltip-btn" data-description="How close your local government is to its benchmark. 1.0 means performing at the top-peer level; 0.5 means collecting about half of what peers suggest is achievable.">
-                                                <i class="bi bi-info-circle"></i>
-                                            </button>
-                                        </span>
-                                        <div class="metric-bar-container">
-                                            <div class="metric-bar" id="m2PerformanceBarTop" style="width: 0%;"></div>
-                                            <span class="metric-bar-value" id="m2PerformanceIndexTop">-</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Peer SNG Scatter Chart -->
-                                <div class="module2-chart-section">
-                                    <h6 class="chart-title">@Localizer["Chart_ScatterTitle"]</h6>
-                                    <div class="chart-container" style="height: 260px;">
-                                        <canvas id="peerSngChartTop"></canvas>
-                                    </div>
-                                </div>
-
-                                <!-- Analysis Result -->
-                                <div class="analysis-result-section module2-result">
-                                    <div class="analysis-result-header">
-                                        <i class="bi bi-lightbulb"></i>
-                                        <span>@Localizer["Result_Header"]</span>
-                                    </div>
-                                    <p class="analysis-result-text" id="module2ResultTextTop">
-                                        @Localizer["Result_Placeholder"]
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <hr class="my-4">
-
-                        <!-- OPTIONAL ANALYSIS SECTION HEADER -->
-                        <div class="optional-analysis-header mb-3">
-                            <h5 class="text-muted"><i class="bi bi-sliders me-2"></i>@Localizer["CrossCountry_Title"]</h5>
-                            <p class="small text-muted">@Localizer["CrossCountry_Subtitle"]</p>
-                        </div>
-
-                        <!-- Optional Analysis: Funding Decentralization -->
-                        <div class="frontier-section" id="fundingDecentralizationSection">
-                            <div class="frontier-section-header">
-                                <span class="frontier-section-number">A</span>
-                                <h5 class="frontier-section-title">@Localizer["Funding_Title"] <span class="badge bg-secondary" style="font-size: 0.6rem;">@Localizer["Funding_Optional"]</span></h5>
-                            </div>
-                            <div class="frontier-metrics">
-                                <div class="frontier-row">
-                                    <div class="tooltip-trigger">
-                                        <span class="frontier-label">@Localizer["Funding_SngRevenue"]</span>
-                                        <button type="button" class="info-btn" data-tooltip-id="tip-sng-rev">
-                                            <i class="bi bi-info"></i>
-                                        </button>
-                                        <div class="formula-tooltip" id="tip-sng-rev">
-                                            <div class="tooltip-header">
-                                                <i class="bi bi-database"></i>
-                                                <span>Data Source</span>
-                                            </div>
-                                            <div class="formula-content">DB_Countries.SNG_total_rev_pc</div>
-                                        </div>
-                                    </div>
-                                    <span class="frontier-value" id="sngRevenuePerCapita">-</span>
-                                </div>
-                                <div class="frontier-row highlight">
-                                    <div class="tooltip-trigger">
-                                        <span class="frontier-label">@Localizer["Funding_PeerBenchmark"]</span>
-                                        <button type="button" class="info-btn" data-tooltip-id="tip-peer-funding">
-                                            <i class="bi bi-info"></i>
-                                        </button>
-                                        <div class="formula-tooltip" id="tip-peer-funding">
-                                            <div class="tooltip-header">
-                                                <i class="bi bi-database"></i>
-                                                <span>Data Source</span>
-                                            </div>
-                                            <div class="formula-content">DB_Frontiers.SNG_total_rev_pc_frontier</div>
-                                        </div>
-                                    </div>
-                                    <span class="frontier-value" id="peerBenchmarkFunding">-</span>
-                                </div>
-                                <div class="frontier-row with-bar">
-                                    <div class="tooltip-trigger">
-                                        <span class="frontier-label accent">@Localizer["Funding_Index"]</span>
-                                        <button type="button" class="info-btn" data-tooltip-id="tip-funding-index">
-                                            <i class="bi bi-info"></i>
-                                        </button>
-                                        <div class="formula-tooltip" id="tip-funding-index">
-                                            <div class="tooltip-header">
-                                                <i class="bi bi-calculator"></i>
-                                                <span>Formula</span>
-                                            </div>
-                                            <div class="formula-content">(SNG rev pc ÷ Peer benchmark) × 100</div>
-                                        </div>
-                                    </div>
-                                    <div class="frontier-bar-container">
-                                        <div class="frontier-bar" id="fundingIndexBar" style="width: 0%"></div>
-                                        <span class="frontier-bar-value" id="fundingIndex">-</span>
-                                    </div>
-                                </div>
-                                <div class="frontier-row result">
-                                    <div class="tooltip-trigger">
-                                        <span class="frontier-label bold">@Localizer["Funding_Headroom"]</span>
-                                        <button type="button" class="info-btn" data-tooltip-id="tip-funding-headroom">
-                                            <i class="bi bi-info"></i>
-                                        </button>
-                                        <div class="formula-tooltip" id="tip-funding-headroom">
-                                            <div class="tooltip-header">
-                                                <i class="bi bi-calculator"></i>
-                                                <span>Formula</span>
-                                            </div>
-                                            <div class="formula-content">Peer benchmark - SNG rev pc</div>
-                                        </div>
-                                    </div>
-                                    <span class="frontier-value bold" id="fundingHeadroom">-</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Optional Analysis: Subnational Revenue Autonomy -->
-                        <div class="frontier-section" id="revenueAutonomySection">
-                            <div class="frontier-section-header">
-                                <span class="frontier-section-number">B</span>
-                                <h5 class="frontier-section-title">@Localizer["Autonomy_Title"] <span class="badge bg-secondary" style="font-size: 0.6rem;">@Localizer["Funding_Optional"]</span></h5>
-                            </div>
-                            <div class="frontier-metrics">
-                                <div class="frontier-row">
-                                    <div class="tooltip-trigger">
-                                        <span class="frontier-label">@Localizer["Autonomy_NonGrants"]</span>
-                                        <button type="button" class="info-btn" data-tooltip-id="tip-non-grants">
-                                            <i class="bi bi-info"></i>
-                                        </button>
-                                        <div class="formula-tooltip" id="tip-non-grants">
-                                            <div class="tooltip-header">
-                                                <i class="bi bi-database"></i>
-                                                <span>Data Source</span>
-                                            </div>
-                                            <div class="formula-content">DB_Countries.Revenue_Autonomy × 100</div>
-                                        </div>
-                                    </div>
-                                    <span class="frontier-value" id="nonGrantsShare">-</span>
-                                </div>
-                                <div class="frontier-row highlight">
-                                    <div class="tooltip-trigger">
-                                        <span class="frontier-label">@Localizer["Autonomy_PeerBenchmark"]</span>
-                                        <button type="button" class="info-btn" data-tooltip-id="tip-peer-autonomy">
-                                            <i class="bi bi-info"></i>
-                                        </button>
-                                        <div class="formula-tooltip" id="tip-peer-autonomy">
-                                            <div class="tooltip-header">
-                                                <i class="bi bi-database"></i>
-                                                <span>Data Source</span>
-                                            </div>
-                                            <div class="formula-content">DB_Frontiers.Revenue_Autonomy_frontier × 100</div>
-                                        </div>
-                                    </div>
-                                    <span class="frontier-value" id="peerBenchmarkAutonomy">-</span>
-                                </div>
-                                <div class="frontier-row with-bar">
-                                    <div class="tooltip-trigger">
-                                        <span class="frontier-label accent">@Localizer["Autonomy_Index"]</span>
-                                        <button type="button" class="info-btn" data-tooltip-id="tip-autonomy-index">
-                                            <i class="bi bi-info"></i>
-                                        </button>
-                                        <div class="formula-tooltip" id="tip-autonomy-index">
-                                            <div class="tooltip-header">
-                                                <i class="bi bi-calculator"></i>
-                                                <span>Formula</span>
-                                            </div>
-                                            <div class="formula-content">(Non-grants share ÷ Peer benchmark) × 100</div>
-                                        </div>
-                                    </div>
-                                    <div class="frontier-bar-container">
-                                        <div class="frontier-bar autonomy" id="autonomyIndexBar" style="width: 0%"></div>
-                                        <span class="frontier-bar-value" id="autonomyIndex">-</span>
-                                    </div>
-                                </div>
-                                <div class="frontier-row">
-                                    <div class="tooltip-trigger">
-                                        <span class="frontier-label">@Localizer["Autonomy_Distance"]</span>
-                                        <button type="button" class="info-btn" data-tooltip-id="tip-distance">
-                                            <i class="bi bi-info"></i>
-                                        </button>
-                                        <div class="formula-tooltip" id="tip-distance">
-                                            <div class="tooltip-header">
-                                                <i class="bi bi-calculator"></i>
-                                                <span>Formula</span>
-                                            </div>
-                                            <div class="formula-content">|Non-grants share - Peer benchmark|</div>
-                                        </div>
-                                    </div>
-                                    <span class="frontier-value" id="distanceFromBenchmark">-</span>
-                                </div>
-                                <div class="frontier-row result position">
-                                    <div class="tooltip-trigger">
-                                        <span class="frontier-label bold">@Localizer["Autonomy_Position"]</span>
-                                        <button type="button" class="info-btn" data-tooltip-id="tip-position">
-                                            <i class="bi bi-info"></i>
-                                        </button>
-                                        <div class="formula-tooltip" id="tip-position">
-                                            <div class="tooltip-header">
-                                                <i class="bi bi-signpost-split"></i>
-                                                <span>Logic</span>
-                                            </div>
-                                            <div class="formula-content">Above if Non-grants > Benchmark, Below otherwise</div>
-                                        </div>
-                                    </div>
-                                    <span class="frontier-position" id="positionRelative">-</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Position in Fiscal Decentralisation Space Chart (OPTIONAL ANALYSIS) -->
-                        <div class="fiscal-chart-section" id="fiscalDecentralisationSection">
-                            <div class="fiscal-chart-header">
-                                <h5 class="fiscal-chart-title">@Localizer["FiscalChart_Title"] <span class="badge bg-secondary ms-2" style="font-size: 0.65rem;">@Localizer["FiscalChart_Optional"]</span></h5>
-                            </div>
-                            <div class="fiscal-chart-container">
-                                <canvas id="fiscalDecentralisationChart"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Analysis Result Text for Optional Analysis -->
-                        <div class="analysis-result-section" id="analysisResultSection">
-                            <div class="analysis-result-header">
-                                <i class="bi bi-lightbulb"></i>
-                                <span>@Localizer["CrossCountry_ResultHeader"]</span>
-                            </div>
-                            <p class="analysis-result-text" id="analysisResultText">
-                                @Localizer["CrossCountry_ResultPlaceholder"]
-                            </p>
-                        </div>
-
-                        </div><!-- /#moreAnalysisContent -->
-
-                        <!-- Forward CTA: usher the user to the per-stream analysis section -->
-                        <div class="next-step-cta-wrap">
-                            <button type="button" id="goToStreamAnalysisBtn" class="next-step-cta">
-                                <span class="next-step-cta__copy">
-                                    <span class="next-step-cta__eyebrow">@SharedLocalizer["Nav_NextStep"]</span>
-                                    <span class="next-step-cta__title">@Localizer["NextStepCTA_Title"]</span>
-                                    <span class="next-step-cta__sub">@Localizer["NextStepCTA_Sub"]</span>
-                                </span>
-                                <span class="next-step-cta__arrow">
-                                    <i class="bi bi-arrow-right"></i>
-                                </span>
-                            </button>
+                        <div class="wofi-header-meta" id="wofiHeaderMeta">
+                            <span class="wofi-meta-row"><span class="wofi-meta-label">@Localizer["Wofi_IncomeGroup"]</span><span id="wofiIncomeGroupLabel">—</span></span>
+                            <span class="wofi-meta-row"><span class="wofi-meta-label">@Localizer["Wofi_BenchmarkFrontier"]</span><span id="wofiBenchmarkLabel">—</span></span>
+                            <span class="wofi-meta-row"><span class="wofi-meta-label">@Localizer["Wofi_ProfileFactor"]</span><span id="wofiProfileFactorLabel">—</span></span>
                         </div>
                     </div>
+
+                    <!-- Placeholder shown before Get Analysis has been clicked -->
+                    <div class="wofi-placeholder" id="wofiPlaceholder">
+                        <i class="bi bi-bullseye"></i>
+                        <p>@Localizer["Wofi_Placeholder"]</p>
+                    </div>
+
+                    <!-- Estimator output (hidden until first compute returns) -->
+                    <div class="wofi-content" id="wofiContent" style="display:none;">
+
+                        <!-- 3-up tile row: Potential, Gap, Frontier index -->
+                        <div class="wofi-tiles">
+                            <div class="wofi-tile wofi-tile-potential">
+                                <span class="wofi-tile-label">@Localizer["Wofi_PotentialLabel"]</span>
+                                <span class="wofi-tile-value" id="wofiPotentialValue">—</span>
+                                <span class="wofi-tile-caption">@Localizer["Wofi_PotentialCaption"]</span>
+                            </div>
+                            <div class="wofi-tile wofi-tile-gap">
+                                <span class="wofi-tile-label">@Localizer["Wofi_GapLabel"]</span>
+                                <span class="wofi-tile-value" id="wofiGapValue">—</span>
+                                <span class="wofi-tile-caption">@Localizer["Wofi_GapCaption"]</span>
+                            </div>
+                            <div class="wofi-tile wofi-tile-index">
+                                <span class="wofi-tile-label">@Localizer["Wofi_FrontierIndexLabel"]</span>
+                                <span class="wofi-tile-value" id="wofiFrontierIndexValue">—</span>
+                                <span class="wofi-tile-caption" id="wofiFrontierInterpretation">—</span>
+                            </div>
+                        </div>
+
+                        <!-- Current OSR vs Potential — two-bar Chart.js column chart
+                             with right-side gap bracket annotation. -->
+                        <div class="wofi-bar-block">
+                            <div class="wofi-bar-header">
+                                <h5 class="wofi-bar-title">@Localizer["Wofi_BarTitle"]</h5>
+                                <span class="wofi-bar-units" id="wofiBarUnits" data-units-format="@Localizer["GapFrontier_UnitsFormat"].Value">@string.Format(Localizer["GapFrontier_UnitsFormat"].Value, "LCU")</span>
+                            </div>
+                            <div class="wofi-chart-container">
+                                <canvas id="actualVsPotentialChart" aria-label="@Localizer["Wofi_BarAriaLabel"]"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Warning ribbon (shown only if WarningLevel != OK) -->
+                        <div class="wofi-warning" id="wofiWarning" style="display:none;" data-level="OK">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <span id="wofiWarningMessage"></span>
+                        </div>
+
+                        <!-- Methodology / data-source caption -->
+                        <div class="wofi-methodology">
+                            <details>
+                                <summary>@Localizer["Wofi_MethodologyToggle"]</summary>
+                                <div class="wofi-methodology-content">
+                                    <p>@Localizer["Wofi_MethodologyBody"]</p>
+                                    <ul class="wofi-methodology-list">
+                                        <li><strong>@Localizer["Wofi_Method_GdpLabel"]:</strong> <span id="wofiMethodGdp">—</span></li>
+                                        <li><strong>@Localizer["Wofi_Method_LocalGdpLabel"]:</strong> <span id="wofiMethodLocalGdp">—</span></li>
+                                        <li><strong>@Localizer["Wofi_Method_BenchmarkLabel"]:</strong> <span id="wofiMethodBenchmark">—</span></li>
+                                        <li><strong>@Localizer["Wofi_Method_GdpShareLabel"]:</strong> <span id="wofiMethodGdpShare">—</span></li>
+                                        <li><strong>@Localizer["Wofi_Method_DataSource"]:</strong> <span id="wofiMethodSource">—</span></li>
+                                    </ul>
+                                    <p class="wofi-methodology-caveat">@Localizer["Wofi_MethodologyCaveat"]</p>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forward CTA: usher the user to the per-stream analysis section -->
+                <div class="next-step-cta-wrap">
+                    <button type="button" id="goToStreamAnalysisBtn" class="next-step-cta">
+                        <span class="next-step-cta__copy">
+                            <span class="next-step-cta__eyebrow">@SharedLocalizer["Nav_NextStep"]</span>
+                            <span class="next-step-cta__title">@Localizer["NextStepCTA_Title"]</span>
+                            <span class="next-step-cta__sub">@Localizer["NextStepCTA_Sub"]</span>
+                        </span>
+                        <span class="next-step-cta__arrow">
+                            <i class="bi bi-arrow-right"></i>
+                        </span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -3497,6 +3312,12 @@
 
         // Fetch GDP per capita from World Bank API based on selected year
         async function fetchGdpPerCapita(countryName, year = null) {
+            // SUPERSEDED: the WoFi top-down estimator handles GDP per capita
+            // server-side via /Rosra/WofiCountryReference (LCU, World Bank WDI
+            // 2024). The old browser-direct call returned USD and clobbered
+            // the LCU value. Kept as a no-op so legacy call sites don't break.
+            return null;
+            // eslint-disable-next-line no-unreachable
             const isoCode = countryIsoCodes[countryName];
             if (!isoCode) {
                 console.log('No ISO code found for country:', countryName);
@@ -3870,6 +3691,12 @@
 
         // Fetch and display Frontier Analysis
         async function fetchFrontierAnalysis(countryName) {
+            // SUPERSEDED: this populated the legacy Within-Country OSR Frontier
+            // panel which has been replaced by the WoFi top-down estimator.
+            // The target DOM nodes (frontierPlaceholder / frontierContent) are
+            // gone, so bail out before the null derefs.
+            return;
+            // eslint-disable-next-line no-unreachable
             const placeholder = document.getElementById('frontierPlaceholder');
             const content = document.getElementById('frontierContent');
 
@@ -4464,6 +4291,12 @@
         }
 
         async function loadPeerSNGs() {
+            // SUPERSEDED: the Peer SNG / Within-Country Frontier panel has been
+            // replaced by the WoFi top-down estimator. The DOM elements this
+            // function targeted (peerSngSelectTop, frontierPlaceholder,
+            // frontierContent, etc.) no longer exist. Bail out early so the
+            // numerous legacy call sites don't throw on null DOM access.
+            if (!document.getElementById('peerSngSelectTop')) return;
             try {
                 const countryCode = getCurrentCountryCode();
 
@@ -5210,8 +5043,9 @@
                 .replace('{3}', gapFormatted);
         }
 
-        // Handle Peer SNG selection change
-        peerSngSelect.addEventListener('change', function() {
+        // Handle Peer SNG selection change — legacy listener for the removed
+        // Peer SNG dropdown. Guarded so it no-ops when the element is gone.
+        if (peerSngSelect) peerSngSelect.addEventListener('change', function() {
             fetchPeerSNGAnalysis(this.value);
 
             // Sync with State/Region dropdown (two-way binding)
@@ -5461,21 +5295,446 @@
             });
         }
 
-        // Get Analysis — reveal the bottom panel
-        var getBtn = document.getElementById('getAnalysisBtn');
-        var panel  = document.getElementById('analysisPanelWrap');
-        if (getBtn && panel) {
-            // If a country is already selected (edit / sample mode), show panel immediately
-            var country = document.getElementById('country');
-            if (country && country.value) { panel.style.display = ''; }
+        // ============================================================
+        // WoFi Top-Down OSR Potential Estimator — wire-up.
+        // - On country change: fetch national GDPpc + meta, fill the
+        //   auto-populated stat in the LG Profile card.
+        // - On economic profile change: surface the descriptive tooltip.
+        // - On "Get Analysis" click: gather inputs, POST to
+        //   /Rosra/WofiEstimatePotential, and render the result panel.
+        // ============================================================
+        (function wireUpWofiEstimator() {
+            var URL_COUNTRY = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Url.Action("WofiCountryReference", "Rosra")));
+            var URL_ESTIMATE = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Url.Action("WofiEstimatePotential", "Rosra")));
+            // Localised strings serialised via JsonSerializer so they survive
+            // apostrophes/quotes regardless of the active culture (en/fr/es).
+            var L = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new {
+                interpStrong = Localizer["Wofi_FrontierInterp_Strong"].Value,
+                interpModerate = Localizer["Wofi_FrontierInterp_Moderate"].Value,
+                interpSignificant = Localizer["Wofi_FrontierInterp_Significant"].Value,
+                interpLarge = Localizer["Wofi_FrontierInterp_Large"].Value,
+                autoHelp = Localizer["LgProfile_Grp_AutoHelp"].Value,
+                validationCountry = Localizer["Wofi_ValidationMissingCountry"].Value,
+                validationProfile = Localizer["Wofi_ValidationMissingProfile"].Value,
+                validationPopulation = Localizer["Wofi_ValidationMissingPopulation"].Value,
+                validationOsr = Localizer["Wofi_ValidationMissingOsr"].Value,
+            }));
+            var INTERP_TEXT = {
+                Strong:      L.interpStrong,
+                Moderate:    L.interpModerate,
+                Significant: L.interpSignificant,
+                Large:       L.interpLarge,
+            };
 
-            getBtn.addEventListener('click', function () {
-                panel.style.display = '';
-                setTimeout(function () {
-                    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 50);
-            });
-        }
+            var countryEl   = document.getElementById('country');
+            var profileEl   = document.getElementById('economicProfile');
+            var gdpEl       = document.getElementById('gdpPerCapita');
+            var gdpSourceEl = document.getElementById('gdpPerCapitaSource');
+            var profileDescEl = document.getElementById('economicProfileDescription');
+            var actualOsrEl = document.getElementById('actualOsr');
+            var populationEl = document.getElementById('population');
+            var currencyCodeEl = document.getElementById('currency');
+            var currencySymbolEl = document.getElementById('currencySymbol');
+            var financialYearEl = document.getElementById('financialYear');
+            var cityEl      = document.getElementById('city');
+            var getBtn      = document.getElementById('getAnalysisBtn');
+            var panel       = document.getElementById('analysisPanelWrap');
+            var placeholder = document.getElementById('wofiPlaceholder');
+            var content     = document.getElementById('wofiContent');
+
+            // ---- Number / currency helpers ----
+            function parseNumber(raw) {
+                if (raw == null) return 0;
+                var s = String(raw).replace(/[^0-9.\-]/g, '');
+                var n = parseFloat(s);
+                return isNaN(n) ? 0 : n;
+            }
+            function formatNumber(n, maxFractionDigits) {
+                if (n == null || isNaN(n)) return '—';
+                return Number(n).toLocaleString(undefined, {
+                    maximumFractionDigits: maxFractionDigits == null ? 0 : maxFractionDigits,
+                });
+            }
+            function currencyUnit() {
+                var sym = (currencySymbolEl && currencySymbolEl.value) ? currencySymbolEl.value.trim() : '';
+                var code = (currencyCodeEl && currencyCodeEl.value) ? currencyCodeEl.value.trim() : '';
+                return (sym || code) ? (sym || code) : 'LCU';
+            }
+            function withCurrency(n, fractionDigits) {
+                if (n == null || isNaN(n)) return '—';
+                return currencyUnit() + ' ' + formatNumber(n, fractionDigits);
+            }
+            function withCurrencyShort(n) {
+                if (n == null || isNaN(n)) return '—';
+                var abs = Math.abs(n);
+                var unit = currencyUnit();
+                if (abs >= 1e9) return unit + ' ' + (n / 1e9).toFixed(2) + 'B';
+                if (abs >= 1e6) return unit + ' ' + (n / 1e6).toFixed(2) + 'M';
+                if (abs >= 1e3) return unit + ' ' + (n / 1e3).toFixed(2) + 'K';
+                return unit + ' ' + formatNumber(n, 0);
+            }
+
+            // ---- Country change → load national reference data ----
+            function loadCountryReference(countryName) {
+                if (!countryName) {
+                    if (gdpEl) gdpEl.value = '';
+                    if (gdpSourceEl) gdpSourceEl.textContent = L.autoHelp;
+                    return Promise.resolve(null);
+                }
+                var url = URL_COUNTRY + '?country=' + encodeURIComponent(countryName);
+                return fetch(url, { credentials: 'same-origin' })
+                    .then(function (r) { return r.ok ? r.json() : null; })
+                    .then(function (data) {
+                        if (!data) return null;
+                        if (gdpEl && data.nationalGdpPerCapita != null) {
+                            gdpEl.value = formatNumber(data.nationalGdpPerCapita, 2);
+                        }
+                        if (gdpSourceEl) {
+                            var src = 'World Bank WDI';
+                            if (data.dataYear) src += ' ' + data.dataYear;
+                            gdpSourceEl.textContent = src;
+                        }
+                        return data;
+                    })
+                    .catch(function () { return null; });
+            }
+            if (countryEl) {
+                countryEl.addEventListener('change', function () {
+                    loadCountryReference(this.value);
+                });
+                // Initial load if a country is already selected (edit / sample mode)
+                if (countryEl.value) loadCountryReference(countryEl.value);
+            }
+
+            // ---- Economic profile change → show descriptive caption ----
+            function refreshProfileDescription() {
+                if (!profileEl || !profileDescEl) return;
+                var opt = profileEl.options[profileEl.selectedIndex];
+                profileDescEl.textContent = (opt && opt.title) ? opt.title : '';
+            }
+            if (profileEl) {
+                profileEl.addEventListener('change', refreshProfileDescription);
+                refreshProfileDescription();
+            }
+
+            // ---- Get Analysis → run the estimator ----
+            function gatherInputs() {
+                return {
+                    Country: countryEl ? countryEl.value : null,
+                    EconomicProfile: profileEl ? profileEl.value : null,
+                    ActualOsr: parseNumber(actualOsrEl ? actualOsrEl.value : 0),
+                    LocalPopulation: parseNumber(populationEl ? populationEl.value : 0),
+                    LocalGovernmentName: cityEl ? cityEl.value : null,
+                    OsrYear: financialYearEl ? financialYearEl.value : null,
+                };
+            }
+
+            function renderResult(result) {
+                if (!result) return;
+                if (placeholder) placeholder.style.display = 'none';
+                if (content) content.style.display = '';
+
+                // Header meta strip
+                setText('wofiIncomeGroupLabel', result.incomeGroup || '—');
+                setText(
+                    'wofiBenchmarkLabel',
+                    result.finalHeadlineFrontierPctGdp != null
+                        ? formatNumber(result.finalHeadlineFrontierPctGdp, 2) + '% of GDP'
+                        : '—'
+                );
+                setText(
+                    'wofiProfileFactorLabel',
+                    result.economicProfileFactor != null
+                        ? '×' + formatNumber(result.economicProfileFactor, 2)
+                        : '—'
+                );
+
+                if (!result.isValid) {
+                    if (placeholder) {
+                        placeholder.style.display = '';
+                        var p = placeholder.querySelector('p');
+                        if (p) p.textContent = result.validationMessage || 'Cannot estimate potential.';
+                    }
+                    if (content) content.style.display = 'none';
+                    return;
+                }
+
+                // Tiles
+                setText('wofiPotentialValue', withCurrencyShort(result.potentialOsr));
+                setText('wofiGapValue', withCurrencyShort(result.osrGap));
+                var idx = result.frontierIndex || 0;
+                setText('wofiFrontierIndexValue', (idx * 100).toFixed(0) + '%');
+                setText('wofiFrontierInterpretation', INTERP_TEXT[result.frontierInterpretation] || '');
+
+                // Bar — Chart.js two-bar stacked column with gap bracket
+                var unitsEl = document.getElementById('wofiBarUnits');
+                if (unitsEl) {
+                    var fmt = unitsEl.getAttribute('data-units-format') || 'AMOUNTS IN {0} (B)';
+                    unitsEl.textContent = fmt.replace('{0}', currencyUnit().toUpperCase());
+                }
+                createActualVsPotentialChart(result.actualOsr || 0, result.potentialOsr || 0, result.osrGap || 0);
+
+                // Warning ribbon
+                var warn = document.getElementById('wofiWarning');
+                var warnMsg = document.getElementById('wofiWarningMessage');
+                if (warn) {
+                    if (result.warningLevel && result.warningLevel !== 'OK' && result.warningMessage) {
+                        warn.style.display = '';
+                        warn.setAttribute('data-level', result.warningLevel);
+                        if (warnMsg) warnMsg.textContent = result.warningMessage;
+                    } else {
+                        warn.style.display = 'none';
+                    }
+                }
+
+                // Methodology echoes
+                setText('wofiMethodGdp', withCurrency(result.nationalGdpPerCapita, 2));
+                setText('wofiMethodLocalGdp', withCurrencyShort(result.estimatedLocalGdp));
+                setText('wofiMethodBenchmark',
+                    (result.finalHeadlineFrontierPctGdp != null
+                        ? formatNumber(result.finalHeadlineFrontierPctGdp, 2) + '% of GDP'
+                        : '—')
+                );
+                setText('wofiMethodGdpShare',
+                    (result.gdpShareNational != null
+                        ? (result.gdpShareNational * 100).toFixed(2) + '%'
+                        : '—')
+                );
+                setText('wofiMethodSource', result.nationalDataSource || '—');
+            }
+
+            function setText(id, text) {
+                var el = document.getElementById(id);
+                if (el) el.textContent = text == null ? '—' : text;
+            }
+
+            // ----------------------------------------------------------
+            // Chart.js — two-bar stacked column chart with right-side
+            // gap bracket annotation. Restored from the legacy
+            // _PotentialEstimates within-country chart so the visual
+            // language stays consistent. Solid colours (no gradients).
+            // ----------------------------------------------------------
+            var actualVsPotentialChart = null;
+            function createActualVsPotentialChart(actualOSR, osrPotential, osrGap) {
+                var canvas = document.getElementById('actualVsPotentialChart');
+                if (!canvas || typeof window.Chart === 'undefined') return;
+                if (actualVsPotentialChart) {
+                    actualVsPotentialChart.destroy();
+                    actualVsPotentialChart = null;
+                }
+
+                var sym = currencyUnit();
+                var fmtShort = function (v) {
+                    if (v == null || isNaN(v)) return '0';
+                    if (Math.abs(v) >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+                    if (Math.abs(v) >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+                    if (Math.abs(v) >= 1e3) return (v / 1e3).toFixed(1) + 'K';
+                    return Number(v).toLocaleString();
+                };
+                var fmtFull = function (v) { return sym + ' ' + fmtShort(v); };
+                var pctOfPotential = (osrPotential > 0) ? Math.round((osrGap / osrPotential) * 100) : 0;
+
+                var gapAnnotPlugin = {
+                    id: 'gapAnnotations',
+                    afterDatasetsDraw: function (chart) {
+                        var c = chart.ctx;
+                        var m0 = chart.getDatasetMeta(0);
+                        var m1 = chart.getDatasetMeta(1);
+                        if (!m0 || !m1) return;
+                        var bar0Cur = m0.data[0];
+                        var bar0Pot = m0.data[1];
+                        var bar1Pot = m1.data[1];
+                        if (!bar0Cur || !bar0Pot || !bar1Pot) return;
+
+                        c.save();
+
+                        // 1) Total amount label above each bar
+                        c.font = '700 13px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.fillStyle = '#1f2937';
+                        c.textAlign = 'center';
+                        c.textBaseline = 'bottom';
+                        c.fillText(fmtFull(actualOSR),    bar0Cur.x, bar0Cur.y - 8);
+                        c.fillText(fmtFull(osrPotential), bar1Pot.x, bar1Pot.y - 8);
+
+                        // 2) Segment value labels (white) inside each filled segment
+                        c.fillStyle = '#ffffff';
+                        c.font = '700 14px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.textBaseline = 'middle';
+                        if (Math.abs(bar0Cur.base - bar0Cur.y) > 22) {
+                            c.fillText(fmtShort(actualOSR), bar0Cur.x, (bar0Cur.y + bar0Cur.base) / 2);
+                        }
+                        if (Math.abs(bar0Pot.base - bar0Pot.y) > 22) {
+                            c.fillText(fmtShort(actualOSR), bar0Pot.x, (bar0Pot.y + bar0Pot.base) / 2);
+                        }
+                        if (Math.abs(bar1Pot.base - bar1Pot.y) > 22) {
+                            c.fillText(fmtShort(osrGap),    bar1Pot.x, (bar1Pot.y + bar1Pot.base) / 2);
+                        }
+
+                        // 3) Dashed connector — top of Current OSR → top of blue base in Potential
+                        var halfW = (bar0Cur.width || 60) / 2;
+                        c.strokeStyle = '#9ca3af';
+                        c.lineWidth = 1;
+                        c.setLineDash([4, 4]);
+                        c.beginPath();
+                        c.moveTo(bar0Cur.x + halfW, bar0Cur.y);
+                        c.lineTo(bar0Pot.x - halfW, bar0Pot.y);
+                        c.stroke();
+                        c.setLineDash([]);
+
+                        // 4) Right-side gap bracket + labels
+                        if (osrGap > 0) {
+                            var bracketX = bar1Pot.x + ((bar1Pot.width || 60) / 2) + 18;
+                            var topY = bar1Pot.y;
+                            var botY = bar1Pot.base;
+                            c.strokeStyle = '#FD9D24';
+                            c.lineWidth = 1.5;
+                            c.beginPath(); c.moveTo(bracketX, topY); c.lineTo(bracketX, botY); c.stroke();
+                            c.beginPath(); c.moveTo(bracketX, topY); c.lineTo(bracketX - 6, topY); c.stroke();
+                            c.beginPath(); c.moveTo(bracketX, botY); c.lineTo(bracketX - 6, botY); c.stroke();
+
+                            var midY = (topY + botY) / 2;
+                            c.fillStyle = '#FD9D24';
+                            c.textAlign = 'left';
+                            c.font = '700 12px Roboto, "Segoe UI", Arial, sans-serif';
+                            c.textBaseline = 'bottom';
+                            c.fillText('Gap', bracketX + 8, midY - 4);
+                            c.font = '700 14px Roboto, "Segoe UI", Arial, sans-serif';
+                            c.textBaseline = 'top';
+                            c.fillText(fmtShort(osrGap), bracketX + 8, midY + 2);
+                            c.fillStyle = '#94a3b8';
+                            c.font = '500 11px Roboto, "Segoe UI", Arial, sans-serif';
+                            c.fillText(pctOfPotential + '% of benchmark', bracketX + 8, midY + 22);
+                        }
+
+                        c.restore();
+                    }
+                };
+
+                actualVsPotentialChart = new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Actual revenue', 'Potential revenue'],
+                        datasets: [
+                            {
+                                label: 'Actual revenue',
+                                data: [actualOSR, actualOSR],
+                                backgroundColor: '#00b2e3',
+                                stack: 'osr',
+                                borderWidth: 0,
+                                barThickness: 110,
+                                maxBarThickness: 130
+                            },
+                            {
+                                label: 'Gap',
+                                data: [0, osrGap],
+                                backgroundColor: '#FD9D24',
+                                stack: 'osr',
+                                borderWidth: 0,
+                                barThickness: 110,
+                                maxBarThickness: 130
+                            }
+                        ]
+                    },
+                    plugins: [gapAnnotPlugin],
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: { padding: { top: 36, right: 150, bottom: 8, left: 8 } },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (ctx) {
+                                        return ctx.dataset.label + ': ' + fmtFull(ctx.parsed.y);
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                stacked: true,
+                                ticks: { font: { size: 12, weight: '700' }, color: '#1f2937', padding: 8 },
+                                grid: { display: false },
+                                border: { display: false }
+                            },
+                            y: {
+                                stacked: true,
+                                beginAtZero: true,
+                                ticks: {
+                                    font: { size: 11, weight: '700' },
+                                    color: '#1f2937',
+                                    callback: function (v) {
+                                        if (v >= 1e9) return (v / 1e9).toFixed(1) + 'B';
+                                        if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+                                        if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
+                                        return v.toLocaleString();
+                                    }
+                                },
+                                grid: { color: '#eef0f3', drawBorder: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function runEstimator() {
+                var inputs = gatherInputs();
+                // Minimal client-side validation for fast feedback
+                if (!inputs.Country) {
+                    return showPlaceholder(L.validationCountry);
+                }
+                if (!inputs.EconomicProfile) {
+                    return showPlaceholder(L.validationProfile);
+                }
+                if (!inputs.LocalPopulation || inputs.LocalPopulation <= 0) {
+                    return showPlaceholder(L.validationPopulation);
+                }
+                if (!inputs.ActualOsr || inputs.ActualOsr <= 0) {
+                    return showPlaceholder(L.validationOsr);
+                }
+
+                return fetch(URL_ESTIMATE, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(inputs),
+                })
+                    .then(function (r) { return r.ok ? r.json() : null; })
+                    .then(function (result) {
+                        renderResult(result);
+                    })
+                    .catch(function (e) {
+                        showPlaceholder('Could not compute potential. Please retry.');
+                    });
+            }
+
+            function showPlaceholder(message) {
+                if (placeholder) {
+                    placeholder.style.display = '';
+                    var p = placeholder.querySelector('p');
+                    if (p && message) p.textContent = message;
+                }
+                if (content) content.style.display = 'none';
+            }
+
+            if (getBtn && panel) {
+                // If a country is already selected (edit / sample mode), show panel
+                // immediately and try to compute. If inputs aren't complete, the
+                // renderer will leave the placeholder visible.
+                if (countryEl && countryEl.value) {
+                    panel.style.display = '';
+                    setTimeout(runEstimator, 200);
+                }
+
+                getBtn.addEventListener('click', function () {
+                    panel.style.display = '';
+                    runEstimator();
+                    setTimeout(function () {
+                        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 50);
+                });
+            }
+        })();
 
         // "Next step → Analyse Each Revenue Stream" CTA — switches umbrella tab to the per-stream pipeline
         var nextStepBtn = document.getElementById('goToStreamAnalysisBtn');

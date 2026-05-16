@@ -32,6 +32,7 @@ namespace RosraApp.Controllers
         private readonly ExcelExportService _excelExportService;
         private readonly HtmlToPdfService _htmlToPdfService;
         private readonly IMemoryCache _cache;
+        private readonly WofiPotentialEstimator _wofiEstimator;
 
         // JSON serialization options to ensure consistent property naming
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
@@ -49,7 +50,8 @@ namespace RosraApp.Controllers
             ReportExportService pdfExportService,
             ExcelExportService excelExportService,
             HtmlToPdfService htmlToPdfService,
-            IMemoryCache cache)
+            IMemoryCache cache,
+            WofiPotentialEstimator wofiEstimator)
         {
             _context = context;
             _userManager = userManager;
@@ -59,6 +61,75 @@ namespace RosraApp.Controllers
             _excelExportService = excelExportService;
             _htmlToPdfService = htmlToPdfService;
             _cache = cache;
+            _wofiEstimator = wofiEstimator;
+        }
+
+        // ---------------------------------------------------------------
+        // WoFi top-down OSR potential estimator endpoints.
+        // ---------------------------------------------------------------
+
+        /// <summary>
+        /// Returns the seeded country reference data: income group, national
+        /// GDP per capita (LCU), national population, data year, and source.
+        /// Called by the LG Profile card whenever the country dropdown changes
+        /// so the read-only GDP-per-capita stat can be filled.
+        /// </summary>
+        [HttpGet]
+        public IActionResult WofiCountryReference(string country)
+        {
+            if (string.IsNullOrWhiteSpace(country))
+                return BadRequest(new { error = "country is required" });
+
+            var proxy = _wofiEstimator.FindCountry(country);
+            if (proxy == null)
+                return NotFound(new { error = $"Country '{country}' is not in the WoFi reference table." });
+
+            var national = _wofiEstimator.FindNationalData(proxy.Iso3);
+            var frontier = _wofiEstimator.FindFrontier(proxy.IncomeGroup);
+
+            return Json(new
+            {
+                country = proxy.Country,
+                iso3 = proxy.Iso3,
+                incomeGroup = proxy.IncomeGroup,
+                nationalGdpPerCapita = national?.GdpPerCapitaLcu,
+                nationalPopulation = national?.NationalPopulation,
+                dataYear = national?.DataYear,
+                source = national?.Source,
+                finalHeadlineFrontierPctGdp = frontier?.FinalHeadlineFrontierPctGdp,
+            });
+        }
+
+        /// <summary>
+        /// Returns the five Local Economic Profile options (label, description,
+        /// factor) so the LG Profile dropdown can be populated from the seed
+        /// rules rather than hard-coded in the view.
+        /// </summary>
+        [HttpGet]
+        public IActionResult WofiEconomicProfiles()
+        {
+            var options = _wofiEstimator.EconomicProfiles.Select(r => new
+            {
+                name = r.ProfileName,
+                whenToUse = r.WhenToUse,
+                factor = r.Factor,
+            });
+            return Json(options);
+        }
+
+        /// <summary>
+        /// Computes the top-down potential estimate from the user's LG Profile
+        /// inputs. Returns the full WofiEstimatorResult including potential,
+        /// gap, frontier index, warning level, and methodology echoes.
+        /// </summary>
+        [HttpPost]
+        public IActionResult WofiEstimatePotential([FromBody] Models.Wofi.WofiEstimatorInputs inputs)
+        {
+            if (inputs == null)
+                return BadRequest(new { error = "Inputs payload is required." });
+
+            var result = _wofiEstimator.Calculate(inputs);
+            return Json(result);
         }
 
         public IActionResult Index(string activeTab = null, string umbrellaTab = null, bool viewMode = false)
@@ -643,6 +714,7 @@ namespace RosraApp.Controllers
                 BudgetedOsr = formData.BudgetedOsr,
                 Population = formData.Population,
                 GdpPerCapita = formData.GdpPerCapita,
+                EconomicProfile = formData.EconomicProfile,
                 // Project Details
                 ProjectName = formData.ProjectName,
                 // EstimatedBudget field removed from UI but kept in DB for backward compatibility
@@ -758,6 +830,7 @@ namespace RosraApp.Controllers
                         existingReport.BudgetedOsr = formData.BudgetedOsr;
                         existingReport.Population = formData.Population;
                         existingReport.GdpPerCapita = formData.GdpPerCapita;
+                        existingReport.EconomicProfile = formData.EconomicProfile;
                         // Project Details
                         existingReport.ProjectName = formData.ProjectName;
                         existingReport.EstimatedBudget = formData.EstimatedBudget;
@@ -944,6 +1017,7 @@ namespace RosraApp.Controllers
             report.BudgetedOsr = formData.BudgetedOsr;
             report.Population = formData.Population;
             report.GdpPerCapita = formData.GdpPerCapita;
+            report.EconomicProfile = formData.EconomicProfile;
             report.ProjectName = formData.ProjectName;
             report.EstimatedBudget = formData.EstimatedBudget;
             report.ProjectDescription = formData.ProjectDescription;
@@ -991,6 +1065,7 @@ namespace RosraApp.Controllers
                 BudgetedOsr = formData.BudgetedOsr,
                 Population = formData.Population,
                 GdpPerCapita = formData.GdpPerCapita,
+                EconomicProfile = formData.EconomicProfile,
                 ProjectName = formData.ProjectName,
                 EstimatedBudget = formData.EstimatedBudget,
                 ProjectDescription = formData.ProjectDescription,
@@ -1046,6 +1121,7 @@ namespace RosraApp.Controllers
                 BudgetedOsr = source.BudgetedOsr,
                 Population = source.Population,
                 GdpPerCapita = source.GdpPerCapita,
+                EconomicProfile = source.EconomicProfile,
                 ProjectName = source.ProjectName,
                 EstimatedBudget = source.EstimatedBudget,
                 ProjectDescription = source.ProjectDescription,
@@ -1130,6 +1206,7 @@ namespace RosraApp.Controllers
                 BudgetedOsr = report.BudgetedOsr,
                 Population = report.Population,
                 GdpPerCapita = report.GdpPerCapita,
+                EconomicProfile = report.EconomicProfile,
                 // Project Details
                 ProjectName = report.ProjectName,
                 EstimatedBudget = report.EstimatedBudget,
@@ -1190,6 +1267,7 @@ namespace RosraApp.Controllers
                 BudgetedOsr = report.BudgetedOsr,
                 Population = report.Population,
                 GdpPerCapita = report.GdpPerCapita,
+                EconomicProfile = report.EconomicProfile,
                 // Project Details
                 ProjectName = report.ProjectName,
                 ProjectDescription = report.ProjectDescription,
@@ -1307,6 +1385,7 @@ namespace RosraApp.Controllers
                 BudgetedOsr = report.BudgetedOsr,
                 Population = report.Population,
                 GdpPerCapita = report.GdpPerCapita,
+                EconomicProfile = report.EconomicProfile,
                 // Project Details
                 ProjectName = report.ProjectName,
                 ProjectDescription = report.ProjectDescription,

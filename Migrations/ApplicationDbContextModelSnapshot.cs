@@ -915,6 +915,10 @@ namespace RosraApp.Migrations
                     b.Property<string>("DeletedByUserId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("EconomicProfile")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 

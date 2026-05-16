@@ -102,6 +102,9 @@ builder.Services.AddSingleton<RosraApp.Services.DataRetentionService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<RosraApp.Services.DataRetentionService>());
 builder.Services.AddScoped<RosraApp.Services.SubmissionService>();
 builder.Services.AddScoped<RosraApp.Services.ValidationService>();
+// WoFi top-down OSR potential estimator. Singleton because the four seed JSONs
+// under Data/Wofi/ are static reference data loaded once at startup.
+builder.Services.AddSingleton<RosraApp.Services.WofiPotentialEstimator>();
 
 // Add session services
 builder.Services.AddDistributedMemoryCache();

@@ -14,6 +14,13 @@
   <ItemGroup>
     <EmbeddedResource Include="Data\SeedData\countrydata.json" />
     <EmbeddedResource Include="Data\SeedData\peersng.json" />
+    <!-- WoFi top-down OSR potential estimator reference data. Embedded so they
+         travel with the assembly and are guaranteed to be present on Azure
+         App Service / Railway / any host, without filesystem path concerns. -->
+    <EmbeddedResource Include="Data\Wofi\wofi_country_proxy.json" />
+    <EmbeddedResource Include="Data\Wofi\wofi_frontier_stats.json" />
+    <EmbeddedResource Include="Data\Wofi\wofi_premium_rules.json" />
+    <EmbeddedResource Include="Data\Wofi\wofi_national_data.json" />
   </ItemGroup>
 
   <ItemGroup>

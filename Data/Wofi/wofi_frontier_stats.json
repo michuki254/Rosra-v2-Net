@@ -1,0 +1,58 @@
+[
+  {
+    "income_group": "High income countries",
+    "peer_count": 38,
+    "top20_count": 8,
+    "base_top20_frontier_pct_gdp": 5.817439570125,
+    "p80_pct_gdp": 3.758301261,
+    "max_observed_pct_gdp": 9.217857459,
+    "local_admin_pooled_sng_factor": 1.6685169084530473,
+    "option2_shrinkage": 0.5,
+    "option2_half_factor": 1.3342584542265237,
+    "total_osr_proxy_uplift": 0.1,
+    "final_benchmark_factor": 1.4676842996491761,
+    "final_headline_frontier_pct_gdp": 8.538164721230315
+  },
+  {
+    "income_group": "Lower-middle income countries",
+    "peer_count": 33,
+    "top20_count": 7,
+    "base_top20_frontier_pct_gdp": 2.1081468791428573,
+    "p80_pct_gdp": 1.184025375,
+    "max_observed_pct_gdp": 2.6819027749999997,
+    "local_admin_pooled_sng_factor": 1.6685169084530473,
+    "option2_shrinkage": 0.5,
+    "option2_half_factor": 1.3342584542265237,
+    "total_osr_proxy_uplift": 0.1,
+    "final_benchmark_factor": 1.4676842996491761,
+    "final_headline_frontier_pct_gdp": 3.094094075872381
+  },
+  {
+    "income_group": "Other low income countries",
+    "peer_count": 16,
+    "top20_count": 4,
+    "base_top20_frontier_pct_gdp": 0.473142117,
+    "p80_pct_gdp": 0.249513382,
+    "max_observed_pct_gdp": 0.709318182,
+    "local_admin_pooled_sng_factor": 1.6685169084530473,
+    "option2_shrinkage": 0.5,
+    "option2_half_factor": 1.3342584542265237,
+    "total_osr_proxy_uplift": 0.1,
+    "final_benchmark_factor": 1.4676842996491761,
+    "final_headline_frontier_pct_gdp": 0.6944232566236735
+  },
+  {
+    "income_group": "Upper-middle income countries",
+    "peer_count": 34,
+    "top20_count": 7,
+    "base_top20_frontier_pct_gdp": 2.5275033527142856,
+    "p80_pct_gdp": 1.5724747309999998,
+    "max_observed_pct_gdp": 4.872799036,
+    "local_admin_pooled_sng_factor": 1.6685169084530473,
+    "option2_shrinkage": 0.5,
+    "option2_half_factor": 1.3342584542265237,
+    "total_osr_proxy_uplift": 0.1,
+    "final_benchmark_factor": 1.4676842996491761,
+    "final_headline_frontier_pct_gdp": 3.709576988089411
+  }
+]

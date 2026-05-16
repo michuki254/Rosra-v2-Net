@@ -104,6 +104,7 @@ namespace RosraApp.Services
                 BudgetedOsr = report.BudgetedOsr,
                 Population = report.Population,
                 GdpPerCapita = report.GdpPerCapita,
+                EconomicProfile = report.EconomicProfile,
                 ProjectName = report.ProjectName,
                 EstimatedBudget = report.EstimatedBudget,
                 ProjectDescription = report.ProjectDescription,

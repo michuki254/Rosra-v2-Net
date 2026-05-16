@@ -113,6 +113,12 @@ snapshot-initial.yml
 /temp_np_*.txt
 /*_export.csv
 
+# Workbook dumps + intermediate JSONs produced by the extract scripts.
+# The Python scripts and the curated seed JSONs under Data/Wofi/ are tracked;
+# these dumps are regeneratable artifacts.
+Scripts/wofi_estimator_dump.json
+Scripts/wofi_countries.json
+
 # Backup files
 *.bak2
 *.backup

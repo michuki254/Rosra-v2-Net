@@ -40,9 +40,14 @@ namespace RosraApp.Models
         public decimal? BudgetedOsr { get; set; }
         
         public int? Population { get; set; }
-        
+
         [Column(TypeName = "decimal(18,2)")]
         public decimal? GdpPerCapita { get; set; }
+
+        // WoFi top-down potential estimator — user-selected local economic profile.
+        // One of the five labels in Data/Wofi/wofi_premium_rules.json.
+        [MaxLength(80)]
+        public string? EconomicProfile { get; set; }
         
         // Potential Estimates Tab
         public string? ProjectName { get; set; }

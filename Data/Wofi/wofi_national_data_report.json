@@ -1,0 +1,18 @@
+{
+  "fetched_at_utc": "2026-05-16T09:06:37.254775+00:00",
+  "source": "World Bank Open Data API (NY.GDP.PCAP.CN, SP.POP.TOTL)",
+  "indicator_range": "2000:2024",
+  "iso_fixups_applied": [
+    {
+      "name": "Kosovo",
+      "workbook_iso3": "XKV",
+      "wb_iso3": "XKX"
+    }
+  ],
+  "missing_both": [],
+  "missing_gdp_only": [],
+  "missing_pop_only": [],
+  "year_mismatch": [],
+  "covered": 124,
+  "total": 124
+}

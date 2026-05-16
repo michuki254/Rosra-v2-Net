@@ -1,0 +1,1242 @@
+[
+  {
+    "country": "Albania",
+    "iso3": "ALB",
+    "wb_iso3": "ALB",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 1059185.58836546,
+    "national_population": 2377128.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Angola",
+    "iso3": "AGO",
+    "wb_iso3": "AGO",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 2689940.37608668,
+    "national_population": 37885849.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Argentina",
+    "iso3": "ARG",
+    "wb_iso3": "ARG",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 12778089.6307609,
+    "national_population": 45696159.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Armenia",
+    "iso3": "ARM",
+    "wb_iso3": "ARM",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 3360281.95154112,
+    "national_population": 3033500.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Australia",
+    "iso3": "AUS",
+    "wb_iso3": "AUS",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 98541.8805704139,
+    "national_population": 27196812.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Austria",
+    "iso3": "AUT",
+    "wb_iso3": "AUT",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 53834.0079551256,
+    "national_population": 9177982.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Azerbaijan",
+    "iso3": "AZE",
+    "wb_iso3": "AZE",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 12382.5448429504,
+    "national_population": 10202830.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Bangladesh",
+    "iso3": "BGD",
+    "wb_iso3": "BGD",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 288233.784370441,
+    "national_population": 173562364.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Belgium",
+    "iso3": "BEL",
+    "wb_iso3": "BEL",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 52305.6074868808,
+    "national_population": 11858610.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Benin",
+    "iso3": "BEN",
+    "wb_iso3": "BEN",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 900653.293252364,
+    "national_population": 14462724.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Bolivia",
+    "iso3": "BOL",
+    "wb_iso3": "BOL",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 30550.2577433989,
+    "national_population": 12413315.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Bosnia and Herzegovina",
+    "iso3": "BIH",
+    "wb_iso3": "BIH",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 16916.6077112039,
+    "national_population": 3164253.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Botswana",
+    "iso3": "BWA",
+    "wb_iso3": "BWA",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 104378.524111523,
+    "national_population": 2521139.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Brazil",
+    "iso3": "BRA",
+    "wb_iso3": "BRA",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 55562.8767445916,
+    "national_population": 211998573.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Bulgaria",
+    "iso3": "BGR",
+    "wb_iso3": "BGR",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 31810.8192276207,
+    "national_population": 6441421.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Burkina Faso",
+    "iso3": "BFA",
+    "wb_iso3": "BFA",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 595426.625858043,
+    "national_population": 23548781.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Burundi",
+    "iso3": "BDI",
+    "wb_iso3": "BDI",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 1046624.21089994,
+    "national_population": 14047786.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Cabo Verde",
+    "iso3": "CPV",
+    "wb_iso3": "CPV",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 529228.162979136,
+    "national_population": 524877.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Cambodia",
+    "iso3": "KHM",
+    "wb_iso3": "KHM",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 10701770.0247766,
+    "national_population": 17638801.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Canada",
+    "iso3": "CAN",
+    "wb_iso3": "CAN",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 74411.4858438282,
+    "national_population": 41288599.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Chad",
+    "iso3": "TCD",
+    "wb_iso3": "TCD",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 583037.236569284,
+    "national_population": 20299123.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Chile",
+    "iso3": "CHL",
+    "wb_iso3": "CHL",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 15766986.5488753,
+    "national_population": 19764771.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "China (People’s Republic of)",
+    "iso3": "CHN",
+    "wb_iso3": "CHN",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 95749.2891128657,
+    "national_population": 1408975000.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Colombia",
+    "iso3": "COL",
+    "wb_iso3": "COL",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 32266295.1884213,
+    "national_population": 52886363.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Costa Rica",
+    "iso3": "CRI",
+    "wb_iso3": "CRI",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 9574424.25746261,
+    "national_population": 5129910.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Croatia",
+    "iso3": "HRV",
+    "wb_iso3": "HRV",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 22219.551963168,
+    "national_population": 3866200.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Cyprus",
+    "iso3": "CYP",
+    "wb_iso3": "CYP",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 35730.79296875,
+    "national_population": 1358282.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Czechia",
+    "iso3": "CZE",
+    "wb_iso3": "CZE",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 738836.433982563,
+    "national_population": 10905028.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Côte d’Ivoire",
+    "iso3": "CIV",
+    "wb_iso3": "CIV",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 1654045.41055162,
+    "national_population": 31934230.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Denmark",
+    "iso3": "DNK",
+    "wb_iso3": "DNK",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 489690.768701046,
+    "national_population": 5976992.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Djibouti",
+    "iso3": "DJI",
+    "wb_iso3": "DJI",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 631393.546626144,
+    "national_population": 1168722.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Dominican Republic",
+    "iso3": "DOM",
+    "wb_iso3": "DOM",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 647810.244219303,
+    "national_population": 11427557.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Ecuador",
+    "iso3": "ECU",
+    "wb_iso3": "ECU",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 6874.705739766,
+    "national_population": 18135478.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Egypt",
+    "iso3": "EGY",
+    "wb_iso3": "EGY",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 119296.789214062,
+    "national_population": 116538258.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "El Salvador",
+    "iso3": "SLV",
+    "wb_iso3": "SLV",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 5579.65969165029,
+    "national_population": 6338193.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Estonia",
+    "iso3": "EST",
+    "wb_iso3": "EST",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 29036.3284344051,
+    "national_population": 1372341.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Eswatini",
+    "iso3": "SWZ",
+    "wb_iso3": "SWZ",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 71614.0766738922,
+    "national_population": 1242822.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Ethiopia",
+    "iso3": "ETH",
+    "wb_iso3": "ETH",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 89236.5761095126,
+    "national_population": 132059767.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Finland",
+    "iso3": "FIN",
+    "wb_iso3": "FIN",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 49104.5142885715,
+    "national_population": 5619911.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "France",
+    "iso3": "FRA",
+    "wb_iso3": "FRA",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 42594.1574304561,
+    "national_population": 68551653.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Gambia",
+    "iso3": "GMB",
+    "wb_iso3": "GMB",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 59012.9734943982,
+    "national_population": 2759988.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Georgia",
+    "iso3": "GEO",
+    "wb_iso3": "GEO",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 25144.16599493,
+    "national_population": 3699557.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Germany",
+    "iso3": "DEU",
+    "wb_iso3": "DEU",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 51833.6517870167,
+    "national_population": 83516593.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Ghana",
+    "iso3": "GHA",
+    "wb_iso3": "GHA",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 33951.8773166678,
+    "national_population": 34427414.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Greece",
+    "iso3": "GRC",
+    "wb_iso3": "GRC",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 22751.8408700936,
+    "national_population": 10405134.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Guatemala",
+    "iso3": "GTM",
+    "wb_iso3": "GTM",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 47715.2082060336,
+    "national_population": 18406359.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Guinea",
+    "iso3": "GIN",
+    "wb_iso3": "GIN",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 14544249.3518957,
+    "national_population": 14754785.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Honduras",
+    "iso3": "HND",
+    "wb_iso3": "HND",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 84973.1236853625,
+    "national_population": 10825703.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Hungary",
+    "iso3": "HUN",
+    "wb_iso3": "HUN",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 8517790.24719033,
+    "national_population": 9562065.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Iceland",
+    "iso3": "ISL",
+    "wb_iso3": "ISL",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 11869981.8088206,
+    "national_population": 386506.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "India",
+    "iso3": "IND",
+    "wb_iso3": "IND",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 227909.0885629,
+    "national_population": 1450935791.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Indonesia",
+    "iso3": "IDN",
+    "wb_iso3": "IDN",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 78094908.3860646,
+    "national_population": 283487931.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Ireland",
+    "iso3": "IRL",
+    "wb_iso3": "IRL",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 104302.467108616,
+    "national_population": 5395790.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Israel",
+    "iso3": "ISR",
+    "wb_iso3": "ISR",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 200438.54397257,
+    "national_population": 9974400.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Italy",
+    "iso3": "ITA",
+    "wb_iso3": "ITA",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 37311.5947319397,
+    "national_population": 58952704.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Jamaica",
+    "iso3": "JAM",
+    "wb_iso3": "JAM",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 1213000.95978585,
+    "national_population": 2839175.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Japan",
+    "iso3": "JPN",
+    "wb_iso3": "JPN",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 4917448.48256998,
+    "national_population": 123975371.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Jordan",
+    "iso3": "JOR",
+    "wb_iso3": "JOR",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 3278.84810673983,
+    "national_population": 11552876.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Kazakhstan",
+    "iso3": "KAZ",
+    "wb_iso3": "KAZ",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 6637991.84181519,
+    "national_population": 20592571.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Kenya",
+    "iso3": "KEN",
+    "wb_iso3": "KEN",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 287500.116952963,
+    "national_population": 56432944.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Korea",
+    "iso3": "KOR",
+    "wb_iso3": "KOR",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 49406855.6849989,
+    "national_population": 51751065.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Kosovo",
+    "iso3": "XKV",
+    "wb_iso3": "XKX",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 6491.89357689295,
+    "national_population": 1594353.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Kyrgyzstan",
+    "iso3": "KGZ",
+    "wb_iso3": "KGZ",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 210919.917118397,
+    "national_population": 7221868.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Latvia",
+    "iso3": "LVA",
+    "wb_iso3": "LVA",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 21627.4084680332,
+    "national_population": 1866124.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Lithuania",
+    "iso3": "LTU",
+    "wb_iso3": "LTU",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 27147.5879399421,
+    "national_population": 2888278.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Luxembourg",
+    "iso3": "LUX",
+    "wb_iso3": "LUX",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 127295.055331368,
+    "national_population": 677012.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Madagascar",
+    "iso3": "MDG",
+    "wb_iso3": "MDG",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 2466299.90913174,
+    "national_population": 31964956.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Malawi",
+    "iso3": "MWI",
+    "wb_iso3": "MWI",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 908404.793379316,
+    "national_population": 21655286.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Malaysia",
+    "iso3": "MYS",
+    "wb_iso3": "MYS",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 54342.4618928241,
+    "national_population": 35557673.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Mali",
+    "iso3": "MLI",
+    "wb_iso3": "MLI",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 663717.382472319,
+    "national_population": 24478595.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Malta",
+    "iso3": "MLT",
+    "wb_iso3": "MLT",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 40557.4573955144,
+    "national_population": 568847.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Mauritius",
+    "iso3": "MUS",
+    "wb_iso3": "MUS",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 556548.151798995,
+    "national_population": 1245779.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Mexico",
+    "iso3": "MEX",
+    "wb_iso3": "MEX",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 259668.710939998,
+    "national_population": 130861007.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Moldova",
+    "iso3": "MDA",
+    "wb_iso3": "MDA",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 134794.16210924,
+    "national_population": 2402306.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Mongolia",
+    "iso3": "MNG",
+    "wb_iso3": "MNG",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 22884511.3408239,
+    "national_population": 3524788.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Montenegro",
+    "iso3": "MNE",
+    "wb_iso3": "MNE",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 12260.1828314823,
+    "national_population": 623525.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Morocco",
+    "iso3": "MAR",
+    "wb_iso3": "MAR",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 41291.171875,
+    "national_population": 38081173.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Mozambique",
+    "iso3": "MOZ",
+    "wb_iso3": "MOZ",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 41971.322978447,
+    "national_population": 34631766.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Myanmar",
+    "iso3": "MMR",
+    "wb_iso3": "MMR",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 2854005.03276224,
+    "national_population": 54500091.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Namibia",
+    "iso3": "NAM",
+    "wb_iso3": "NAM",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 80886.7050632464,
+    "national_population": 3030131.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Nepal",
+    "iso3": "NPL",
+    "wb_iso3": "NPL",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 192542.806179249,
+    "national_population": 29651054.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Netherlands",
+    "iso3": "NLD",
+    "wb_iso3": "NLD",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 62381.4119388212,
+    "national_population": 17993485.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "New Zealand",
+    "iso3": "NZL",
+    "wb_iso3": "NZL",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 81302.1276595745,
+    "national_population": 5287500.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Nicaragua",
+    "iso3": "NIC",
+    "wb_iso3": "NIC",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 104289.146894077,
+    "national_population": 6916140.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Niger",
+    "iso3": "NER",
+    "wb_iso3": "NER",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 445827.662355842,
+    "national_population": 27032412.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Nigeria",
+    "iso3": "NGA",
+    "wb_iso3": "NGA",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 1602302.14062969,
+    "national_population": 232679478.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "North Macedonia",
+    "iso3": "MKD",
+    "wb_iso3": "MKD",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 528452.294751198,
+    "national_population": 1824359.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Norway",
+    "iso3": "NOR",
+    "wb_iso3": "NOR",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 932581.803603158,
+    "national_population": 5572279.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Pakistan",
+    "iso3": "PAK",
+    "wb_iso3": "PAK",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 418636.331356601,
+    "national_population": 251269164.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Palestinian Authority or West Bank and Gaza Strip",
+    "iso3": "PSE",
+    "wb_iso3": "PSE",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 2592.30591217647,
+    "national_population": 5289152.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Panama",
+    "iso3": "PAN",
+    "wb_iso3": "PAN",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 19161.2188501596,
+    "national_population": 4515577.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Paraguay",
+    "iso3": "PRY",
+    "wb_iso3": "PRY",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 48507282.5492635,
+    "national_population": 6929153.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Peru",
+    "iso3": "PER",
+    "wb_iso3": "PER",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 31729.2988475368,
+    "national_population": 34217848.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Philippines",
+    "iso3": "PHL",
+    "wb_iso3": "PHL",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 228293.608920539,
+    "national_population": 115843670.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Poland",
+    "iso3": "POL",
+    "wb_iso3": "POL",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 99931.8557913947,
+    "national_population": 36559233.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Portugal",
+    "iso3": "PRT",
+    "wb_iso3": "PRT",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 27062.7962629273,
+    "national_population": 10694681.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Romania",
+    "iso3": "ROU",
+    "wb_iso3": "ROU",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 92336.8359237792,
+    "national_population": 19051804.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Rwanda",
+    "iso3": "RWA",
+    "wb_iso3": "RWA",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 1317673.02492248,
+    "national_population": 14256567.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Senegal",
+    "iso3": "SEN",
+    "wb_iso3": "SEN",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 1075182.57806838,
+    "national_population": 18501984.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Serbia",
+    "iso3": "SRB",
+    "wb_iso3": "SRB",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 1480041.63379628,
+    "national_population": 6586476.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Sierra Leone",
+    "iso3": "SLE",
+    "wb_iso3": "SLE",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 18219.7754909679,
+    "national_population": 8642022.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Slovak Republic",
+    "iso3": "SVK",
+    "wb_iso3": "SVK",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 24014.3605697382,
+    "national_population": 5422069.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Slovenia",
+    "iso3": "SVN",
+    "wb_iso3": "SVN",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 31690.3647645013,
+    "national_population": 2127400.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Somalia",
+    "iso3": "SOM",
+    "wb_iso3": "SOM",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 17701267.7530943,
+    "national_population": 19009151.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "South Africa",
+    "iso3": "ZAF",
+    "wb_iso3": "ZAF",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 114869.12373762,
+    "national_population": 64007187.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Spain",
+    "iso3": "ESP",
+    "wb_iso3": "ESP",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 32638.0319368894,
+    "national_population": 48848840.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Sri Lanka",
+    "iso3": "LKA",
+    "wb_iso3": "LKA",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 1364234.54557452,
+    "national_population": 21916000.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Sweden",
+    "iso3": "SWE",
+    "wb_iso3": "SWE",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 603596.844529968,
+    "national_population": 10569709.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Switzerland",
+    "iso3": "CHE",
+    "wb_iso3": "CHE",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 91564.2501506288,
+    "national_population": 9005582.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Tajikistan",
+    "iso3": "TJK",
+    "wb_iso3": "TJK",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 14484.3034042251,
+    "national_population": 10590927.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Tanzania",
+    "iso3": "TZA",
+    "wb_iso3": "TZA",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 3082972.5,
+    "national_population": 68560157.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Thailand",
+    "iso3": "THA",
+    "wb_iso3": "THA",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 259288.219956321,
+    "national_population": 71668011.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Togo",
+    "iso3": "TGO",
+    "wb_iso3": "TGO",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 678731.772916615,
+    "national_population": 9515236.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Tunisia",
+    "iso3": "TUN",
+    "wb_iso3": "TUN",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 13012.884385078,
+    "national_population": 12277109.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Türkiye",
+    "iso3": "TUR",
+    "wb_iso3": "TUR",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 521374.223109036,
+    "national_population": 85518661.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Uganda",
+    "iso3": "UGA",
+    "wb_iso3": "UGA",
+    "income_group": "Other low income countries",
+    "gdp_per_capita_lcu": 4072925.99260039,
+    "national_population": 50015092.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Ukraine",
+    "iso3": "UKR",
+    "wb_iso3": "UKR",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 216398.578125,
+    "national_population": 37860221.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "United Kingdom",
+    "iso3": "GBR",
+    "wb_iso3": "GBR",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 41660.734406148,
+    "national_population": 69226000.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "United States",
+    "iso3": "USA",
+    "wb_iso3": "USA",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 84534.0407841548,
+    "national_population": 340110988.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Uruguay",
+    "iso3": "URY",
+    "wb_iso3": "URY",
+    "income_group": "High income countries",
+    "gdp_per_capita_lcu": 961347.527363825,
+    "national_population": 3386588.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Uzbekistan",
+    "iso3": "UZB",
+    "wb_iso3": "UZB",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 40002736.5872575,
+    "national_population": 36361859.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Venezuela",
+    "iso3": "VEN",
+    "wb_iso3": "VEN",
+    "income_group": "Upper-middle income countries",
+    "gdp_per_capita_lcu": 173540.756698133,
+    "national_population": 28405543.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Viet Nam",
+    "iso3": "VNM",
+    "wb_iso3": "VNM",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 113992781.234316,
+    "national_population": 100987686.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  },
+  {
+    "country": "Zambia",
+    "iso3": "ZMB",
+    "wb_iso3": "ZMB",
+    "income_group": "Lower-middle income countries",
+    "gdp_per_capita_lcu": 31062.4028358304,
+    "national_population": 21314956.0,
+    "data_year": 2024,
+    "source": "World Bank WDI: GDPpc (NY.GDP.PCAP.CN) and Pop (SP.POP.TOTL) for same year"
+  }
+]

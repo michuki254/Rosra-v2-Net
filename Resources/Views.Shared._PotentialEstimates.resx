@@ -118,9 +118,16 @@
   <data name="LgProfile_OsrLabel" xml:space="preserve"><value>Own-Source Revenue (OSR)</value></data>
   <data name="LgProfile_OsrHelp" xml:space="preserve"><value>Total revenue the local government collects directly — taxes, fees, charges, fines (LCU).</value></data>
   <data name="LgProfile_OsrPlaceholder" xml:space="preserve"><value>e.g. 12,500,000,000</value></data>
-  <data name="LgProfile_GrpLabel" xml:space="preserve"><value>GRP</value></data>
-  <data name="LgProfile_GrpHelp" xml:space="preserve"><value>Gross Regional Product (LCU)</value></data>
-  <data name="LgProfile_GrpPlaceholder" xml:space="preserve"><value>e.g. 480,000,000,000</value></data>
+  <data name="LgProfile_GrpLabel" xml:space="preserve"><value>National GDP per capita</value></data>
+  <data name="LgProfile_GrpHelp" xml:space="preserve"><value>Country average, used to estimate the local economic base.</value></data>
+  <data name="LgProfile_GrpPlaceholder" xml:space="preserve"><value>—</value></data>
+  <data name="LgProfile_Grp_AutoBadge" xml:space="preserve"><value>Auto</value></data>
+  <data name="LgProfile_Grp_AutoTooltip" xml:space="preserve"><value>Auto-populated from the World Bank WoFi reference dataset based on the selected country.</value></data>
+  <data name="LgProfile_Grp_AutoHelp" xml:space="preserve"><value>Select a country to load this value.</value></data>
+  <data name="LgProfile_EstimationGroup" xml:space="preserve"><value>Estimation context</value></data>
+  <data name="LgProfile_EconomicProfileLabel" xml:space="preserve"><value>Local economic profile</value></data>
+  <data name="LgProfile_EconomicProfileHelp" xml:space="preserve"><value>Tell us what kind of local economy this is — used to estimate the local economic base.</value></data>
+  <data name="LgProfile_EconomicProfilePlaceholder" xml:space="preserve"><value>Select a profile…</value></data>
   <data name="LgProfile_PopulationLabel" xml:space="preserve"><value>Population</value></data>
   <data name="LgProfile_PopulationHelp" xml:space="preserve"><value>Optional — most recent census</value></data>
   <data name="LgProfile_PopulationPlaceholder" xml:space="preserve"><value>e.g. 4,397,073</value></data>
@@ -138,4 +145,37 @@
   <data name="LgProfile_L3Placeholder" xml:space="preserve"><value>Ward, borough, sub-county...</value></data>
   <data name="LgProfile_L2InfoTooltip" xml:space="preserve"><value>Tick this box if the analysis should be conducted for a lower-level government unit within the selected country. This opens an additional field to enter the unit (district, municipality or sub-county).</value></data>
   <data name="LgProfile_L3InfoTooltip" xml:space="preserve"><value>Tick this box to drill further down within the selected lower-level unit. This opens an additional field to enter the unit (ward, borough or sub-county).</value></data>
+  <!-- WoFi-backed top-down estimator — user-facing copy in plain English (no "WoFi" / "frontier" / "top-down" jargon). -->
+  <data name="Wofi_Title" xml:space="preserve"><value>Estimated revenue potential — based on similar countries</value></data>
+  <data name="Wofi_Subtitle" xml:space="preserve"><value>An indicative estimate of how much own-source revenue this jurisdiction could collect, based on what top-performing countries with a similar economic profile collect.</value></data>
+  <data name="Wofi_IncomeGroup" xml:space="preserve"><value>Country group</value></data>
+  <data name="Wofi_BenchmarkFrontier" xml:space="preserve"><value>Benchmark revenue (% of GDP)</value></data>
+  <data name="Wofi_ProfileFactor" xml:space="preserve"><value>Economy weighting</value></data>
+  <data name="Wofi_Placeholder" xml:space="preserve"><value>Complete the Local Government Profile above and click Get Analysis to see the estimated revenue potential.</value></data>
+  <data name="Wofi_PotentialLabel" xml:space="preserve"><value>Estimated revenue potential</value></data>
+  <data name="Wofi_PotentialCaption" xml:space="preserve"><value>What this local government could collect at the benchmark level.</value></data>
+  <data name="Wofi_GapLabel" xml:space="preserve"><value>Estimated room to improve</value></data>
+  <data name="Wofi_GapCaption" xml:space="preserve"><value>Potential minus current revenue.</value></data>
+  <data name="Wofi_FrontierIndexLabel" xml:space="preserve"><value>% of benchmark reached</value></data>
+  <data name="Wofi_BarTitle" xml:space="preserve"><value>Current revenue + estimated gap = potential</value></data>
+  <data name="Wofi_BarAriaLabel" xml:space="preserve"><value>Stacked column chart showing current own-source revenue plus the estimated gap equals the potential.</value></data>
+  <data name="Wofi_LegendActual" xml:space="preserve"><value>Current revenue</value></data>
+  <data name="Wofi_LegendGap" xml:space="preserve"><value>Estimated gap</value></data>
+  <data name="Wofi_LegendPotential" xml:space="preserve"><value>Estimated potential</value></data>
+  <data name="Wofi_FrontierInterp_Strong" xml:space="preserve"><value>Strong performance — close to the benchmark.</value></data>
+  <data name="Wofi_FrontierInterp_Moderate" xml:space="preserve"><value>Moderate room to improve.</value></data>
+  <data name="Wofi_FrontierInterp_Significant" xml:space="preserve"><value>Significant room to improve.</value></data>
+  <data name="Wofi_FrontierInterp_Large" xml:space="preserve"><value>Large estimated room to improve.</value></data>
+  <data name="Wofi_MethodologyToggle" xml:space="preserve"><value>How was this calculated?</value></data>
+  <data name="Wofi_MethodologyBody" xml:space="preserve"><value>This is an indicative estimate. It compares the local government's situation to what top-performing countries in the same country group collect from their own sources, after adjusting for the type of local economy this jurisdiction has. Read it together with the detailed analysis below.</value></data>
+  <data name="Wofi_MethodologyCaveat" xml:space="preserve"><value>For a more accurate picture, complete the per-stream analysis in the section below.</value></data>
+  <data name="Wofi_Method_GdpLabel" xml:space="preserve"><value>National GDP per person</value></data>
+  <data name="Wofi_Method_LocalGdpLabel" xml:space="preserve"><value>Estimated size of the local economy</value></data>
+  <data name="Wofi_Method_BenchmarkLabel" xml:space="preserve"><value>Benchmark revenue as % of GDP</value></data>
+  <data name="Wofi_Method_GdpShareLabel" xml:space="preserve"><value>Local economy as % of national GDP</value></data>
+  <data name="Wofi_Method_DataSource" xml:space="preserve"><value>Data source</value></data>
+  <data name="Wofi_ValidationMissingCountry" xml:space="preserve"><value>Select a country before running the estimate.</value></data>
+  <data name="Wofi_ValidationMissingProfile" xml:space="preserve"><value>Select a local economic profile before running the estimate.</value></data>
+  <data name="Wofi_ValidationMissingPopulation" xml:space="preserve"><value>Enter the local population to estimate potential.</value></data>
+  <data name="Wofi_ValidationMissingOsr" xml:space="preserve"><value>Enter the local government's actual total revenue.</value></data>
 </root>
