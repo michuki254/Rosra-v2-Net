@@ -17,15 +17,11 @@ namespace RosraApp.Services
 
         public static async Task SeedSampleReports(ApplicationDbContext context, ILogger logger)
         {
-            if (await context.RosraReports.IgnoreQueryFilters().AnyAsync(r => r.PublicId == NairobiId))
-            {
-                logger.LogInformation("Sample reports already seeded, skipping");
-                return;
-            }
-
-            logger.LogInformation("Seeding 5 sample reports...");
-
-            var reports = new List<RosraReport>
+            // Upsert pattern — samples are public, no user data attached, so it's
+            // safe to refresh them on every startup. This is what makes adding new
+            // LG Profile fields (EconomicProfile, etc.) flow back into already-seeded
+            // dev/prod DBs without a manual reset.
+            var desired = new List<RosraReport>
             {
                 CreateNairobiReport(),
                 CreateKampalaReport(),
@@ -34,9 +30,53 @@ namespace RosraApp.Services
                 CreateAddisReport()
             };
 
-            context.RosraReports.AddRange(reports);
-            await context.SaveChangesAsync();
-            logger.LogInformation("Seeded 5 sample reports");
+            int inserted = 0, updated = 0;
+            foreach (var d in desired)
+            {
+                var existing = await context.RosraReports
+                    .IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(r => r.PublicId == d.PublicId);
+
+                if (existing == null)
+                {
+                    context.RosraReports.Add(d);
+                    inserted++;
+                }
+                else
+                {
+                    // Refresh LG Profile context + analysis payloads so any newly-added
+                    // model fields (e.g. EconomicProfile) backfill cleanly. Keeps CreatedAt
+                    // and PublicId stable so existing share-links still resolve.
+                    existing.Title = d.Title;
+                    existing.Country = d.Country;
+                    existing.Region = d.Region;
+                    existing.City = d.City;
+                    existing.Currency = d.Currency;
+                    existing.CurrencySymbol = d.CurrencySymbol;
+                    existing.FinancialYear = d.FinancialYear;
+                    existing.GovernmentType = d.GovernmentType;
+                    existing.IncomeLevel = d.IncomeLevel;
+                    existing.EconomicProfile = d.EconomicProfile;
+                    existing.ActualOsr = d.ActualOsr;
+                    existing.BudgetedOsr = d.BudgetedOsr;
+                    existing.Population = d.Population;
+                    existing.GdpPerCapita = d.GdpPerCapita;
+                    existing.Status = d.Status;
+                    existing.CompletionLevel = d.CompletionLevel;
+                    existing.PropertyTaxData = d.PropertyTaxData;
+                    existing.LicenseData = d.LicenseData;
+                    existing.GenericStreamsData = d.GenericStreamsData;
+                    existing.PrioritizationData = d.PrioritizationData;
+                    existing.SelectedSolutionsData = d.SelectedSolutionsData;
+                    updated++;
+                }
+            }
+
+            if (inserted + updated > 0)
+            {
+                await context.SaveChangesAsync();
+            }
+            logger.LogInformation("Sample reports seed pass: {Inserted} inserted, {Updated} refreshed.", inserted, updated);
         }
 
         private static RosraReport CreateNairobiReport()
@@ -50,13 +90,21 @@ namespace RosraApp.Services
                 City = "Nairobi City",
                 Currency = "KES",
                 CurrencySymbol = "KES",
-                FinancialYear = "2024/25",
+                // FY dropdown only has plain calendar years (2010-2045), so the
+                // old "2024/25" slash format rendered as blank. Single year matches.
+                FinancialYear = "2025",
                 GovernmentType = "County Government",
                 IncomeLevel = "Lower-middle income",
-                ActualOsr = 18200000000m,
-                BudgetedOsr = 24500000000m,
+                EconomicProfile = "Main national hub, capital, or port",
+                // Calibrated to land around ~55% of WoFi-computed Potential (~78B KES) so
+                // the Quick OSR Estimate shows a meaningful Gap rather than 0 or 100%+ frontier.
+                ActualOsr = 42000000000m,
+                BudgetedOsr = 55000000000m,
                 Population = 4400000,
-                GdpPerCapita = 2100m,
+                // WB WDI 2024 GDP/capita LCU (Data/Wofi/wofi_national_data.json) — Kenya: 287,500 KES.
+                // The field is auto-populated from country on a fresh analysis, so the seeded
+                // sample must match the auto-loaded value or it looks like stale data.
+                GdpPerCapita = 287500m,
                 Status = 4, // Validated
                 CompletionLevel = 2, // Full
                 PropertyTaxData = @"{""RegisteredProperties"":285000,""NonRegisteredProperties"":95000,""EstimatedProperties"":380000,""CompliantProperties"":198000,""TotalFiscalBase"":450000000000,""TotalMarketValue"":1200000000000,""BilledAmount"":8500000000,""OutstandingAmount"":3200000000,""RevenueToDate"":5300000000}",
@@ -79,13 +127,17 @@ namespace RosraApp.Services
                 City = "Kampala",
                 Currency = "UGX",
                 CurrencySymbol = "UGX",
-                FinancialYear = "2024/25",
+                FinancialYear = "2025",
                 GovernmentType = "City Authority",
                 IncomeLevel = "Low income",
-                ActualOsr = 280000000000m,
-                BudgetedOsr = 380000000000m,
+                EconomicProfile = "Main national hub, capital, or port",
+                // Old seed (280B UGX) exceeded WoFi Potential (~96B), so Gap rendered as 0.
+                // Calibrated to land around ~54% of Potential.
+                ActualOsr = 52000000000m,
+                BudgetedOsr = 70000000000m,
                 Population = 1700000,
-                GdpPerCapita = 1100m,
+                // WB WDI 2024 GDP/capita LCU — Uganda: 4,072,926 UGX.
+                GdpPerCapita = 4072926m,
                 Status = 4,
                 CompletionLevel = 2,
                 PropertyTaxData = @"{""RegisteredProperties"":120000,""NonRegisteredProperties"":80000,""EstimatedProperties"":200000,""CompliantProperties"":72000,""TotalFiscalBase"":180000000000,""TotalMarketValue"":600000000000,""BilledAmount"":95000000000,""OutstandingAmount"":42000000000,""RevenueToDate"":53000000000}",
@@ -108,13 +160,18 @@ namespace RosraApp.Services
                 City = "Dar es Salaam",
                 Currency = "TZS",
                 CurrencySymbol = "TZS",
-                FinancialYear = "2023/24",
+                FinancialYear = "2024",
                 GovernmentType = "City Council",
-                IncomeLevel = "Low income",
-                ActualOsr = 145000000000m,
-                BudgetedOsr = 210000000000m,
+                // Tanzania transitioned to lower-middle income (WB) in 2020 — fix old "Low income" seed.
+                IncomeLevel = "Lower-middle income",
+                EconomicProfile = "Main national hub, capital, or port",
+                // Calibrated to ~55% of Potential (~1,030B TZS) so frontier index sits in
+                // a realistic range for an emerging African capital instead of 14%.
+                ActualOsr = 560000000000m,
+                BudgetedOsr = 720000000000m,
                 Population = 5400000,
-                GdpPerCapita = 1200m,
+                // WB WDI 2024 GDP/capita LCU — Tanzania: 3,082,973 TZS.
+                GdpPerCapita = 3082973m,
                 Status = 4,
                 CompletionLevel = 2,
                 PropertyTaxData = @"{""RegisteredProperties"":180000,""NonRegisteredProperties"":220000,""EstimatedProperties"":400000,""CompliantProperties"":90000,""TotalFiscalBase"":300000000000,""TotalMarketValue"":1500000000000,""BilledAmount"":45000000000,""OutstandingAmount"":22000000000,""RevenueToDate"":23000000000}",
@@ -140,10 +197,13 @@ namespace RosraApp.Services
                 FinancialYear = "2024",
                 GovernmentType = "Metropolitan Assembly",
                 IncomeLevel = "Lower-middle income",
-                ActualOsr = 85000000m,
-                BudgetedOsr = 140000000m,
+                EconomicProfile = "Main national hub, capital, or port",
+                // Calibrated to ~55% of Potential (~5.25B GHS). Old seed (85M) was 2%.
+                ActualOsr = 2900000000m,
+                BudgetedOsr = 4000000000m,
                 Population = 2500000,
-                GdpPerCapita = 2400m,
+                // WB WDI 2024 GDP/capita LCU — Ghana: 33,952 GHS.
+                GdpPerCapita = 33952m,
                 Status = 4,
                 CompletionLevel = 2,
                 PropertyTaxData = @"{""RegisteredProperties"":95000,""NonRegisteredProperties"":105000,""EstimatedProperties"":200000,""CompliantProperties"":42000,""TotalFiscalBase"":12000000000,""TotalMarketValue"":50000000000,""BilledAmount"":38000000,""OutstandingAmount"":16000000,""RevenueToDate"":22000000}",
@@ -166,13 +226,17 @@ namespace RosraApp.Services
                 City = "Addis Ababa",
                 Currency = "ETB",
                 CurrencySymbol = "ETB",
-                FinancialYear = "2024/25",
+                FinancialYear = "2025",
                 GovernmentType = "City Administration",
                 IncomeLevel = "Low income",
-                ActualOsr = 12500000000m,
-                BudgetedOsr = 18000000000m,
+                EconomicProfile = "Main national hub, capital, or port",
+                // Old seed (12.5B ETB) exceeded WoFi Potential (~6.82B), Gap rendered as 0.
+                // Calibrated to ~55% of Potential.
+                ActualOsr = 3700000000m,
+                BudgetedOsr = 5000000000m,
                 Population = 5500000,
-                GdpPerCapita = 1300m,
+                // WB WDI 2024 GDP/capita LCU — Ethiopia: 89,237 ETB.
+                GdpPerCapita = 89237m,
                 Status = 4,
                 CompletionLevel = 2,
                 PropertyTaxData = @"{""RegisteredProperties"":150000,""NonRegisteredProperties"":250000,""EstimatedProperties"":400000,""CompliantProperties"":75000,""TotalFiscalBase"":200000000000,""TotalMarketValue"":800000000000,""BilledAmount"":4500000000,""OutstandingAmount"":1800000000,""RevenueToDate"":2700000000}",

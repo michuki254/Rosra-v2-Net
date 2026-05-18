@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Sample Reports";
+    ViewData["Title"] = "Sample Diagnostic Reports";
     // Fixed PublicIds matching SampleReportSeeder
     var nairobiId = "a0000001-0001-0001-0001-000000000001";
     var kampalaId = "a0000001-0001-0001-0001-000000000002";
@@ -111,6 +111,35 @@
     }
     .report-card .status-validated { background: #d1fae5; color: #065f46; }
     .report-card .status-demo { background: #e0f2fe; color: #0369a1; }
+
+    /* LG Profile strip (FY, Currency, Population, Economic Profile, GDP/capita).
+       Mirrors the Local Government Profile fields captured in the diagnostic so
+       each sample shows the same context the diagnostic report uses. */
+    .lg-profile-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-bottom: 1rem;
+    }
+    .lg-profile-strip .lg-chip {
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 999px;
+        padding: 0.25rem 0.7rem;
+        font-size: 0.72rem;
+        color: #334155;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    .lg-profile-strip .lg-chip strong {
+        color: #475569;
+        font-weight: 600;
+    }
+    .lg-profile-strip .lg-chip i {
+        color: #00689D;
+        font-size: 0.78rem;
+    }
 
     /* Financial Summary */
     .financial-grid {
@@ -267,12 +296,13 @@
 
         <!-- Header -->
         <div class="sample-reports-header">
-            <h1>Sample ROSRA Reports</h1>
-            <p class="subtitle">Explore completed analyses from different cities to understand how ROSRA identifies revenue gaps and recommends targeted reform solutions.</p>
+            <h1>Sample @SharedLocalizer["Diagnostic_ReportTitle"]s</h1>
+            <p class="subtitle">Explore completed diagnostics from different cities. Each sample walks through the full ROSRA flow — Quick OSR Estimate, Stream Gap Analysis, Prioritization, and Reform Guidance — and produces a @SharedLocalizer["Diagnostic_ReportTitle"].</p>
             <div class="badge-row">
-                <span class="info-badge"><i class="bi bi-globe2 me-1"></i> 5 Cities</span>
-                <span class="info-badge"><i class="bi bi-bar-chart me-1"></i> Multiple Revenue Streams</span>
-                <span class="info-badge"><i class="bi bi-lightbulb me-1"></i> Gap Analysis + Solutions</span>
+                <span class="info-badge"><i class="bi bi-gauge-high me-1"></i>@SharedLocalizer["Process_QuickEstimate"]</span>
+                <span class="info-badge"><i class="bi bi-magnifying-glass-chart me-1"></i>@SharedLocalizer["Process_StreamGapAnalysis"]</span>
+                <span class="info-badge"><i class="bi bi-sort-amount-down me-1"></i>@SharedLocalizer["Process_Prioritization"]</span>
+                <span class="info-badge"><i class="bi bi-lightbulb me-1"></i>@SharedLocalizer["Process_ReformGuidance"]</span>
             </div>
         </div>
 
@@ -291,18 +321,25 @@
                     </div>
                     <span class="status-badge status-validated">Validated</span>
                 </div>
+                <div class="lg-profile-strip">
+                    <span class="lg-chip"><i class="bi bi-calendar3"></i><strong>FY</strong> 2025</span>
+                    <span class="lg-chip"><i class="bi bi-currency-exchange"></i><strong>Currency</strong> KES</span>
+                    <span class="lg-chip"><i class="bi bi-people"></i><strong>Population</strong> 4.4M</span>
+                    <span class="lg-chip"><i class="bi bi-geo-alt-fill"></i><strong>Profile</strong> Capital city</span>
+                    <span class="lg-chip"><i class="bi bi-graph-up"></i><strong>GDP/capita</strong> KES 287,500</span>
+                </div>
                 <div class="financial-grid">
                     <div class="fin-item">
                         <div class="fin-label">Actual OSR</div>
-                        <div class="fin-value">KES 18.2B</div>
+                        <div class="fin-value">KES 42.0B</div>
                     </div>
                     <div class="fin-item">
                         <div class="fin-label">Potential OSR</div>
-                        <div class="fin-value">KES 32.7B</div>
+                        <div class="fin-value">KES 78.3B</div>
                     </div>
                     <div class="fin-item">
                         <div class="fin-label">Total Gap</div>
-                        <div class="fin-value" style="color: #F44336;">KES 14.5B</div>
+                        <div class="fin-value" style="color: #F44336;">KES 36.3B</div>
                     </div>
                 </div>
                 <div class="streams-row">
@@ -329,13 +366,13 @@
                     </div>
                 </div>
                 <div class="solutions-summary">
-                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Solutions selected</span>
+                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Reform options identified</span>
                     <span class="sol-count">12 cards</span>
                 </div>
             </div>
             <div class="card-footer-custom">
-                <span class="meta-info">FY 2024/25 | Population: 4.4M | Currency: KES</span>
-                <a href="@Url.Action("View", "Rosra", new { id = nairobiId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Report</a>
+                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Full diagnostic + reform guidance</span>
+                <a href="@Url.Action("View", "Rosra", new { id = nairobiId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Diagnostic Report</a>
             </div>
         </div>
 
@@ -352,18 +389,25 @@
                     </div>
                     <span class="status-badge status-validated">Validated</span>
                 </div>
+                <div class="lg-profile-strip">
+                    <span class="lg-chip"><i class="bi bi-calendar3"></i><strong>FY</strong> 2025</span>
+                    <span class="lg-chip"><i class="bi bi-currency-exchange"></i><strong>Currency</strong> UGX</span>
+                    <span class="lg-chip"><i class="bi bi-people"></i><strong>Population</strong> 1.7M</span>
+                    <span class="lg-chip"><i class="bi bi-geo-alt-fill"></i><strong>Profile</strong> Capital city</span>
+                    <span class="lg-chip"><i class="bi bi-graph-up"></i><strong>GDP/capita</strong> UGX 4,072,926</span>
+                </div>
                 <div class="financial-grid">
                     <div class="fin-item">
                         <div class="fin-label">Actual OSR</div>
-                        <div class="fin-value">UGX 280B</div>
+                        <div class="fin-value">UGX 52.0B</div>
                     </div>
                     <div class="fin-item">
                         <div class="fin-label">Potential OSR</div>
-                        <div class="fin-value">UGX 520B</div>
+                        <div class="fin-value">UGX 96.2B</div>
                     </div>
                     <div class="fin-item">
                         <div class="fin-label">Total Gap</div>
-                        <div class="fin-value" style="color: #F44336;">UGX 240B</div>
+                        <div class="fin-value" style="color: #F44336;">UGX 44.2B</div>
                     </div>
                 </div>
                 <div class="streams-row">
@@ -389,13 +433,13 @@
                     </div>
                 </div>
                 <div class="solutions-summary">
-                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Solutions selected</span>
+                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Reform options identified</span>
                     <span class="sol-count">9 cards</span>
                 </div>
             </div>
             <div class="card-footer-custom">
-                <span class="meta-info">FY 2024/25 | Population: 1.7M | Currency: UGX</span>
-                <a href="@Url.Action("View", "Rosra", new { id = kampalaId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Report</a>
+                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Full diagnostic + reform guidance</span>
+                <a href="@Url.Action("View", "Rosra", new { id = kampalaId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Diagnostic Report</a>
             </div>
         </div>
 
@@ -412,18 +456,25 @@
                     </div>
                     <span class="status-badge status-demo">Demo</span>
                 </div>
+                <div class="lg-profile-strip">
+                    <span class="lg-chip"><i class="bi bi-calendar3"></i><strong>FY</strong> 2024</span>
+                    <span class="lg-chip"><i class="bi bi-currency-exchange"></i><strong>Currency</strong> TZS</span>
+                    <span class="lg-chip"><i class="bi bi-people"></i><strong>Population</strong> 5.4M</span>
+                    <span class="lg-chip"><i class="bi bi-geo-alt-fill"></i><strong>Profile</strong> Major urban centre</span>
+                    <span class="lg-chip"><i class="bi bi-graph-up"></i><strong>GDP/capita</strong> TZS 3,082,973</span>
+                </div>
                 <div class="financial-grid">
                     <div class="fin-item">
                         <div class="fin-label">Actual OSR</div>
-                        <div class="fin-value">TZS 145B</div>
+                        <div class="fin-value">TZS 560B</div>
                     </div>
                     <div class="fin-item">
                         <div class="fin-label">Potential OSR</div>
-                        <div class="fin-value">TZS 310B</div>
+                        <div class="fin-value">TZS 1.03T</div>
                     </div>
                     <div class="fin-item">
                         <div class="fin-label">Total Gap</div>
-                        <div class="fin-value" style="color: #F44336;">TZS 165B</div>
+                        <div class="fin-value" style="color: #F44336;">TZS 470B</div>
                     </div>
                 </div>
                 <div class="streams-row">
@@ -451,13 +502,13 @@
                     </div>
                 </div>
                 <div class="solutions-summary">
-                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Solutions selected</span>
+                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Reform options identified</span>
                     <span class="sol-count">15 cards</span>
                 </div>
             </div>
             <div class="card-footer-custom">
-                <span class="meta-info">FY 2023/24 | Population: 5.4M | Currency: TZS</span>
-                <a href="@Url.Action("View", "Rosra", new { id = darId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Report</a>
+                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Full diagnostic + reform guidance</span>
+                <a href="@Url.Action("View", "Rosra", new { id = darId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Diagnostic Report</a>
             </div>
         </div>
 
@@ -474,18 +525,25 @@
                     </div>
                     <span class="status-badge status-demo">Demo</span>
                 </div>
+                <div class="lg-profile-strip">
+                    <span class="lg-chip"><i class="bi bi-calendar3"></i><strong>FY</strong> 2024</span>
+                    <span class="lg-chip"><i class="bi bi-currency-exchange"></i><strong>Currency</strong> GHS</span>
+                    <span class="lg-chip"><i class="bi bi-people"></i><strong>Population</strong> 2.5M</span>
+                    <span class="lg-chip"><i class="bi bi-geo-alt-fill"></i><strong>Profile</strong> Capital city</span>
+                    <span class="lg-chip"><i class="bi bi-graph-up"></i><strong>GDP/capita</strong> GHS 33,952</span>
+                </div>
                 <div class="financial-grid">
                     <div class="fin-item">
                         <div class="fin-label">Actual OSR</div>
-                        <div class="fin-value">GHS 85M</div>
+                        <div class="fin-value">GHS 2.9B</div>
                     </div>
                     <div class="fin-item">
                         <div class="fin-label">Potential OSR</div>
-                        <div class="fin-value">GHS 210M</div>
+                        <div class="fin-value">GHS 5.25B</div>
                     </div>
                     <div class="fin-item">
                         <div class="fin-label">Total Gap</div>
-                        <div class="fin-value" style="color: #F44336;">GHS 125M</div>
+                        <div class="fin-value" style="color: #F44336;">GHS 2.35B</div>
                     </div>
                 </div>
                 <div class="streams-row">
@@ -512,13 +570,13 @@
                     </div>
                 </div>
                 <div class="solutions-summary">
-                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Solutions selected</span>
+                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Reform options identified</span>
                     <span class="sol-count">11 cards</span>
                 </div>
             </div>
             <div class="card-footer-custom">
-                <span class="meta-info">FY 2024 | Population: 2.5M | Currency: GHS</span>
-                <a href="@Url.Action("View", "Rosra", new { id = accraId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Report</a>
+                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Full diagnostic + reform guidance</span>
+                <a href="@Url.Action("View", "Rosra", new { id = accraId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Diagnostic Report</a>
             </div>
         </div>
 
@@ -535,18 +593,25 @@
                     </div>
                     <span class="status-badge status-demo">Demo</span>
                 </div>
+                <div class="lg-profile-strip">
+                    <span class="lg-chip"><i class="bi bi-calendar3"></i><strong>FY</strong> 2025</span>
+                    <span class="lg-chip"><i class="bi bi-currency-exchange"></i><strong>Currency</strong> ETB</span>
+                    <span class="lg-chip"><i class="bi bi-people"></i><strong>Population</strong> 5.5M</span>
+                    <span class="lg-chip"><i class="bi bi-geo-alt-fill"></i><strong>Profile</strong> Capital city</span>
+                    <span class="lg-chip"><i class="bi bi-graph-up"></i><strong>GDP/capita</strong> ETB 89,237</span>
+                </div>
                 <div class="financial-grid">
                     <div class="fin-item">
                         <div class="fin-label">Actual OSR</div>
-                        <div class="fin-value">ETB 12.5B</div>
+                        <div class="fin-value">ETB 3.7B</div>
                     </div>
                     <div class="fin-item">
                         <div class="fin-label">Potential OSR</div>
-                        <div class="fin-value">ETB 28.0B</div>
+                        <div class="fin-value">ETB 6.82B</div>
                     </div>
                     <div class="fin-item">
                         <div class="fin-label">Total Gap</div>
-                        <div class="fin-value" style="color: #F44336;">ETB 15.5B</div>
+                        <div class="fin-value" style="color: #F44336;">ETB 3.12B</div>
                     </div>
                 </div>
                 <div class="streams-row">
@@ -574,13 +639,13 @@
                     </div>
                 </div>
                 <div class="solutions-summary">
-                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Solutions selected</span>
+                    <span class="sol-label"><i class="bi bi-check-circle me-1"></i>Reform options identified</span>
                     <span class="sol-count">14 cards</span>
                 </div>
             </div>
             <div class="card-footer-custom">
-                <span class="meta-info">FY 2024/25 | Population: 5.5M | Currency: ETB</span>
-                <a href="@Url.Action("View", "Rosra", new { id = addisId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Report</a>
+                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Full diagnostic + reform guidance</span>
+                <a href="@Url.Action("View", "Rosra", new { id = addisId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Diagnostic Report</a>
             </div>
         </div>
 
@@ -588,9 +653,9 @@
 
         <!-- CTA -->
         <div class="text-center mt-4 mb-5">
-            <p class="text-muted mb-3">Ready to analyse your city's own-source revenue?</p>
+            <p class="text-muted mb-3">Ready to run your own diagnostic and generate a @SharedLocalizer["Diagnostic_ReportTitle"]?</p>
             <a href="@Url.Action("Index", "Rosra")" class="btn-view-report" style="padding: 0.75rem 2rem; font-size: 1rem;">
-                <i class="bi bi-plus-circle me-2"></i>Start Your Own Analysis
+                <i class="bi bi-plus-circle me-2"></i>Start Analysis
             </a>
         </div>
 
