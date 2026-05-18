@@ -96,7 +96,8 @@
   <data name="Personalise_HigherFeasibility" xml:space="preserve"><value>Higher feasibility</value></data>
   <data name="Personalise_Moderate" xml:space="preserve"><value>Moderate</value></data>
   <data name="Personalise_LowerFeasibility" xml:space="preserve"><value>Lower feasibility</value></data>
-  <data name="Personalise_Focus" xml:space="preserve"><value>Focus</value></data>
+  <data name="Personalise_Stream" xml:space="preserve"><value>Stream</value></data>
+  <data name="Personalise_Focus" xml:space="preserve"><value>Gap Type</value></data>
   <data name="Personalise_Compliance" xml:space="preserve"><value>Compliance</value></data>
   <data name="Personalise_Coverage" xml:space="preserve"><value>Coverage</value></data>
   <data name="Personalise_Valuation" xml:space="preserve"><value>Valuation</value></data>

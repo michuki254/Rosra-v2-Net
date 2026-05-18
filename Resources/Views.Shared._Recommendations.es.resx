@@ -95,7 +95,8 @@
   <data name="Personalise_HigherFeasibility" xml:space="preserve"><value>Mayor viabilidad</value></data>
   <data name="Personalise_Moderate" xml:space="preserve"><value>Moderada</value></data>
   <data name="Personalise_LowerFeasibility" xml:space="preserve"><value>Menor viabilidad</value></data>
-  <data name="Personalise_Focus" xml:space="preserve"><value>Enfoque</value></data>
+  <data name="Personalise_Stream" xml:space="preserve"><value>Flujo</value></data>
+  <data name="Personalise_Focus" xml:space="preserve"><value>Tipo de brecha</value></data>
   <data name="Personalise_Compliance" xml:space="preserve"><value>Cumplimiento</value></data>
   <data name="Personalise_Coverage" xml:space="preserve"><value>Cobertura</value></data>
   <data name="Personalise_Valuation" xml:space="preserve"><value>Valoración</value></data>

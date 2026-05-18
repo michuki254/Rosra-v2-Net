@@ -749,7 +749,8 @@
                     <div class="solution-card" data-solution-id="${solution.solutionId}"
                          data-timeline="${escapeForTemplate(solution.timeline || '')}"
                          data-political="${escapeForTemplate(fullSolution.politicalFeasibility || '')}"
-                         data-gap="${escapeForTemplate(String(solution.gapType || '').toLowerCase())}">
+                         data-gap="${escapeForTemplate(String(solution.gapType || '').toLowerCase())}"
+                         data-stream="${escapeForTemplate(solution.streamName || '')}">
                         <div class="solution-card-header" onclick="RecommendationsModule.toggleSolution('${solution.solutionId}')">
                             <div class="solution-title-section">
                                 <div class="solution-id">${escapeForTemplate(fullIdLabel)}</div>

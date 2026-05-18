@@ -1490,6 +1490,23 @@
     <div class="rec-personalise-bar" id="recPersonaliseBar">
         <p class="rec-personalise-help text-muted small mb-2"><i class="bi bi-funnel me-1"></i>@Localizer["Personalise_FilterHelp"]</p>
         <div class="rec-personalise-row">
+            @* Stream chips are populated dynamically at init time from
+               RosraStateManager.getIncludedStreams(). The placeholder div is
+               filled by populateStreamChips() below; if no included streams
+               exist yet (very early render) the group hides itself. *@
+            <div class="rec-chip-group" id="recStreamGroup" style="display:none;">
+                <span class="rec-group-label">@Localizer["Personalise_Stream"]</span>
+                <div class="rec-q-chips" data-question="stream" id="recStreamChips"></div>
+            </div>
+            <div class="rec-chip-group">
+                <span class="rec-group-label">@Localizer["Personalise_Focus"]</span>
+                <div class="rec-q-chips" data-question="focus">
+                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="compliance" checked><span>@Localizer["Personalise_Compliance"]</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="coverage" checked><span>@Localizer["Personalise_Coverage"]</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="valuation" checked><span>@Localizer["Personalise_Valuation"]</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qFocus" value="liability" checked><span>@Localizer["Personalise_Liability"]</span></label>
+                </div>
+            </div>
             <div class="rec-chip-group">
                 <span class="rec-group-label">@Localizer["Personalise_Time"]</span>
                 <div class="rec-q-chips" data-question="time">
@@ -1506,11 +1523,6 @@
                     <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="sensitive"><span>@Localizer["Personalise_LowerFeasibility"]</span></label>
                 </div>
             </div>
-            @* Focus chip group removed — gap-type filtering now flows from Step 2 Gap
-               Prioritization. Setting a gap-type to (Remove) there drops the matching
-               solutions from Recommendations automatically. The existing chip-filter
-               JS gracefully handles the absent qFocus chips (the state.focus.length
-               guard short-circuits filtering when zero chips are present). *@
         </div>
         <div class="rec-personalise-status">
             <span>@Html.Raw(Localizer["Personalise_CardsMatch"].Value)</span>
@@ -1919,6 +1931,51 @@
             });
         }
 
+        // Populate the Stream chip group from RosraStateManager. Called on init
+        // and re-called whenever the included-streams set changes (e.g. user
+        // toggles "Include" on a stream in Prioritization). Preserves any
+        // pre-existing checked state so user selections aren't trampled by a
+        // refresh.
+        function populateStreamChips() {
+            var host = document.getElementById('recStreamChips');
+            var group = document.getElementById('recStreamGroup');
+            if (!host || !group) return;
+            if (typeof RosraStateManager === 'undefined') { group.style.display = 'none'; return; }
+
+            // Remember which streams are currently checked so refresh keeps them on.
+            var previouslyChecked = new Set();
+            host.querySelectorAll('input[name="qStream"]:checked').forEach(function (i) { previouslyChecked.add(i.value); });
+            var hadChips = host.children.length > 0;
+
+            var streams = (typeof RosraStateManager.getIncludedStreams === 'function')
+                ? RosraStateManager.getIncludedStreams()
+                : (RosraStateManager.getStreams() || []).filter(function (s) { return s.included !== false; });
+
+            if (!streams.length) { group.style.display = 'none'; host.innerHTML = ''; return; }
+
+            host.innerHTML = '';
+            streams.forEach(function (s) {
+                var name = s.name || '';
+                if (!name) return;
+                var label = document.createElement('label');
+                label.className = 'rec-q-chip';
+                var input = document.createElement('input');
+                input.type = 'checkbox';
+                input.name = 'qStream';
+                input.value = name;
+                // Default: checked on first render; on refresh, preserve previous
+                // state (or default to checked if this stream is brand new).
+                input.checked = hadChips ? previouslyChecked.has(name) : true;
+                input.addEventListener('change', applyChipFilter);
+                var span = document.createElement('span');
+                span.textContent = name;
+                label.appendChild(input);
+                label.appendChild(span);
+                host.appendChild(label);
+            });
+            group.style.display = '';
+        }
+
         // Restore chip state from localStorage if present, otherwise apply smart defaults.
         function restoreOrDefault() {
             var saved = null;
@@ -1927,16 +1984,20 @@
                 document.querySelectorAll('.rec-personalise-bar input[name="qTime"]').forEach(function (i) { i.checked = saved.time.indexOf(i.value) >= 0; });
                 document.querySelectorAll('.rec-personalise-bar input[name="qPolitical"]').forEach(function (i) { i.checked = saved.political.indexOf(i.value) >= 0; });
                 document.querySelectorAll('.rec-personalise-bar input[name="qFocus"]').forEach(function (i) { i.checked = saved.focus.indexOf(i.value) >= 0; });
+                if (Array.isArray(saved.stream)) {
+                    document.querySelectorAll('.rec-personalise-bar input[name="qStream"]').forEach(function (i) { i.checked = saved.stream.indexOf(i.value) >= 0; });
+                }
             } else {
                 smartDefaultFocus();
             }
         }
 
         function readChips() {
-            var state = { time: [], political: [], focus: [] };
+            var state = { time: [], political: [], focus: [], stream: [] };
             document.querySelectorAll('.rec-personalise-bar input[name="qTime"]:checked').forEach(function (i) { state.time.push(i.value); });
             document.querySelectorAll('.rec-personalise-bar input[name="qPolitical"]:checked').forEach(function (i) { state.political.push(i.value); });
             document.querySelectorAll('.rec-personalise-bar input[name="qFocus"]:checked').forEach(function (i) { state.focus.push(i.value); });
+            document.querySelectorAll('.rec-personalise-bar input[name="qStream"]:checked').forEach(function (i) { state.stream.push(i.value); });
             return state;
         }
 
@@ -1946,14 +2007,21 @@
             var state = readChips();
             var cards = document.querySelectorAll('#solutionCardsContainer .solution-card');
             var visible = 0;
+            // Stream filter only applies when chips actually exist for the group;
+            // otherwise treat as "all streams" to avoid hiding everything during
+            // early renders before populateStreamChips has run.
+            var hasStreamChips = document.querySelectorAll('.rec-personalise-bar input[name="qStream"]').length > 0;
             cards.forEach(function (card) {
                 var t = timelineBucket(card.dataset.timeline);
                 var p = politicalBucket(card.dataset.political);
                 var g = (card.dataset.gap || '').toLowerCase();
+                var st = card.dataset.stream || '';
                 var match = true;
                 if (state.time.length && state.time.indexOf(t) < 0 && t !== 'unknown') match = false;
                 if (state.political.length && state.political.indexOf(p) < 0 && p !== 'unknown') match = false;
                 if (state.focus.length && state.focus.indexOf(g) < 0) match = false;
+                if (hasStreamChips && state.stream.length === 0) match = false; // user unchecked every stream → hide all
+                if (hasStreamChips && state.stream.length && st && state.stream.indexOf(st) < 0) match = false;
                 card.style.display = match ? '' : 'none';
                 if (match) visible++;
             });
@@ -1994,17 +2062,29 @@
                 i.checked = (i.value === 'higher' || i.value === 'moderate');
             });
             document.querySelectorAll('.rec-personalise-bar input[name="qFocus"]').forEach(function (i) { i.checked = true; });
+            document.querySelectorAll('.rec-personalise-bar input[name="qStream"]').forEach(function (i) { i.checked = true; });
             smartDefaultFocus();
             applyChipFilter();
         }
 
         function init() {
             ensureAutoSelected();
+            populateStreamChips();
             restoreOrDefault();
 
             document.querySelectorAll('.rec-personalise-bar input[type="checkbox"]').forEach(function (input) {
                 input.addEventListener('change', applyChipFilter);
             });
+
+            // Keep the Stream chip list in sync with Prioritization include/exclude
+            // toggles — when a stream's `included` flips, the chip should appear /
+            // disappear immediately rather than waiting for a page reload.
+            if (typeof RosraStateManager !== 'undefined' && RosraStateManager.subscribe) {
+                RosraStateManager.subscribe('streams', function () {
+                    populateStreamChips();
+                    applyChipFilter();
+                });
+            }
             var showBtn = document.getElementById('recShowAllBtn');
             if (showBtn) showBtn.addEventListener('click', showAll82);
             var emptyShowBtn = document.getElementById('recEmptyShowAllBtn');

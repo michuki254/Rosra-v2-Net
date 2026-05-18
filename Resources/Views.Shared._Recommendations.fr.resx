@@ -95,7 +95,8 @@
   <data name="Personalise_HigherFeasibility" xml:space="preserve"><value>Faisabilité élevée</value></data>
   <data name="Personalise_Moderate" xml:space="preserve"><value>Modérée</value></data>
   <data name="Personalise_LowerFeasibility" xml:space="preserve"><value>Faisabilité faible</value></data>
-  <data name="Personalise_Focus" xml:space="preserve"><value>Axe</value></data>
+  <data name="Personalise_Stream" xml:space="preserve"><value>Flux</value></data>
+  <data name="Personalise_Focus" xml:space="preserve"><value>Type d'écart</value></data>
   <data name="Personalise_Compliance" xml:space="preserve"><value>Conformité</value></data>
   <data name="Personalise_Coverage" xml:space="preserve"><value>Couverture</value></data>
   <data name="Personalise_Valuation" xml:space="preserve"><value>Évaluation</value></data>
