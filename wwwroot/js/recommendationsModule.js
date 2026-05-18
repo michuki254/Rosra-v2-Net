@@ -3295,67 +3295,37 @@
                 }
 
                 // ===== Recommendations Summary =====
-                // Section page (page 6): editorial header + at-a-glance KPI + a
-                // summary table listing every selected solution + a compact
-                // polished card per solution with the key reform info. We
-                // deliberately drop the encyclopedic "Capacity, Systems &
-                // Partnerships" / "Legal & Institutional" deep dumps — those
-                // remain on the website cards.
+                // v2 brief §5: the action-plan report does NOT reproduce the
+                // solution catalogue. Section is now a single short paragraph
+                // pointing the reader back to the live Recommendations page.
+                // The platform URL is built from window.location.origin at
+                // generation time so the link is clickable in the PDF and
+                // resolves to whichever environment (localhost / dev / prod)
+                // the user is on when they export.
                 if (options.includeSelectedSolutions) {
+                    const platformOrigin = (typeof window !== 'undefined' && window.location && window.location.origin)
+                        ? window.location.origin
+                        : '';
+                    const recommendationsUrl = platformOrigin
+                        ? platformOrigin + '/Rosra#recommendations'
+                        : '/Rosra#recommendations';
+                    const recommendationsDisplay = platformOrigin
+                        ? platformOrigin.replace(/^https?:\/\//, '') + '/Rosra'
+                        : '/Rosra';
+
                     html += `<div class="qa-page">
     <div class="qa-section-label">SECTION 05 &middot; RECOMMENDATIONS</div>
-    <h1 class="qa-section-title">Recommended Solutions</h1>`;
-
-                    if (!selectedSolutions.length) {
-                        html += `<p class="qa-section-sub">No solutions selected.</p></div>`;
-                    } else {
-                        const quickWinsArr  = selectedSolutions.filter(s => s.timeline === '<1 year');
-                        const mediumTermArr = selectedSolutions.filter(s => s.timeline === '1-3 years');
-                        const longTermArr   = selectedSolutions.filter(s => s.timeline === '3+ years');
-                        const distinctStreams = new Set(selectedSolutions.map(s => s.streamName || '').filter(Boolean));
-
-                        html += `<p class="qa-section-sub">${selectedSolutions.length} solution${selectedSolutions.length !== 1 ? 's' : ''} selected across ${distinctStreams.size} stream${distinctStreams.size !== 1 ? 's' : ''}. Each card below outlines what the option does, when it's a strong fit, and the implementation path your reform team should follow.</p>`;
-
-                        // --- At-a-glance explainer ---
-                        html += `<div class="prio-explainer">
-    <div class="prio-explainer-title">At a glance</div>
-    <p>The recommended action plan combines <strong>${quickWinsArr.length}</strong> quick win${quickWinsArr.length !== 1 ? 's' : ''} (under 1 year), <strong>${mediumTermArr.length}</strong> medium-term reform${mediumTermArr.length !== 1 ? 's' : ''} (1&ndash;3 years), and <strong>${longTermArr.length}</strong> long-term programme${longTermArr.length !== 1 ? 's' : ''} (3+ years).</p>
-    <p><strong>How to read each card:</strong> the cyan ID code maps back to the website catalogue. The metadata strip shows the stream, the gap type the solution addresses, the expected delivery timeline, and any political-feasibility flags. The card body is the editorial summary &mdash; the full implementation details remain available on the website.</p>
+    <h1 class="qa-section-title">Recommended Solutions</h1>
+    <p class="qa-section-sub">Based on your prioritized streams and gap types, ROSRA has identified the reform options most relevant to this assessment. This report does not reproduce the full solution catalogue. To review each solution &mdash; including implementation steps, timeline, feasibility considerations, stakeholders and monitoring guidance &mdash; open the Recommendations page of the platform.</p>
+    <a class="rec-platform-cta" href="${esc(recommendationsUrl)}" target="_blank" rel="noopener" style="display:block;margin-top:24px;padding:18px 22px;background:linear-gradient(135deg,#E6F4FB 0%,#F0FAFD 100%);border:1.5px solid #00B2E3;border-radius:12px;text-decoration:none;color:#0F2742;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;">
+            <div>
+                <div style="font-weight:700;font-size:1.05rem;color:#00689D;letter-spacing:0.01em;">Open Recommendations on the ROSRA platform &rarr;</div>
+                <div style="font-size:0.85rem;color:#475569;margin-top:4px;font-family:'Courier New',monospace;">${esc(recommendationsDisplay)}</div>
+            </div>
+        </div>
+    </a>
 </div>`;
-
-                        // --- Summary table (one row per selected solution) ---
-                        html += `<h3 class="qa-block-title">Selected solutions at a glance</h3>
-<table class="report-table">
-<thead><tr>
-    <th style="width:40px;text-align:center">#</th>
-    <th>Solution</th>
-    <th>Stream</th>
-    <th>Gap</th>
-    <th style="width:90px">Timeline</th>
-</tr></thead><tbody>`;
-                        selectedSolutions.forEach((s, i) => {
-                            const fs = getCompleteSolution(s.solutionId);
-                            const title = (fs && fs.title) || s.title || '';
-                            html += `<tr>
-    <td style="text-align:center">${i + 1}</td>
-    <td><strong>${esc(title)}</strong></td>
-    <td>${esc(s.streamName || '—')}</td>
-    <td>${esc(s.gapType || '—')}</td>
-    <td>${esc(s.timeline || '—')}</td>
-</tr>`;
-                        });
-                        html += `</tbody></table>`;
-
-                        // Closing pointer to the website for full reform detail.
-                        // The detailed "Solution detail cards" block (overview /
-                        // Why-this-matters / Practical path / Risks / Monitoring)
-                        // used to render here but was removed per the v2 brief —
-                        // the diagnostic report stays a result-oriented summary
-                        // and the full solution package lives on the platform.
-                        html += `<p class="qa-section-sub" style="margin-top:14px;font-style:italic;color:#475569;">For each solution, the full implementation steps, risks, safeguards and monitoring guidance are available in the Recommendations section of the ROSRA platform.</p>`;
-
-                        html += `</div>`; // close .qa-page for the section header / table
-                    }
                 }
 
                 // ===== Solutions Not Selected (Summary Only) =====
