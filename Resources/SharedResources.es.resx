@@ -166,4 +166,59 @@
   <data name="Nav_SaveReport" xml:space="preserve"><value>Guardar informe</value></data>
   <data name="Nav_UpdateReport" xml:space="preserve"><value>Actualizar informe</value></data>
   <data name="Nav_SaveAsMyReport" xml:space="preserve"><value>Guardar como mi informe</value></data>
+
+  <!-- Canonical ROSRA process labels - source of truth for the 4 diagnostic steps + final output -->
+  <data name="Process_QuickEstimate" xml:space="preserve"><value>Estimación Rápida de IPP</value></data>
+  <data name="Process_QuickEstimate_Desc" xml:space="preserve"><value>Estimación de alto nivel del margen de mejora posible en los ingresos propios.</value></data>
+  <data name="Process_StreamGapAnalysis" xml:space="preserve"><value>Análisis de Brechas por Fuente</value></data>
+  <data name="Process_StreamGapAnalysis_Desc" xml:space="preserve"><value>Diagnóstico de las fuentes de ingresos por tipo de brecha: cobertura, cumplimiento e imposición/valoración.</value></data>
+  <data name="Process_Prioritization" xml:space="preserve"><value>Priorización</value></data>
+  <data name="Process_Prioritization_Desc" xml:space="preserve"><value>Clasificación de fuentes y tipos de brechas para ayudar a centrar la atención en la reforma.</value></data>
+  <data name="Process_ReformGuidance" xml:space="preserve"><value>Orientación para la Reforma</value></data>
+  <data name="Process_ReformGuidance_Desc" xml:space="preserve"><value>Orientación pertinente sobre soluciones, mostrada en la plataforma, según las fuentes y brechas priorizadas.</value></data>
+  <data name="Diagnostic_ReportTitle" xml:space="preserve"><value>Informe de Diagnóstico ROSRA</value></data>
+  <data name="Diagnostic_ReportSubtitle" xml:space="preserve"><value>Un resumen conciso del perfil del gobierno local, la estimación de los IPP, los resultados del análisis de brechas, la priorización y la vía de orientación para la reforma.</value></data>
+  <data name="Diagnostic_FooterNote" xml:space="preserve"><value>Preparado con ROSRA, una herramienta de diagnóstico de ONU-Hábitat para el análisis de los ingresos propios subnacionales.</value></data>
+
+  <!-- Report-section copy (ES) -->
+  <data name="Report_LgProfile_Title" xml:space="preserve"><value>Perfil del gobierno local</value></data>
+  <data name="Report_LgProfile_Body" xml:space="preserve"><value>Esta sección resume el contexto básico utilizado en la evaluación ROSRA, incluyendo el gobierno local, el ejercicio fiscal, la moneda, los ingresos propios actuales, el producto regional bruto y la población. Estos elementos definen el alcance del análisis y aseguran que los resultados se refieren a la misma jurisdicción y al mismo año de referencia.</value></data>
+
+  <data name="Report_QuickEstimate_Title" xml:space="preserve"><value>Estimación Rápida de IPP</value></data>
+  <data name="Report_QuickEstimate_Body" xml:space="preserve"><value>Esta sección ofrece una estimación de alto nivel del margen global de mejora de los ingresos propios. Su propósito es dar a los usuarios una primera idea de la magnitud de la oportunidad antes de pasar al diagnóstico por fuente. La estimación debe leerse como un punto de orientación, no como una explicación detallada de las pérdidas de ingresos.</value></data>
+
+  <data name="Report_StreamGap_Title" xml:space="preserve"><value>Resultados del análisis de brechas por fuente</value></data>
+  <data name="Report_StreamGap_What" xml:space="preserve"><value>Esta sección muestra la brecha funcional estimada para cada fuente de ingresos incluida en la evaluación. El visual descompone cada fuente según los principales tipos de pérdida de ingresos: cumplimiento, cobertura e imposición o valoración. Las barras permiten comparar el tamaño relativo de las brechas entre fuentes, mientras que los segmentos coloreados muestran qué impulsa la brecha dentro de cada fuente.</value></data>
+  <data name="Report_StreamGap_Why" xml:space="preserve"><value>Esto ayuda a los usuarios a ir más allá de la afirmación general de que la recaudación es baja e identificar si el problema se vincula sobre todo a facturas impagadas, contribuyentes o unidades faltantes, una evaluación débil, o una combinación de factores.</value></data>
+  <data name="Report_StreamGap_How" xml:space="preserve"><value>Lea el gráfico desde la brecha más grande hasta la más pequeña. Utilice la tabla bajo el gráfico para verificar el monto estimado por tipo de brecha y la brecha total estimada para cada fuente.</value></data>
+
+  <data name="Report_StreamPrio_Title" xml:space="preserve"><value>Priorización de fuentes</value></data>
+  <data name="Report_StreamPrio_What" xml:space="preserve"><value>La priorización de fuentes ordena las fuentes de ingresos incluidas en la evaluación según su brecha funcional total. Esto permite ver qué fuentes representan la mayor oportunidad estimada de mejora en el diagnóstico actual.</value></data>
+  <data name="Report_StreamPrio_Why" xml:space="preserve"><value>Los gobiernos locales suelen contar con varias fuentes de ingresos pero con tiempo, personal y capacidad de reforma limitados. La priorización ayuda a centrar la atención en las fuentes donde la mejora podría marcar la mayor diferencia, permitiendo ajustar la secuencia según el contexto local.</value></data>
+  <data name="Report_StreamPrio_How" xml:space="preserve"><value>La tabla se ordena de la brecha estimada más grande a la más pequeña. Las fuentes marcadas como excluidas no se incluyen en el cálculo de la participación ni en las recomendaciones posteriores, porque no aplican al gobierno local o fueron retiradas de la evaluación.</value></data>
+
+  <data name="Report_GapPrio_Title" xml:space="preserve"><value>Resultados de la priorización de brechas</value></data>
+  <data name="Report_GapPrio_What" xml:space="preserve"><value>La priorización de brechas desglosa cada fuente priorizada en los tipos específicos de problemas que explican el bajo desempeño. Muestra si el problema se relaciona con cumplimiento, cobertura, valoración, imposición, o brechas mixtas.</value></data>
+  <data name="Report_GapPrio_Why" xml:space="preserve"><value>Distintas brechas requieren distintos tipos de reforma. Una brecha de cumplimiento puede requerir mejor facturación, recordatorios, canales de pago o aplicación. Una brecha de cobertura puede requerir mejor registro, conciliación de datos o verificación en campo. Una brecha de valoración o imposición puede requerir mejores reglas de evaluación, valores actualizados o tarifas más claras.</value></data>
+  <data name="Report_GapPrio_How" xml:space="preserve"><value>Para cada fuente, la tabla muestra el modo de priorización seleccionado y el orden sugerido de los tipos de brecha. Este orden debe leerse como un punto de partida para la secuenciación de la reforma y puede ajustarse según la viabilidad, la capacidad, las consideraciones políticas o las reformas en curso.</value></data>
+
+  <data name="Report_ReformGuidance_Title" xml:space="preserve"><value>Orientación para la Reforma</value></data>
+  <data name="Report_ReformGuidance_Body" xml:space="preserve"><value>Sobre la base de las fuentes y los tipos de brechas priorizados, ROSRA identifica las opciones de reforma pertinentes en la sección Recomendaciones de la plataforma. Este informe no reproduce el catálogo completo de soluciones. Los usuarios deben consultar el sitio web para revisar las fichas de solución seleccionadas, incluidos los pasos de implementación, el plazo, las consideraciones de viabilidad, las partes interesadas y la orientación de seguimiento.</value></data>
+
+  <data name="Report_SectionWhat" xml:space="preserve"><value>Lo que muestra esta sección</value></data>
+  <data name="Report_SectionWhy" xml:space="preserve"><value>Por qué es importante</value></data>
+  <data name="Report_SectionHow" xml:space="preserve"><value>Cómo leer</value></data>
+  <data name="Report_NotAvailable" xml:space="preserve"><value>No disponible</value></data>
+
+  <!-- Validation / stream-exclusion messages (ES) -->
+  <data name="Stream_AtLeastOneRequired" xml:space="preserve"><value>Al menos una fuente de ingresos debe permanecer incluida para generar el diagnóstico.</value></data>
+  <data name="Stream_ExcludeBusinessLicenseConfirm" xml:space="preserve"><value>¿Excluir las licencias comerciales de este análisis? Podrá reincluirlas más adelante desde el paso de priorización.</value></data>
+  <data name="Stream_Excluded_Badge" xml:space="preserve"><value>Excluida</value></data>
+  <data name="Stream_Reinclude" xml:space="preserve"><value>Reincluir</value></data>
+
+  <!-- Duplicate-solution collapse notes (ES). {0} = anchor stream name, {1} = category label, {2} = overlapping gap types. -->
+  <data name="Duplicate_FullCollapse" xml:space="preserve"><value>Igual que {0}. Esta fuente es también una {1} y comparte un perfil de brechas similar, por lo que las opciones de reforma relevantes son las mismas. Consulte el paquete de soluciones mostrado bajo {0}.</value></data>
+  <data name="Duplicate_PartialCollapse" xml:space="preserve"><value>Algunas acciones recomendadas para esta fuente son iguales a las mostradas bajo {0}, porque ambas fuentes comparten la misma categoría y la brecha de {2}. Aquí solo se muestran las recomendaciones adicionales o diferentes.</value></data>
+  <data name="Duplicate_ReportNote" xml:space="preserve"><value>Algunas fuentes pueden compartir la misma orientación de reforma cuando pertenecen a la misma categoría de ingresos y tienen perfiles de brechas similares. Las recomendaciones agrupadas detalladas están disponibles en la plataforma.</value></data>
+  <data name="Duplicate_SameAs_Heading" xml:space="preserve"><value>Orientación de reforma compartida</value></data>
 </root>

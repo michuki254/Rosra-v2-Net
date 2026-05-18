@@ -12,7 +12,15 @@
 
   <!-- Hero Section -->
   <data name="Hero_Title" xml:space="preserve"><value>Analisis rapido de ingresos propios para ciudades sostenibles</value></data>
+  <data name="Hero_Subtitle" xml:space="preserve"><value>ROSRA ayuda a los gobiernos locales a estimar el potencial de mejora de los IPP, diagnosticar donde se estan perdiendo ingresos, priorizar las areas de reforma y acceder a una orientacion practica para la reforma.</value></data>
+  <data name="Hero_StartAnalysis" xml:space="preserve"><value>Iniciar analisis</value></data>
+  <data name="Hero_ViewSampleReport" xml:space="preserve"><value>Ver informe de muestra</value></data>
   <data name="Hero_LearnMore" xml:space="preserve"><value>MAS INFORMACION</value></data>
+
+  <!-- Diagnostic flow -->
+  <data name="Flow_Title" xml:space="preserve"><value>Como funciona el diagnostico ROSRA</value></data>
+  <data name="Flow_Body" xml:space="preserve"><value>ROSRA comienza con una estimacion rapida del margen global de mejora de los ingresos propios. Luego pasa a un diagnostico por fuente, desglosando donde se estan perdiendo ingresos por brechas de cobertura, cumplimiento e imposicion o valoracion. La herramienta ayuda a priorizar que problemas abordar primero y orienta hacia soluciones de reforma practicas. El resultado final es un Informe de Diagnostico ROSRA.</value></data>
+  <data name="Flow_FinalOutputEyebrow" xml:space="preserve"><value>Resultado final</value></data>
 
   <!-- Featured Cards -->
   <data name="Featured_RosraTool" xml:space="preserve"><value>HERRAMIENTA ROSRA</value></data>
@@ -25,9 +33,15 @@
   <data name="Featured_DataPrivacy" xml:space="preserve"><value>PRIVACIDAD DE DATOS</value></data>
   <data name="Featured_DataPrivacy_Desc" xml:space="preserve"><value>Todos los datos ingresados en el ROSRA son completamente confidenciales y solo visibles para el gobierno local correspondiente y ONU-Habitat.</value></data>
 
-  <!-- What is ROSRA Section -->
-  <data name="WhatIsRosra_Title" xml:space="preserve"><value>Que es el ROSRA?</value></data>
-  <data name="WhatIsRosra_Subtitle" xml:space="preserve"><value>ROSRA es una herramienta de diagnostico de ONU-Habitat que ayuda a los gobiernos locales a evaluar la situacion actual de su sistema de ingresos propios e identificar el margen de mejora.</value></data>
+  <!-- What ROSRA helps users do (3 cards) -->
+  <data name="WhatIsRosra_Title" xml:space="preserve"><value>Lo que ROSRA permite hacer</value></data>
+  <data name="WhatIsRosra_Subtitle" xml:space="preserve"><value>Tres cosas que el diagnostico ROSRA aporta a cada gobierno local que lo utiliza.</value></data>
+  <data name="WhatIsRosra_Estimate" xml:space="preserve"><value>Estimar el potencial de los IPP</value></data>
+  <data name="WhatIsRosra_Estimate_Desc" xml:space="preserve"><value>Comprender el margen global de mejora.</value></data>
+  <data name="WhatIsRosra_Diagnose" xml:space="preserve"><value>Diagnosticar brechas de ingresos</value></data>
+  <data name="WhatIsRosra_Diagnose_Desc" xml:space="preserve"><value>Identificar si las perdidas provienen de problemas de cobertura, cumplimiento, imposicion o valoracion.</value></data>
+  <data name="WhatIsRosra_Prioritize" xml:space="preserve"><value>Priorizar la accion de reforma</value></data>
+  <data name="WhatIsRosra_Prioritize_Desc" xml:space="preserve"><value>Centrar la atencion en las fuentes y brechas que mas importan.</value></data>
   <data name="WhatIsRosra_StrategicDecision" xml:space="preserve"><value>Toma de decisiones estrategicas</value></data>
   <data name="WhatIsRosra_StrategicDecision_Desc" xml:space="preserve"><value>Visualizacion clara de las brechas de ingresos propios para decisiones informadas y priorizacion de reformas.</value></data>
   <data name="WhatIsRosra_RevenueOptimization" xml:space="preserve"><value>Optimizacion de ingresos</value></data>
@@ -45,11 +59,13 @@
   <data name="OsrTypes_Subtitle" xml:space="preserve"><value>Los ingresos propios son impuestos, tasas, licencias y otros ingresos controlados directamente por los gobiernos locales.</value></data>
   <data name="OsrTypes_PropertyTax" xml:space="preserve"><value>Impuesto predial</value></data>
   <data name="OsrTypes_PropertyTax_Desc" xml:space="preserve"><value>Impuesto recurrente sobre terrenos o propiedades</value></data>
-  <data name="OsrTypes_OtherTaxes" xml:space="preserve"><value>Otros impuestos</value></data>
+  <data name="OsrTypes_OtherTaxes" xml:space="preserve"><value>Otros ingresos locales</value></data>
   <data name="OsrTypes_OtherTaxes_Desc" xml:space="preserve"><value>Impuesto local sobre ventas, impuesto especial, impuesto hotelero</value></data>
-  <data name="OsrTypes_UserFees" xml:space="preserve"><value>Tasas por servicios</value></data>
+  <data name="OsrTypes_UserFees" xml:space="preserve"><value>Tasas de uso</value></data>
   <data name="OsrTypes_UserFees_Desc" xml:space="preserve"><value>Estacionamiento, peajes, tasas de mercado</value></data>
-  <data name="OsrTypes_Licenses" xml:space="preserve"><value>Licencias y permisos</value></data>
+  <data name="OsrTypes_ServiceFees" xml:space="preserve"><value>Tasas por servicios</value></data>
+  <data name="OsrTypes_ServiceFees_Desc" xml:space="preserve"><value>Cargos facturados por servicios locales</value></data>
+  <data name="OsrTypes_Licenses" xml:space="preserve"><value>Licencias comerciales</value></data>
   <data name="OsrTypes_Licenses_Desc" xml:space="preserve"><value>Permiso comercial, licencia de expendio de bebidas</value></data>
   <data name="OsrTypes_Fines" xml:space="preserve"><value>Multas y sanciones</value></data>
   <data name="OsrTypes_Fines_Desc" xml:space="preserve"><value>Multas de estacionamiento, recargos por mora</value></data>
@@ -61,17 +77,20 @@
   <data name="WhyOptimize_OurFocus" xml:space="preserve"><value>Nuestra mision</value></data>
   <data name="WhyOptimize_OurFocus_Desc" xml:space="preserve"><value>ONU-Habitat promueve el cambio transformador en las ciudades a traves del conocimiento, la asesoria en politicas publicas, la asistencia tecnica y la accion colaborativa para no dejar a nadie ni a ningun lugar atras.</value></data>
   <data name="WhyOptimize_Title" xml:space="preserve"><value>Por que optimizar los ingresos propios?</value></data>
-  <data name="WhyOptimize_IncreasedResources" xml:space="preserve"><value>Mayores recursos</value></data>
-  <data name="WhyOptimize_IncreasedResources_Desc" xml:space="preserve"><value>para cerrar mandatos sin financiamiento e invertir en desarrollo</value></data>
-  <data name="WhyOptimize_GreaterAutonomy" xml:space="preserve"><value>Mayor autonomia</value></data>
-  <data name="WhyOptimize_GreaterAutonomy_Desc" xml:space="preserve"><value>y reduccion de la dependencia de las transferencias intergubernamentales</value></data>
-  <data name="WhyOptimize_SocialContract" xml:space="preserve"><value>Contrato social fortalecido</value></data>
-  <data name="WhyOptimize_SocialContract_Desc" xml:space="preserve"><value>y mejora de la rendicion de cuentas gubernamental</value></data>
-  <data name="WhyOptimize_CrisisPrevention" xml:space="preserve"><value>Prevencion efectiva de crisis urbanas</value></data>
-  <data name="WhyOptimize_CrisisPrevention_Desc" xml:space="preserve"><value>y mejora de la solvencia crediticia</value></data>
+  <data name="WhyOptimize_IncreasedResources" xml:space="preserve"><value>Aumentar los recursos</value></data>
+  <data name="WhyOptimize_IncreasedResources_Desc" xml:space="preserve"><value>para las prioridades locales.</value></data>
+  <data name="WhyOptimize_GreaterAutonomy" xml:space="preserve"><value>Reducir la dependencia excesiva</value></data>
+  <data name="WhyOptimize_GreaterAutonomy_Desc" xml:space="preserve"><value>de las transferencias intergubernamentales.</value></data>
+  <data name="WhyOptimize_SocialContract" xml:space="preserve"><value>Fortalecer la rendicion de cuentas</value></data>
+  <data name="WhyOptimize_SocialContract_Desc" xml:space="preserve"><value>y el contrato social.</value></data>
+  <data name="WhyOptimize_CrisisPrevention" xml:space="preserve"><value>Mejorar los cimientos financieros</value></data>
+  <data name="WhyOptimize_CrisisPrevention_Desc" xml:space="preserve"><value>para la inversion.</value></data>
   <data name="WhyOptimize_GetStarted" xml:space="preserve"><value>+ COMENZAR CON EL ROSRA</value></data>
 
-  <!-- Why Choose UN-Habitat Section -->
+  <!-- Supported by UN-Habitat (compact) -->
+  <data name="UnHabitatSupport_Title" xml:space="preserve"><value>Respaldado por la experiencia de ONU-Habitat en finanzas municipales</value></data>
+  <data name="UnHabitatSupport_Body" xml:space="preserve"><value>ROSRA se basa en el trabajo de ONU-Habitat con los gobiernos locales en materia de ingresos propios, finanzas municipales y priorizacion de reformas.</value></data>
+
   <data name="WhyChoose_Title" xml:space="preserve"><value>Por que elegir ONU-Habitat?</value></data>
   <data name="WhyChoose_Data" xml:space="preserve"><value>Datos</value></data>
   <data name="WhyChoose_Data_Desc" xml:space="preserve"><value>Ofrecemos los mejores datos globales combinados con un analisis ejemplar para brindar las recomendaciones mas adaptadas.</value></data>
@@ -103,19 +122,45 @@
 
   <!-- How ROSRA Works — methodology walkthrough -->
   <data name="Methodology_Title" xml:space="preserve"><value>Cómo funciona ROSRA</value></data>
-  <data name="Methodology_Subtitle" xml:space="preserve"><value>Una metodología de cuatro pasos que convierte los datos de ingresos propios en un plan de reforma concreto. Cada captura de pantalla a continuación proviene del informe de muestra de Nairobi.</value></data>
-  <data name="Methodology_Step1_Eyebrow" xml:space="preserve"><value>Paso 1</value></data>
-  <data name="Methodology_Step1_Title" xml:space="preserve"><value>Análisis de brechas</value></data>
+  <data name="Methodology_Subtitle" xml:space="preserve"><value>Una mirada más detallada a las cuatro vistas principales del diagnóstico. Cada captura de pantalla a continuación proviene del informe de muestra de Kampala (Uganda).</value></data>
+
+  <!-- Process flow diagram (top of methodology section) -->
+  <data name="Diagram_AriaLabel" xml:space="preserve"><value>Diagrama del proceso ROSRA: estimación rápida del potencial, análisis de brechas por fuente, priorización, orientación para la reforma, salida del informe.</value></data>
+  <data name="Diagram_Card1_Title" xml:space="preserve"><value>Estimación rápida del potencial</value></data>
+  <data name="Diagram_Card1_Sub" xml:space="preserve"><value>Vista rápida del potencial global de ingresos propios</value></data>
+  <data name="Diagram_Card2_Title" xml:space="preserve"><value>Análisis de brechas por fuente</value></data>
+  <data name="Diagram_Card2_Sub" xml:space="preserve"><value>Identificar dónde se pierden ingresos en cada fuente</value></data>
+  <data name="Diagram_Card3_Title" xml:space="preserve"><value>Priorización</value></data>
+  <data name="Diagram_Card3_Sub" xml:space="preserve"><value>Clasificar fuentes y brechas según criterios seleccionados</value></data>
+  <data name="Diagram_Card4_Title" xml:space="preserve"><value>Orientación para la reforma</value></data>
+  <data name="Diagram_Card4_Sub" xml:space="preserve"><value>Vincular el diagnóstico con acciones prácticas</value></data>
+  <data name="Diagram_Card5_Title" xml:space="preserve"><value>Salida del informe</value></data>
+  <data name="Diagram_PropertyTax" xml:space="preserve"><value>Impuesto predial</value></data>
+  <data name="Diagram_Licenses" xml:space="preserve"><value>Licencias</value></data>
+  <data name="Diagram_FeesCharges" xml:space="preserve"><value>Tarifas / cargos</value></data>
+  <data name="Diagram_Coverage" xml:space="preserve"><value>Cobertura</value></data>
+  <data name="Diagram_Compliance" xml:space="preserve"><value>Cumplimiento</value></data>
+  <data name="Diagram_LiabilityValuation" xml:space="preserve"><value>Obligación / Valoración</value></data>
+  <data name="Diagram_Phase1" xml:space="preserve"><value>Comprender la oportunidad</value></data>
+  <data name="Diagram_Phase2" xml:space="preserve"><value>Encontrar las brechas</value></data>
+  <data name="Diagram_Phase3" xml:space="preserve"><value>Enfocar lo que importa</value></data>
+  <data name="Diagram_Phase4" xml:space="preserve"><value>Avanzar hacia la acción</value></data>
+  <data name="Methodology_QuickAnalysis_Eyebrow" xml:space="preserve"><value>Paso 1</value></data>
+  <data name="Methodology_QuickAnalysis_Title" xml:space="preserve"><value>Análisis rápido — Perfil del gobierno local</value></data>
+  <data name="Methodology_QuickAnalysis_Alt" xml:space="preserve"><value>Análisis rápido que muestra el perfil del gobierno local de Kampala y una estimación descendente WoFi del potencial de ingresos propios frente a la recaudación actual</value></data>
+  <data name="Methodology_QuickAnalysis_Body" xml:space="preserve"><value>Antes de profundizar en el detalle por fuente, ROSRA produce una &lt;strong&gt;instantánea descendente&lt;/strong&gt;. La ciudad completa en una sola pantalla el perfil del gobierno local — país, ejercicio fiscal, moneda, ingresos propios actuales, PIB regional y población — y el estimador WoFi compara la ciudad con sus pares subnacionales a nivel global. En segundos verás los ingresos actuales, el &lt;strong&gt;potencial de ingresos estimado&lt;/strong&gt;, la brecha entre ambos y un índice de frontera que ubica a la ciudad en la escala global del esfuerzo recaudatorio. Es el paso de orientación: indica al equipo de reforma cuánto margen hay antes de elegir las fuentes en las que profundizar.</value></data>
+  <data name="Methodology_Step1_Eyebrow" xml:space="preserve"><value>Paso 2</value></data>
+  <data name="Methodology_Step1_Title" xml:space="preserve"><value>Análisis de Brechas por Fuente</value></data>
   <data name="Methodology_Step1_Alt" xml:space="preserve"><value>Paso 1 — Tablero de análisis de brechas con la matriz del impuesto predial y el desglose de ingresos vs potencial</value></data>
   <data name="Methodology_Step1_Body" xml:space="preserve"><value>Para cada fuente de ingresos, la ciudad introduce únicamente los datos en las celdas sombreadas en gris — unidades registradas, monto facturado, monto pendiente, referencia estatutaria — y ROSRA descompone la brecha entre la recaudación actual y el potencial total en factores específicos: &lt;strong&gt;Cumplimiento&lt;/strong&gt;, &lt;strong&gt;Cobertura&lt;/strong&gt;, &lt;strong&gt;Valoración&lt;/strong&gt; u &lt;strong&gt;Obligación&lt;/strong&gt;, y las brechas mixtas que los combinan. El tablero matricial a la derecha hace inmediatamente visible por dónde se escapa cada chelín. Las fuentes que no aplican a su contexto (ej. la tarifa de residuos aquí) pueden excluirse.</value></data>
-  <data name="Methodology_Step2_Eyebrow" xml:space="preserve"><value>Paso 2</value></data>
+  <data name="Methodology_Step2_Eyebrow" xml:space="preserve"><value>Paso 3</value></data>
   <data name="Methodology_Step2_Title" xml:space="preserve"><value>Priorización</value></data>
   <data name="Methodology_Step2_Alt" xml:space="preserve"><value>Paso 2 — Tabla de priorización de fuentes, clasificadas por brecha funcional total</value></data>
-  <data name="Methodology_Step2_Body" xml:space="preserve"><value>Las fuentes se clasifican por su Brecha Funcional Total y se desglosan por tipo de brecha — Cumplimiento, Cobertura, Valoración/Obligación y las brechas mixtas — en una sola barra apilada para que la ciudad pueda ver de un vistazo qué reformas generan más ingresos. Los responsables pueden &lt;strong&gt;reordenar, excluir o eliminar tipos de brecha específicos&lt;/strong&gt; que no son políticamente viables. Las fuentes excluidas (como la tarifa de residuos aquí) se eliminan del ranking, las cuotas, el gráfico y las recomendaciones posteriores — el plan respeta las realidades locales, no solo las matemáticas.</value></data>
+  <data name="Methodology_Step2_Body" xml:space="preserve"><value>Las fuentes se clasifican por su Brecha Funcional Total y se desglosan por tipo de brecha — Cumplimiento, Cobertura, Valoración/Obligación y las brechas mixtas — en una sola barra apilada para que la ciudad pueda ver de un vistazo qué reformas generan más ingresos. Los responsables pueden &lt;strong&gt;reordenar, excluir o eliminar tipos de brecha específicos&lt;/strong&gt; que no son políticamente viables. Las fuentes excluidas (como la tarifa de residuos aquí) se eliminan del ranking, las cuotas, el gráfico y la orientación para la reforma posterior — el plan respeta las realidades locales, no solo las matemáticas.</value></data>
   <data name="Methodology_Step3_Eyebrow" xml:space="preserve"><value>Paso 3</value></data>
-  <data name="Methodology_Step3_Title" xml:space="preserve"><value>Selección de soluciones</value></data>
-  <data name="Methodology_Step3_Alt" xml:space="preserve"><value>Paso 3 — Selección de soluciones, fichas con orientación de implementación</value></data>
-  <data name="Methodology_Step3_Body" xml:space="preserve"><value>De una biblioteca curada de &lt;strong&gt;82 fichas de soluciones basadas en evidencia&lt;/strong&gt;, ROSRA reduce la lista por fuente, tipo de brecha, plazo y viabilidad política — y un personalizador de 3 preguntas las adapta al contexto de la ciudad. Cada ficha explica &lt;em&gt;qué hace la opción&lt;/em&gt;, &lt;em&gt;cuándo es más útil&lt;/em&gt;, &lt;em&gt;cuándo no suele ser el mejor primer paso&lt;/em&gt; y &lt;em&gt;con qué suele funcionar mejor&lt;/em&gt;. El &lt;strong&gt;Resumen de selección&lt;/strong&gt; a la derecha registra cada elección por fuente y brecha, con un salto de un clic directamente a las Recomendaciones cuando tenga suficientes.</value></data>
+  <data name="Methodology_Step3_Title" xml:space="preserve"><value>Orientación para la Reforma</value></data>
+  <data name="Methodology_Step3_Alt" xml:space="preserve"><value>Orientación para la Reforma — fichas de soluciones con orientación de implementación</value></data>
+  <data name="Methodology_Step3_Body" xml:space="preserve"><value>De una biblioteca curada de fichas de soluciones basadas en evidencia, ROSRA reduce la lista por fuente, tipo de brecha, plazo y viabilidad política — y un personalizador de 3 preguntas las adapta al contexto de la ciudad. Cada ficha explica &lt;em&gt;qué hace la opción&lt;/em&gt;, &lt;em&gt;cuándo es más útil&lt;/em&gt;, &lt;em&gt;cuándo no suele ser el mejor primer paso&lt;/em&gt; y &lt;em&gt;con qué suele funcionar mejor&lt;/em&gt;. El &lt;strong&gt;Resumen de selección&lt;/strong&gt; a la derecha registra cada elección por fuente y brecha para que la ciudad obtenga un paquete de reformas coherente.</value></data>
   <data name="Methodology_Step4_Eyebrow" xml:space="preserve"><value>Paso 4</value></data>
   <data name="Methodology_Step4_Title" xml:space="preserve"><value>Recomendaciones</value></data>
   <data name="Methodology_Step4_Alt" xml:space="preserve"><value>Paso 4 — Recomendaciones, plan de acción consolidado con plazos y etiquetas de victoria rápida</value></data>

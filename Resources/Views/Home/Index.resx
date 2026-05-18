@@ -12,7 +12,15 @@
 
   <!-- Hero Section -->
   <data name="Hero_Title" xml:space="preserve"><value>Rapid Own Source Revenue Analysis for Sustainable Cities</value></data>
+  <data name="Hero_Subtitle" xml:space="preserve"><value>ROSRA helps local governments estimate OSR improvement potential, diagnose where revenue is being lost, prioritize reform areas and access practical reform guidance.</value></data>
+  <data name="Hero_StartAnalysis" xml:space="preserve"><value>Start Analysis</value></data>
+  <data name="Hero_ViewSampleReport" xml:space="preserve"><value>View Sample Report</value></data>
   <data name="Hero_LearnMore" xml:space="preserve"><value>LEARN MORE</value></data>
+
+  <!-- Diagnostic flow (high-level 4-step + final output, immediately after hero) -->
+  <data name="Flow_Title" xml:space="preserve"><value>How the ROSRA diagnostic works</value></data>
+  <data name="Flow_Body" xml:space="preserve"><value>ROSRA starts with a quick estimate of the overall room for own-source revenue improvement. It then moves into a stream-level diagnosis, breaking down where revenue is being lost across coverage, compliance, and liability or valuation gaps. The tool then helps users prioritize which issues to address first and points them to practical reform guidance. The final output is a ROSRA Diagnostic Report.</value></data>
+  <data name="Flow_FinalOutputEyebrow" xml:space="preserve"><value>Final output</value></data>
 
   <!-- Featured Cards -->
   <data name="Featured_RosraTool" xml:space="preserve"><value>ROSRA TOOL</value></data>
@@ -25,9 +33,15 @@
   <data name="Featured_DataPrivacy" xml:space="preserve"><value>DATA PRIVACY</value></data>
   <data name="Featured_DataPrivacy_Desc" xml:space="preserve"><value>All data input into the ROSRA is completely confidential and only visible to the local government itself and UN-Habitat.</value></data>
 
-  <!-- What is ROSRA Section -->
-  <data name="WhatIsRosra_Title" xml:space="preserve"><value>What is the ROSRA?</value></data>
-  <data name="WhatIsRosra_Subtitle" xml:space="preserve"><value>ROSRA is a UN-Habitat diagnostic tool that helps local governments see where their own source revenue system stands today and how much room there is to improve.</value></data>
+  <!-- What ROSRA helps users do (3 cards) -->
+  <data name="WhatIsRosra_Title" xml:space="preserve"><value>What ROSRA helps users do</value></data>
+  <data name="WhatIsRosra_Subtitle" xml:space="preserve"><value>Three things the ROSRA diagnostic gives every local government using it.</value></data>
+  <data name="WhatIsRosra_Estimate" xml:space="preserve"><value>Estimate OSR opportunity</value></data>
+  <data name="WhatIsRosra_Estimate_Desc" xml:space="preserve"><value>Understand the overall room for improvement.</value></data>
+  <data name="WhatIsRosra_Diagnose" xml:space="preserve"><value>Diagnose revenue gaps</value></data>
+  <data name="WhatIsRosra_Diagnose_Desc" xml:space="preserve"><value>Identify whether revenue is being lost through coverage, compliance, liability or valuation problems.</value></data>
+  <data name="WhatIsRosra_Prioritize" xml:space="preserve"><value>Prioritize reform action</value></data>
+  <data name="WhatIsRosra_Prioritize_Desc" xml:space="preserve"><value>Focus attention on the streams and gaps that matter most.</value></data>
   <data name="WhatIsRosra_StrategicDecision" xml:space="preserve"><value>Strategic Decision Making</value></data>
   <data name="WhatIsRosra_StrategicDecision_Desc" xml:space="preserve"><value>Clear visualization of OSR gaps for informed decisions and reform prioritization.</value></data>
   <data name="WhatIsRosra_RevenueOptimization" xml:space="preserve"><value>Revenue Optimization</value></data>
@@ -43,17 +57,19 @@
   <!-- OSR Types Section -->
   <data name="OsrTypes_Title" xml:space="preserve"><value>Own Source Revenue Types</value></data>
   <data name="OsrTypes_Subtitle" xml:space="preserve"><value>OSRs are taxes, fees, licenses, and other revenues directly controlled by local governments.</value></data>
-  <data name="OsrTypes_PropertyTax" xml:space="preserve"><value>Property Tax</value></data>
+  <data name="OsrTypes_PropertyTax" xml:space="preserve"><value>Property tax</value></data>
   <data name="OsrTypes_PropertyTax_Desc" xml:space="preserve"><value>Recurrent tax on land or property</value></data>
-  <data name="OsrTypes_OtherTaxes" xml:space="preserve"><value>Other Taxes</value></data>
+  <data name="OsrTypes_OtherTaxes" xml:space="preserve"><value>Other local revenues</value></data>
   <data name="OsrTypes_OtherTaxes_Desc" xml:space="preserve"><value>Local Sales Tax, Excise Tax, Hotel Tax</value></data>
-  <data name="OsrTypes_UserFees" xml:space="preserve"><value>User Fees</value></data>
+  <data name="OsrTypes_UserFees" xml:space="preserve"><value>User charges</value></data>
   <data name="OsrTypes_UserFees_Desc" xml:space="preserve"><value>Parking, Road Tolls, Market Fees</value></data>
-  <data name="OsrTypes_Licenses" xml:space="preserve"><value>Licenses &amp; Permits</value></data>
+  <data name="OsrTypes_ServiceFees" xml:space="preserve"><value>Service fees</value></data>
+  <data name="OsrTypes_ServiceFees_Desc" xml:space="preserve"><value>Billed use charges for local services</value></data>
+  <data name="OsrTypes_Licenses" xml:space="preserve"><value>Business licenses</value></data>
   <data name="OsrTypes_Licenses_Desc" xml:space="preserve"><value>Business Permit, Liquor License</value></data>
-  <data name="OsrTypes_Fines" xml:space="preserve"><value>Fines &amp; Penalties</value></data>
+  <data name="OsrTypes_Fines" xml:space="preserve"><value>Fines and penalties</value></data>
   <data name="OsrTypes_Fines_Desc" xml:space="preserve"><value>Parking Fines, Late Payment Fees</value></data>
-  <data name="OsrTypes_RevenueFromAssets" xml:space="preserve"><value>Revenue from Assets</value></data>
+  <data name="OsrTypes_RevenueFromAssets" xml:space="preserve"><value>Asset revenues</value></data>
   <data name="OsrTypes_RevenueFromAssets_Desc" xml:space="preserve"><value>Public Land, Buildings, Investments</value></data>
   <data name="OsrTypes_ViewProcess" xml:space="preserve"><value>+ VIEW ANALYSIS PROCESS</value></data>
 
@@ -61,17 +77,21 @@
   <data name="WhyOptimize_OurFocus" xml:space="preserve"><value>Our focus</value></data>
   <data name="WhyOptimize_OurFocus_Desc" xml:space="preserve"><value>UN-Habitat promotes transformative change in cities through knowledge, policy advice, technical assistance and collaborative action to leave no one and no place behind.</value></data>
   <data name="WhyOptimize_Title" xml:space="preserve"><value>Why optimize Own Source Revenue?</value></data>
-  <data name="WhyOptimize_IncreasedResources" xml:space="preserve"><value>Increased resources</value></data>
-  <data name="WhyOptimize_IncreasedResources_Desc" xml:space="preserve"><value>to close unfunded mandates and invest in development</value></data>
-  <data name="WhyOptimize_GreaterAutonomy" xml:space="preserve"><value>Greater autonomy</value></data>
-  <data name="WhyOptimize_GreaterAutonomy_Desc" xml:space="preserve"><value>and reduced dependence on inter-governmental transfers</value></data>
-  <data name="WhyOptimize_SocialContract" xml:space="preserve"><value>Strengthened social contract</value></data>
-  <data name="WhyOptimize_SocialContract_Desc" xml:space="preserve"><value>and improved government accountability</value></data>
-  <data name="WhyOptimize_CrisisPrevention" xml:space="preserve"><value>Effective urban crises prevention</value></data>
-  <data name="WhyOptimize_CrisisPrevention_Desc" xml:space="preserve"><value>and improved creditworthiness</value></data>
+  <data name="WhyOptimize_IncreasedResources" xml:space="preserve"><value>Increase resources</value></data>
+  <data name="WhyOptimize_IncreasedResources_Desc" xml:space="preserve"><value>for local priorities.</value></data>
+  <data name="WhyOptimize_GreaterAutonomy" xml:space="preserve"><value>Reduce excessive dependence</value></data>
+  <data name="WhyOptimize_GreaterAutonomy_Desc" xml:space="preserve"><value>on inter-governmental transfers.</value></data>
+  <data name="WhyOptimize_SocialContract" xml:space="preserve"><value>Strengthen accountability</value></data>
+  <data name="WhyOptimize_SocialContract_Desc" xml:space="preserve"><value>and the social contract.</value></data>
+  <data name="WhyOptimize_CrisisPrevention" xml:space="preserve"><value>Improve financial foundations</value></data>
+  <data name="WhyOptimize_CrisisPrevention_Desc" xml:space="preserve"><value>for investment.</value></data>
   <data name="WhyOptimize_GetStarted" xml:space="preserve"><value>+ GET STARTED WITH ROSRA</value></data>
 
-  <!-- Why Choose UN-Habitat Section -->
+  <!-- Supported by UN-Habitat (compact) -->
+  <data name="UnHabitatSupport_Title" xml:space="preserve"><value>Supported by UN-Habitat municipal finance experience</value></data>
+  <data name="UnHabitatSupport_Body" xml:space="preserve"><value>ROSRA builds on UN-Habitat's work with local governments on own-source revenue, municipal finance and reform prioritization.</value></data>
+
+  <!-- Why Choose UN-Habitat Section (legacy, not rendered on the new homepage) -->
   <data name="WhyChoose_Title" xml:space="preserve"><value>Why Choose UN-Habitat?</value></data>
   <data name="WhyChoose_Data" xml:space="preserve"><value>Data</value></data>
   <data name="WhyChoose_Data_Desc" xml:space="preserve"><value>We bring the best of global data paired with exemplary analysis to provide the most tailored recommendations.</value></data>
@@ -101,21 +121,47 @@
   <data name="Sdg_Title" xml:space="preserve"><value>Sustainable Development Goals</value></data>
   <data name="Sdg_HoverNote" xml:space="preserve"><value>Hover over an icon to learn more.</value></data>
 
-  <!-- How ROSRA Works — methodology walkthrough -->
-  <data name="Methodology_Title" xml:space="preserve"><value>How ROSRA Works</value></data>
-  <data name="Methodology_Subtitle" xml:space="preserve"><value>A four-step methodology that turns own-source revenue data into a concrete reform plan. Each screenshot below is from the Nairobi sample report.</value></data>
-  <data name="Methodology_Step1_Eyebrow" xml:space="preserve"><value>Step 1</value></data>
-  <data name="Methodology_Step1_Title" xml:space="preserve"><value>Gap Analysis</value></data>
-  <data name="Methodology_Step1_Alt" xml:space="preserve"><value>Step 1 Gap Analysis dashboard showing the property tax matrix and revenue vs potential breakdown</value></data>
-  <data name="Methodology_Step1_Body" xml:space="preserve"><value>For each revenue stream, the city enters only the inputs in the gray-shaded cells — registered units, billed amount, outstanding amount, statutory benchmark — and ROSRA decomposes the gap between current collection and full potential into specific drivers: &lt;strong&gt;Compliance&lt;/strong&gt;, &lt;strong&gt;Coverage&lt;/strong&gt;, &lt;strong&gt;Valuation&lt;/strong&gt; or &lt;strong&gt;Liability&lt;/strong&gt;, and the mixed gaps that combine them. The matrix dashboard on the right makes it instantly visible where each shilling is slipping through. Streams that don't apply to your context (e.g. Solid Waste Fee here) can be excluded.</value></data>
-  <data name="Methodology_Step2_Eyebrow" xml:space="preserve"><value>Step 2</value></data>
+  <!-- Methodology deep-dive walkthrough (renamed steps) -->
+  <data name="Methodology_Title" xml:space="preserve"><value>A closer look at the diagnostic</value></data>
+  <data name="Methodology_Subtitle" xml:space="preserve"><value>A closer look at the four core diagnostic views. Each screenshot below is from the Kampala (Uganda) sample report.</value></data>
+
+  <!-- Process flow diagram (top of methodology section) -->
+  <data name="Diagram_AriaLabel" xml:space="preserve"><value>ROSRA process flow diagram: quick potential estimate, stream-specific gap analysis, prioritization, reform guidance, report output.</value></data>
+  <data name="Diagram_Card1_Title" xml:space="preserve"><value>Quick potential estimate</value></data>
+  <data name="Diagram_Card1_Sub" xml:space="preserve"><value>Fast view of overall OSR potential</value></data>
+  <data name="Diagram_Card2_Title" xml:space="preserve"><value>Stream-specific gap analysis</value></data>
+  <data name="Diagram_Card2_Sub" xml:space="preserve"><value>Identify where revenue is being lost within each stream</value></data>
+  <data name="Diagram_Card3_Title" xml:space="preserve"><value>Prioritization</value></data>
+  <data name="Diagram_Card3_Sub" xml:space="preserve"><value>Rank streams and gaps by selected criteria</value></data>
+  <data name="Diagram_Card4_Title" xml:space="preserve"><value>Reform guidance</value></data>
+  <data name="Diagram_Card4_Sub" xml:space="preserve"><value>Match the diagnosis to practical actions</value></data>
+  <data name="Diagram_Card5_Title" xml:space="preserve"><value>Report output</value></data>
+  <data name="Diagram_PropertyTax" xml:space="preserve"><value>Property tax</value></data>
+  <data name="Diagram_Licenses" xml:space="preserve"><value>Licenses</value></data>
+  <data name="Diagram_FeesCharges" xml:space="preserve"><value>Fees / charges</value></data>
+  <data name="Diagram_Coverage" xml:space="preserve"><value>Coverage</value></data>
+  <data name="Diagram_Compliance" xml:space="preserve"><value>Compliance</value></data>
+  <data name="Diagram_LiabilityValuation" xml:space="preserve"><value>Liability / Valuation</value></data>
+  <data name="Diagram_Phase1" xml:space="preserve"><value>Understand the opportunity</value></data>
+  <data name="Diagram_Phase2" xml:space="preserve"><value>Find the gaps</value></data>
+  <data name="Diagram_Phase3" xml:space="preserve"><value>Focus where it matters</value></data>
+  <data name="Diagram_Phase4" xml:space="preserve"><value>Move toward action</value></data>
+  <data name="Methodology_QuickAnalysis_Eyebrow" xml:space="preserve"><value>Step 1</value></data>
+  <data name="Methodology_QuickAnalysis_Title" xml:space="preserve"><value>Quick Analysis — Local Government Profile</value></data>
+  <data name="Methodology_QuickAnalysis_Alt" xml:space="preserve"><value>Quick Analysis showing the Kampala Local Government Profile and a top-down WoFi estimate of own-source revenue potential vs current collection</value></data>
+  <data name="Methodology_QuickAnalysis_Body" xml:space="preserve"><value>Before diving into stream-by-stream detail, ROSRA produces a &lt;strong&gt;top-down snapshot&lt;/strong&gt;. The city fills in a one-screen Local Government Profile — country, financial year, currency, current OSR, regional GDP and population — and the WoFi estimator benchmarks the city against peer subnational governments globally. In seconds you see today's revenue, the &lt;strong&gt;estimated revenue potential&lt;/strong&gt;, the gap between them, and a frontier index that places the city on the global revenue-effort scale. It's the orientation step: it tells the reform team how much headroom they're working with before they pick which streams to dig into.</value></data>
+  <data name="Methodology_Step1_Eyebrow" xml:space="preserve"><value>Step 2</value></data>
+  <data name="Methodology_Step1_Title" xml:space="preserve"><value>Stream Gap Analysis</value></data>
+  <data name="Methodology_Step1_Alt" xml:space="preserve"><value>Gap Analysis dashboard showing the Kampala Daily Market Fee matrix and revenue vs potential breakdown</value></data>
+  <data name="Methodology_Step1_Body" xml:space="preserve"><value>For each revenue stream, the city enters only the inputs in the gray-shaded cells — registered units, billed amount, outstanding amount, statutory benchmark — and ROSRA decomposes the gap between current collection and full potential into specific drivers: &lt;strong&gt;Compliance&lt;/strong&gt;, &lt;strong&gt;Coverage&lt;/strong&gt;, &lt;strong&gt;Valuation&lt;/strong&gt; or &lt;strong&gt;Liability&lt;/strong&gt;, and the mixed gaps that combine them. The matrix dashboard on the right makes it instantly visible where each shilling is slipping through. Streams that don't apply to your context can be excluded.</value></data>
+  <data name="Methodology_Step2_Eyebrow" xml:space="preserve"><value>Step 3</value></data>
   <data name="Methodology_Step2_Title" xml:space="preserve"><value>Prioritization</value></data>
-  <data name="Methodology_Step2_Alt" xml:space="preserve"><value>Step 2 Stream Prioritization table showing each revenue stream ranked by total functional gap</value></data>
-  <data name="Methodology_Step2_Body" xml:space="preserve"><value>Streams are ranked by their Total Functional Gap and broken down per gap-type — Compliance, Coverage, Valuation/Liability, and the mixed gaps — in a single stacked bar so the city can see at a glance which reforms move the most revenue. Decision-makers can &lt;strong&gt;re-order, exclude, or remove specific gap-types&lt;/strong&gt; that aren't politically feasible. Excluded streams (like Solid Waste Fee here) are dropped from rank, share, the bar chart, and the downstream Recommendations — the plan respects local realities, not just the math.</value></data>
+  <data name="Methodology_Step2_Alt" xml:space="preserve"><value>Stream Prioritization table showing each Kampala revenue stream ranked by total functional gap</value></data>
+  <data name="Methodology_Step2_Body" xml:space="preserve"><value>Streams are ranked by their Total Functional Gap and broken down per gap-type — Compliance, Coverage, Valuation/Liability, and the mixed gaps — in a single stacked bar so the city can see at a glance which reforms move the most revenue. Decision-makers can &lt;strong&gt;re-order, exclude, or remove specific gap-types&lt;/strong&gt; that aren't politically feasible. Excluded streams (like Solid Waste Fee here) are dropped from rank, share, the bar chart, and the downstream Reform Guidance — the plan respects local realities, not just the math.</value></data>
   <data name="Methodology_Step3_Eyebrow" xml:space="preserve"><value>Step 3</value></data>
-  <data name="Methodology_Step3_Title" xml:space="preserve"><value>Overview Selection</value></data>
-  <data name="Methodology_Step3_Alt" xml:space="preserve"><value>Step 3 Overview Selection — solution cards with implementation guidance</value></data>
-  <data name="Methodology_Step3_Body" xml:space="preserve"><value>From a curated library of &lt;strong&gt;82 evidence-based solution cards&lt;/strong&gt;, ROSRA narrows the list by stream, gap-type, timeline, and political feasibility — and a 3-question personaliser tailors them to the city's context. Each card explains &lt;em&gt;what the option does&lt;/em&gt;, &lt;em&gt;most useful when&lt;/em&gt;, &lt;em&gt;usually not the best first move when&lt;/em&gt;, and &lt;em&gt;often works best alongside&lt;/em&gt;. The right-hand &lt;strong&gt;Selection Summary&lt;/strong&gt; tracks every pick by stream and gap, with a one-click jump straight to Recommendations once you have enough.</value></data>
+  <data name="Methodology_Step3_Title" xml:space="preserve"><value>Reform Guidance</value></data>
+  <data name="Methodology_Step3_Alt" xml:space="preserve"><value>Reform Guidance — solution cards with implementation guidance</value></data>
+  <data name="Methodology_Step3_Body" xml:space="preserve"><value>From a curated library of evidence-based solution cards, ROSRA narrows the list by stream, gap-type, timeline, and political feasibility — and a 3-question personaliser tailors them to the city's context. Each card explains &lt;em&gt;what the option does&lt;/em&gt;, &lt;em&gt;most useful when&lt;/em&gt;, &lt;em&gt;usually not the best first move when&lt;/em&gt;, and &lt;em&gt;often works best alongside&lt;/em&gt;. The right-hand &lt;strong&gt;Selection Summary&lt;/strong&gt; tracks every pick by stream and gap so the city ends up with a coherent reform package.</value></data>
   <data name="Methodology_Step4_Eyebrow" xml:space="preserve"><value>Step 4</value></data>
   <data name="Methodology_Step4_Title" xml:space="preserve"><value>Recommendations</value></data>
   <data name="Methodology_Step4_Alt" xml:space="preserve"><value>Step 4 Recommendations — consolidated action plan with timelines and quick-win tags</value></data>

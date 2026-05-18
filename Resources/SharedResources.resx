@@ -183,4 +183,68 @@
   <data name="Nav_SaveReport" xml:space="preserve"><value>Save report</value></data>
   <data name="Nav_UpdateReport" xml:space="preserve"><value>Update report</value></data>
   <data name="Nav_SaveAsMyReport" xml:space="preserve"><value>Save as my report</value></data>
+
+  <!-- ====================================================================== -->
+  <!-- Canonical ROSRA process labels. These are the SINGLE source of truth   -->
+  <!-- for the four diagnostic steps and the final output. Every view (home,  -->
+  <!-- tool, report, sample report) MUST reference these keys instead of      -->
+  <!-- hardcoding the strings, so wording stays aligned across the product.   -->
+  <!-- ====================================================================== -->
+  <data name="Process_QuickEstimate" xml:space="preserve"><value>Quick OSR Estimate</value></data>
+  <data name="Process_QuickEstimate_Desc" xml:space="preserve"><value>High-level estimate of how much room there may be to improve own-source revenue.</value></data>
+  <data name="Process_StreamGapAnalysis" xml:space="preserve"><value>Stream Gap Analysis</value></data>
+  <data name="Process_StreamGapAnalysis_Desc" xml:space="preserve"><value>Diagnosis of revenue streams by gap type: coverage, compliance, and liability/valuation.</value></data>
+  <data name="Process_Prioritization" xml:space="preserve"><value>Prioritization</value></data>
+  <data name="Process_Prioritization_Desc" xml:space="preserve"><value>Ranking of streams and gap types to help users focus reform attention.</value></data>
+  <data name="Process_ReformGuidance" xml:space="preserve"><value>Reform Guidance</value></data>
+  <data name="Process_ReformGuidance_Desc" xml:space="preserve"><value>Relevant solution guidance shown in the platform, based on the prioritized streams and gaps.</value></data>
+  <data name="Diagnostic_ReportTitle" xml:space="preserve"><value>ROSRA Diagnostic Report</value></data>
+  <data name="Diagnostic_ReportSubtitle" xml:space="preserve"><value>A concise summary of the local government profile, OSR estimate, gap analysis results, prioritization and reform guidance pathway.</value></data>
+  <data name="Diagnostic_FooterNote" xml:space="preserve"><value>Prepared with ROSRA, a UN-Habitat diagnostic tool for subnational own-source revenue analysis.</value></data>
+
+  <!-- ====================================================================== -->
+  <!-- Report-section copy. Used by Views/Rosra/PrintFullReport.cshtml and    -->
+  <!-- the partials it renders to frame each section with a What / Why / How  -->
+  <!-- structure, per the v2 feedback brief.                                  -->
+  <!-- ====================================================================== -->
+  <data name="Report_LgProfile_Title" xml:space="preserve"><value>Local Government Profile</value></data>
+  <data name="Report_LgProfile_Body" xml:space="preserve"><value>This section summarizes the basic context used for the ROSRA assessment, including the local government, financial year, currency, current own-source revenue, gross regional product and population. These inputs define the scope of the analysis and ensure that the results refer to the same jurisdiction and reporting year.</value></data>
+
+  <data name="Report_QuickEstimate_Title" xml:space="preserve"><value>Quick OSR Estimate</value></data>
+  <data name="Report_QuickEstimate_Body" xml:space="preserve"><value>This section provides a high-level estimate of the overall room for own-source revenue improvement. It is intended to give users an initial sense of the scale of the opportunity before moving into the stream-level diagnosis. The estimate should be read as an orientation point, not as a detailed explanation of where revenue is being lost.</value></data>
+
+  <data name="Report_StreamGap_Title" xml:space="preserve"><value>Stream Gap Analysis Results</value></data>
+  <data name="Report_StreamGap_What" xml:space="preserve"><value>This section shows the estimated functional gap for each revenue stream included in the assessment. The visual breaks each stream into the main types of revenue loss: compliance, coverage, and liability or valuation. The bars allow users to compare the relative size of gaps across streams, while the colored segments show what is driving the gap within each stream.</value></data>
+  <data name="Report_StreamGap_Why" xml:space="preserve"><value>This helps users move beyond a general statement that revenue collection is low and identify whether the problem is mainly linked to unpaid bills, missing taxpayers or units, weak assessment, or a combination of issues.</value></data>
+  <data name="Report_StreamGap_How" xml:space="preserve"><value>Read the chart from the largest to the smallest stream gap. Use the table below the chart to check the estimated amount by gap type and the total estimated gap for each stream.</value></data>
+
+  <data name="Report_StreamPrio_Title" xml:space="preserve"><value>Stream Prioritization</value></data>
+  <data name="Report_StreamPrio_What" xml:space="preserve"><value>Stream prioritization ranks the revenue streams included in the assessment according to their total functional gap. This helps users see which streams represent the largest estimated opportunity for improvement within the current diagnosis.</value></data>
+  <data name="Report_StreamPrio_Why" xml:space="preserve"><value>Local governments often have several revenue streams but limited time, staff and reform capacity. Prioritization helps focus attention on the streams where improvement could make the biggest difference, while still allowing users to adjust the sequence based on local context.</value></data>
+  <data name="Report_StreamPrio_How" xml:space="preserve"><value>The table is ordered from the largest to the smallest estimated stream gap. Streams marked as excluded are not included in the share calculation or downstream recommendations because they do not apply to the local government or were removed from the assessment.</value></data>
+
+  <data name="Report_GapPrio_Title" xml:space="preserve"><value>Gap Prioritization Results</value></data>
+  <data name="Report_GapPrio_What" xml:space="preserve"><value>Gap prioritization breaks each prioritized stream into the specific types of problems driving underperformance. It shows whether the issue is related to compliance, coverage, valuation, liability assessment, or mixed gaps.</value></data>
+  <data name="Report_GapPrio_Why" xml:space="preserve"><value>Different gaps require different types of reform. A compliance gap may require better billing, reminders, payment channels or enforcement. A coverage gap may require better registration, data matching or field verification. A valuation or liability gap may require better assessment rules, updated values or clearer fee-setting.</value></data>
+  <data name="Report_GapPrio_How" xml:space="preserve"><value>For each stream, the table shows the selected prioritization mode and the suggested order of gap types. The order should be read as a starting point for reform sequencing and can be adjusted based on feasibility, capacity, political considerations or ongoing reforms.</value></data>
+
+  <data name="Report_ReformGuidance_Title" xml:space="preserve"><value>Reform Guidance</value></data>
+  <data name="Report_ReformGuidance_Body" xml:space="preserve"><value>Based on the prioritized streams and gap types, ROSRA identifies relevant reform options in the Recommendations section of the platform. This report does not reproduce the full solution catalogue. Users should refer to the website to review the selected solution cards, including implementation steps, timeline, feasibility considerations, stakeholders and monitoring guidance.</value></data>
+
+  <data name="Report_SectionWhat" xml:space="preserve"><value>What this section shows</value></data>
+  <data name="Report_SectionWhy" xml:space="preserve"><value>Why it matters</value></data>
+  <data name="Report_SectionHow" xml:space="preserve"><value>How to read</value></data>
+  <data name="Report_NotAvailable" xml:space="preserve"><value>Not available</value></data>
+
+  <!-- Validation / stream-exclusion messages -->
+  <data name="Stream_AtLeastOneRequired" xml:space="preserve"><value>At least one revenue stream must remain included to generate the diagnostic.</value></data>
+  <data name="Stream_ExcludeBusinessLicenseConfirm" xml:space="preserve"><value>Exclude Business License from this analysis? You can re-include it later from the Prioritization step.</value></data>
+  <data name="Stream_Excluded_Badge" xml:space="preserve"><value>Excluded</value></data>
+  <data name="Stream_Reinclude" xml:space="preserve"><value>Re-include</value></data>
+
+  <!-- Duplicate-solution collapse notes (v2 brief §10–11). {0} = anchor stream name, {1} = category label, {2} = comma-joined overlapping gap types. -->
+  <data name="Duplicate_FullCollapse" xml:space="preserve"><value>Same as {0}. This stream is also a {1} and shares a similar gap profile, so the relevant reform options are the same. Please refer to the solution package shown under {0}.</value></data>
+  <data name="Duplicate_PartialCollapse" xml:space="preserve"><value>Some recommended actions for this stream are the same as those shown under {0}, because both streams share the same category and {2} gap. Only additional or different recommendations are shown here.</value></data>
+  <data name="Duplicate_ReportNote" xml:space="preserve"><value>Some streams may share the same reform guidance where they belong to the same revenue category and have similar gap profiles. Detailed grouped recommendations are available in the platform.</value></data>
+  <data name="Duplicate_SameAs_Heading" xml:space="preserve"><value>Shared reform guidance</value></data>
 </root>

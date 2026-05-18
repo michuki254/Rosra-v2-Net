@@ -166,4 +166,59 @@
   <data name="Nav_SaveReport" xml:space="preserve"><value>Enregistrer le rapport</value></data>
   <data name="Nav_UpdateReport" xml:space="preserve"><value>Mettre à jour le rapport</value></data>
   <data name="Nav_SaveAsMyReport" xml:space="preserve"><value>Enregistrer comme mon rapport</value></data>
+
+  <!-- Canonical ROSRA process labels - source of truth for the 4 diagnostic steps + final output -->
+  <data name="Process_QuickEstimate" xml:space="preserve"><value>Estimation Rapide des RPP</value></data>
+  <data name="Process_QuickEstimate_Desc" xml:space="preserve"><value>Estimation de haut niveau de la marge d'amélioration possible des recettes propres.</value></data>
+  <data name="Process_StreamGapAnalysis" xml:space="preserve"><value>Analyse des Écarts par Source</value></data>
+  <data name="Process_StreamGapAnalysis_Desc" xml:space="preserve"><value>Diagnostic des sources de revenus par type d'écart : couverture, conformité et imposition/évaluation.</value></data>
+  <data name="Process_Prioritization" xml:space="preserve"><value>Priorisation</value></data>
+  <data name="Process_Prioritization_Desc" xml:space="preserve"><value>Classement des sources et des types d'écarts pour aider à concentrer l'attention sur la réforme.</value></data>
+  <data name="Process_ReformGuidance" xml:space="preserve"><value>Orientation pour la Réforme</value></data>
+  <data name="Process_ReformGuidance_Desc" xml:space="preserve"><value>Orientation pertinente sur les solutions affichée dans la plateforme, en fonction des sources et écarts priorisés.</value></data>
+  <data name="Diagnostic_ReportTitle" xml:space="preserve"><value>Rapport de Diagnostic ROSRA</value></data>
+  <data name="Diagnostic_ReportSubtitle" xml:space="preserve"><value>Un résumé concis du profil du gouvernement local, de l'estimation des RPP, des résultats de l'analyse des écarts, de la priorisation et du parcours d'orientation pour la réforme.</value></data>
+  <data name="Diagnostic_FooterNote" xml:space="preserve"><value>Préparé avec ROSRA, un outil de diagnostic d'ONU-Habitat pour l'analyse des recettes propres infranationales.</value></data>
+
+  <!-- Report-section copy (FR) -->
+  <data name="Report_LgProfile_Title" xml:space="preserve"><value>Profil du gouvernement local</value></data>
+  <data name="Report_LgProfile_Body" xml:space="preserve"><value>Cette section résume le contexte de base utilisé pour l'évaluation ROSRA, y compris le gouvernement local, l'exercice financier, la devise, les recettes propres actuelles, le produit régional brut et la population. Ces éléments définissent le périmètre de l'analyse et garantissent que les résultats portent sur la même juridiction et la même année de référence.</value></data>
+
+  <data name="Report_QuickEstimate_Title" xml:space="preserve"><value>Estimation Rapide des RPP</value></data>
+  <data name="Report_QuickEstimate_Body" xml:space="preserve"><value>Cette section fournit une estimation de haut niveau de la marge globale d'amélioration des recettes propres. Elle vise à donner aux utilisateurs une première idée de l'ampleur de l'opportunité avant de passer au diagnostic par source. L'estimation doit être lue comme un point d'orientation, et non comme une explication détaillée des pertes de recettes.</value></data>
+
+  <data name="Report_StreamGap_Title" xml:space="preserve"><value>Résultats de l'analyse des écarts par source</value></data>
+  <data name="Report_StreamGap_What" xml:space="preserve"><value>Cette section présente l'écart fonctionnel estimé pour chaque source de revenus incluse dans l'évaluation. Le visuel décompose chaque source selon les principaux types de pertes de recettes : conformité, couverture et imposition ou évaluation. Les barres permettent de comparer la taille relative des écarts entre les sources, tandis que les segments colorés montrent ce qui alimente l'écart au sein de chaque source.</value></data>
+  <data name="Report_StreamGap_Why" xml:space="preserve"><value>Cela aide les utilisateurs à dépasser le constat général d'une faible collecte et à identifier si le problème provient principalement de factures impayées, de contribuables ou d'unités manquants, d'une évaluation insuffisante, ou d'une combinaison de ces facteurs.</value></data>
+  <data name="Report_StreamGap_How" xml:space="preserve"><value>Lisez le graphique de l'écart le plus grand au plus petit. Utilisez le tableau sous le graphique pour vérifier le montant estimé par type d'écart et l'écart total estimé pour chaque source.</value></data>
+
+  <data name="Report_StreamPrio_Title" xml:space="preserve"><value>Priorisation des sources</value></data>
+  <data name="Report_StreamPrio_What" xml:space="preserve"><value>La priorisation des sources classe les sources de revenus incluses dans l'évaluation en fonction de leur écart fonctionnel total. Cela permet de voir quelles sources représentent la plus grande opportunité estimée d'amélioration dans le diagnostic actuel.</value></data>
+  <data name="Report_StreamPrio_Why" xml:space="preserve"><value>Les gouvernements locaux disposent souvent de plusieurs sources de revenus mais d'un temps, d'un personnel et d'une capacité de réforme limités. La priorisation permet de concentrer l'attention sur les sources où l'amélioration ferait la plus grande différence, tout en permettant d'ajuster la séquence selon le contexte local.</value></data>
+  <data name="Report_StreamPrio_How" xml:space="preserve"><value>Le tableau est ordonné de l'écart estimé le plus grand au plus petit. Les sources marquées comme exclues ne sont pas incluses dans le calcul des parts ni dans les recommandations en aval, car elles ne s'appliquent pas au gouvernement local ou ont été retirées de l'évaluation.</value></data>
+
+  <data name="Report_GapPrio_Title" xml:space="preserve"><value>Résultats de la priorisation des écarts</value></data>
+  <data name="Report_GapPrio_What" xml:space="preserve"><value>La priorisation des écarts décompose chaque source priorisée en types spécifiques de problèmes qui expliquent les contre-performances. Elle indique si le problème est lié à la conformité, à la couverture, à l'évaluation, à l'imposition, ou à des écarts mixtes.</value></data>
+  <data name="Report_GapPrio_Why" xml:space="preserve"><value>Différents écarts appellent différents types de réformes. Un écart de conformité peut nécessiter une meilleure facturation, des rappels, des canaux de paiement ou de l'application. Un écart de couverture peut nécessiter une meilleure enregistrement, un appariement de données ou une vérification de terrain. Un écart d'évaluation ou d'imposition peut nécessiter de meilleures règles d'évaluation, des valeurs actualisées ou une fixation des redevances plus claire.</value></data>
+  <data name="Report_GapPrio_How" xml:space="preserve"><value>Pour chaque source, le tableau indique le mode de priorisation retenu et l'ordre suggéré des types d'écarts. Cet ordre doit être lu comme un point de départ pour la séquence des réformes et peut être ajusté en fonction de la faisabilité, de la capacité, des considérations politiques ou des réformes en cours.</value></data>
+
+  <data name="Report_ReformGuidance_Title" xml:space="preserve"><value>Orientation pour la Réforme</value></data>
+  <data name="Report_ReformGuidance_Body" xml:space="preserve"><value>Sur la base des sources et des types d'écarts priorisés, ROSRA identifie les options de réforme pertinentes dans la section Recommandations de la plateforme. Ce rapport ne reproduit pas l'intégralité du catalogue de solutions. Les utilisateurs doivent se référer au site Web pour consulter les fiches de solutions sélectionnées, y compris les étapes de mise en œuvre, le calendrier, les considérations de faisabilité, les parties prenantes et les orientations de suivi.</value></data>
+
+  <data name="Report_SectionWhat" xml:space="preserve"><value>Ce que présente cette section</value></data>
+  <data name="Report_SectionWhy" xml:space="preserve"><value>Pourquoi c'est important</value></data>
+  <data name="Report_SectionHow" xml:space="preserve"><value>Comment lire</value></data>
+  <data name="Report_NotAvailable" xml:space="preserve"><value>Non disponible</value></data>
+
+  <!-- Validation / stream-exclusion messages (FR) -->
+  <data name="Stream_AtLeastOneRequired" xml:space="preserve"><value>Au moins une source de revenus doit rester incluse pour générer le diagnostic.</value></data>
+  <data name="Stream_ExcludeBusinessLicenseConfirm" xml:space="preserve"><value>Exclure les licences commerciales de cette analyse ? Vous pourrez les réintégrer plus tard depuis l'étape de priorisation.</value></data>
+  <data name="Stream_Excluded_Badge" xml:space="preserve"><value>Exclu</value></data>
+  <data name="Stream_Reinclude" xml:space="preserve"><value>Réintégrer</value></data>
+
+  <!-- Duplicate-solution collapse notes (FR). {0} = anchor stream name, {1} = category label, {2} = overlapping gap types. -->
+  <data name="Duplicate_FullCollapse" xml:space="preserve"><value>Identique à {0}. Cette source est également une {1} et partage un profil d'écart similaire, les options de réforme pertinentes sont donc les mêmes. Veuillez vous référer au paquet de solutions présenté sous {0}.</value></data>
+  <data name="Duplicate_PartialCollapse" xml:space="preserve"><value>Certaines actions recommandées pour cette source sont identiques à celles présentées sous {0}, car les deux sources partagent la même catégorie et l'écart {2}. Seules les recommandations supplémentaires ou différentes sont affichées ici.</value></data>
+  <data name="Duplicate_ReportNote" xml:space="preserve"><value>Certaines sources peuvent partager la même orientation de réforme lorsqu'elles appartiennent à la même catégorie de revenus et présentent des profils d'écart similaires. Les recommandations groupées détaillées sont disponibles sur la plateforme.</value></data>
+  <data name="Duplicate_SameAs_Heading" xml:space="preserve"><value>Orientation de réforme partagée</value></data>
 </root>

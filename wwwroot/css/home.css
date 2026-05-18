@@ -1048,3 +1048,349 @@
     .rosra-method-row--reverse .rosra-method-text { order: 0; }
     .rosra-method-heading { font-size: 1.3rem; }
 }
+
+/* ============================================
+   Process flow diagram — visual TOC at top of the methodology section.
+   5 cards in a row, arrows between them, phase timeline below.
+   Brand palette: cyan #00B2E3, navy #0F2742, teal #1F7B5A, accent orange #FD9D24.
+   ============================================ */
+.rosra-flow {
+    max-width: 1240px;
+    margin: 2rem auto 3.5rem;
+    padding: 1rem 0;
+}
+
+/* Shared column template for cards + phases so the timeline aligns under each card.
+   Columns: card1 | arrow | card2-wide | arrow | card3 | arrow | card4 | arrow | card5 */
+.rosra-flow__cards {
+    display: grid;
+    grid-template-columns: 1fr 28px 2.4fr 28px 1fr 28px 1fr 28px 1fr;
+    align-items: stretch;
+    gap: 0.5rem;
+}
+
+.rosra-flow__card {
+    min-width: 0;
+    background: #ffffff;
+    border: 2px solid #00B2E3;
+    border-radius: 14px;
+    padding: 2rem 1rem 1.25rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    box-shadow: 0 6px 18px -10px rgba(15, 23, 42, 0.18);
+}
+
+.rosra-flow__card--teal      { border-color: #1F7B5A; background: #F2FBF7; }
+.rosra-flow__card--green     { border-color: #1F7B5A; }
+.rosra-flow__card--report    { border-style: dashed; border-color: #B0BEC9; background: transparent; box-shadow: none; }
+.rosra-flow__card--wide      { padding-bottom: 1.5rem; }
+
+.rosra-flow__num {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: #0F2742;
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+}
+.rosra-flow__num--teal  { background: #1F7B5A; }
+.rosra-flow__num--green { background: #1F7B5A; }
+
+.rosra-flow__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0F2742;
+    margin: 0.25rem 0 0.4rem;
+    line-height: 1.2;
+}
+.rosra-flow__title--teal   { color: #155F46; }
+.rosra-flow__title--green  { color: #155F46; }
+.rosra-flow__title--report { color: #0F2742; margin-top: 0.8rem; }
+
+.rosra-flow__sub {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: #475569;
+    margin: 0 0 0.85rem;
+}
+
+.rosra-flow__icon {
+    margin: 0.5rem auto 0;
+    width: 70px; height: 70px;
+}
+.rosra-flow__icon svg { width: 100%; height: 100%; display: block; }
+.rosra-flow__icon--navy { color: #0F2742; }
+.rosra-flow__icon--teal { color: #1F7B5A; }
+
+.rosra-flow__arrow {
+    align-self: center;
+    justify-self: center;
+    width: 28px; height: 28px;
+    color: #0F2742;
+}
+
+/* Stream-specific gap sub-cards (Card 2) */
+.rosra-flow__streams {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
+    margin-top: 0.2rem;
+}
+.rosra-flow__stream {
+    background: #ffffff;
+    border: 1px solid #E0E7EB;
+    border-radius: 8px;
+    padding: 0.7rem 0.55rem 0.6rem;
+    text-align: left;
+}
+.rosra-flow__stream--green { background: #EAF6EE; border-color: #C7E4D2; }
+.rosra-flow__stream-head {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 700;
+    color: #0F2742;
+    font-size: 0.82rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #E0E7EB;
+    margin-bottom: 0.4rem;
+}
+.rosra-flow__stream-head i { color: #1F7B5A; font-size: 0.95rem; }
+.rosra-flow__gaps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.rosra-flow__gaps li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.74rem;
+    color: #334155;
+    padding: 0.18rem 0;
+}
+.rosra-flow__gaps li i { color: #1F7B5A; width: 14px; font-size: 0.75rem; }
+
+/* Prioritization ranked bars (Card 3) */
+.rosra-flow__rank {
+    list-style: none;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+.rosra-flow__rank li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.rosra-flow__rank-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: #0F2742;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.rosra-flow__rank-bar {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+}
+.rosra-flow__rank-bar--1 { background: #0F2742; }
+.rosra-flow__rank-bar--2 { background: #00B2E3; }
+.rosra-flow__rank-bar--3 { background: #B8E5F2; }
+
+/* Phase timeline — same grid template as the cards row so each phase sits under its card.
+   Phase 5 (report) is intentionally omitted; the 5th column is left empty. */
+.rosra-flow__phases {
+    display: grid;
+    grid-template-columns: 1fr 28px 2.4fr 28px 1fr 28px 1fr 28px 1fr;
+    gap: 0.5rem;
+    margin: 1.25rem auto 0;
+}
+.rosra-flow__phase {
+    position: relative;
+    padding-top: 1rem;
+    text-align: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    line-height: 1.3;
+}
+.rosra-flow__phase::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 8%; right: 8%;
+    height: 2px;
+    border-radius: 1px;
+}
+.rosra-flow__phase::after {
+    content: '';
+    position: absolute;
+    top: -3px; right: 8%;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    transform: translateX(50%);
+}
+.rosra-flow__phase--cyan  { color: #00689D; grid-column: 1; }
+.rosra-flow__phase--teal  { color: #155F46; grid-column: 3; }
+.rosra-flow__phase--blue  { color: #00689D; grid-column: 5; }
+.rosra-flow__phase--green { color: #155F46; grid-column: 7; }
+.rosra-flow__phase--cyan::before,  .rosra-flow__phase--cyan::after  { background: #00B2E3; }
+.rosra-flow__phase--teal::before,  .rosra-flow__phase--teal::after  { background: #1F7B5A; }
+.rosra-flow__phase--blue::before,  .rosra-flow__phase--blue::after  { background: #00689D; }
+.rosra-flow__phase--green::before, .rosra-flow__phase--green::after { background: #1F7B5A; }
+
+/* Responsive — stack cards vertically on narrow viewports */
+@media (max-width: 991.98px) {
+    .rosra-flow__cards {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    .rosra-flow__arrow {
+        transform: rotate(90deg);
+        justify-self: center;
+    }
+    .rosra-flow__phases {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+        margin-top: 1rem;
+    }
+    .rosra-flow__phase,
+    .rosra-flow__phase--cyan,
+    .rosra-flow__phase--teal,
+    .rosra-flow__phase--blue,
+    .rosra-flow__phase--green {
+        grid-column: 1;
+        padding: 0.5rem 0 0 1.2rem;
+        text-align: left;
+    }
+    .rosra-flow__phase::before {
+        top: 0; left: 0; right: auto;
+        width: 4px; height: 100%;
+        border-radius: 2px;
+    }
+    .rosra-flow__phase::after {
+        top: 50%; left: 2px; right: auto;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* ============================================
+   Hero subtitle + action buttons (homepage rewrite)
+   ============================================ */
+.hero-subtitle {
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0 0 18px;
+    max-width: 720px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn-hero-primary,
+.btn-hero-secondary {
+    display: inline-block;
+    padding: 10px 22px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    min-height: 44px;
+    line-height: 1.5;
+    transition: background var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal);
+}
+
+.btn-hero-primary {
+    background: var(--un-blue);
+    color: #ffffff;
+    border: 2px solid var(--un-blue);
+}
+.btn-hero-primary:hover,
+.btn-hero-primary:focus {
+    background: var(--un-blue-dark, #008cbb);
+    border-color: var(--un-blue-dark, #008cbb);
+    color: #ffffff;
+}
+
+.btn-hero-secondary {
+    background: transparent;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+}
+.btn-hero-secondary:hover,
+.btn-hero-secondary:focus {
+    background: #ffffff;
+    color: var(--un-blue);
+}
+
+@media (min-width: 768px) {
+    .hero-subtitle { font-size: 1.05rem; margin-bottom: 22px; }
+}
+
+/* ============================================
+   Compact OSR streams chips
+   ============================================ */
+.rosra-streams-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: center;
+    max-width: 920px;
+    margin: 1.25rem auto 0;
+}
+
+.rosra-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.95rem;
+    background: #ffffff;
+    border: 1px solid #d6dde3;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--un-dark-blue);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.rosra-chip i {
+    color: var(--un-blue);
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   Supported by UN-Habitat (compact section)
+   ============================================ */
+.rosra-unhabitat {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.rosra-unhabitat__body {
+    color: #4a5560;
+    line-height: 1.55;
+    font-size: 1rem;
+    margin: 0;
+}

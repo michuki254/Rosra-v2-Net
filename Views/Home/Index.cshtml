@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
 }
 
-<!-- Hero Section - UN-Habitat Style Slider -->
+<!-- Hero Section -->
 <div class="hero-container">
     <section id="hero" class="hero-section">
         <div class="hero-slides">
@@ -25,10 +25,12 @@
         </div>
         <div class="hero-gradient"></div>
         <div class="hero-content">
-            <h1 class="hero-title">
-                @Localizer["Hero_Title"]
-            </h1>
-            <a href="#what-is-rosra" class="btn-hero-learn-more">@Localizer["Hero_LearnMore"]</a>
+            <h1 class="hero-title">@Localizer["Hero_Title"]</h1>
+            <p class="hero-subtitle">@Localizer["Hero_Subtitle"]</p>
+            <div class="hero-actions">
+                <a asp-controller="Rosra" asp-action="NewReport" class="btn-hero-primary">@Localizer["Hero_StartAnalysis"]</a>
+                <a asp-controller="Home" asp-action="SampleReports" class="btn-hero-secondary">@Localizer["Hero_ViewSampleReport"]</a>
+            </div>
         </div>
         <div class="hero-indicators">
             <span class="indicator active" data-slide="0"></span>
@@ -39,129 +41,209 @@
     </section>
 </div>
 
-<!-- What is ROSRA Section -->
+<!-- How the ROSRA diagnostic works — process-flow diagram placed immediately after the hero -->
+<section id="how-it-works" class="uh-section uh-section--light">
+    <div class="container">
+        <h2 class="uh-section-title">@Localizer["Flow_Title"]</h2>
+        <p class="uh-section-subtitle">@Localizer["Flow_Body"]</p>
+
+        @* ============================================================
+           Process flow diagram — 5 cards (quick estimate, stream-specific
+           gap analysis, prioritization, reform guidance, report output)
+           plus a 4-segment phase timeline beneath. Built as HTML cards +
+           inline SVG so it stays localizable, responsive, and prints clean.
+           ============================================================ *@
+        <div class="rosra-flow" role="img" aria-label="@Localizer["Diagram_AriaLabel"]">
+            <div class="rosra-flow__cards">
+                @* Card 1 — Quick potential estimate *@
+                <div class="rosra-flow__card rosra-flow__card--cyan">
+                    <div class="rosra-flow__num">1</div>
+                    <h4 class="rosra-flow__title">@Localizer["Diagram_Card1_Title"]</h4>
+                    <p class="rosra-flow__sub">@Localizer["Diagram_Card1_Sub"]</p>
+                    <div class="rosra-flow__icon rosra-flow__icon--navy">
+                        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <rect x="8"  y="40" width="9" height="16" rx="1.5" fill="currentColor"/>
+                            <rect x="21" y="32" width="9" height="24" rx="1.5" fill="currentColor"/>
+                            <rect x="34" y="24" width="9" height="32" rx="1.5" fill="currentColor"/>
+                            <rect x="47" y="14" width="9" height="42" rx="1.5" fill="currentColor"/>
+                            <path d="M6 30 L20 22 L34 16 L48 10 L56 6 M56 6 L50 6 M56 6 L56 12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <svg class="rosra-flow__arrow" viewBox="0 0 40 40" aria-hidden="true">
+                    <path d="M4 20 H30 M22 12 L30 20 L22 28" stroke="#0F2742" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+
+                @* Card 2 — Stream-specific gap analysis (wide, with 3 sub-streams) *@
+                <div class="rosra-flow__card rosra-flow__card--teal rosra-flow__card--wide">
+                    <div class="rosra-flow__num rosra-flow__num--teal">2</div>
+                    <h4 class="rosra-flow__title rosra-flow__title--teal">@Localizer["Diagram_Card2_Title"]</h4>
+                    <p class="rosra-flow__sub">@Localizer["Diagram_Card2_Sub"]</p>
+                    <div class="rosra-flow__streams">
+                        <div class="rosra-flow__stream">
+                            <div class="rosra-flow__stream-head">
+                                <i class="fas fa-house" aria-hidden="true"></i>
+                                <span>@Localizer["Diagram_PropertyTax"]</span>
+                            </div>
+                            <ul class="rosra-flow__gaps">
+                                <li><i class="far fa-circle-dot" aria-hidden="true"></i>@Localizer["Diagram_Coverage"]</li>
+                                <li><i class="fas fa-shield-halved" aria-hidden="true"></i>@Localizer["Diagram_Compliance"]</li>
+                                <li><i class="fas fa-calculator" aria-hidden="true"></i>@Localizer["Diagram_LiabilityValuation"]</li>
+                            </ul>
+                        </div>
+                        <div class="rosra-flow__stream">
+                            <div class="rosra-flow__stream-head">
+                                <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                                <span>@Localizer["Diagram_Licenses"]</span>
+                            </div>
+                            <ul class="rosra-flow__gaps">
+                                <li><i class="far fa-circle-dot" aria-hidden="true"></i>@Localizer["Diagram_Coverage"]</li>
+                                <li><i class="fas fa-shield-halved" aria-hidden="true"></i>@Localizer["Diagram_Compliance"]</li>
+                                <li><i class="fas fa-calculator" aria-hidden="true"></i>@Localizer["Diagram_LiabilityValuation"]</li>
+                            </ul>
+                        </div>
+                        <div class="rosra-flow__stream rosra-flow__stream--green">
+                            <div class="rosra-flow__stream-head">
+                                <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i>
+                                <span>@Localizer["Diagram_FeesCharges"]</span>
+                            </div>
+                            <ul class="rosra-flow__gaps">
+                                <li><i class="far fa-circle-dot" aria-hidden="true"></i>@Localizer["Diagram_Coverage"]</li>
+                                <li><i class="fas fa-shield-halved" aria-hidden="true"></i>@Localizer["Diagram_Compliance"]</li>
+                                <li><i class="fas fa-calculator" aria-hidden="true"></i>@Localizer["Diagram_LiabilityValuation"]</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <svg class="rosra-flow__arrow" viewBox="0 0 40 40" aria-hidden="true">
+                    <path d="M4 20 H30 M22 12 L30 20 L22 28" stroke="#0F2742" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+
+                @* Card 3 — Prioritization *@
+                <div class="rosra-flow__card rosra-flow__card--cyan">
+                    <div class="rosra-flow__num">3</div>
+                    <h4 class="rosra-flow__title">@Localizer["Diagram_Card3_Title"]</h4>
+                    <p class="rosra-flow__sub">@Localizer["Diagram_Card3_Sub"]</p>
+                    <ul class="rosra-flow__rank">
+                        <li><span class="rosra-flow__rank-num">1</span><span class="rosra-flow__rank-bar rosra-flow__rank-bar--1"></span></li>
+                        <li><span class="rosra-flow__rank-num">2</span><span class="rosra-flow__rank-bar rosra-flow__rank-bar--2"></span></li>
+                        <li><span class="rosra-flow__rank-num">3</span><span class="rosra-flow__rank-bar rosra-flow__rank-bar--3"></span></li>
+                    </ul>
+                </div>
+
+                <svg class="rosra-flow__arrow" viewBox="0 0 40 40" aria-hidden="true">
+                    <path d="M4 20 H30 M22 12 L30 20 L22 28" stroke="#0F2742" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+
+                @* Card 4 — Reform guidance *@
+                <div class="rosra-flow__card rosra-flow__card--green">
+                    <div class="rosra-flow__num rosra-flow__num--green">4</div>
+                    <h4 class="rosra-flow__title rosra-flow__title--green">@Localizer["Diagram_Card4_Title"]</h4>
+                    <p class="rosra-flow__sub">@Localizer["Diagram_Card4_Sub"]</p>
+                    <div class="rosra-flow__icon rosra-flow__icon--navy">
+                        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M30 6 H42 L50 14 L42 22 H30 Z" fill="#1F7B5A"/>
+                            <path d="M34 26 H22 L14 34 L22 42 H34 Z" fill="#00B2E3"/>
+                            <rect x="30" y="6"  width="4" height="52" fill="#0F2742"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <svg class="rosra-flow__arrow" viewBox="0 0 40 40" aria-hidden="true">
+                    <path d="M4 20 H30 M22 12 L30 20 L22 28" stroke="#0F2742" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+
+                @* Card 5 — Report output (dashed) *@
+                <div class="rosra-flow__card rosra-flow__card--report">
+                    <div class="rosra-flow__icon rosra-flow__icon--teal">
+                        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M14 6 H40 L52 18 V58 H14 Z" stroke="#1F7B5A" stroke-width="2.5" fill="#E6F4ED" stroke-linejoin="round"/>
+                            <path d="M40 6 V18 H52" stroke="#1F7B5A" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
+                            <rect x="22" y="44" width="5" height="8" fill="#1F7B5A"/>
+                            <rect x="30" y="38" width="5" height="14" fill="#1F7B5A"/>
+                            <rect x="38" y="32" width="5" height="20" fill="#1F7B5A"/>
+                        </svg>
+                    </div>
+                    <h4 class="rosra-flow__title rosra-flow__title--report">@Localizer["Diagram_Card5_Title"]</h4>
+                </div>
+            </div>
+
+            @* Phase timeline below the cards *@
+            <div class="rosra-flow__phases" aria-hidden="true">
+                <div class="rosra-flow__phase rosra-flow__phase--cyan"><span class="rosra-flow__phase-label">@Localizer["Diagram_Phase1"]</span></div>
+                <div class="rosra-flow__phase rosra-flow__phase--teal"><span class="rosra-flow__phase-label">@Localizer["Diagram_Phase2"]</span></div>
+                <div class="rosra-flow__phase rosra-flow__phase--blue"><span class="rosra-flow__phase-label">@Localizer["Diagram_Phase3"]</span></div>
+                <div class="rosra-flow__phase rosra-flow__phase--green"><span class="rosra-flow__phase-label">@Localizer["Diagram_Phase4"]</span></div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a asp-controller="Rosra" asp-action="NewReport" class="uh-btn uh-btn--outline">@Localizer["HowItWorks_StartAnalysis"]</a>
+        </div>
+    </div>
+</section>
+
+<!-- What ROSRA helps users do — 3 cards -->
 <section id="what-is-rosra" class="uh-section">
     <div class="container">
         <h2 class="uh-section-title">@Localizer["WhatIsRosra_Title"]</h2>
         <p class="uh-section-subtitle">@Localizer["WhatIsRosra_Subtitle"]</p>
 
-        <div class="uh-card-grid uh-card-grid--2col">
-            <div class="uh-info-card">
-                <div class="uh-info-card__img uh-info-card__img--svg">
-                    <img src="~/images/what-is-rosra/strategic-decision.svg" asp-append-version="true" alt="Strategic Decision Making" />
-                </div>
-                <div class="uh-info-card__body">
-                    <h4>@Localizer["WhatIsRosra_StrategicDecision"]</h4>
-                    <p>@Localizer["WhatIsRosra_StrategicDecision_Desc"]</p>
-                </div>
-            </div>
-            <div class="uh-info-card">
-                <div class="uh-info-card__img uh-info-card__img--svg">
-                    <img src="~/images/what-is-rosra/revenue-optimization.svg" asp-append-version="true" alt="Revenue Optimization" />
-                </div>
-                <div class="uh-info-card__body">
-                    <h4>@Localizer["WhatIsRosra_RevenueOptimization"]</h4>
-                    <p>@Localizer["WhatIsRosra_RevenueOptimization_Desc"]</p>
-                </div>
-            </div>
-        </div>
-
         <div class="uh-card-grid uh-card-grid--3col">
             <div class="uh-info-card">
                 <div class="uh-info-card__img uh-info-card__img--svg">
-                    <img src="~/images/what-is-rosra/reform-prioritization.svg" asp-append-version="true" alt="Reform Prioritization" />
+                    <img src="~/images/what-is-rosra/revenue-optimization.svg" asp-append-version="true" alt="Estimate OSR opportunity" />
                 </div>
                 <div class="uh-info-card__body">
-                    <h4>@Localizer["WhatIsRosra_ReformPrioritization"]</h4>
-                    <p>@Localizer["WhatIsRosra_ReformPrioritization_Desc"]</p>
+                    <h4>@Localizer["WhatIsRosra_Estimate"]</h4>
+                    <p>@Localizer["WhatIsRosra_Estimate_Desc"]</p>
                 </div>
             </div>
             <div class="uh-info-card">
                 <div class="uh-info-card__img uh-info-card__img--svg">
-                    <img src="~/images/what-is-rosra/enhanced-creditworthiness.svg" asp-append-version="true" alt="Enhanced Creditworthiness" />
+                    <img src="~/images/what-is-rosra/strategic-decision.svg" asp-append-version="true" alt="Diagnose revenue gaps" />
                 </div>
                 <div class="uh-info-card__body">
-                    <h4>@Localizer["WhatIsRosra_EnhancedCreditworthiness"]</h4>
-                    <p>@Localizer["WhatIsRosra_EnhancedCreditworthiness_Desc"]</p>
+                    <h4>@Localizer["WhatIsRosra_Diagnose"]</h4>
+                    <p>@Localizer["WhatIsRosra_Diagnose_Desc"]</p>
                 </div>
             </div>
             <div class="uh-info-card">
                 <div class="uh-info-card__img uh-info-card__img--svg">
-                    <img src="~/images/what-is-rosra/political-support.svg" asp-append-version="true" alt="Political Support" />
+                    <img src="~/images/what-is-rosra/reform-prioritization.svg" asp-append-version="true" alt="Prioritize reform action" />
                 </div>
                 <div class="uh-info-card__body">
-                    <h4>@Localizer["WhatIsRosra_PoliticalSupport"]</h4>
-                    <p>@Localizer["WhatIsRosra_PoliticalSupport_Desc"]</p>
+                    <h4>@Localizer["WhatIsRosra_Prioritize"]</h4>
+                    <p>@Localizer["WhatIsRosra_Prioritize_Desc"]</p>
                 </div>
             </div>
-        </div>
-
-        <div class="text-center mt-4">
-            <a href="#what-is-osr" class="uh-btn uh-btn--outline">@Localizer["WhatIsRosra_AllAbout"]</a>
         </div>
     </div>
 </section>
 
-<!-- What is OSR - Revenue Types (like Research & Publications) -->
-<section id="what-is-osr" class="uh-section">
+<!-- Own-source revenue streams — compact chips -->
+<section id="what-is-osr" class="uh-section uh-section--light">
     <div class="container">
         <h2 class="uh-section-title">@Localizer["OsrTypes_Title"]</h2>
         <p class="uh-section-subtitle">@Localizer["OsrTypes_Subtitle"]</p>
 
-        <div class="uh-carousel">
-            <button type="button" class="uh-carousel__btn uh-carousel__btn--prev" aria-label="Previous">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <div class="uh-scroll-row">
-                <div class="uh-pub-card">
-                    <div class="uh-pub-icon"><i class="fas fa-home"></i></div>
-                    <h4>@Localizer["OsrTypes_PropertyTax"]</h4>
-                    <p>@Localizer["OsrTypes_PropertyTax_Desc"]</p>
-                </div>
-                <div class="uh-pub-card">
-                    <div class="uh-pub-icon"><i class="fas fa-receipt"></i></div>
-                    <h4>@Localizer["OsrTypes_OtherTaxes"]</h4>
-                    <p>@Localizer["OsrTypes_OtherTaxes_Desc"]</p>
-                </div>
-                <div class="uh-pub-card">
-                    <div class="uh-pub-icon"><i class="fas fa-parking"></i></div>
-                    <h4>@Localizer["OsrTypes_UserFees"]</h4>
-                    <p>@Localizer["OsrTypes_UserFees_Desc"]</p>
-                </div>
-                <div class="uh-pub-card">
-                    <div class="uh-pub-icon"><i class="fas fa-file-contract"></i></div>
-                    <h4>@Localizer["OsrTypes_Licenses"]</h4>
-                    <p>@Localizer["OsrTypes_Licenses_Desc"]</p>
-                </div>
-                <div class="uh-pub-card">
-                    <div class="uh-pub-icon"><i class="fas fa-gavel"></i></div>
-                    <h4>@Localizer["OsrTypes_Fines"]</h4>
-                    <p>@Localizer["OsrTypes_Fines_Desc"]</p>
-                </div>
-                <div class="uh-pub-card">
-                    <div class="uh-pub-icon"><i class="fas fa-building"></i></div>
-                    <h4>@Localizer["OsrTypes_RevenueFromAssets"]</h4>
-                    <p>@Localizer["OsrTypes_RevenueFromAssets_Desc"]</p>
-                </div>
-            </div>
-            <button type="button" class="uh-carousel__btn uh-carousel__btn--next" aria-label="Next">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-            <div class="uh-carousel__dots" aria-hidden="true"></div>
-        </div>
-
-        <div class="text-center mt-4">
-            <a href="#how-it-works" class="uh-btn uh-btn--outline">@Localizer["OsrTypes_ViewProcess"]</a>
+        <div class="rosra-streams-chips">
+            <span class="rosra-chip"><i class="fas fa-home"></i>@Localizer["OsrTypes_PropertyTax"]</span>
+            <span class="rosra-chip"><i class="fas fa-file-contract"></i>@Localizer["OsrTypes_Licenses"]</span>
+            <span class="rosra-chip"><i class="fas fa-hand-holding-usd"></i>@Localizer["OsrTypes_ServiceFees"]</span>
+            <span class="rosra-chip"><i class="fas fa-parking"></i>@Localizer["OsrTypes_UserFees"]</span>
+            <span class="rosra-chip"><i class="fas fa-gavel"></i>@Localizer["OsrTypes_Fines"]</span>
+            <span class="rosra-chip"><i class="fas fa-building"></i>@Localizer["OsrTypes_RevenueFromAssets"]</span>
+            <span class="rosra-chip"><i class="fas fa-receipt"></i>@Localizer["OsrTypes_OtherTaxes"]</span>
         </div>
     </div>
 </section>
 
-<!-- Our Focus - Why Optimize OSR (UN-Habitat blue section) -->
+<!-- Why optimize OSR — 4 short bullets, blue section -->
 <section id="why-optimize" class="uh-section uh-section--blue">
     <div class="container">
-        <h3 class="uh-focus-label">@Localizer["WhyOptimize_OurFocus"]</h3>
-        <p class="uh-focus-desc">@Localizer["WhyOptimize_OurFocus_Desc"]</p>
-
         <h3 class="uh-focus-label">@Localizer["WhyOptimize_Title"]</h3>
 
         <div class="uh-focus-grid">
@@ -189,142 +271,65 @@
     </div>
 </section>
 
-<!-- Why Choose UN-Habitat -->
+<!-- Supported by UN-Habitat — compact -->
 <section id="who-is-rosra-for" class="uh-section">
     <div class="container">
-        <h2 class="uh-section-title">@Localizer["WhyChoose_Title"]</h2>
-
-        <div class="uh-icon-cards">
-            <div class="uh-icon-card">
-                <div class="uh-icon-card__img">
-                    <img src="~/images/icon-data.png" alt="Data" />
-                </div>
-                <h4>@Localizer["WhyChoose_Data"]</h4>
-                <p>@Localizer["WhyChoose_Data_Desc"]</p>
-            </div>
-            <div class="uh-icon-card">
-                <div class="uh-icon-card__img">
-                    <img src="~/images/icon-experience-expertise.png" alt="Experience & Expertise" />
-                </div>
-                <h4>@Localizer["WhyChoose_Experience"]</h4>
-                <p>@Localizer["WhyChoose_Experience_Desc"]</p>
-            </div>
-            <div class="uh-icon-card">
-                <div class="uh-icon-card__img">
-                    <img src="~/images/icon-funds-mobilization.png" alt="Funds Mobilization" />
-                </div>
-                <h4>@Localizer["WhyChoose_Funds"]</h4>
-                <p>@Localizer["WhyChoose_Funds_Desc"]</p>
-            </div>
-            <div class="uh-icon-card">
-                <div class="uh-icon-card__img">
-                    <img src="~/images/icon-political-weight.png" alt="Political Weight" />
-                </div>
-                <h4>@Localizer["WhyChoose_Political"]</h4>
-                <p>@Localizer["WhyChoose_Political_Desc"]</p>
-            </div>
+        <div class="rosra-unhabitat">
+            <h2 class="uh-section-title">@Localizer["UnHabitatSupport_Title"]</h2>
+            <p class="rosra-unhabitat__body">@Localizer["UnHabitatSupport_Body"]</p>
         </div>
     </div>
 </section>
 
-<!-- How It Works -->
-<section id="how-it-works" class="uh-section uh-section--light">
-    <div class="container">
-        <h2 class="uh-section-title">@Localizer["HowItWorks_Title"]</h2>
-        <p class="uh-section-subtitle">@Localizer["HowItWorks_Subtitle"]</p>
-
-        <div class="uh-carousel">
-            <button type="button" class="uh-carousel__btn uh-carousel__btn--prev" aria-label="Previous">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <div class="uh-scroll-row">
-                <div class="uh-pub-card">
-                    <div class="uh-pub-icon"><i class="fas fa-university"></i></div>
-                    <h4>@Localizer["HowItWorks_Step1"]</h4>
-                    <p>@Localizer["HowItWorks_Step1_Desc"]</p>
-                </div>
-                <div class="uh-pub-card">
-                    <div class="uh-pub-icon"><i class="fas fa-users-cog"></i></div>
-                    <h4>@Localizer["HowItWorks_Step2"]</h4>
-                    <p>@Localizer["HowItWorks_Step2_Desc"]</p>
-                </div>
-                <div class="uh-pub-card">
-                    <div class="uh-pub-icon"><i class="fas fa-cogs"></i></div>
-                    <h4>@Localizer["HowItWorks_Step3"]</h4>
-                    <p>@Localizer["HowItWorks_Step3_Desc"]</p>
-                </div>
-                <div class="uh-pub-card">
-                    <div class="uh-pub-icon"><i class="fas fa-chart-bar"></i></div>
-                    <h4>@Localizer["HowItWorks_Step4"]</h4>
-                    <p>@Localizer["HowItWorks_Step4_Desc"]</p>
-                </div>
-                <div class="uh-pub-card">
-                    <div class="uh-pub-icon"><i class="fas fa-file-pdf"></i></div>
-                    <h4>@Localizer["HowItWorks_Step5"]</h4>
-                    <p>@Localizer["HowItWorks_Step5_Desc"]</p>
-                </div>
-            </div>
-            <button type="button" class="uh-carousel__btn uh-carousel__btn--next" aria-label="Next">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-            <div class="uh-carousel__dots" aria-hidden="true"></div>
-        </div>
-
-        <div class="text-center mt-4">
-            <a asp-controller="Rosra" asp-action="NewReport" class="uh-btn uh-btn--outline">@Localizer["HowItWorks_StartAnalysis"]</a>
-        </div>
-    </div>
-</section>
-
-<!-- How ROSRA Works — methodology walkthrough with sample-report screenshots -->
-<section id="rosra-methodology" class="uh-section">
+<!-- Methodology deep-dive — 4 image rows, screenshots from the Kampala (Uganda) sample report. -->
+<section id="rosra-methodology" class="uh-section uh-section--light">
     <div class="container">
         <h2 class="uh-section-title">@Localizer["Methodology_Title"]</h2>
         <p class="uh-section-subtitle">@Localizer["Methodology_Subtitle"]</p>
 
-        <!-- Step 1 — Gap Analysis (image left, text right) -->
+        <!-- Quick Analysis — Local Government Profile (image left, text right) -->
         <div class="rosra-method-row">
             <div class="rosra-method-img">
-                <img src="~/images/methodology/step1-gap-analysis.png"
+                <img src="~/images/methodology/step1-quick-analysis.png"
+                     alt="@Localizer["Methodology_QuickAnalysis_Alt"]"
+                     loading="lazy" />
+            </div>
+            <div class="rosra-method-text">
+                <span class="rosra-method-step">@Localizer["Methodology_QuickAnalysis_Eyebrow"]</span>
+                <h3 class="rosra-method-heading"><i class="fas fa-flag me-2"></i>@Localizer["Methodology_QuickAnalysis_Title"]</h3>
+                <p>@Html.Raw(Localizer["Methodology_QuickAnalysis_Body"].Value)</p>
+            </div>
+        </div>
+
+        <!-- Stream Gap Analysis (image right, text left) -->
+        <div class="rosra-method-row rosra-method-row--reverse">
+            <div class="rosra-method-img">
+                <img src="~/images/methodology/step2-gap-analysis.png"
                      alt="@Localizer["Methodology_Step1_Alt"]"
                      loading="lazy" />
             </div>
             <div class="rosra-method-text">
                 <span class="rosra-method-step">@Localizer["Methodology_Step1_Eyebrow"]</span>
-                <h3 class="rosra-method-heading"><i class="fas fa-magnifying-glass-chart me-2"></i>@Localizer["Methodology_Step1_Title"]</h3>
+                <h3 class="rosra-method-heading"><i class="fas fa-magnifying-glass-chart me-2"></i>@SharedLocalizer["Process_StreamGapAnalysis"]</h3>
                 <p>@Html.Raw(Localizer["Methodology_Step1_Body"].Value)</p>
             </div>
         </div>
 
-        <!-- Step 2 — Prioritization (image right, text left) -->
-        <div class="rosra-method-row rosra-method-row--reverse">
+        <!-- Prioritization (image left, text right) -->
+        <div class="rosra-method-row">
             <div class="rosra-method-img">
-                <img src="~/images/methodology/step2-prioritization.png"
+                <img src="~/images/methodology/step3-prioritization.png"
                      alt="@Localizer["Methodology_Step2_Alt"]"
                      loading="lazy" />
             </div>
             <div class="rosra-method-text">
                 <span class="rosra-method-step">@Localizer["Methodology_Step2_Eyebrow"]</span>
-                <h3 class="rosra-method-heading"><i class="fas fa-sort-amount-down me-2"></i>@Localizer["Methodology_Step2_Title"]</h3>
+                <h3 class="rosra-method-heading"><i class="fas fa-sort-amount-down me-2"></i>@SharedLocalizer["Process_Prioritization"]</h3>
                 <p>@Html.Raw(Localizer["Methodology_Step2_Body"].Value)</p>
             </div>
         </div>
 
-        <!-- Step 3 — Overview Selection (image left, text right) -->
-        <div class="rosra-method-row">
-            <div class="rosra-method-img">
-                <img src="~/images/methodology/step3-overview-selection.png"
-                     alt="@Localizer["Methodology_Step3_Alt"]"
-                     loading="lazy" />
-            </div>
-            <div class="rosra-method-text">
-                <span class="rosra-method-step">@Localizer["Methodology_Step3_Eyebrow"]</span>
-                <h3 class="rosra-method-heading"><i class="fas fa-list-check me-2"></i>@Localizer["Methodology_Step3_Title"]</h3>
-                <p>@Html.Raw(Localizer["Methodology_Step3_Body"].Value)</p>
-            </div>
-        </div>
-
-        <!-- Step 4 — Recommendations (image right, text left) -->
+        <!-- Recommendations / Reform Guidance (image right, text left) -->
         <div class="rosra-method-row rosra-method-row--reverse">
             <div class="rosra-method-img">
                 <img src="~/images/methodology/step4-recommendations.png"
@@ -348,38 +353,23 @@
 
 @section Scripts {
     <script>
-        // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
         });
 
-        // Animation on scroll
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1
-        };
-
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-in');
-                }
+                if (entry.isIntersecting) entry.target.classList.add('animate-in');
             });
         }, observerOptions);
-
-        document.querySelectorAll('.uh-info-card, .uh-pub-card, .uh-focus-item, .uh-flagship-card').forEach(el => {
-            observer.observe(el);
-        });
+        document.querySelectorAll('.uh-info-card, .uh-pub-card, .uh-focus-item, .rosra-flow__step').forEach(el => observer.observe(el));
 
         // Hero slider
         (function() {
@@ -387,7 +377,6 @@
             const indicators = document.querySelectorAll('.hero-indicators .indicator');
             let current = 0;
             let timer;
-
             function goTo(index) {
                 slides[current].classList.remove('active');
                 indicators[current].classList.remove('active');
@@ -395,15 +384,8 @@
                 slides[current].classList.add('active');
                 indicators[current].classList.add('active');
             }
-
-            function next() {
-                goTo((current + 1) % slides.length);
-            }
-
-            function startTimer() {
-                timer = setInterval(next, 5000);
-            }
-
+            function next() { goTo((current + 1) % slides.length); }
+            function startTimer() { timer = setInterval(next, 5000); }
             indicators.forEach(dot => {
                 dot.addEventListener('click', function() {
                     clearInterval(timer);
@@ -411,56 +393,7 @@
                     startTimer();
                 });
             });
-
             startTimer();
         })();
-
-        // Carousel controls for .uh-scroll-row (mobile/tablet only)
-        document.querySelectorAll('.uh-carousel').forEach(carousel => {
-            const row = carousel.querySelector('.uh-scroll-row');
-            const prev = carousel.querySelector('.uh-carousel__btn--prev');
-            const next = carousel.querySelector('.uh-carousel__btn--next');
-            const dotsContainer = carousel.querySelector('.uh-carousel__dots');
-            if (!row || !prev || !next || !dotsContainer) return;
-
-            const cards = Array.from(row.querySelectorAll('.uh-pub-card'));
-            if (!cards.length) return;
-
-            cards.forEach((card, i) => {
-                const dot = document.createElement('button');
-                dot.type = 'button';
-                dot.className = 'uh-carousel__dot';
-                dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
-                dot.addEventListener('click', () => {
-                    row.scrollTo({ left: card.offsetLeft - row.offsetLeft, behavior: 'smooth' });
-                });
-                dotsContainer.appendChild(dot);
-            });
-            const dots = Array.from(dotsContainer.querySelectorAll('.uh-carousel__dot'));
-
-            function update() {
-                const rowLeft = row.getBoundingClientRect().left;
-                let closestIndex = 0, minDist = Infinity;
-                cards.forEach((c, i) => {
-                    const dist = Math.abs(c.getBoundingClientRect().left - rowLeft);
-                    if (dist < minDist) { minDist = dist; closestIndex = i; }
-                });
-                dots.forEach((d, i) => d.classList.toggle('is-active', i === closestIndex));
-                prev.disabled = row.scrollLeft <= 2;
-                next.disabled = row.scrollLeft + row.clientWidth >= row.scrollWidth - 2;
-            }
-
-            function step(direction) {
-                const first = cards[0];
-                const stepSize = first.getBoundingClientRect().width + 12;
-                row.scrollBy({ left: direction * stepSize, behavior: 'smooth' });
-            }
-
-            prev.addEventListener('click', () => step(-1));
-            next.addEventListener('click', () => step(1));
-            row.addEventListener('scroll', update, { passive: true });
-            window.addEventListener('resize', update);
-            update();
-        });
     </script>
 }
