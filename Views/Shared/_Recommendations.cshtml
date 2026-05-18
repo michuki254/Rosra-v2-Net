@@ -1782,13 +1782,19 @@
             return 'unknown';
         }
 
-        // Collect the gap-type set per included stream from Prioritization output.
-        // Returns Map<streamName, Set<lowercase gap type>>.
-        function gapTypesPerIncludedStream() {
-            var out = new Map();
+        // Build a per-included-stream meta record from Prioritization output.
+        // Returns Map<canonicalKey, { displayName, rank, subgroup, gaps:Set<lowercase> }>
+        // where canonicalKey is the user-facing stream name (the key we match cards by).
+        // Business License and any generic A/B/C stream also gets indexed by its
+        // subgroup so non-property DB cards (which carry stream="Non-Property") can
+        // be routed back to the user's actual stream rather than being dropped.
+        function includedStreamMeta() {
+            var out = { byName: new Map(), bySubgroup: new Map() };
             if (typeof RosraStateManager === 'undefined') return out;
-            var streams = RosraStateManager.getStreams() || [];
-            streams.forEach(function (s) {
+            var streams = (typeof RosraStateManager.getStreamsByGapRanking === 'function')
+                ? RosraStateManager.getStreamsByGapRanking()
+                : RosraStateManager.getStreams() || [];
+            streams.forEach(function (s, idx) {
                 if (s.included === false) return;
                 var gaps = new Set();
                 if ((s.complianceGap || 0) > 0) gaps.add('compliance');
@@ -1797,7 +1803,21 @@
                 if ((s.liabilityGap || 0) > 0) gaps.add('liability');
                 if ((s.mixedGapCompliance || s.mixedGapReg || 0) > 0) gaps.add('compliance');
                 if ((s.mixedGapCoverage || s.mixedGapUnreg || 0) > 0) gaps.add('coverage');
-                out.set(s.name, gaps);
+
+                // Business License is the historical alias for non-property subgroup A —
+                // even though state stores subgroup=null on it, the DB serves its cards
+                // under stream="Non-Property" subgroup="A".
+                var subgroup = s.subgroup || (s.id === 'business-license' ? 'A' : null);
+                var rec = {
+                    displayName: s.name,
+                    rank: s.finalRank || s.adjustedRank || (idx + 1),
+                    subgroup: subgroup,
+                    gaps: gaps
+                };
+                out.byName.set(s.name, rec);
+                if (subgroup && !out.bySubgroup.has(subgroup)) {
+                    out.bySubgroup.set(subgroup, rec);
+                }
             });
             return out;
         }
@@ -1808,27 +1828,40 @@
         function autoSelectFromPrioritization() {
             if (typeof SolutionsDatabase === 'undefined') return [];
             var all = SolutionsDatabase.getAllSolutions();
-            var streamGaps = gapTypesPerIncludedStream();
+            var meta = includedStreamMeta();
+
             // Empty prioritization → fall back to ALL 82 cards so the page is not blank.
-            if (streamGaps.size === 0) {
-                return all.map(function (c) { return shapeForSelected(c); });
+            if (meta.byName.size === 0) {
+                return all.map(function (c) { return shapeForSelected(c, null); });
             }
-            return all.filter(function (c) {
-                var sGaps = streamGaps.get(c.stream);
-                if (!sGaps) return false;
-                return sGaps.has(String(c.gap || '').toLowerCase());
-            }).map(function (c) { return shapeForSelected(c); });
+
+            var out = [];
+            all.forEach(function (c) {
+                // Try direct stream-name match first (Property Tax, or a user-named
+                // stream that happens to match a DB card's stream string).
+                var rec = meta.byName.get(c.stream);
+
+                // Otherwise route non-property cards through subgroup → user stream.
+                if (!rec && c.stream === 'Non-Property' && c.subgroup) {
+                    rec = meta.bySubgroup.get(c.subgroup);
+                }
+
+                if (!rec) return;
+                if (!rec.gaps.has(String(c.gap || '').toLowerCase())) return;
+                out.push(shapeForSelected(c, rec));
+            });
+            return out;
         }
-        function shapeForSelected(c) {
+        function shapeForSelected(c, rec) {
             return {
                 solutionId: c.solutionId,
-                streamName: c.stream,
-                streamRank: 999,
+                streamName: rec ? rec.displayName : c.stream,
+                streamRank: rec ? rec.rank : 999,
                 gapType: c.gap,
                 gapPriority: 999,
                 timeline: c.timeline,
                 title: c.title || c.shortTitle || c.solutionId,
-                subgroup: c.subgroup || ''
+                subgroup: c.subgroup || (rec ? rec.subgroup : '') || ''
             };
         }
 
@@ -1840,17 +1873,36 @@
             } catch (e) { console.error('saveSelected failed', e); }
         }
 
-        // Run auto-select if no manual selection exists yet. Idempotent.
+        // Run auto-select if no selection exists yet, OR if the existing selection
+        // doesn't yet cover every included stream the user has in Prioritization.
+        // The "coverage" check is what un-sticks the bug the user hit: an earlier
+        // visit auto-selected before Business License had gap data, the selection
+        // got saved with only Property Tax entries, and ensureAutoSelected then
+        // refused to refresh on later visits — leaving BL invisible forever even
+        // after the user filled in BL gaps. We preserve sample-report curation
+        // (e.g. the Kampala seed) because those entries name every included
+        // stream by hand, so `allCovered` is true and we leave them alone.
         function ensureAutoSelected() {
+            var existing = null;
             try {
-                var existing = null;
                 if (typeof FormStateManager !== 'undefined') existing = FormStateManager.getData(SELECTED_KEY);
                 if (!existing) {
                     var raw = localStorage.getItem(SELECTED_KEY);
                     if (raw) existing = JSON.parse(raw);
                 }
-                if (Array.isArray(existing) && existing.length > 0) return; // user already has something
-            } catch (e) { /* fall through to auto-select */ }
+            } catch (e) { existing = null; }
+
+            if (Array.isArray(existing) && existing.length > 0) {
+                var meta = includedStreamMeta();
+                if (meta.byName.size === 0) return; // no prioritization yet — keep what we have
+                var covered = new Set();
+                existing.forEach(function (e) { if (e && e.streamName) covered.add(e.streamName); });
+                var allCovered = true;
+                meta.byName.forEach(function (_rec, name) {
+                    if (!covered.has(name)) allCovered = false;
+                });
+                if (allCovered) return;
+            }
             saveSelected(autoSelectFromPrioritization());
         }
 
