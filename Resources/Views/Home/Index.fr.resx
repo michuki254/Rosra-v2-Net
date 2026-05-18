@@ -100,19 +100,8 @@
   <data name="WhyChoose_Political" xml:space="preserve"><value>Poids politique</value></data>
   <data name="WhyChoose_Political_Desc" xml:space="preserve"><value>Le nom des Nations Unies confere credibilite et stature politique pour agir sur les recommandations.</value></data>
 
-  <!-- How It Works Section -->
-  <data name="HowItWorks_Title" xml:space="preserve"><value>Comment fonctionne le ROSRA ?</value></data>
-  <data name="HowItWorks_Subtitle" xml:space="preserve"><value>Le ROSRA analyse les donnees de l'utilisateur en les comparant a des references reconnues et aux caracteristiques specifiques des systemes de recettes propres performants observes dans les gouvernements locaux homologues.</value></data>
-  <data name="HowItWorks_Step1" xml:space="preserve"><value>1. Autorite et incitations</value></data>
-  <data name="HowItWorks_Step1_Desc" xml:space="preserve"><value>L'autorite et les incitations du gouvernement local a collecter des recettes propres</value></data>
-  <data name="HowItWorks_Step2" xml:space="preserve"><value>2. Evaluation des capacites</value></data>
-  <data name="HowItWorks_Step2_Desc" xml:space="preserve"><value>La capacite et les incitations de l'administration fiscale</value></data>
-  <data name="HowItWorks_Step3" xml:space="preserve"><value>3. Strategie et gestion</value></data>
-  <data name="HowItWorks_Step3_Desc" xml:space="preserve"><value>La strategie, la gestion et les processus de collecte</value></data>
-  <data name="HowItWorks_Step4" xml:space="preserve"><value>4. Analyse des ecarts</value></data>
-  <data name="HowItWorks_Step4_Desc" xml:space="preserve"><value>Ventilation detaillee des ecarts de recettes et estimations du potentiel</value></data>
-  <data name="HowItWorks_Step5" xml:space="preserve"><value>5. Rapport final</value></data>
-  <data name="HowItWorks_Step5_Desc" xml:space="preserve"><value>Rapport complet avec recommandations en environ 1 heure</value></data>
+  <!-- How It Works Section — only the CTA label remains; the 5-step section
+       was replaced by the 4-step process flow diagram (Flow_* / Diagram_* keys). -->
   <data name="HowItWorks_StartAnalysis" xml:space="preserve"><value>+ LANCER VOTRE ANALYSE</value></data>
 
   <!-- SDG Section -->

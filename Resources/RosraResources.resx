@@ -61,7 +61,6 @@
   <data name="Tab_BottomUp" xml:space="preserve"><value>Analyse Each Revenue Stream</value></data>
   <data name="Tab_GapAnalysis" xml:space="preserve"><value>Gap Analysis</value></data>
   <data name="Tab_Prioritization" xml:space="preserve"><value>Prioritization</value></data>
-  <data name="Tab_OverviewSelection" xml:space="preserve"><value>Overview Selection</value></data>
   <data name="Tab_Recommendations" xml:space="preserve"><value>Recommendations</value></data>
 
   <!-- Messages -->

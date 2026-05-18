@@ -101,19 +101,8 @@
   <data name="WhyChoose_Political" xml:space="preserve"><value>Peso politico</value></data>
   <data name="WhyChoose_Political_Desc" xml:space="preserve"><value>El nombre de las Naciones Unidas otorga credibilidad y estatura politica para actuar sobre las recomendaciones.</value></data>
 
-  <!-- How It Works Section -->
-  <data name="HowItWorks_Title" xml:space="preserve"><value>Como funciona el ROSRA?</value></data>
-  <data name="HowItWorks_Subtitle" xml:space="preserve"><value>El ROSRA analiza los datos del usuario comparandolos con referencias aceptadas y las caracteristicas especificas de los sistemas de ingresos propios eficientes observados en gobiernos locales homologos.</value></data>
-  <data name="HowItWorks_Step1" xml:space="preserve"><value>1. Autoridad e incentivos</value></data>
-  <data name="HowItWorks_Step1_Desc" xml:space="preserve"><value>La autoridad y los incentivos del gobierno local para recaudar ingresos propios</value></data>
-  <data name="HowItWorks_Step2" xml:space="preserve"><value>2. Evaluacion de capacidades</value></data>
-  <data name="HowItWorks_Step2_Desc" xml:space="preserve"><value>La capacidad y los incentivos de la administracion tributaria</value></data>
-  <data name="HowItWorks_Step3" xml:space="preserve"><value>3. Estrategia y gestion</value></data>
-  <data name="HowItWorks_Step3_Desc" xml:space="preserve"><value>La estrategia, la gestion y los procesos de recaudacion</value></data>
-  <data name="HowItWorks_Step4" xml:space="preserve"><value>4. Analisis de brechas</value></data>
-  <data name="HowItWorks_Step4_Desc" xml:space="preserve"><value>Desglose detallado de las brechas de ingresos y estimaciones de potencial</value></data>
-  <data name="HowItWorks_Step5" xml:space="preserve"><value>5. Informe final</value></data>
-  <data name="HowItWorks_Step5_Desc" xml:space="preserve"><value>Informe completo con recomendaciones en aproximadamente 1 hora</value></data>
+  <!-- How It Works Section — only the CTA label remains; the 5-step section
+       was replaced by the 4-step process flow diagram (Flow_* / Diagram_* keys). -->
   <data name="HowItWorks_StartAnalysis" xml:space="preserve"><value>+ INICIE SU ANALISIS</value></data>
 
   <!-- SDG Section -->

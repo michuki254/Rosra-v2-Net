@@ -61,7 +61,6 @@
   <data name="Tab_BottomUp" xml:space="preserve"><value>Analizar cada fuente de ingresos</value></data>
   <data name="Tab_GapAnalysis" xml:space="preserve"><value>Análisis de brechas</value></data>
   <data name="Tab_Prioritization" xml:space="preserve"><value>Priorización</value></data>
-  <data name="Tab_OverviewSelection" xml:space="preserve"><value>Selección de soluciones</value></data>
   <data name="Tab_Recommendations" xml:space="preserve"><value>Recomendaciones</value></data>
 
   <!-- Messages -->
