@@ -2066,9 +2066,14 @@
                     h4 { color: #2c4a63; margin: 14px 0 4px 0; font-size: 1rem; font-weight: 600; }
                     h5 { color: #5d7a8f; margin: 10px 0 4px 0; font-size: 0.9rem; font-weight: 600; }
                     /* ======================= COVER PAGE ======================= */
-                    /* Sized to its content + page-break-after so it occupies exactly
-                       one PDF page. A previous min-height + flex layout pushed the
-                       footer past the page boundary into a phantom second page. */
+                    /* The cover used to be sized to its content, leaving roughly
+                       half a blank A4 page below it. We now stretch it to the
+                       printable area so the cyan fills the page and the footer
+                       pins to the bottom via flex + margin-top:auto.
+                       The min-height is intentionally a touch below the printable
+                       area (A4 261mm content height minus body padding) to avoid
+                       the phantom-second-page bug an earlier attempt hit when it
+                       set the cover taller than the page. */
                     .cover-page {
                         position: relative;
                         margin: -40px -40px 40px;
@@ -2080,6 +2085,9 @@
                         break-after: page;
                         page-break-inside: avoid;
                         break-inside: avoid;
+                        min-height: 247mm;
+                        display: flex;
+                        flex-direction: column;
                     }
                     .cover-skyline {
                         position: absolute; left: 0; right: 0; bottom: 130px;
@@ -2161,7 +2169,7 @@
                     .cover-meta-item .v { font-size: 1.05rem; font-weight: 700; margin-top: 2px; }
                     .cover-footer {
                         position: relative; z-index: 2;
-                        margin-top: 28px; padding-top: 20px;
+                        margin-top: auto; padding-top: 20px;
                         border-top: 1px solid rgba(255, 255, 255, 0.28);
                     }
                     .cover-footer-text { font-size: 0.85rem; line-height: 1.45; opacity: 0.9; max-width: 720px; }
