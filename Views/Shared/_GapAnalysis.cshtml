@@ -1544,6 +1544,21 @@
             }
         }
 
+        // Persist the new classification to RosraStateManager. The DOM update
+        // above is the source of truth during the session, but Recommendations
+        // reads the user's actual stream name via state (state has subgroup,
+        // not the DOM containers — they're dynamic and disappear across tabs).
+        // Without this, changing the subgroup leaves state stuck on the old
+        // value and every non-property selection collapses into a single
+        // "Non-Property" block downstream.
+        if (typeof RosraStateManager !== 'undefined') {
+            RosraStateManager.updateGenericStream(editMetaStreamIndex, {
+                name: newName,
+                subgroup: newSubgroup || null,
+                subtype: newSubtype || null
+            });
+        }
+
         // Close modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('editStreamMetaModal'));
         modal.hide();

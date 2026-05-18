@@ -937,10 +937,22 @@
         const streamNameInput = document.getElementById(streamId + 'Name');
         const streamName = streamNameInput ? streamNameInput.value : ('Generic Stream ' + (index + 1));
 
+        // Read subgroup/subtype from the container — set when the stream is
+        // first created (Add Stream modal) and refreshed when the Edit-
+        // Classification modal runs. Without this, the Recommendations step
+        // can't map a saved "Non-Property" solution back to the user's
+        // actual stream, so every non-property card collapses into a
+        // single "Non-Property" block.
+        const container = document.getElementById(streamId + '-container');
+        const subgroup = container ? (container.getAttribute('data-subgroup') || null) : null;
+        const subtype  = container ? (container.getAttribute('data-subtype')  || null) : null;
+
         // Use RosraStateManager if available (preferred method)
         if (typeof RosraStateManager !== 'undefined') {
             RosraStateManager.updateGenericStream(index, {
                 name: streamName,
+                subgroup: subgroup,
+                subtype: subtype,
                 currentRevenue: revenueToDate,
                 potentialRevenue: totalPotentialRevenue,
                 totalFunctionalGap: totalFunctionalGap,
@@ -955,7 +967,7 @@
                 // via createStream(); existing streams keep whatever the user chose
                 // in the Prioritization tab.
             });
-            console.log('RosraStateManager: Updated Generic Stream ' + index + ' (' + streamName + ')');
+            console.log('RosraStateManager: Updated Generic Stream ' + index + ' (' + streamName + ', subgroup=' + (subgroup || '∅') + ')');
         }
 
         // Also keep localStorage for backward compatibility

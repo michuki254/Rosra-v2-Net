@@ -206,7 +206,75 @@
             }
 
             function normaliseSelections(arr) {
-                return (arr || []).map(s => ({ ...s, timeline: canonicalizeTimeline(s && s.timeline) }));
+                return rehydrateStreamNames(
+                    (arr || []).map(s => ({ ...s, timeline: canonicalizeTimeline(s && s.timeline) }))
+                );
+            }
+
+            // Saved selections for non-property cards carry streamName="Non-Property"
+            // because that's the streamType label on the solution card in the DB.
+            // The user, however, owns one or more generic streams (Daily Market Fee,
+            // Signage Permit, …) each tied to a subgroup (A/B/C). Without a remap
+            // every non-property selection collapses into a single "Non-Property"
+            // block in the render below, hiding the user's actual stream names.
+            //
+            // This rehydrate pass tries to recover the real stream name:
+            //   1. derive a subgroup for the selection (own field → solutionId prefix)
+            //   2. find a user stream in RosraStateManager with the matching subgroup
+            //   3. swap streamName to the user's stream name (and stamp subgroup back)
+            //
+            // If state has no subgroup info yet (older sessions saved before the
+            // gap-analysis save bug was fixed), we fall back to a descriptive
+            // subgroup label so the three buckets at least appear as separate
+            // sections instead of one giant "Non-Property" mound.
+            function rehydrateStreamNames(arr) {
+                if (!Array.isArray(arr) || arr.length === 0) return arr;
+
+                // Build subgroup → user-stream-name lookup from RosraStateManager.
+                // First match wins; if two user streams share a subgroup the second
+                // collapses into the first (same behaviour as the save-time mapping).
+                const subgroupToUserStream = new Map();
+                try {
+                    if (typeof RosraStateManager !== 'undefined') {
+                        RosraStateManager.getStreams().forEach(s => {
+                            const sub = s && s.subgroup;
+                            if (sub && s.name && s.name !== 'Non-Property' && !subgroupToUserStream.has(sub)) {
+                                subgroupToUserStream.set(sub, { name: s.name, rank: s.adjustedRank || null });
+                            }
+                        });
+                    }
+                } catch (_) { /* ignore */ }
+
+                function inferSubgroup(sel) {
+                    if (sel.subgroup) return String(sel.subgroup).toUpperCase();
+                    const id = String(sel.solutionId || '');
+                    // NP-A-COV-01 / NP-B-LIA-01 style first
+                    let m = id.match(/^NP-([ABC])-/i);
+                    if (m) return m[1].toUpperCase();
+                    // Bare A/B/C prefix (A1, A12, B14, C3 …)
+                    m = id.match(/^([ABC])\d/i);
+                    if (m) return m[1].toUpperCase();
+                    return null;
+                }
+
+                return arr.map(sel => {
+                    if (!sel || sel.streamName !== 'Non-Property') return sel;
+                    const sub = inferSubgroup(sel);
+                    if (!sub) return sel;
+
+                    const userStream = subgroupToUserStream.get(sub);
+                    if (userStream) {
+                        return {
+                            ...sel,
+                            streamName: userStream.name,
+                            subgroup: sub,
+                            streamRank: sel.streamRank || userStream.rank || 999
+                        };
+                    }
+                    // State has no user stream with this subgroup — leave the entry
+                    // alone so the upstream bug is visible rather than masked.
+                    return sel;
+                });
             }
 
             // Build a map: streamName -> Set of gap-types the user marked (Remove)
