@@ -45,17 +45,25 @@
         padding: 20px 0;
     }
 
-    /* Personalisation chip filter bar */
+    /* Personalisation chip filter bar (v2 brief §8.1 — must be visible and sticky
+       at the top of the recommendations area so users can scan filter state while
+       scrolling cards). Background contrast + shadow lifts it above the cards. */
     .recommendations-container .rec-personalise-bar {
-        background: #F8FAFC;
-        border: 1px solid #E6EDF3;
-        border-radius: 12px;
-        padding: 14px 16px;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        padding: 12px 16px;
         margin-bottom: 16px;
         display: flex;
         flex-direction: column;
         gap: 10px;
+        position: sticky;
+        top: 56px; /* account for fixed app navbar */
+        z-index: 10;
+        box-shadow: 0 4px 12px -8px rgba(15, 23, 42, 0.18);
     }
+    /* Sticky bar leaves a small bottom gap so the first card doesn't sit flush */
+    .recommendations-container .rec-personalise-bar + .recommendations-summary { margin-top: 8px; }
     .recommendations-container .rec-personalise-row {
         display: flex; flex-wrap: wrap; gap: 14px 24px;
         align-items: flex-start;
@@ -495,13 +503,21 @@
 
     .recommendations-container .gap-solutions-list {
         padding: 0 18px 12px;
+        /* Centre the card column inside the stream body. Cards are width-capped
+           below, so without this they pin to the left and leave a big empty
+           gutter on wide screens. */
+        max-width: 980px;
+        margin: 0 auto;
     }
 
-    /* Individual Solution Card */
+    /* Individual Solution Card (v2 brief §8.4 — narrower + tighter so the
+       page doesn't feel crowded. The width cap lives on the parent
+       .gap-solutions-list which is margin-auto'd to centre the column;
+       cards themselves fill that centred column. */
     .recommendations-container .solution-card {
         background: #fafbfc;
         border-radius: 10px;
-        margin-bottom: 10px;
+        margin: 0 0 10px;
         border: 1px solid #e2e8f0;
         overflow: hidden;
         transition: var(--transition-normal);
@@ -513,12 +529,13 @@
     }
 
     .recommendations-container .solution-card-header {
-        padding: 12px 16px;
+        padding: 12px 14px;
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         cursor: pointer;
         transition: var(--transition-fast);
+        gap: 10px;
     }
 
     .recommendations-container .solution-card-header:hover {
@@ -548,35 +565,90 @@
         margin-bottom: 5px;
     }
 
+    /* Solution card top-of-card badge row (v2 brief §8.3 — Timeline + Feasibility
+       must be bold and easy to scan; Stream + Gap are secondary context). The
+       previous styling buried them in dense muted metadata; this version uses
+       a 4-pill row with explicit labels. */
     .recommendations-container .solution-meta {
         display: flex;
-        gap: 10px;
-        font-size: 0.78rem;
-        color: #6c757d;
-        font-weight: 500;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 0.82rem;
+        color: #334155;
+        font-weight: 600;
+        align-items: center;
+        margin-top: 4px;
     }
+    .recommendations-container .rec-badge {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        line-height: 1.25;
+        background: #f1f5f9;
+        color: #1e293b;
+        border: 1px solid transparent;
+    }
+    .recommendations-container .rec-badge-label {
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        opacity: 0.75;
+    }
+    /* Timeline — colour-coded per duration */
+    .recommendations-container .rec-badge--timeline.timeline-quick { background: var(--timeline-quick-light, #d1fae5); color: #065f46; border-color: #6ee7b7; }
+    .recommendations-container .rec-badge--timeline.timeline-medium { background: var(--timeline-medium-light, #fef3c7); color: #92400e; border-color: #fcd34d; }
+    .recommendations-container .rec-badge--timeline.timeline-long { background: var(--timeline-long-light, #ffedd5); color: #9a3412; border-color: #fdba74; }
+    /* Feasibility — green/amber/red mirroring Higher/Moderate/Lower (politically sensitive) */
+    .recommendations-container .rec-badge--feasibility.feasibility-higher { background: #dcfce7; color: #166534; border-color: #86efac; }
+    .recommendations-container .rec-badge--feasibility.feasibility-moderate { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+    .recommendations-container .rec-badge--feasibility.feasibility-sensitive { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
 
+    /* Duplicate-solution collapse note (v2 brief §10–11). Shown under streams
+       whose solution package is identical or partially overlaps with an
+       earlier (higher-priority) stream in the same NPT category. */
+    .recommendations-container .collapse-note {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-left: 4px solid #3b82f6;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 0 0 10px;
+        font-size: 0.85rem;
+        color: #1e40af;
+        line-height: 1.55;
+    }
+    .recommendations-container .collapse-note--partial {
+        background: #fffbeb;
+        border-color: #fde68a;
+        border-left-color: #f59e0b;
+        color: #78350f;
+    }
+    .recommendations-container .collapse-note__heading {
+        font-weight: 700;
+        display: block;
+        margin-bottom: 4px;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .recommendations-container .collapse-note__anchor { font-weight: 700; }
+
+    /* Legacy class — kept so non-recommendations places that still reference it
+       (sample-report screenshots, jobaid) still render. New cards use .rec-badge. */
     .recommendations-container .timeline-badge {
         padding: 3px 10px;
         border-radius: 12px;
-        font-size: 0.7rem;
+        font-size: 0.72rem;
         font-weight: 700;
     }
-
-    .recommendations-container .timeline-badge.quick {
-        background: var(--timeline-quick-light);
-        color: #065f46;
-    }
-
-    .recommendations-container .timeline-badge.medium {
-        background: var(--timeline-medium-light);
-        color: #92400e;
-    }
-
-    .recommendations-container .timeline-badge.long {
-        background: var(--timeline-long-light);
-        color: #9a3412;
-    }
+    .recommendations-container .timeline-badge.quick { background: var(--timeline-quick-light); color: #065f46; }
+    .recommendations-container .timeline-badge.medium { background: var(--timeline-medium-light); color: #92400e; }
+    .recommendations-container .timeline-badge.long { background: var(--timeline-long-light); color: #9a3412; }
 
     .recommendations-container .solution-expand-btn {
         background: none;
@@ -1358,6 +1430,16 @@
         }
     }
 </style>
+
+@* Surface localised strings to plain-JS modules. recommendationsModule.js reads
+   these to render the duplicate-collapse notes (v2 brief §10–11). *@
+<script>
+    window.RosraStrings = window.RosraStrings || {};
+    window.RosraStrings.duplicateFullCollapse = '@Html.Raw(SharedLocalizer["Duplicate_FullCollapse"].Value.Replace("\\", "\\\\").Replace("'", "\\'"))';
+    window.RosraStrings.duplicatePartialCollapse = '@Html.Raw(SharedLocalizer["Duplicate_PartialCollapse"].Value.Replace("\\", "\\\\").Replace("'", "\\'"))';
+    window.RosraStrings.duplicateSameAsHeading = '@Html.Raw(SharedLocalizer["Duplicate_SameAs_Heading"].Value.Replace("'", "\\'"))';
+</script>
+
 <div class="recommendations-container">
     <!-- Header Section -->
     <div class="recommendations-header">

@@ -86,12 +86,12 @@
   <data name="Modal_Cancel" xml:space="preserve"><value>Cancelar</value></data>
   <data name="Modal_Generate" xml:space="preserve"><value>Generar informe</value></data>
 
-  <data name="Personalise_FilterHelp" xml:space="preserve"><value>Filtre las fichas según su plazo y preferencias de viabilidad.</value></data>
+  <data name="Personalise_FilterHelp" xml:space="preserve"><value>Filtrar las soluciones recomendadas</value></data>
   <data name="Personalise_Time" xml:space="preserve"><value>Plazo</value></data>
   <data name="Personalise_QuickWins" xml:space="preserve"><value>Victorias rápidas</value></data>
   <data name="Personalise_MediumTerm" xml:space="preserve"><value>Mediano plazo</value></data>
   <data name="Personalise_LongTerm" xml:space="preserve"><value>Largo plazo</value></data>
-  <data name="Personalise_Risk" xml:space="preserve"><value>Riesgo</value></data>
+  <data name="Personalise_Risk" xml:space="preserve"><value>Viabilidad</value></data>
   <data name="Personalise_HigherFeasibility" xml:space="preserve"><value>Mayor viabilidad</value></data>
   <data name="Personalise_Moderate" xml:space="preserve"><value>Moderada</value></data>
   <data name="Personalise_LowerFeasibility" xml:space="preserve"><value>Menor viabilidad</value></data>

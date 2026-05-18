@@ -377,6 +377,150 @@
             }
 
             // Render solution cards grouped by stream and gap
+            /**
+             * v2 brief §10 — compute a "collapse plan" for the visible streams to
+             * avoid printing the same solution package twice when two non-property
+             * streams sit in the same NPT subgroup (A/B/C) AND share gap profiles.
+             *
+             * The plan is a Map streamName -> { kind, anchorName, sharedGaps, categoryLabel }
+             *   kind = 'full'    : render every gap/card normally
+             *   kind = 'sameAs'  : Scenario A — render a "Same as <anchor>" note only,
+             *                      no cards. Used when subgroup + gap profile fully match.
+             *   kind = 'partial' : Scenario C — drop gaps shared with the anchor and
+             *                      render a reference note at the top; render any
+             *                      gap unique to this stream.
+             *
+             * Property Tax (subgroup unset, name ~ /property tax/i) ALWAYS gets 'full'
+             * and is never used as an anchor for NPT streams — Scenario E in the brief.
+             * Different subgroup or non-overlapping gaps → 'full' (Scenarios B and D).
+             *
+             * Streams are walked in rank order. The first stream in any (subgroup,
+             * gap) bucket becomes the anchor; later streams collapse against it.
+             */
+            function computeCollapsePlan(visibleSolutions) {
+                const plan = new Map();
+                if (!visibleSolutions.length) return plan;
+
+                // Build per-stream metadata: subgroup, gapTypes Set, rank
+                const meta = new Map();
+                visibleSolutions.forEach(s => {
+                    const name = s.streamName || 'Other';
+                    if (!meta.has(name)) {
+                        meta.set(name, {
+                            name: name,
+                            subgroup: s.subgroup || null,
+                            rank: s.streamRank || 999,
+                            gapTypes: new Set(),
+                            isPropertyTax: !s.subgroup && /property\s*tax/i.test(name)
+                        });
+                    }
+                    meta.get(name).gapTypes.add(s.gapType || 'Other');
+                });
+
+                const ordered = [...meta.values()].sort((a, b) => a.rank - b.rank);
+
+                ordered.forEach(curr => {
+                    // Property tax / unclassified streams are never collapsed (Scenario E).
+                    if (curr.isPropertyTax || !curr.subgroup) {
+                        plan.set(curr.name, { kind: 'full' });
+                        return;
+                    }
+
+                    // Look for an earlier-rendered FULL stream with same subgroup and
+                    // some gap overlap. Anchor must itself be rendered in full so the
+                    // "Same as X" reference actually points somewhere with cards.
+                    let anchor = null;
+                    let intersect = null;
+                    for (const prev of ordered) {
+                        if (prev === curr) break;
+                        if (prev.subgroup !== curr.subgroup) continue; // Scenario D
+                        const prevPlan = plan.get(prev.name);
+                        if (!prevPlan || prevPlan.kind !== 'full') continue;
+                        const overlap = new Set([...curr.gapTypes].filter(g => prev.gapTypes.has(g)));
+                        if (overlap.size === 0) continue; // no overlap → render in full
+
+                        anchor = prev;
+                        intersect = overlap;
+                        break;
+                    }
+
+                    if (!anchor) {
+                        plan.set(curr.name, { kind: 'full' });
+                        return;
+                    }
+
+                    // Resolve category label via StreamClassification when available.
+                    let categoryLabel = '';
+                    try {
+                        if (typeof StreamClassification !== 'undefined') {
+                            categoryLabel = StreamClassification.getSubgroupShortLabel(curr.subgroup) || '';
+                        }
+                    } catch (_) { /* ignore */ }
+
+                    const allCurrentGapsShared = [...curr.gapTypes].every(g => intersect.has(g));
+                    if (allCurrentGapsShared) {
+                        // Scenario A — every gap this stream cares about is already
+                        // covered by the anchor. Just point to the anchor.
+                        plan.set(curr.name, {
+                            kind: 'sameAs',
+                            anchorName: anchor.name,
+                            sharedGaps: intersect,
+                            categoryLabel: categoryLabel
+                        });
+                    } else {
+                        // Scenario C — partial overlap. Drop shared gaps, render
+                        // the unique ones, prepend a reference note for the shared.
+                        plan.set(curr.name, {
+                            kind: 'partial',
+                            anchorName: anchor.name,
+                            sharedGaps: intersect,
+                            categoryLabel: categoryLabel
+                        });
+                    }
+                });
+
+                return plan;
+            }
+
+            /**
+             * Render a "Same as / shared reform guidance" callout. Used by the
+             * sameAs and partial scenarios in the collapse plan.
+             */
+            function renderCollapseNote(planEntry) {
+                const strings = (window.RosraStrings || {});
+                const headingText = escapeForTemplate(strings.duplicateSameAsHeading || 'Shared reform guidance');
+                const anchorHtml = '<span class="collapse-note__anchor">' + escapeForTemplate(planEntry.anchorName) + '</span>';
+                const cat = escapeForTemplate(planEntry.categoryLabel || 'similar revenue stream');
+                const gapList = escapeForTemplate(
+                    [...(planEntry.sharedGaps || [])].map(g => String(g).toLowerCase()).join(', ')
+                );
+
+                if (planEntry.kind === 'sameAs') {
+                    const tpl = strings.duplicateFullCollapse
+                        || 'Same as {0}. This stream is also a {1} and shares a similar gap profile, so the relevant reform options are the same. Please refer to the solution package shown under {0}.';
+                    // Manual {0}/{1} substitution — anchor inserted as bold HTML.
+                    const body = tpl
+                        .replace(/\{0\}/g, anchorHtml)
+                        .replace(/\{1\}/g, cat);
+                    return '<div class="collapse-note">'
+                         + '<span class="collapse-note__heading">' + headingText + '</span>'
+                         + body
+                         + '</div>';
+                }
+
+                // partial
+                const tpl = strings.duplicatePartialCollapse
+                    || 'Some recommended actions for this stream are the same as those shown under {0}, because both streams share the same category and {2} gap. Only additional or different recommendations are shown here.';
+                const body = tpl
+                    .replace(/\{0\}/g, anchorHtml)
+                    .replace(/\{1\}/g, cat)
+                    .replace(/\{2\}/g, gapList || 'overlapping');
+                return '<div class="collapse-note collapse-note--partial">'
+                     + '<span class="collapse-note__heading">' + headingText + '</span>'
+                     + body
+                     + '</div>';
+            }
+
             function renderSolutionCards() {
                 const container = document.getElementById('solutionCardsContainer');
                 const noSelectionsMsg = document.getElementById('noSelectionsMessage');
@@ -394,6 +538,10 @@
                     container.innerHTML = `<div class="empty-state"><p>No solutions match the current filter. <a href="#" onclick="event.preventDefault(); RecommendationsModule.filterByTimeline('all');">Clear filter</a>.</p></div>`;
                     return;
                 }
+
+                // v2 brief §10 — compute the duplicate-collapse plan up front so
+                // the render loop below can pick the right rendering for each stream.
+                const collapsePlan = computeCollapsePlan(visibleSolutions);
 
                 // Group by stream
                 const streamGroups = {};
@@ -423,6 +571,8 @@
 
                 sortedStreams.forEach(([streamName, streamData], streamIdx) => {
                     const streamKey = 'stream-' + streamIdx;
+                    const planEntry = collapsePlan.get(streamName) || { kind: 'full' };
+
                     html += `
                         <div class="stream-section" data-stream-key="${streamKey}">
                             <div class="stream-header" onclick="RecommendationsModule.toggleStream('${streamKey}')" style="cursor:pointer;">
@@ -437,11 +587,29 @@
                             <div class="stream-body" id="stream-body-${streamKey}" style="display:none;">
                     `;
 
+                    // Scenario A — fully collapsed. Render just the note, skip all gap/card output.
+                    if (planEntry.kind === 'sameAs') {
+                        html += renderCollapseNote(planEntry);
+                        html += `</div></div>`;
+                        return;
+                    }
+
+                    // Scenario C — partial overlap. Prepend the reference note and
+                    // filter out gap-types already shown under the anchor.
+                    if (planEntry.kind === 'partial') {
+                        html += renderCollapseNote(planEntry);
+                    }
+                    const sharedGapsLower = planEntry.kind === 'partial' && planEntry.sharedGaps
+                        ? new Set([...planEntry.sharedGaps].map(g => String(g).toLowerCase()))
+                        : null;
+
                     // Sort gaps by priority
                     const sortedGaps = Object.entries(streamData.gaps)
                         .sort((a, b) => a[1].priority - b[1].priority);
 
                     sortedGaps.forEach(([gapType, gapData], gapIdx) => {
+                        // Skip gap-types that the anchor already covers (Scenario C).
+                        if (sharedGapsLower && sharedGapsLower.has(String(gapType).toLowerCase())) return;
                         const gapClass = gapType.toLowerCase();
                         const gapKey = streamKey + '-gap-' + gapIdx;
                         html += `
@@ -491,9 +659,21 @@
                 const fd = fullSolution.fullDetails || {};
                 const overviewText = ov.whatThisOptionDoes || ov.whatThisSolves || fd.whyThisMatters || '';
 
-                // Difficulty/sensitivity badges
-                const diffBadge = fullSolution.deliveryDifficulty ? '<span class="badge bg-light text-dark border ms-1" style="font-size:0.65rem;">' + escapeForTemplate(fullSolution.deliveryDifficulty) + '</span>' : '';
-                const polBadge = fullSolution.politicalSensitivity ? '<span class="badge bg-light text-dark border ms-1" style="font-size:0.65rem;">Pol: ' + escapeForTemplate(fullSolution.politicalSensitivity) + '</span>' : '';
+                // v2 brief §8.3 — Timeline + Feasibility get prominent badges at the
+                // top of every card. Feasibility derives from politicalFeasibility
+                // (higher/moderate/lower); fall back to politicalSensitivity if the
+                // newer field isn't set in the underlying solution data.
+                const feasRaw = String(fullSolution.politicalFeasibility || fullSolution.politicalSensitivity || '').toLowerCase();
+                let feasClass = 'moderate';
+                let feasLabel = fullSolution.politicalFeasibility || fullSolution.politicalSensitivity || '—';
+                if (feasRaw.indexOf('higher') >= 0 || feasRaw.indexOf('high') >= 0) {
+                    feasClass = 'higher';
+                } else if (feasRaw.indexOf('lower') >= 0 || feasRaw.indexOf('sensitive') >= 0 || feasRaw.indexOf('low') >= 0) {
+                    feasClass = 'sensitive';
+                }
+                const diffBadge = fullSolution.deliveryDifficulty
+                    ? '<span class="rec-badge rec-badge--difficulty" title="Delivery difficulty"><span class="rec-badge-label">Effort</span>' + escapeForTemplate(fullSolution.deliveryDifficulty) + '</span>'
+                    : '';
 
                 const fullIdLabel = buildFullIdLabel(solution.solutionId, fullSolution);
 
@@ -507,9 +687,19 @@
                                 <div class="solution-id">${escapeForTemplate(fullIdLabel)}</div>
                                 <div class="solution-title">${fullSolution.title}</div>
                                 <div class="solution-meta">
-                                    <span class="timeline-badge ${timelineClass}">${solution.timeline}</span>
-                                    ${diffBadge}${polBadge}
-                                    <span>${solution.streamName} | ${solution.gapType}</span>
+                                    <span class="rec-badge rec-badge--timeline timeline-${timelineClass}">
+                                        <span class="rec-badge-label">Timeline</span>${escapeForTemplate(solution.timeline || '—')}
+                                    </span>
+                                    <span class="rec-badge rec-badge--feasibility feasibility-${feasClass}">
+                                        <span class="rec-badge-label">Feasibility</span>${escapeForTemplate(feasLabel)}
+                                    </span>
+                                    <span class="rec-badge rec-badge--stream">
+                                        <span class="rec-badge-label">Stream</span>${escapeForTemplate(solution.streamName || '—')}
+                                    </span>
+                                    <span class="rec-badge rec-badge--gap">
+                                        <span class="rec-badge-label">Gap</span>${escapeForTemplate(solution.gapType || '—')}
+                                    </span>
+                                    ${diffBadge}
                                 </div>
                             </div>
                             <button type="button" class="solution-expand-btn" id="expand-btn-${solution.solutionId}">
@@ -1267,9 +1457,43 @@
                 modal.show();
             }
 
+            // Wait for the WoFi estimator result to populate window.__RosraWofiResult.
+            // The "Current revenue + estimated gap = potential" chart lives in the
+            // top-down tab — when the user generates the report from another tab,
+            // its hidden canvas can't be captured via toBase64Image, so the report
+            // builder's SVG fallback depends on the raw numbers in __RosraWofiResult.
+            // This helper ensures those numbers are available before HTML is built.
+            function ensureWofiResult(timeoutMs) {
+                return new Promise(function (resolve) {
+                    var deadline = Date.now() + (timeoutMs || 5000);
+                    var have = function () {
+                        var r = window.__RosraWofiResult;
+                        return r && typeof r.potentialOsr === 'number' && r.potentialOsr > 0;
+                    };
+                    if (have()) return resolve();
+                    // Kick off the estimator if it hasn't been run/finished yet.
+                    if (typeof window.RosraWofiRunEstimator === 'function') {
+                        try { window.RosraWofiRunEstimator(); } catch (_) {}
+                    }
+                    (function poll() {
+                        if (have()) return resolve();
+                        if (Date.now() >= deadline) return resolve();
+                        setTimeout(poll, 100);
+                    })();
+                });
+            }
+
             // Generate report
-            function generateReport() {
+            async function generateReport() {
                 console.log('[Report] generateReport() called');
+                const modalEl = document.getElementById('reportModal');
+                const genBtn = modalEl ? modalEl.querySelector('.modal-footer .btn-primary') : null;
+                const originalBtnHtml = genBtn ? genBtn.innerHTML : null;
+                if (genBtn) {
+                    genBtn.disabled = true;
+                    genBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Generating…';
+                }
+
                 try {
                     const format = document.getElementById('reportFormat').value;
                     console.log('[Report] format=', format);
@@ -1291,16 +1515,16 @@
                     };
                     console.log('[Report] options=', options);
 
+                    // Block until WoFi numbers are available (or timeout) so the
+                    // "Current revenue + estimated gap = potential" chart is
+                    // rendered into the export instead of being silently skipped.
+                    if (options.includeExecSummary) {
+                        await ensureWofiResult(5000);
+                        console.log('[Report] WoFi result ready=', !!window.__RosraWofiResult);
+                    }
+
                     const html = buildReportHtml(options);
                     console.log('[Report] html built, length=', html.length);
-
-                    const modalEl = document.getElementById('reportModal');
-                    const genBtn = modalEl ? modalEl.querySelector('.modal-footer .btn-primary') : null;
-                    const originalBtnHtml = genBtn ? genBtn.innerHTML : null;
-                    if (genBtn) {
-                        genBtn.disabled = true;
-                        genBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Generating…';
-                    }
 
                     const closeModal = () => {
                         if (genBtn) {
@@ -1311,31 +1535,23 @@
                         if (inst) { try { inst.hide(); } catch (_) {} }
                     };
 
-                    const dispatch = () => {
-                        console.log('[Report] dispatching format=', format);
-                        // Server-attached downloads (HTML blob / base64 PDF) take ~100 ms for HTML
-                        // and ~2-3 s for PDF rendering. Close the modal after a short delay so the
-                        // user sees the "Generating…" state confirm their click worked.
-                        if (format === 'html') {
-                            downloadReportHtml(html);
-                            setTimeout(closeModal, 400);
-                        } else if (format === 'pdf') {
-                            // downloadReportPdf is async internally; it logs "PDF built, posting to
-                            // server…" when the form is submitted. We close shortly after that.
-                            downloadReportPdf(html, closeModal);
-                        } else {
-                            printReportHtml(html);
-                            setTimeout(closeModal, 400);
-                        }
-                    };
-
-                    dispatch();
+                    console.log('[Report] dispatching format=', format);
+                    if (format === 'html') {
+                        downloadReportHtml(html);
+                        setTimeout(closeModal, 400);
+                    } else if (format === 'pdf') {
+                        downloadReportPdf(html, closeModal);
+                    } else {
+                        printReportHtml(html);
+                        setTimeout(closeModal, 400);
+                    }
                 } catch (err) {
                     console.error('[Report] generateReport failed', err);
                     alert('Report generation failed: ' + (err && err.message ? err.message : err));
-                    const modalEl = document.getElementById('reportModal');
-                    const genBtn = modalEl ? modalEl.querySelector('.modal-footer .btn-primary') : null;
-                    if (genBtn) { genBtn.disabled = false; }
+                    if (genBtn) {
+                        genBtn.disabled = false;
+                        if (originalBtnHtml !== null) genBtn.innerHTML = originalBtnHtml;
+                    }
                 }
             }
 
@@ -2398,12 +2614,63 @@
                             const suf = (m[2] || '').toUpperCase();
                             return suf === 'B' ? n * 1e9 : suf === 'M' ? n * 1e6 : suf === 'K' ? n * 1e3 : n;
                         };
-                        const actualText = text('m2ActualOSRTop');
-                        const potentialText = text('m2OSRPotentialTop');
-                        const gapText = text('m2OSRGapTop');
-                        const perfText = text('m2PerformanceIndexTop');
-                        const actualN = parseShort(actualText);
-                        const potentialN = parseShort(potentialText);
+                        // Multi-source value resolution:
+                        // 1. window.__RosraWofiResult — set by _PotentialEstimates
+                        //    after the WoFi estimator returns. Authoritative when
+                        //    present because it carries raw numbers, not formatted
+                        //    text. Survives a hidden tab / 0-size canvas.
+                        // 2. WoFi tile DOM (#wofiPotentialValue / #wofiGapValue /
+                        //    #wofiFrontierIndexValue) — c9d37f2 replaced the
+                        //    legacy peer-SNG first-analysis panel with WoFi.
+                        // 3. Legacy peer-SNG tile IDs (#m2ActualOSRTop / …) —
+                        //    only populated if the old peer-SNG flow still runs.
+                        let actualText, potentialText, gapText, perfText;
+                        let actualN = null, potentialN = null;
+
+                        const wofiCache = window.__RosraWofiResult;
+                        if (wofiCache && typeof wofiCache.potentialOsr === 'number' && wofiCache.potentialOsr > 0) {
+                            actualN    = Number(wofiCache.actualOsr) || 0;
+                            potentialN = Number(wofiCache.potentialOsr) || 0;
+                            const gapN = Number(wofiCache.osrGap) || Math.max(0, potentialN - actualN);
+                            const curSym = (typeof getCurrencySymbol === 'function') ? getCurrencySymbol() : '';
+                            const fmt = n => {
+                                if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+                                if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+                                if (n >= 1e3) return (n / 1e3).toFixed(0) + 'K';
+                                return Math.round(n).toLocaleString();
+                            };
+                            const sp = curSym ? curSym + ' ' : '';
+                            actualText    = sp + fmt(actualN);
+                            potentialText = sp + fmt(potentialN);
+                            gapText       = sp + fmt(gapN);
+                            const idx = typeof wofiCache.frontierIndex === 'number' ? Math.round(wofiCache.frontierIndex * 100) : null;
+                            perfText      = idx != null ? idx + '%' : '';
+                        } else {
+                            // DOM fallback path
+                            const wofiPotText = text('wofiPotentialValue');
+                            const wofiGapText = text('wofiGapValue');
+                            const wofiPotN = parseShort(wofiPotText);
+                            const wofiGapN = parseShort(wofiGapText);
+                            if (wofiPotN != null && wofiPotN > 0) {
+                                const inputEl = document.getElementById('actualOsr');
+                                const inputVal = inputEl ? parseFloat(String(inputEl.value || '').replace(/[\s,]/g, '')) : NaN;
+                                actualN = (!isNaN(inputVal) && inputVal > 0)
+                                    ? inputVal
+                                    : (wofiGapN != null ? Math.max(0, wofiPotN - wofiGapN) : null);
+                                potentialN = wofiPotN;
+                                actualText    = (typeof getCurrencySymbol === 'function' ? getCurrencySymbol() + ' ' : '') + (actualN >= 1e9 ? (actualN / 1e9).toFixed(2) + 'B' : actualN >= 1e6 ? (actualN / 1e6).toFixed(2) + 'M' : actualN.toLocaleString());
+                                potentialText = wofiPotText;
+                                gapText       = wofiGapText;
+                                perfText      = text('wofiFrontierIndexValue');
+                            } else {
+                                actualText    = text('m2ActualOSRTop');
+                                potentialText = text('m2OSRPotentialTop');
+                                gapText       = text('m2OSRGapTop');
+                                perfText      = text('m2PerformanceIndexTop');
+                                actualN    = parseShort(actualText);
+                                potentialN = parseShort(potentialText);
+                            }
+                        }
 
                         if (actualN != null && potentialN != null && potentialN > 0) {
                             // Round the y-axis max up to the next nice tick so the bars don't

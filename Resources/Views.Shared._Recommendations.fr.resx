@@ -86,12 +86,12 @@
   <data name="Modal_Cancel" xml:space="preserve"><value>Annuler</value></data>
   <data name="Modal_Generate" xml:space="preserve"><value>Générer le rapport</value></data>
 
-  <data name="Personalise_FilterHelp" xml:space="preserve"><value>Filtrez les fiches selon votre calendrier et vos préférences de faisabilité.</value></data>
-  <data name="Personalise_Time" xml:space="preserve"><value>Délai</value></data>
+  <data name="Personalise_FilterHelp" xml:space="preserve"><value>Filtrer les solutions recommandées</value></data>
+  <data name="Personalise_Time" xml:space="preserve"><value>Calendrier</value></data>
   <data name="Personalise_QuickWins" xml:space="preserve"><value>Gains rapides</value></data>
   <data name="Personalise_MediumTerm" xml:space="preserve"><value>Moyen terme</value></data>
   <data name="Personalise_LongTerm" xml:space="preserve"><value>Long terme</value></data>
-  <data name="Personalise_Risk" xml:space="preserve"><value>Risque</value></data>
+  <data name="Personalise_Risk" xml:space="preserve"><value>Faisabilité</value></data>
   <data name="Personalise_HigherFeasibility" xml:space="preserve"><value>Faisabilité élevée</value></data>
   <data name="Personalise_Moderate" xml:space="preserve"><value>Modérée</value></data>
   <data name="Personalise_LowerFeasibility" xml:space="preserve"><value>Faisabilité faible</value></data>
