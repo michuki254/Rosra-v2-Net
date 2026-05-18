@@ -47,7 +47,7 @@
 <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/png" href="~/images/LogoFavicon.png" />
-    <title>Full Analysis Report — @(Model.Country ?? "ROSRA")</title>
+    <title>@SharedLocalizer["Diagnostic_ReportTitle"] — @(Model.Country ?? "ROSRA")</title>
     <link rel="stylesheet" href="~/lib/roboto/roboto.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -178,14 +178,17 @@
             font-weight: 700;
             color: #ffffff;
             line-height: 1.15;
-            margin: 0 0 8px;
+            margin: 0 0 12px;
             text-shadow: 0 2px 20px rgba(0,0,0,0.3);
         }
+        /* Longer concise subtitle from the v2 brief — smaller font, capped width so it wraps cleanly */
         .cover-subtitle {
-            font-size: 22px;
-            font-weight: 300;
-            color: rgba(255,255,255,0.85);
-            margin: 0 0 16px;
+            font-size: 14px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.9);
+            line-height: 1.45;
+            max-width: 620px;
+            margin: 0 0 20px;
         }
         .cover-location {
             display: flex;
@@ -347,6 +350,81 @@
         .print-section { margin-bottom: 30px; }
         .print-section-title { color: #00689D; font-size: 16px; font-weight: 700; border-bottom: 2px solid #00b2e3; padding-bottom: 6px; margin-bottom: 15px; }
 
+        /* ============================
+           LG Profile data card (print-only)
+           ============================
+           The interactive editor uses a form-style config-card with inputs.
+           In the printed diagnostic report we render a clean read-only data
+           grid instead, then hide the form card via CSS below. This shows
+           ALL LG Profile fields including the new EconomicProfile field. */
+        .lg-profile-card {
+            background: #ffffff;
+            border: 1px solid #d1d9e0;
+            border-radius: 8px;
+            padding: 18px 22px;
+            margin-bottom: 24px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .lg-profile-card__header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .lg-profile-card__flag {
+            width: 36px;
+            height: 26px;
+            border-radius: 3px;
+            object-fit: cover;
+        }
+        .lg-profile-card__title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+        .lg-profile-card__subtitle {
+            font-size: 0.78rem;
+            color: #64748b;
+        }
+        .lg-profile-card__grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px 22px;
+        }
+        .lg-profile-field {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .lg-profile-field__label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #64748b;
+        }
+        .lg-profile-field__value {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .lg-profile-field__value--muted {
+            font-style: italic;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        /* Report section intro — What this shows / Why it matters / How to read */
+        .report-section-intro { margin: 4px 0 18px; padding: 12px 16px; background: #f3f8fb; border-left: 3px solid #00b2e3; border-radius: 4px; }
+        .report-section-intro p { margin: 0 0 8px; font-size: 0.78rem; color: #334; line-height: 1.5; }
+        .report-section-intro p:last-child { margin-bottom: 0; }
+        .report-section-intro .report-section-eyebrow { display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #00689D; margin-bottom: 2px; }
+        .report-section-body { font-size: 0.78rem; color: #334; line-height: 1.55; margin: 4px 0 18px; }
+
         /* ── Footer ── */
         .print-footer { margin-top: 30px; padding: 15px 20px 0; border-top: 2px solid #00689D; font-size: 9px; color: #868e96; }
         .print-footer-content { display: flex; align-items: center; justify-content: space-between; }
@@ -367,6 +445,21 @@
         .gov-unit-helper,
         .module2-selection,
         .frontier-placeholder { display: none !important; }
+
+        /* Hide the form-style LG Profile config-card from _PotentialEstimates —
+           the printable LG Profile data card above replaces it. Hidden form
+           inputs are still in the DOM so seed-script logic that references
+           #country, #financialYear, etc. continues to work. */
+        .report-content .config-card { display: none !important; }
+
+        /* Force the WoFi Quick OSR Estimate panel + its chart visible in
+           the report (in the editor it's hidden until "Get Analysis" is
+           clicked). The chart is rendered into #actualVsPotentialChart;
+           keeping wofiContent shown lets Chart.js draw on first compute. */
+        .report-content #analysisPanelWrap { display: block !important; }
+        .report-content #wofiContent { display: block !important; }
+        .report-content #wofiPlaceholder { display: none !important; }
+        .report-content .next-step-cta-wrap { display: none !important; }
 
         /* ── Form elements as static text (TopDown) ── */
         .form-control, .form-select, select, input[type="text"], input[type="number"] {
@@ -623,8 +716,8 @@
 
         <!-- Title -->
         <div class="cover-title-section">
-            <h1 class="cover-title">Rapid Own-Source<br />Revenue Analysis</h1>
-            <p class="cover-subtitle">Full Analysis Report</p>
+            <h1 class="cover-title">@SharedLocalizer["Diagnostic_ReportTitle"]</h1>
+            <p class="cover-subtitle">@SharedLocalizer["Diagnostic_ReportSubtitle"]</p>
             <div class="cover-location">
                 @if (!string.IsNullOrEmpty(countryCode))
                 {
@@ -680,10 +773,13 @@
     <div class="report-content">
 
         <!-- ═══════════════════════════
-             SECTION 1: TOP-DOWN ANALYSIS
+             SECTION 1: LOCAL GOVERNMENT PROFILE + QUICK OSR ESTIMATE
+             (The _PotentialEstimates partial renders both the LG Profile card and
+             the WoFi Quick OSR Estimate card. The partial injects its own
+             "Quick OSR Estimate" subsection header between them in view/print mode.)
              ═══════════════════════════ -->
         <div class="report-content-header">
-            <h2>Top-Down Analysis</h2>
+            <h2>@SharedLocalizer["Report_LgProfile_Title"]</h2>
             <div class="header-meta">
                 @if (!string.IsNullOrEmpty(countryCode))
                 {
@@ -700,8 +796,74 @@
                 }
             </div>
         </div>
+        <p class="report-section-body">@SharedLocalizer["Report_LgProfile_Body"]</p>
 
-        <!-- Render the Potential Estimates partial (TopDown) -->
+        @{
+            string FieldOrMissing(string? v) => string.IsNullOrWhiteSpace(v) ? null : v;
+            string FormatMoney(decimal? n) => n.HasValue ? $"{cs} {n.Value.ToString("#,##0")}" : null;
+            string FormatPop(int? n) => n.HasValue ? n.Value.ToString("#,##0") : null;
+            string FormatGdp(decimal? n) => n.HasValue ? $"USD {n.Value.ToString("#,##0")}" : null;
+            string CurrencyDisplay()
+            {
+                if (string.IsNullOrWhiteSpace(Model.Currency) && string.IsNullOrWhiteSpace(Model.CurrencySymbol)) return null;
+                if (!string.IsNullOrWhiteSpace(Model.Currency) && !string.IsNullOrWhiteSpace(Model.CurrencySymbol)
+                    && !string.Equals(Model.Currency, Model.CurrencySymbol, StringComparison.OrdinalIgnoreCase))
+                    return $"{Model.Currency} ({Model.CurrencySymbol})";
+                return Model.Currency ?? Model.CurrencySymbol;
+            }
+
+            (string label, string value)[] profileFields = new[]
+            {
+                ("Country", FieldOrMissing(Model.Country)),
+                ("Region / Level 1", FieldOrMissing(Model.Region)),
+                ("City / Level 2", FieldOrMissing(Model.City)),
+                ("Level 3", FieldOrMissing(Model.GovUnitLevel3)),
+                ("Financial Year", FieldOrMissing(Model.FinancialYear)),
+                ("Currency", CurrencyDisplay()),
+                ("Government Type", FieldOrMissing(Model.GovernmentType)),
+                ("Income Level", FieldOrMissing(Model.IncomeLevel)),
+                ("Local Economic Profile", FieldOrMissing(Model.EconomicProfile)),
+                ("Own-Source Revenue (OSR)", FormatMoney(Model.ActualOsr)),
+                ("Population", FormatPop(Model.Population)),
+                ("National GDP per capita", FormatGdp(Model.GdpPerCapita)),
+            };
+        }
+
+        <!-- Read-only LG Profile data card (replaces the form-style config-card in print mode).
+             Surfaces every field captured under the v2 Local Government Profile, including
+             new fields like Local Economic Profile that weren't visible in the old layout. -->
+        <div class="lg-profile-card">
+            <div class="lg-profile-card__header">
+                @if (!string.IsNullOrEmpty(countryCode))
+                {
+                    <img class="lg-profile-card__flag" src="https://flagcdn.com/w80/@(countryCode).png" alt="@(Model.Country ?? "")" />
+                }
+                <div>
+                    <p class="lg-profile-card__title">@(Model.City ?? Model.Region ?? Model.Country ?? "Local Government")</p>
+                    <span class="lg-profile-card__subtitle">@(Model.Country ?? "")@(Model.FinancialYear != null ? " — FY " + Model.FinancialYear : "")</span>
+                </div>
+            </div>
+            <div class="lg-profile-card__grid">
+                @foreach (var f in profileFields)
+                {
+                    <div class="lg-profile-field">
+                        <span class="lg-profile-field__label">@f.label</span>
+                        @if (f.value != null)
+                        {
+                            <span class="lg-profile-field__value">@f.value</span>
+                        }
+                        else
+                        {
+                            <span class="lg-profile-field__value lg-profile-field__value--muted">@SharedLocalizer["Report_NotAvailable"]</span>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Render the Potential Estimates partial. In print mode the partial's
+             form-style config-card is hidden via CSS — only the WoFi Quick OSR
+             Estimate panel (with chart) renders. -->
         @await Html.PartialAsync("_PotentialEstimates", Model)
 
         <!-- ═══════════════════════════
@@ -710,10 +872,10 @@
         <div class="page-break"></div>
 
         <!-- ═══════════════════════════
-             SECTION 2: BOTTOM-UP GAP ANALYSIS
+             SECTION 2: STREAM GAP ANALYSIS RESULTS
              ═══════════════════════════ -->
         <div class="report-content-header">
-            <h2>Bottom-Up Gap Analysis</h2>
+            <h2>@SharedLocalizer["Report_StreamGap_Title"]</h2>
             <div class="header-meta">
                 @if (!string.IsNullOrEmpty(countryCode))
                 {
@@ -729,6 +891,11 @@
                     <span>&rsaquo; @Model.City</span>
                 }
             </div>
+        </div>
+        <div class="report-section-intro">
+            <p><span class="report-section-eyebrow">@SharedLocalizer["Report_SectionWhat"]</span>@SharedLocalizer["Report_StreamGap_What"]</p>
+            <p><span class="report-section-eyebrow">@SharedLocalizer["Report_SectionWhy"]</span>@SharedLocalizer["Report_StreamGap_Why"]</p>
+            <p><span class="report-section-eyebrow">@SharedLocalizer["Report_SectionHow"]</span>@SharedLocalizer["Report_StreamGap_How"]</p>
         </div>
 
         <!-- Property Tax Section -->
@@ -758,48 +925,32 @@
             }
         }
 
-        <!-- Prioritization Section -->
+        <!-- Stream Prioritization + Gap Prioritization (rendered together by _Prioritization partial).
+             Both intros are surfaced up front so the reader knows what the two sub-sections below mean. -->
         <div class="print-section">
-            <div class="print-section-title">Revenue Stream Prioritization</div>
+            <div class="print-section-title">@SharedLocalizer["Report_StreamPrio_Title"]</div>
+            <div class="report-section-intro">
+                <p><span class="report-section-eyebrow">@SharedLocalizer["Report_SectionWhat"]</span>@SharedLocalizer["Report_StreamPrio_What"]</p>
+                <p><span class="report-section-eyebrow">@SharedLocalizer["Report_SectionWhy"]</span>@SharedLocalizer["Report_StreamPrio_Why"]</p>
+                <p><span class="report-section-eyebrow">@SharedLocalizer["Report_SectionHow"]</span>@SharedLocalizer["Report_StreamPrio_How"]</p>
+            </div>
+            <div class="print-section-title" style="margin-top:1.5rem;">@SharedLocalizer["Report_GapPrio_Title"]</div>
+            <div class="report-section-intro">
+                <p><span class="report-section-eyebrow">@SharedLocalizer["Report_SectionWhat"]</span>@SharedLocalizer["Report_GapPrio_What"]</p>
+                <p><span class="report-section-eyebrow">@SharedLocalizer["Report_SectionWhy"]</span>@SharedLocalizer["Report_GapPrio_Why"]</p>
+                <p><span class="report-section-eyebrow">@SharedLocalizer["Report_SectionHow"]</span>@SharedLocalizer["Report_GapPrio_How"]</p>
+            </div>
             @await Html.PartialAsync("_Prioritization", Model)
         </div>
 
-        <!-- Overview Selection Section (compact print summary) -->
+        <!-- Reform Guidance — short paragraph only. Full solution cards live on the website,
+             not in the diagnostic report (per v2 brief §4 and §5). The second paragraph
+             surfaces the duplicate-collapse caveat from brief §12 so readers know the
+             platform may group similar streams together. -->
         <div class="print-section">
-            <div class="print-section-title">Solution Overview &amp; Selection</div>
-            <div id="overviewSelectionSummary">
-                <!-- Summary stats -->
-                <div class="row mb-3" id="overviewStats">
-                    <div class="col-4">
-                        <div class="card border-0 bg-light text-center p-3">
-                            <div class="h4 mb-0" id="ovSelectedCount">0</div>
-                            <small class="text-muted">Solutions Selected</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="card border-0 bg-light text-center p-3">
-                            <div class="h4 mb-0" id="ovSkippedCount">0</div>
-                            <small class="text-muted">Solutions Skipped</small>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="card border-0 bg-light text-center p-3">
-                            <div class="h4 mb-0" id="ovQuickWinsCount">0</div>
-                            <small class="text-muted">Quick Wins</small>
-                        </div>
-                    </div>
-                </div>
-                <!-- Selected solutions table (populated by JS) -->
-                <div id="overviewSelectedTable"></div>
-                <!-- Skipped solutions (populated by JS) -->
-                <div id="overviewSkippedList" class="mt-3"></div>
-            </div>
-        </div>
-
-        <!-- Recommendations Section -->
-        <div class="print-section">
-            <div class="print-section-title">Recommendations</div>
-            @await Html.PartialAsync("_Recommendations", Model)
+            <div class="print-section-title">@SharedLocalizer["Report_ReformGuidance_Title"]</div>
+            <p class="report-section-body">@SharedLocalizer["Report_ReformGuidance_Body"]</p>
+            <p class="report-section-body" style="font-style:italic; color:#475569;">@SharedLocalizer["Duplicate_ReportNote"]</p>
         </div>
 
         <!-- Footer -->
@@ -816,7 +967,7 @@
                 </div>
             </div>
             <div class="print-footer-center">
-                ROSRA &mdash; Rapid Own-Source Revenue Analysis Tool | &copy; @DateTime.Now.Year UN-Habitat. All rights reserved. | Generated @DateTime.Now.ToString("dd MMM yyyy")
+                @SharedLocalizer["Diagnostic_FooterNote"] | &copy; @DateTime.Now.Year UN-Habitat. All rights reserved. | Generated @DateTime.Now.ToString("dd MMM yyyy")
             </div>
         </div>
     </div>
@@ -866,6 +1017,10 @@
             setSelectValue('country', '@Html.Raw(Model.Country?.Replace("'", "\\'") ?? "")');
             setSelectValue('financialYear', '@Html.Raw(Model.FinancialYear?.Replace("'", "\\'") ?? "")');
             setSelectValue('region', '@Html.Raw(Model.Region?.Replace("'", "\\'") ?? "")');
+            // EconomicProfile is rendered server-side from WofiPotentialEstimator,
+            // so the option likely exists already — but setSelectValue is idempotent
+            // (only appends when value missing) so a no-op call is safe.
+            setSelectValue('economicProfile', '@Html.Raw(Model.EconomicProfile?.Replace("'", "\\'") ?? "")');
 
             var region = '@Html.Raw(Model.Region?.Replace("'", "\\'") ?? "")';
             var city = '@Html.Raw(Model.City?.Replace("'", "\\'") ?? "")';
@@ -894,17 +1049,52 @@
                 });
             }, 1000);
 
+            // Step 1b: Kick the Quick OSR Estimate (WoFi) flow IMMEDIATELY so the chart
+            // is in flight before Playwright's NetworkIdle detection hits.
+            //
+            // Why the rush:
+            //   - The partial's IIFE checks countryEl.value BEFORE setSelectValue runs,
+            //     so the auto-show path doesn't trigger.
+            //   - Playwright's PDF pipeline waits for NetworkIdle + 3s. If we wait too
+            //     long to fire Get Analysis, the AJAX kicks off after NetworkIdle and
+            //     the capture happens before the chart finishes drawing.
+            //
+            // Firing in the same tick as setSelectValue keeps the AJAX inside the
+            // NetworkIdle window, so Playwright's 3s buffer always lands AFTER chart render.
+            (function kickWofi() {
+                var countryEl = document.getElementById('country');
+                if (countryEl) countryEl.dispatchEvent(new Event('change', { bubbles: true }));
+                var profileEl = document.getElementById('economicProfile');
+                if (profileEl) profileEl.dispatchEvent(new Event('change', { bubbles: true }));
+                var getBtn = document.getElementById('getAnalysisBtn');
+                if (getBtn) getBtn.click();
+
+                // After WoFi compute finishes, the Chart.js bar chart needs a resize tick
+                // when the container was force-visible via print CSS — otherwise Chart.js
+                // can cache a 0-height layout from its initial measurement and the canvas
+                // renders empty. Re-running .resize() once at ~3.5s after compute gives
+                // it the final container height in print viewport.
+                setTimeout(function () {
+                    if (typeof Chart !== 'undefined' && Chart.instances) {
+                        Object.values(Chart.instances).forEach(function (c) {
+                            try { c.resize(); c.update('none'); } catch (e) { /* ignore */ }
+                        });
+                    }
+                }, 3500);
+            })();
+
             // Step 2: After gap data is in localStorage, re-initialize Prioritization
             setTimeout(function() {
                 window.dispatchEvent(new Event('gapDataReady'));
             }, 2500);
 
-            // Step 3: Render Overview Selection summary table
-            setTimeout(function() {
-                renderOverviewSummary();
-            }, 3000);
+            // Step 3: Replace empty LG Profile fields with "Not available" per v2 brief §5.
+            // Runs after gap-calcs so we don't clobber values that just got hydrated.
+            setTimeout(replaceEmptyProfileValues, 2800);
 
             // Step 4: Auto-print if requested (opens Save as PDF dialog, then closes tab)
+            // The legacy Overview Selection / Recommendations render step is gone — the
+            // diagnostic report ends at Reform Guidance, which is a static paragraph.
             if (window.location.search.indexOf('autoPrint=true') >= 0) {
                 setTimeout(function() {
                     window.print();
@@ -913,65 +1103,33 @@
             }
         });
 
-        function renderOverviewSummary() {
-            // Read selections from localStorage
-            var selectionsRaw = localStorage.getItem('rosraOverviewSelections');
-            var solutionsRaw = localStorage.getItem('rosraSelectedSolutions');
-            var selections = { selected: [], skipped: [] };
-            var solutions = [];
-
-            try { if (selectionsRaw) selections = JSON.parse(selectionsRaw); } catch(e) {}
-            try { if (solutionsRaw) solutions = JSON.parse(solutionsRaw); } catch(e) {}
-
-            var selectedIds = selections.selected || [];
-            var skippedIds = selections.skipped || [];
-
-            // Update stats
-            var quickWins = solutions.filter(function(s) { return s.timeline && s.timeline.indexOf('<') >= 0; }).length;
-            document.getElementById('ovSelectedCount').textContent = selectedIds.length;
-            document.getElementById('ovSkippedCount').textContent = skippedIds.length;
-            document.getElementById('ovQuickWinsCount').textContent = quickWins;
-
-            // Group solutions by stream
-            var streams = {};
-            solutions.forEach(function(s) {
-                var key = s.streamName || 'Other';
-                if (!streams[key]) streams[key] = [];
-                streams[key].push(s);
+        /**
+         * v2 brief §5 / P4.8 — empty fields in the Local Government Profile must
+         * read as "Not available" in the printed report rather than rendering as
+         * a bare currency prefix with nothing after it (e.g. "₱ " followed by
+         * blank space). Walks the readable profile/quick-estimate inputs and
+         * swaps empty values for the localised fallback text + a muted styling.
+         */
+        function replaceEmptyProfileValues() {
+            var fallback = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(SharedLocalizer["Report_NotAvailable"].Value));
+            // Profile field IDs we care about — these are the user-visible KPIs on
+            // the LG Profile card. Adding new fields? List them here.
+            var ids = ['actualOsr', 'budgetedOsr', 'population', 'gdpPerCapita',
+                       'city', 'govUnitLevel3'];
+            ids.forEach(function (id) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                var v = (el.value || '').trim();
+                if (v) return;
+                // Replace the empty input cell with a styled span so the printed
+                // PDF reads "Not available" instead of a blank field. Form binding
+                // is irrelevant in view-mode so removing the input is safe here.
+                var span = document.createElement('span');
+                span.className = 'value-not-available';
+                span.textContent = fallback;
+                span.style.cssText = 'color:#6b7280; font-style:italic; font-size:0.9em;';
+                if (el.parentNode) el.parentNode.replaceChild(span, el);
             });
-
-            // Build selected solutions tables
-            var html = '';
-            Object.keys(streams).forEach(function(streamName) {
-                var items = streams[streamName];
-                html += '<div class="card mb-3"><div class="card-header bg-light py-2">';
-                html += '<h6 class="mb-0"><i class="fas fa-stream me-2"></i>' + streamName + ' &mdash; ' + items.length + ' solution' + (items.length !== 1 ? 's' : '') + ' selected</h6></div>';
-                html += '<div class="card-body p-0"><table class="table table-sm table-striped mb-0">';
-                html += '<thead class="table-light"><tr><th>Solution</th><th class="text-center">Gap Type</th><th class="text-center">Timeline</th></tr></thead><tbody>';
-                items.forEach(function(s) {
-                    var timelineLabel = s.timeline || '-';
-                    if (timelineLabel.indexOf('<') >= 0) timelineLabel = '<span class="badge bg-success">Quick Win</span>';
-                    else if (timelineLabel.indexOf('1-3') >= 0) timelineLabel = '<span class="badge bg-warning text-dark">Medium-Term</span>';
-                    else if (timelineLabel.indexOf('3+') >= 0 || timelineLabel.indexOf('3-5') >= 0) timelineLabel = '<span class="badge bg-danger">Long-Term</span>';
-                    html += '<tr><td>' + (s.title || s.solutionId) + '</td>';
-                    html += '<td class="text-center"><span class="badge bg-info">' + (s.gapType || '-') + '</span></td>';
-                    html += '<td class="text-center">' + timelineLabel + '</td></tr>';
-                });
-                html += '</tbody></table></div></div>';
-            });
-
-            if (selectedIds.length === 0) {
-                html = '<div class="alert alert-secondary text-center"><i class="fas fa-info-circle me-2"></i>No solutions have been selected yet. Complete the Overview Selection step in the main app.</div>';
-            }
-
-            document.getElementById('overviewSelectedTable').innerHTML = html;
-
-            // Build skipped list
-            if (skippedIds.length > 0) {
-                var skippedHtml = '<details><summary class="text-muted small mb-2"><i class="fas fa-ban me-1"></i>' + skippedIds.length + ' solution' + (skippedIds.length !== 1 ? 's' : '') + ' skipped</summary>';
-                skippedHtml += '<div class="text-muted small">' + skippedIds.join(', ') + '</div></details>';
-                document.getElementById('overviewSkippedList').innerHTML = skippedHtml;
-            }
         }
 
         // Paint "Excluded" badge on Gap Analysis section titles for any stream

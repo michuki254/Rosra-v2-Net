@@ -1599,10 +1599,10 @@ namespace RosraApp.Controllers
                 }
 
                 // Generate PDF using the ReportExportService
-                var pdfBytes = _pdfExportService.GeneratePdfReport(sessionData, sessionData.Title ?? "ROSRA Analysis Report");
+                var pdfBytes = _pdfExportService.GeneratePdfReport(sessionData, sessionData.Title ?? "ROSRA Diagnostic Report");
 
                 // Generate filename with timestamp
-                var filename = $"ROSRA_Report_{formData.City ?? "Analysis"}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+                var filename = $"ROSRA_Diagnostic_Report_{formData.City ?? "Analysis"}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
 
                 // Return the PDF file
                 return File(pdfBytes, "application/pdf", filename);
@@ -1666,7 +1666,7 @@ namespace RosraApp.Controllers
             try
             {
                 var pdfBytes = await _htmlToPdfService.RenderUrlToPdf("/Rosra/PrintFullReportView", HttpContext);
-                var filename = $"ROSRA_FullReport_{data.Country ?? "Analysis"}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+                var filename = $"ROSRA_Diagnostic_Report_{data.Country ?? "Analysis"}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
                 return File(pdfBytes, "application/pdf", filename);
             }
             catch (Exception ex)

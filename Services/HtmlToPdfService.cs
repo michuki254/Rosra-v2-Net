@@ -140,8 +140,11 @@ namespace RosraApp.Services
                     Timeout = 30000
                 });
 
-                // Wait for JS-rendered charts and images to finish
-                await page.WaitForTimeoutAsync(3000);
+                // Wait for JS-rendered charts and images to finish. Bumped from 3s
+                // to 5s because the Quick OSR Estimate (WoFi) flow fires an AJAX
+                // after page load, then Chart.js renders the bar chart — that whole
+                // chain needs a comfortable buffer or the chart canvas is captured blank.
+                await page.WaitForTimeoutAsync(5000);
 
                 return await page.PdfAsync(new PagePdfOptions
                 {

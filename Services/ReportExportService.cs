@@ -19,7 +19,7 @@ namespace RosraApp.Services
             _l = localizer;
         }
 
-        public byte[] GeneratePdfReport(RosraFormViewModel model, string title = "ROSRA Analysis Report")
+        public byte[] GeneratePdfReport(RosraFormViewModel model, string title = "ROSRA Diagnostic Report")
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
@@ -676,7 +676,7 @@ namespace RosraApp.Services
         {
             container.Column(column =>
             {
-                column.Item().Text("Recommendations & Action Plan").FontSize(16).Bold().FontColor(Colors.Blue.Darken2);
+                column.Item().Text("Reform Guidance").FontSize(16).Bold().FontColor(Colors.Blue.Darken2);
 
                 column.Item().PaddingTop(10).Border(1).BorderColor(Colors.Grey.Lighten2).Padding(15).Column(inner =>
                 {
