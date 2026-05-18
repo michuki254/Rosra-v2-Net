@@ -3346,56 +3346,15 @@
                         });
                         html += `</tbody></table>`;
 
+                        // Closing pointer to the website for full reform detail.
+                        // The detailed "Solution detail cards" block (overview /
+                        // Why-this-matters / Practical path / Risks / Monitoring)
+                        // used to render here but was removed per the v2 brief —
+                        // the diagnostic report stays a result-oriented summary
+                        // and the full solution package lives on the platform.
+                        html += `<p class="qa-section-sub" style="margin-top:14px;font-style:italic;color:#475569;">For each solution, the full implementation steps, risks, safeguards and monitoring guidance are available in the Recommendations section of the ROSRA platform.</p>`;
+
                         html += `</div>`; // close .qa-page for the section header / table
-
-                        // --- Detailed cards (compact editorial format) ---
-                        // Renders after the summary page break. Each card uses
-                        // page-break-inside: avoid so it won't split.
-                        const timelinePillClass = (tl) => {
-                            if (tl === '<1 year')   return 'rec-pill-quick';
-                            if (tl === '1-3 years') return 'rec-pill-mid';
-                            if (tl === '3+ years')  return 'rec-pill-long';
-                            return '';
-                        };
-
-                        html += `<h2 class="qa-block-title rec-detail-header">Solution detail cards</h2>`;
-                        selectedSolutions.forEach((solution, i) => {
-                            const fs = getCompleteSolution(solution.solutionId);
-                            if (!fs) return;
-                            const fullId = buildFullIdLabel(solution.solutionId, fs);
-                            const ov = fs.overview || {};
-                            const fd = fs.fullDetails || {};
-                            const overviewText = ov.whatThisOptionDoes || ov.whatThisSolves || fd.whyThisMatters || '';
-
-                            const meta = [];
-                            if (solution.timeline)        meta.push(`<span class="rec-pill ${timelinePillClass(solution.timeline)}">${esc(solution.timeline)}</span>`);
-                            if (fs.deliveryDifficulty)    meta.push(`<span class="rec-pill rec-pill-diff">${esc(fs.deliveryDifficulty)} difficulty</span>`);
-                            if (fs.politicalSensitivity)  meta.push(`<span class="rec-pill rec-pill-pol">${esc(fs.politicalSensitivity)} political</span>`);
-                            if (solution.streamName || fs.stream) meta.push(`<span class="rec-pill rec-pill-stream">${esc(solution.streamName || fs.stream)}</span>`);
-                            if (solution.gapType   || fs.gap)    meta.push(`<span class="rec-pill rec-pill-gap">${esc(solution.gapType || fs.gap)}</span>`);
-
-                            html += `<div class="rec-card">
-    <div class="rec-card-head">
-        <div class="rec-card-no">${i + 1}</div>
-        <div class="rec-card-titleblock">
-            <div class="rec-card-id">${esc(fullId)}</div>
-            <div class="rec-card-title">${esc(fs.title || '')}</div>
-        </div>
-    </div>
-    <div class="rec-card-meta">${meta.join('')}</div>`;
-
-                            if (overviewText) {
-                                html += `<div class="rec-card-overview">${esc(overviewText)}</div>`;
-                            }
-
-                            html += renderReportSection('Why this matters', fd.whyThisMatters);
-                            html += renderReportSection('When this is a strong fit', fd.whenStrongFit || ov.mostUsefulWhen);
-                            html += renderPracticalPath(fd.practicalPath);
-                            html += renderReportSection('Main risks & safeguards', fd.risksAndSafeguards || fs.whenNotApplicable);
-                            html += renderReportSection('What to monitor', fd.whatToMonitor);
-
-                            html += `</div>`; // close .rec-card
-                        });
                     }
                 }
 

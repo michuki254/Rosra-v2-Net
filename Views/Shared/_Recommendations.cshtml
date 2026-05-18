@@ -1245,7 +1245,39 @@
         background: #cbd5e1;
     }
 
-    /* ----- Checkbox cards ----- */
+    /* ----- "This report includes" pill list (replaced the checkbox grid).
+       Plain visual list — the four sections are always rendered, so there's
+       nothing for the user to toggle. Keep the same column rhythm as before
+       so the modal height doesn't jump. */
+    .report-includes-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+    }
+    .report-includes-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.7rem 0.85rem;
+        background: #ffffff;
+        border-radius: 10px;
+        border: 1px solid #E2E8F0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #0F2742;
+        min-height: 52px;
+    }
+    .report-includes-pill i {
+        width: 26px; height: 26px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 7px;
+        background: #E6F4FB;
+        color: #00689D;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    /* ----- Legacy checkbox cards (kept in case they're needed elsewhere) ----- */
     .report-checkboxes {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -1616,48 +1648,35 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                @* The report is now a fixed 4-section package — Quick OSR Estimate,
+                   Stream Gap Analysis, Prioritization, and Recommendations summary.
+                   The old per-section checkboxes were removed; the hidden inputs
+                   below stay so the existing generateReport() JS contract reads
+                   the same `include*` flags it always did. *@
                 <div class="report-section-head">
                     <div>
                         <h6>@Localizer["Modal_IncludeInReport"]</h6>
                         <p class="report-section-help">@Localizer["Modal_IncludeHelp"]</p>
                     </div>
-                    <div class="report-bulk-toggle" role="group" aria-label="Bulk select">
-                        <button type="button" class="btn btn-link" id="reportSelectAll">@Localizer["Modal_SelectAll"]</button>
-                        <span class="toggle-divider"></span>
-                        <button type="button" class="btn btn-link" id="reportClearAll">@Localizer["Modal_ClearAll"]</button>
-                    </div>
                 </div>
 
-                <div class="report-checkboxes">
-                    <label class="form-check" for="includeExecSummary">
-                        <input class="form-check-input" type="checkbox" id="includeExecSummary" checked>
-                        <span class="check-icon"><i class="fas fa-clipboard-list"></i></span>
-                        <span class="form-check-label">@Localizer["Modal_QuickAnalysis"]</span>
-                    </label>
-                    <label class="form-check" for="includeGapAnalysis">
-                        <input class="form-check-input" type="checkbox" id="includeGapAnalysis" checked>
-                        <span class="check-icon"><i class="fas fa-magnifying-glass-chart"></i></span>
-                        <span class="form-check-label">@Localizer["Modal_GapAnalysisSummary"]</span>
-                    </label>
-                    <label class="form-check" for="includeStreamPrioritization">
-                        <input class="form-check-input" type="checkbox" id="includeStreamPrioritization" checked>
-                        <span class="check-icon"><i class="fas fa-list-ol"></i></span>
-                        <span class="form-check-label">@Localizer["Modal_Prioritization"]</span>
-                    </label>
-                    <label class="form-check" for="includeSelectedSolutions">
-                        <input class="form-check-input" type="checkbox" id="includeSelectedSolutions" checked>
-                        <span class="check-icon"><i class="fas fa-check-double"></i></span>
-                        <span class="form-check-label">@Localizer["Modal_RecommendationsSummary"]</span>
-                    </label>
+                <div class="report-includes-list">
+                    <span class="report-includes-pill"><i class="fas fa-clipboard-list"></i> @Localizer["Modal_QuickAnalysis"]</span>
+                    <span class="report-includes-pill"><i class="fas fa-magnifying-glass-chart"></i> @Localizer["Modal_GapAnalysisSummary"]</span>
+                    <span class="report-includes-pill"><i class="fas fa-list-ol"></i> @Localizer["Modal_Prioritization"]</span>
+                    <span class="report-includes-pill"><i class="fas fa-check-double"></i> @Localizer["Modal_RecommendationsSummary"]</span>
                 </div>
-                @* Hidden flags. Kept in the DOM so the existing report-renderer JS
-                   contract is preserved without forking it. Defaults:
-                   - includeGapSequencing follows includeStreamPrioritization (the "Prioritization"
-                     checkbox covers both stream + gap-type sequencing).
-                   - All other former checkboxes default to unchecked, since the user explicitly
-                     scoped the report to four sections (Quick / Gap / Priority / Recs). *@
+
+                @* Hidden flags drive the existing generateReport() include-section
+                   logic. All four user-facing sections are always on; the leftover
+                   legacy flags stay off (we never reintroduced Timeline / Progress
+                   Tracker / Resources / Skipped lists in the editorial report). *@
                 <div class="d-none" aria-hidden="true">
+                    <input type="checkbox" id="includeExecSummary" checked>
+                    <input type="checkbox" id="includeGapAnalysis" checked>
+                    <input type="checkbox" id="includeStreamPrioritization" checked>
                     <input type="checkbox" id="includeGapSequencing" checked>
+                    <input type="checkbox" id="includeSelectedSolutions" checked>
                     <input type="checkbox" id="includeSkippedSolutions">
                     <input type="checkbox" id="includeTimeline">
                     <input type="checkbox" id="includeProgressTracker">
@@ -1701,28 +1720,9 @@
             });
         });
 
-        // Select-all / Clear-all helpers for the section checkboxes.
-        var checkboxes = modal.querySelectorAll('.report-checkboxes .form-check-input');
-        var selectAllBtn = document.getElementById('reportSelectAll');
-        var clearAllBtn = document.getElementById('reportClearAll');
-        if (selectAllBtn) selectAllBtn.addEventListener('click', function () {
-            checkboxes.forEach(function (cb) { cb.checked = true; });
-        });
-        if (clearAllBtn) clearAllBtn.addEventListener('click', function () {
-            checkboxes.forEach(function (cb) { cb.checked = false; });
-        });
-
-        // The visible "Prioritization" checkbox covers BOTH the stream-prioritization
-        // section AND the gap-sequencing section in the rendered report. Mirror the
-        // visible checkbox state onto the now-hidden includeGapSequencing input so the
-        // existing report-renderer JS still produces one combined Prioritization block.
-        var priCheckbox = document.getElementById('includeStreamPrioritization');
-        var gapSeqCheckbox = document.getElementById('includeGapSequencing');
-        if (priCheckbox && gapSeqCheckbox) {
-            priCheckbox.addEventListener('change', function () {
-                gapSeqCheckbox.checked = priCheckbox.checked;
-            });
-        }
+        // Section checkboxes were removed — the report is now a fixed 4-section
+        // package and the hidden include* flags above default to checked. No
+        // bulk-toggle wiring needed.
     })();
 </script>
 
