@@ -541,7 +541,17 @@
     // upsertStream() calls from Gap Analysis scripts see the saved
     // `included` / `adjustedRank` flags and preserve them instead of
     // clobbering them with createStream() defaults.
-    loadFromStorage();
+    //
+    // EXCEPTION: when the page emits window.__rosraIsFreshAnalysis = true
+    // (the server detected this is a clean /Rosra entry with no prior session
+    // data), skip hydration entirely. Otherwise zombie streams from a previous
+    // session leak into the new analysis — e.g. the user adds 2 streams but
+    // Recommendations shows 3 because the 3rd is left over in localStorage.
+    if (!window.__rosraIsFreshAnalysis) {
+        loadFromStorage();
+    } else {
+        console.log('RosraStateManager: fresh analysis — skipping localStorage hydrate');
+    }
 
     // Auto-initialize on load (subscriber notifications etc.)
     if (document.readyState === 'loading') {

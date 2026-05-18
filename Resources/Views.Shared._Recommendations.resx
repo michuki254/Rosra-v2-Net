@@ -34,7 +34,7 @@
 
   <!-- Header -->
   <data name="Header_Title" xml:space="preserve"><value>Recommended Solutions and Implementation Guidance</value></data>
-  <data name="Header_Description" xml:space="preserve"><value>This tab provides detailed solution cards for the options you selected previously. Solutions appear according to the established prioritization order. Use these recommendations to create your city's tailored Revenue Enhancement Action Plan.</value></data>
+  <data name="Header_Description" xml:space="preserve"><value>This tab provides detailed solution cards for the options you selected previously. Solutions appear according to the established prioritization order. Use these recommendations to inform your city's reform plan and export the results as a ROSRA Diagnostic Report.</value></data>
   <data name="Header_BackToOverview" xml:space="preserve"><value>Back to Overview Selection</value></data>
   <data name="Header_GenerateReport" xml:space="preserve"><value>Generate Report</value></data>
 
@@ -66,7 +66,7 @@
   <data name="Progress_ExportProgress" xml:space="preserve"><value>Export Progress</value></data>
 
   <!-- Report Modal -->
-  <data name="Modal_Title" xml:space="preserve"><value>Generate Revenue Enhancement Action Plan</value></data>
+  <data name="Modal_Title" xml:space="preserve"><value>Generate ROSRA Diagnostic Report</value></data>
   <data name="Modal_IncludeInReport" xml:space="preserve"><value>Include in Report:</value></data>
   <data name="Modal_QuickAnalysis" xml:space="preserve"><value>Quick Analysis</value></data>
   <data name="Modal_GapAnalysisSummary" xml:space="preserve"><value>Gap Analysis Summary</value></data>

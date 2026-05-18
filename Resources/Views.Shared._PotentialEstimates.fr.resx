@@ -72,7 +72,7 @@
   <data name="Metric_PotentialOSRPerCapita" xml:space="preserve"><value>Recettes par habitant au niveau des meilleurs pairs</value></data>
   <data name="Metric_PerCapitaGap" xml:space="preserve"><value>Recettes inexploitées par habitant</value></data>
   <data name="Chart_ScatterTitle" xml:space="preserve"><value>Comparaison des taux de perception</value></data>
-  <data name="Chart_BarTitle" xml:space="preserve"><value>Ce que vous percevez vs ce que vous pourriez percevoir</value></data>
+  <data name="Chart_BarTitle" xml:space="preserve"><value>RPP actuelle et potentielle estimée</value></data>
   <data name="Result_Header" xml:space="preserve"><value>Résultat de la frontière RPP intra-pays (GNS pairs) :</value></data>
   <data name="Result_Placeholder" xml:space="preserve"><value>Sélectionnez un gouvernement sous-national pour voir le résultat de l'analyse.</value></data>
   <data name="CrossCountry_Title" xml:space="preserve"><value>Facultatif : Analyse fiscale internationale</value></data>
@@ -122,7 +122,7 @@
   <data name="LgProfile_GetAnalysis" xml:space="preserve"><value>Obtenir l'analyse</value></data>
   <data name="NextStepCTA_Title" xml:space="preserve"><value>Commencer une analyse plus détaillée</value></data>
   <data name="NextStepCTA_Sub" xml:space="preserve"><value>Une analyse plus détaillée et précise du potentiel de revenus de chaque source de revenus individuelle.</value></data>
-  <data name="GapFrontier_Title" xml:space="preserve"><value>Ce que vous collectez vs ce que vous pourriez collecter</value></data>
+  <data name="GapFrontier_Title" xml:space="preserve"><value>RPP actuelle et potentielle estimée</value></data>
   <data name="GapFrontier_UnitsFormat" xml:space="preserve"><value>MONTANTS EN {0} (Mds)</value></data>
   <data name="MoreAnalysis_Question" xml:space="preserve"><value>Vous voulez voir plus d'analyses et la méthodologie derrière ces chiffres ?</value></data>
   <data name="Common_Expand" xml:space="preserve"><value>Développer</value></data>

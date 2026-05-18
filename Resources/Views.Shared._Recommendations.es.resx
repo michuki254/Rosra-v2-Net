@@ -34,7 +34,7 @@
 
   <!-- Header -->
   <data name="Header_Title" xml:space="preserve"><value>Soluciones recomendadas y orientación para la implementación</value></data>
-  <data name="Header_Description" xml:space="preserve"><value>Esta pestaña presenta fichas de soluciones detalladas para las opciones que seleccionó anteriormente. Las soluciones aparecen según el orden de priorización establecido. Utilice estas recomendaciones para crear el plan de acción de mejora de ingresos adaptado a su ciudad.</value></data>
+  <data name="Header_Description" xml:space="preserve"><value>Esta pestaña presenta fichas de soluciones detalladas para las opciones que seleccionó anteriormente. Las soluciones aparecen según el orden de priorización establecido. Utilice estas recomendaciones para orientar el plan de reforma de su ciudad y exportar los resultados como un Informe de Diagnóstico ROSRA.</value></data>
   <data name="Header_BackToOverview" xml:space="preserve"><value>Volver a la selección general</value></data>
   <data name="Header_GenerateReport" xml:space="preserve"><value>Generar informe</value></data>
 
@@ -66,7 +66,7 @@
   <data name="Progress_ExportProgress" xml:space="preserve"><value>Exportar progreso</value></data>
 
   <!-- Report Modal -->
-  <data name="Modal_Title" xml:space="preserve"><value>Generar plan de acción de mejora de ingresos</value></data>
+  <data name="Modal_Title" xml:space="preserve"><value>Generar Informe de Diagnóstico ROSRA</value></data>
   <data name="Modal_IncludeInReport" xml:space="preserve"><value>Incluir en el informe:</value></data>
   <data name="Modal_QuickAnalysis" xml:space="preserve"><value>Análisis rápido</value></data>
   <data name="Modal_GapAnalysisSummary" xml:space="preserve"><value>Resumen del análisis de brechas</value></data>

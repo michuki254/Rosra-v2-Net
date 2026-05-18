@@ -722,8 +722,8 @@
                             <span>@RosraLocalizer["Sidebar_Export"]</span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><button type="button" class="dropdown-item" id="printTopDownBtn"><i class="bi bi-file-pdf text-primary me-2"></i>Top-Down Analysis (PDF)</button></li>
-                            <li><button type="button" class="dropdown-item" id="printBottomUpBtn"><i class="bi bi-file-pdf text-success me-2"></i>Bottom-Up Analysis (PDF)</button></li>
+                            <li><button type="button" class="dropdown-item" id="printTopDownBtn"><i class="bi bi-file-pdf text-primary me-2"></i>Quick Estimate (PDF)</button></li>
+                            <li><button type="button" class="dropdown-item" id="printBottomUpBtn"><i class="bi bi-file-pdf text-success me-2"></i>Detailed Diagnostic (PDF)</button></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><button type="button" class="dropdown-item" id="printFullReportBtn"><i class="bi bi-file-pdf text-danger me-2"></i>Full Report (PDF)</button></li>
                         </ul>
@@ -745,8 +745,8 @@
                             <span>@RosraLocalizer["Sidebar_Export"]</span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><button type="button" class="dropdown-item" id="printTopDownBtn"><i class="bi bi-file-pdf text-primary me-2"></i>Top-Down Analysis (PDF)</button></li>
-                            <li><button type="button" class="dropdown-item" id="printBottomUpBtn"><i class="bi bi-file-pdf text-success me-2"></i>Bottom-Up Analysis (PDF)</button></li>
+                            <li><button type="button" class="dropdown-item" id="printTopDownBtn"><i class="bi bi-file-pdf text-primary me-2"></i>Quick Estimate (PDF)</button></li>
+                            <li><button type="button" class="dropdown-item" id="printBottomUpBtn"><i class="bi bi-file-pdf text-success me-2"></i>Detailed Diagnostic (PDF)</button></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><button type="button" class="dropdown-item" id="printFullReportBtn"><i class="bi bi-file-pdf text-danger me-2"></i>Full Report (PDF)</button></li>
                         </ul>
@@ -764,8 +764,8 @@
                                 <span>@RosraLocalizer["Sidebar_Export"]</span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><button type="button" class="dropdown-item" id="printTopDownBtn"><i class="bi bi-file-pdf text-primary me-2"></i>Top-Down Analysis (PDF)</button></li>
-                                <li><button type="button" class="dropdown-item" id="printBottomUpBtn"><i class="bi bi-file-pdf text-success me-2"></i>Bottom-Up Analysis (PDF)</button></li>
+                                <li><button type="button" class="dropdown-item" id="printTopDownBtn"><i class="bi bi-file-pdf text-primary me-2"></i>Quick Estimate (PDF)</button></li>
+                                <li><button type="button" class="dropdown-item" id="printBottomUpBtn"><i class="bi bi-file-pdf text-success me-2"></i>Detailed Diagnostic (PDF)</button></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><button type="button" class="dropdown-item" id="printFullReportBtn"><i class="bi bi-file-pdf text-danger me-2"></i>Full Report (PDF)</button></li>
                             </ul>
@@ -918,6 +918,74 @@
         });
     </script>
 
+    <!-- Fresh-analysis signal — must run BEFORE rosraStateManager.js (loaded in _Layout footer).
+         When ViewBag.IsFreshAnalysis is true, the server is rendering a /Rosra page with no
+         prior session data (clean slate). We wipe ROSRA-scoped localStorage keys here so the
+         state manager's auto-hydrate at script parse reads an empty store — otherwise zombie
+         streams from earlier sessions leak into the new analysis. -->
+    <script>
+        window.__rosraIsFreshAnalysis = @(((bool?)ViewBag.IsFreshAnalysis ?? false) ? "true" : "false");
+
+        // Diagnostic snapshot BEFORE the wipe — useful for debugging zombie state.
+        // Prints which tier(s) carry data when the page renders, so we can tell
+        // localStorage leaks from server-rendered form-field leaks.
+        try {
+            var _preWipeKeys = Object.keys(localStorage).filter(function(k) {
+                return k.indexOf('rosra') === 0 || k.indexOf('propertyTax') === 0 ||
+                       k.indexOf('license') === 0 || k.indexOf('generic') === 0 ||
+                       k.indexOf('peer') === 0;
+            });
+            var _formSelSnippet = (document.getElementById('selectedSolutionsData') || {}).value || '';
+            var _formPriSnippet = (document.getElementById('prioritizationData') || {}).value || '';
+            console.log('[ROSRA fresh-analysis diagnostic]', {
+                IsFreshAnalysis: window.__rosraIsFreshAnalysis,
+                preWipe_localStorageKeys: _preWipeKeys,
+                preWipe_selectedSolutionsDataLen: _formSelSnippet.length,
+                preWipe_prioritizationDataLen: _formPriSnippet.length,
+                preWipe_selectedSolutionsDataSample: _formSelSnippet.substring(0, 160),
+                preWipe_prioritizationDataSample: _formPriSnippet.substring(0, 160)
+            });
+        } catch (_) { /* ignore */ }
+
+        if (window.__rosraIsFreshAnalysis) {
+            try {
+                // The app writes many localStorage keys that don't share a
+                // common prefix (prioritizationState, prioritizationData,
+                // selectedSolutionsData, assessmentGap, top5*, other*, etc.).
+                // A prefix-based allowlist consistently misses some of them
+                // and zombie streams leak through. Switch to a denylist: wipe
+                // everything EXCEPT a handful of genuinely cross-analysis
+                // browser preferences.
+                var _keepKeys = {
+                    'adminSidebarCollapsed': 1,
+                    'sidebarCollapsed': 1,
+                    'preferredLanguage': 1,
+                    'cookieConsent': 1
+                };
+                var _wipedKeys = [];
+                Object.keys(localStorage).forEach(function(key) {
+                    if (!_keepKeys[key]) {
+                        localStorage.removeItem(key);
+                        _wipedKeys.push(key);
+                    }
+                });
+                // Also blank the hidden form fields so restoreTabDataToLocalStorage
+                // can't re-populate localStorage from a server-rendered stale value.
+                // (We also gate restore on __rosraIsFreshAnalysis below; this is
+                // belt-and-braces in case any other code reads these fields.)
+                var _ssField = document.getElementById('selectedSolutionsData');
+                if (_ssField) _ssField.value = '';
+                var _priField = document.getElementById('prioritizationData');
+                if (_priField) _priField.value = '';
+                var _ipField = document.getElementById('implementationProgressData');
+                if (_ipField) _ipField.value = '';
+                console.log('Fresh analysis: wiped ' + _wipedKeys.length + ' localStorage keys AND blanked hidden form fields', _wipedKeys);
+            } catch (e) {
+                console.warn('Fresh analysis: could not clear localStorage', e);
+            }
+        }
+    </script>
+
     <!-- Form State Manager - Primary data storage using form fields -->
     <script>
         // FormStateManager - Pure form field binding (Best Practice)
@@ -1063,16 +1131,20 @@
         {
             <text>
             window.FormStateManager.clearLocalStorageBackup();
-            // Also clear any other ROSRA-related localStorage keys
+            // Wipe everything except a small allowlist of cross-analysis
+            // browser preferences. Earlier this used a prefix allowlist
+            // (propertyTax, license, rosra, ...) but that consistently
+            // missed keys like prioritizationState / prioritizationData /
+            // selectedSolutionsData / top5* / other* and zombie streams
+            // leaked into the next analysis.
+            var _ncKeep = {
+                'adminSidebarCollapsed': 1,
+                'sidebarCollapsed': 1,
+                'preferredLanguage': 1,
+                'cookieConsent': 1
+            };
             Object.keys(localStorage).forEach(function(key) {
-                if (key.indexOf('propertyTax') === 0 || key.indexOf('license') === 0 ||
-                    key.indexOf('total') === 0 || key.indexOf('largest') === 0 ||
-                    key.indexOf('selectedCurrency') === 0 || key.indexOf('shortTerm') === 0 ||
-                    key.indexOf('longTerm') === 0 || key.indexOf('mixed') === 0 ||
-                    key.indexOf('generic') === 0 || key.indexOf('peer') === 0 ||
-                    key.indexOf('rosra') === 0) {
-                    localStorage.removeItem(key);
-                }
+                if (!_ncKeep[key]) localStorage.removeItem(key);
             });
             console.log('New Report: Cleared all localStorage data');
             </text>
@@ -1147,8 +1219,18 @@
 
     <script>
         $(document).ready(function() {
-            // Restore saved tab data to localStorage if loading an existing report
-            restoreTabDataToLocalStorage();
+            // Restore saved tab data to localStorage if loading an existing report.
+            // SKIP on a fresh analysis — the server emitted IsFreshAnalysis=true
+            // because there's no session data, but the hidden form fields might
+            // still carry stale JSON from the page that originally rendered them.
+            // Without this guard, restore re-populates localStorage with zombie
+            // streams (Daily Market Fee, etc.) right after the fresh-analysis
+            // script just wiped them clean.
+            if (window.__rosraIsFreshAnalysis) {
+                console.log('Fresh analysis: skipping restoreTabDataToLocalStorage');
+            } else {
+                restoreTabDataToLocalStorage();
+            }
 
             // Function to restore tab data from the database to localStorage
             function restoreTabDataToLocalStorage() {
@@ -1667,14 +1749,14 @@
                 });
             }
 
-            // Download Top-Down PDF
+            // Download Quick Estimate PDF
             $("#printTopDownBtn").click(function() {
-                downloadPdf('@Url.Action("PrintTopDown", "Rosra")', 'Top-Down Analysis');
+                downloadPdf('@Url.Action("PrintTopDown", "Rosra")', 'Quick Estimate');
             });
 
-            // Download Bottom-Up PDF
+            // Download Detailed Diagnostic PDF
             $("#printBottomUpBtn").click(function() {
-                downloadPdf('@Url.Action("PrintBottomUp", "Rosra")', 'Bottom-Up Analysis');
+                downloadPdf('@Url.Action("PrintBottomUp", "Rosra")', 'Detailed Diagnostic');
             });
 
             // Download Full Report PDF

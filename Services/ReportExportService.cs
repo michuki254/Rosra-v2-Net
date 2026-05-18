@@ -198,7 +198,7 @@ namespace RosraApp.Services
         {
             container.Column(column =>
             {
-                column.Item().Text("Top-Down Frontier Analysis").FontSize(16).Bold().FontColor(Colors.Blue.Darken2);
+                column.Item().Text("Quick Estimate").FontSize(16).Bold().FontColor(Colors.Blue.Darken2);
 
                 // Intro text (matches the page intro box)
                 column.Item().PaddingTop(10).Background("#F0F9FF").Padding(12).Column(intro =>
@@ -294,13 +294,13 @@ namespace RosraApp.Services
                     column.Item().PaddingTop(15).Text("OSR/GDP Multiplier Comparison")
                         .FontSize(11).Bold().FontColor("#333");
                     column.Item().PaddingTop(5).Element(c => EmbedChart(c, "peerSngChartTop",
-                        "Peer SNG scatter chart — visit the Top-Down tab to generate this chart"));
+                        "Peer SNG scatter chart — visit the Quick Estimate tab to generate this chart"));
 
                     // Bar chart — Current OSR vs Frontier Benchmark
                     column.Item().PaddingTop(15).Text("Current OSR vs Frontier Benchmark")
                         .FontSize(11).Bold().FontColor("#333");
                     column.Item().PaddingTop(5).Element(c => EmbedChart(c, "actualVsPotentialChart",
-                        "Actual vs Benchmark bar chart — visit the Top-Down tab to generate this chart"));
+                        "Actual vs Benchmark bar chart — visit the Quick Estimate tab to generate this chart"));
 
                     // Analysis result text box
                     if (peerData.TryGetProperty("resultText", out var resultText) && !string.IsNullOrEmpty(resultText.GetString()))
@@ -356,7 +356,7 @@ namespace RosraApp.Services
                         column.Item().PaddingTop(15).Text("Position in fiscal decentralisation space")
                             .FontSize(11).Bold().FontColor("#333");
                         column.Item().PaddingTop(5).Element(c => EmbedChart(c, "fiscalDecentralisationChart",
-                            "Fiscal decentralisation chart — visit the Top-Down tab to generate this chart"));
+                            "Fiscal decentralisation chart — visit the Quick Estimate tab to generate this chart"));
 
                         // Cross-Country Result Text
                         if (peerData.TryGetProperty("crossCountryResultText", out var ccResult) && !string.IsNullOrEmpty(ccResult.GetString()))
@@ -750,7 +750,7 @@ namespace RosraApp.Services
                     page.Margin(40);
                     page.DefaultTextStyle(x => x.FontSize(10));
 
-                    page.Header().Element(c => ComposeHeader(c, model, "Bottom-Up Gap Analysis Report"));
+                    page.Header().Element(c => ComposeHeader(c, model, "Detailed Diagnostic Report"));
 
                     page.Content().PaddingTop(20).Column(column =>
                     {
@@ -808,7 +808,7 @@ namespace RosraApp.Services
                         {
                             row.RelativeItem().Column(hdr =>
                             {
-                                hdr.Item().Text("Top-Down Analysis Report").FontSize(22).Bold().FontColor("#00689D");
+                                hdr.Item().Text("Quick Estimate Report").FontSize(22).Bold().FontColor("#00689D");
                                 var location = string.Join(" > ", new[] { model.Country, model.Region, model.City }
                                     .Where(s => !string.IsNullOrEmpty(s)));
                                 if (!string.IsNullOrEmpty(location))
@@ -934,14 +934,14 @@ namespace RosraApp.Services
                         {
                             c.Item().Text("OSR/GDP Multiplier Comparison").FontSize(9).Bold().FontColor("#333");
                             c.Item().PaddingTop(3).Element(ct => EmbedChart(ct, "peerSngChartTop",
-                                "Visit Top-Down tab to generate chart"));
+                                "Visit Quick Estimate tab to generate chart"));
                         });
                         row.ConstantItem(10);
                         row.RelativeItem().Column(c =>
                         {
                             c.Item().Text("Current OSR vs Frontier Benchmark").FontSize(9).Bold().FontColor("#333");
                             c.Item().PaddingTop(3).Element(ct => EmbedChart(ct, "actualVsPotentialChart",
-                                "Visit Top-Down tab to generate chart"));
+                                "Visit Quick Estimate tab to generate chart"));
                         });
                     });
 
@@ -1027,7 +1027,7 @@ namespace RosraApp.Services
                         {
                             c.Item().Text("Position in Fiscal Decentralisation Space").FontSize(9).Bold().FontColor("#333");
                             c.Item().PaddingTop(3).Element(ct => EmbedChart(ct, "fiscalDecentralisationChart",
-                                "Visit Top-Down tab to generate chart"));
+                                "Visit Quick Estimate tab to generate chart"));
                         });
 
                         // Cross-country result text

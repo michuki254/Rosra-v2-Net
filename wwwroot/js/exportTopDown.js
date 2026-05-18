@@ -40,7 +40,7 @@ $(document).ready(function () {
             if (chartImages[canvasId] && chartImages[canvasId].length > 100) {
                 return '<img src="data:image/png;base64,' + chartImages[canvasId] + '" style="width:100%;max-height:' + h + 'px;object-fit:contain;" />';
             }
-            return '<div style="background:#f1f3f5;padding:30px;text-align:center;color:#868e96;border-radius:8px;font-size:12px;">Chart not available — ensure the Top-Down tab is visible before exporting</div>';
+            return '<div style="background:#f1f3f5;padding:30px;text-align:center;color:#868e96;border-radius:8px;font-size:12px;">Chart not available — ensure the Quick Estimate tab is visible before exporting</div>';
         }
 
         // Read all data from the page
@@ -76,7 +76,7 @@ $(document).ready(function () {
         var ccResultText = getVal('analysisResultText');
         var hasCrossCountry = sngRevPC !== '-' && sngRevPC !== '';
 
-        var html = '<!DOCTYPE html><html><head><title>Top-Down Analysis - ' + country + '</title>';
+        var html = '<!DOCTYPE html><html><head><title>Quick Estimate - ' + country + '</title>';
         html += '<style>';
         html += 'body { font-family: "Segoe UI", Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 30px; color: #212529; }';
         html += 'h1 { color: #00689D; font-size: 24px; margin-bottom: 4px; }';
@@ -114,7 +114,7 @@ $(document).ready(function () {
         html += '</style></head><body>';
 
         // Header
-        html += '<h1>Top-Down Analysis Report</h1>';
+        html += '<h1>Quick Estimate Report</h1>';
         html += '<div class="subtitle">' + country + (region !== '-' ? ' &gt; ' + region : '') + (city !== '-' ? ' &gt; ' + city : '') + '  |  Financial Year: ' + financialYear + '  |  Currency: ' + currency + ' (' + currencySymbol + ')</div>';
         html += '<div class="header-line"></div>';
 

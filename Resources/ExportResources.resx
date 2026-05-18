@@ -12,11 +12,11 @@
 
   <!-- PDF Section Headers -->
   <data name="ExecutiveSummary" xml:space="preserve"><value>Executive Summary</value></data>
-  <data name="TopDownAnalysis" xml:space="preserve"><value>Top-Down Frontier Analysis</value></data>
+  <data name="TopDownAnalysis" xml:space="preserve"><value>Quick Estimate</value></data>
   <data name="GapAnalysis" xml:space="preserve"><value>Gap Analysis by Revenue Stream</value></data>
   <data name="Prioritization" xml:space="preserve"><value>Prioritization Results</value></data>
   <data name="SelectedSolutions" xml:space="preserve"><value>Selected Solutions</value></data>
-  <data name="Recommendations" xml:space="preserve"><value>Recommendations &amp; Action Plan</value></data>
+  <data name="Recommendations" xml:space="preserve"><value>Recommendations</value></data>
 
   <!-- Labels -->
   <data name="LocationInfo" xml:space="preserve"><value>Location Information</value></data>
@@ -65,7 +65,7 @@
 
   <!-- Excel Sheet Names -->
   <data name="Sheet_Summary" xml:space="preserve"><value>Summary</value></data>
-  <data name="Sheet_TopDown" xml:space="preserve"><value>Top-Down Analysis</value></data>
+  <data name="Sheet_TopDown" xml:space="preserve"><value>Quick Estimate</value></data>
   <data name="Sheet_Gap" xml:space="preserve"><value>Gap</value></data>
   <data name="Sheet_Prioritization" xml:space="preserve"><value>Prioritization</value></data>
   <data name="Sheet_Solutions" xml:space="preserve"><value>Selected Solutions</value></data>

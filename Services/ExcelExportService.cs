@@ -118,7 +118,7 @@ namespace RosraApp.Services
 
         private void ComposeTopDownSheet(XLWorkbook workbook, RosraFormViewModel model)
         {
-            var ws = workbook.Worksheets.Add("Top-Down Analysis");
+            var ws = workbook.Worksheets.Add("Quick Estimate");
 
             ws.Cell(1, 1).Value = "Within-Country OSR Frontier (Peer SNGs)";
             ws.Cell(1, 1).Style.Font.Bold = true;

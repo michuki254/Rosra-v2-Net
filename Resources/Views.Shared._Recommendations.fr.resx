@@ -34,7 +34,7 @@
 
   <!-- Header -->
   <data name="Header_Title" xml:space="preserve"><value>Solutions recommandées et orientations de mise en œuvre</value></data>
-  <data name="Header_Description" xml:space="preserve"><value>Cet onglet présente des fiches de solutions détaillées pour les options que vous avez sélectionnées précédemment. Les solutions apparaissent selon l'ordre de priorisation établi. Utilisez ces recommandations pour élaborer le plan d'action d'amélioration des recettes adapté à votre ville.</value></data>
+  <data name="Header_Description" xml:space="preserve"><value>Cet onglet présente des fiches de solutions détaillées pour les options que vous avez sélectionnées précédemment. Les solutions apparaissent selon l'ordre de priorisation établi. Utilisez ces recommandations pour orienter le plan de réforme de votre ville et exporter les résultats sous forme de Rapport de diagnostic ROSRA.</value></data>
   <data name="Header_BackToOverview" xml:space="preserve"><value>Retour à la sélection générale</value></data>
   <data name="Header_GenerateReport" xml:space="preserve"><value>Générer le rapport</value></data>
 
@@ -66,7 +66,7 @@
   <data name="Progress_ExportProgress" xml:space="preserve"><value>Exporter l'avancement</value></data>
 
   <!-- Report Modal -->
-  <data name="Modal_Title" xml:space="preserve"><value>Générer le plan d'action d'amélioration des recettes</value></data>
+  <data name="Modal_Title" xml:space="preserve"><value>Générer le Rapport de diagnostic ROSRA</value></data>
   <data name="Modal_IncludeInReport" xml:space="preserve"><value>Inclure dans le rapport :</value></data>
   <data name="Modal_QuickAnalysis" xml:space="preserve"><value>Analyse rapide</value></data>
   <data name="Modal_GapAnalysisSummary" xml:space="preserve"><value>Résumé de l'analyse des écarts</value></data>

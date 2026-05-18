@@ -4867,6 +4867,7 @@
                 return (symbol ? symbol + ' ' : '') + fmtShort(v);
             };
             const pctOfPotential = (osrPotential > 0) ? Math.round((osrGap / osrPotential) * 100) : 0;
+            const currentPctOfPotential = (osrPotential > 0) ? Math.round((actualOSR / osrPotential) * 100) : 0;
 
             // Custom plugin: total labels above bars, segment values, dashed connector, right-side gap bracket
             const gapAnnotPlugin = {
@@ -4933,15 +4934,19 @@
                         const midY = (topY + botY) / 2;
                         c.fillStyle = '#FD9D24';
                         c.textAlign = 'left';
-                        c.font = '700 12px Roboto, "Segoe UI", Arial, sans-serif';
+                        c.font = '700 10px Roboto, "Segoe UI", Arial, sans-serif';
                         c.textBaseline = 'bottom';
-                        c.fillText('Gap', bracketX + 8, midY - 4);
+                        c.fillText('Estimated', bracketX + 8, midY - 16);
+                        c.fillText('improvement gap', bracketX + 8, midY - 4);
                         c.font = '700 14px Roboto, "Segoe UI", Arial, sans-serif';
                         c.textBaseline = 'top';
                         c.fillText(fmtShort(osrGap), bracketX + 8, midY + 2);
                         c.fillStyle = '#94a3b8';
                         c.font = '500 11px Roboto, "Segoe UI", Arial, sans-serif';
-                        c.fillText(pctOfPotential + '% of top-peer level', bracketX + 8, midY + 22);
+                        // Wrap the label onto two lines so it doesn't run off
+                        // the chart's right edge in narrower PDF layouts.
+                        c.fillText(currentPctOfPotential + '% — Current OSR', bracketX + 8, midY + 22);
+                        c.fillText('as % of estimated potential', bracketX + 8, midY + 34);
                     }
 
                     c.restore();
@@ -4951,10 +4956,10 @@
             actualVsPotentialChart = new Chart(canvas, {
                 type: 'bar',
                 data: {
-                    labels: ['Actual revenue', 'Potential revenue'],
+                    labels: ['Current OSR', 'Estimated OSR potential'],
                     datasets: [
                         {
-                            label: 'Actual revenue',
+                            label: 'Current OSR',
                             data: [actualOSR, actualOSR],
                             backgroundColor: '#00b2e3',
                             stack: 'osr',
@@ -4963,7 +4968,7 @@
                             maxBarThickness: 130
                         },
                         {
-                            label: 'Gap',
+                            label: 'Estimated improvement gap',
                             data: [0, osrGap],
                             backgroundColor: '#FD9D24',
                             stack: 'osr',
@@ -5556,6 +5561,7 @@
                 };
                 var fmtFull = function (v) { return sym + ' ' + fmtShort(v); };
                 var pctOfPotential = (osrPotential > 0) ? Math.round((osrGap / osrPotential) * 100) : 0;
+                var currentPctOfPotential = (osrPotential > 0) ? Math.round((actualOSR / osrPotential) * 100) : 0;
 
                 var gapAnnotPlugin = {
                     id: 'gapAnnotations',
@@ -5618,15 +5624,18 @@
                             var midY = (topY + botY) / 2;
                             c.fillStyle = '#FD9D24';
                             c.textAlign = 'left';
-                            c.font = '700 12px Roboto, "Segoe UI", Arial, sans-serif';
+                            c.font = '700 10px Roboto, "Segoe UI", Arial, sans-serif';
                             c.textBaseline = 'bottom';
-                            c.fillText('Gap', bracketX + 8, midY - 4);
+                            c.fillText('Estimated', bracketX + 8, midY - 16);
+                            c.fillText('improvement gap', bracketX + 8, midY - 4);
                             c.font = '700 14px Roboto, "Segoe UI", Arial, sans-serif';
                             c.textBaseline = 'top';
                             c.fillText(fmtShort(osrGap), bracketX + 8, midY + 2);
                             c.fillStyle = '#94a3b8';
                             c.font = '500 11px Roboto, "Segoe UI", Arial, sans-serif';
-                            c.fillText(pctOfPotential + '% of benchmark', bracketX + 8, midY + 22);
+                            // Wrap onto two lines so it fits the chart width.
+                            c.fillText(currentPctOfPotential + '% — Current OSR', bracketX + 8, midY + 22);
+                            c.fillText('as % of estimated potential', bracketX + 8, midY + 34);
                         }
 
                         c.restore();
@@ -5636,10 +5645,10 @@
                 actualVsPotentialChart = new Chart(canvas, {
                     type: 'bar',
                     data: {
-                        labels: ['Actual revenue', 'Potential revenue'],
+                        labels: ['Current OSR', 'Estimated OSR potential'],
                         datasets: [
                             {
-                                label: 'Actual revenue',
+                                label: 'Current OSR',
                                 data: [actualOSR, actualOSR],
                                 backgroundColor: '#00b2e3',
                                 stack: 'osr',
@@ -5648,7 +5657,7 @@
                                 maxBarThickness: 130
                             },
                             {
-                                label: 'Gap',
+                                label: 'Estimated improvement gap',
                                 data: [0, osrGap],
                                 backgroundColor: '#FD9D24',
                                 stack: 'osr',

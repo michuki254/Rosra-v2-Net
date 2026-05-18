@@ -57,8 +57,8 @@
   <data name="Sidebar_FullReportPrint" xml:space="preserve"><value>Full Report (Print)</value></data>
 
   <!-- Tabs -->
-  <data name="Tab_TopDown" xml:space="preserve"><value>Top-Down Analysis</value></data>
-  <data name="Tab_BottomUp" xml:space="preserve"><value>Analyse Each Revenue Stream</value></data>
+  <data name="Tab_TopDown" xml:space="preserve"><value>Quick Estimate</value></data>
+  <data name="Tab_BottomUp" xml:space="preserve"><value>Detailed Diagnostic</value></data>
   <data name="Tab_GapAnalysis" xml:space="preserve"><value>Gap Analysis</value></data>
   <data name="Tab_Prioritization" xml:space="preserve"><value>Prioritization</value></data>
   <data name="Tab_Recommendations" xml:space="preserve"><value>Recommendations</value></data>

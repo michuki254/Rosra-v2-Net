@@ -74,7 +74,7 @@ $(document).ready(function () {
         var region = $('#region option:selected').text().trim() || '-';
 
         // ========== BUILD HTML ==========
-        var html = '<!DOCTYPE html><html><head><title>Bottom-Up Gap Analysis</title><style>';
+        var html = '<!DOCTYPE html><html><head><title>Detailed Diagnostic</title><style>';
         html += 'body{font-family:"Segoe UI",Arial,sans-serif;max-width:920px;margin:0 auto;padding:25px;color:#212529;font-size:11px;}';
         html += 'h1{color:#00689D;font-size:22px;margin-bottom:2px;} h2{color:#00689D;font-size:15px;margin:22px 0 8px;border-bottom:2px solid #00b2e3;padding-bottom:5px;} h3{font-size:12px;color:#333;margin:12px 0 6px;}';
         html += '.sub{color:#6c757d;font-size:11px;margin-bottom:16px;} .hl{height:3px;background:#00b2e3;margin-bottom:18px;}';
@@ -96,7 +96,7 @@ $(document).ready(function () {
         html += '@media print{body{padding:12px;} .card,.matrix-card,.chart-sec,.section{break-inside:avoid;} h2{break-after:avoid;}}';
         html += '</style></head><body>';
 
-        html += '<h1>Bottom-Up Gap Analysis Report</h1>';
+        html += '<h1>Detailed Diagnostic Report</h1>';
         html += '<div class="sub">' + country + (region !== '-' ? ' &gt; ' + region : '') + '  |  Currency: ' + cs + '  |  ' + new Date().toLocaleDateString() + '</div><div class="hl"></div>';
 
         // ===== PROPERTY TAX =====

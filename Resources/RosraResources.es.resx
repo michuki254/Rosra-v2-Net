@@ -57,8 +57,8 @@
   <data name="Sidebar_FullReportPrint" xml:space="preserve"><value>Informe completo (Imprimir)</value></data>
 
   <!-- Tabs -->
-  <data name="Tab_TopDown" xml:space="preserve"><value>Análisis descendente</value></data>
-  <data name="Tab_BottomUp" xml:space="preserve"><value>Analizar cada fuente de ingresos</value></data>
+  <data name="Tab_TopDown" xml:space="preserve"><value>Estimación rápida</value></data>
+  <data name="Tab_BottomUp" xml:space="preserve"><value>Diagnóstico detallado</value></data>
   <data name="Tab_GapAnalysis" xml:space="preserve"><value>Análisis de brechas</value></data>
   <data name="Tab_Prioritization" xml:space="preserve"><value>Priorización</value></data>
   <data name="Tab_Recommendations" xml:space="preserve"><value>Recomendaciones</value></data>

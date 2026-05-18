@@ -47,7 +47,7 @@
 <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/png" href="~/images/LogoFavicon.png" />
-    <title>Top-Down Analysis — @(Model.Country ?? "ROSRA")</title>
+    <title>Quick Estimate — @(Model.Country ?? "ROSRA")</title>
     <link rel="stylesheet" href="~/lib/roboto/roboto.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -449,7 +449,7 @@
         <!-- Title -->
         <div class="cover-title-section">
             <h1 class="cover-title">Rapid Own-Source<br />Revenue Analysis</h1>
-            <p class="cover-subtitle">Top-Down Analysis Report</p>
+            <p class="cover-subtitle">Quick Estimate Report</p>
             <div class="cover-location">
                 @if (!string.IsNullOrEmpty(countryCode))
                 {
@@ -506,7 +506,7 @@
     <div class="report-content">
         <!-- Compact running header -->
         <div class="report-content-header">
-            <h2>Top-Down Analysis Report</h2>
+            <h2>Quick Estimate Report</h2>
             <div class="header-meta">
                 @if (!string.IsNullOrEmpty(countryCode))
                 {

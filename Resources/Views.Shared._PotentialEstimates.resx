@@ -73,7 +73,7 @@
   <data name="Metric_PotentialOSRPerCapita" xml:space="preserve"><value>Revenue per resident at top-peer level</value></data>
   <data name="Metric_PerCapitaGap" xml:space="preserve"><value>Untapped revenue per resident</value></data>
   <data name="Chart_ScatterTitle" xml:space="preserve"><value>Collection rate comparison</value></data>
-  <data name="Chart_BarTitle" xml:space="preserve"><value>What you collect vs what you could collect</value></data>
+  <data name="Chart_BarTitle" xml:space="preserve"><value>Current OSR and estimated OSR potential</value></data>
   <data name="Result_Header" xml:space="preserve"><value>Within-Country OSR Frontier (Peer SNGs) Result:</value></data>
   <data name="Result_Placeholder" xml:space="preserve"><value>Select a subnational government to view the analysis result.</value></data>
   <data name="CrossCountry_Title" xml:space="preserve"><value>Optional: Cross-Country Fiscal Analysis</value></data>
@@ -134,7 +134,7 @@
   <data name="LgProfile_GetAnalysis" xml:space="preserve"><value>Get Analysis</value></data>
   <data name="NextStepCTA_Title" xml:space="preserve"><value>Start a more detailed analysis</value></data>
   <data name="NextStepCTA_Sub" xml:space="preserve"><value>A more detailed and accurate analysis of the revenue potential of each individual revenue stream.</value></data>
-  <data name="GapFrontier_Title" xml:space="preserve"><value>What you collect vs what you could collect</value></data>
+  <data name="GapFrontier_Title" xml:space="preserve"><value>Current OSR and estimated OSR potential</value></data>
   <data name="GapFrontier_UnitsFormat" xml:space="preserve"><value>AMOUNTS IN {0} (B)</value></data>
   <data name="MoreAnalysis_Question" xml:space="preserve"><value>Want to see more analysis &amp; methodology behind these numbers?</value></data>
   <data name="Common_Expand" xml:space="preserve"><value>Expand</value></data>

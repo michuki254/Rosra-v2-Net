@@ -213,7 +213,6 @@
                                 <tr>
                                     <th class="text-center" style="width: 70px;" data-bs-toggle="tooltip" title="@Localizer["GapSequencing_Tooltip_Rank"]">@Localizer["GapSequencing_Col_Rank"]</th>
                                     <th data-bs-toggle="tooltip" title="@Localizer["GapSequencing_Tooltip_Stream"]">@Localizer["GapSequencing_Col_Stream"]</th>
-                                    <th class="text-center" style="width: 160px;" data-bs-toggle="tooltip" title="@Localizer["GapSequencing_Tooltip_Mode"]">@Localizer["GapSequencing_Col_Mode"]</th>
                                     <th class="text-center" data-bs-toggle="tooltip" title="@Localizer["GapSequencing_Tooltip_Priority1"]">@Localizer["GapSequencing_Col_Priority1"]</th>
                                     <th class="text-center" data-bs-toggle="tooltip" title="@Localizer["GapSequencing_Tooltip_Priority2"]">@Localizer["GapSequencing_Col_Priority2"]</th>
                                     <th class="text-center" data-bs-toggle="tooltip" title="@Localizer["GapSequencing_Tooltip_Priority3"]">@Localizer["GapSequencing_Col_Priority3"]</th>
@@ -221,7 +220,7 @@
                             </thead>
                             <tbody id="gapSequencingBody">
                                 <tr class="placeholder-row">
-                                    <td colspan="6" class="text-center text-muted py-4">
+                                    <td colspan="5" class="text-center text-muted py-4">
                                         <i class="fas fa-info-circle me-2"></i>@Localizer["GapSequencing_Placeholder"]
                                     </td>
                                 </tr>
@@ -250,53 +249,6 @@
                 <div id="firstPriorityActions"></div>
             </div>
             <table id="masterPriorityTable"><tbody id="masterPriorityBody"></tbody></table>
-        </div>
-    </div>
-
-    <!-- Mode Explanation — single collapsed toggle. Reveals all 3 modes inside; default closed
-         so it doesn't distract from the prioritization table above. -->
-    <div class="accordion mt-3 mb-4" id="modeExplanationAccordion">
-        <div class="accordion-item border-0 shadow-sm">
-            <h2 class="accordion-header" id="headingPrioritizationModes">
-                <button class="accordion-button collapsed" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#collapsePrioritizationModes"
-                        aria-expanded="false" aria-controls="collapsePrioritizationModes">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <span class="fw-semibold">@Localizer["Prio_HowModesChosen"]</span>
-                    <span class="text-muted small ms-2">@Localizer["Prio_HowModesChosen_Hint"]</span>
-                </button>
-            </h2>
-            <div id="collapsePrioritizationModes" class="accordion-collapse collapse"
-                 aria-labelledby="headingPrioritizationModes" data-bs-parent="#modeExplanationAccordion">
-                <div class="accordion-body">
-                    <div class="mb-3">
-                        <span class="mode-badge mode-revenue-potential me-2">@Localizer["Mode_RevenuePotential"]</span>
-                        <span class="text-muted small">@Localizer["Mode_RevenuePotential_Condition"]</span>
-                        <p class="mb-0 mt-2">
-                            <strong>@Localizer["Mode_RevenuePotential_WhenApplied"]</strong>
-                            @Html.Raw(Localizer["Mode_RevenuePotential_Description"].Value)
-                        </p>
-                    </div>
-                    <hr class="my-3">
-                    <div class="mb-3">
-                        <span class="mode-badge mode-compliance-first me-2">@Localizer["Mode_ComplianceFirst"]</span>
-                        <span class="text-muted small">@Localizer["Mode_ComplianceFirst_Condition"]</span>
-                        <p class="mb-0 mt-2">
-                            <strong>@Localizer["Mode_ComplianceFirst_WhenApplied"]</strong>
-                            @Html.Raw(Localizer["Mode_ComplianceFirst_Description"].Value)
-                        </p>
-                    </div>
-                    <hr class="my-3">
-                    <div>
-                        <span class="mode-badge mode-overhaul me-2">@Localizer["Mode_Overhaul"]</span>
-                        <span class="text-muted small">@Localizer["Mode_Overhaul_Condition"]</span>
-                        <p class="mb-0 mt-2">
-                            <strong>@Localizer["Mode_Overhaul_WhenApplied"]</strong>
-                            @Html.Raw(Localizer["Mode_Overhaul_Description"].Value)
-                        </p>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -808,30 +760,6 @@
     }
 
     /* Gap Prioritization Styles - Step 2 */
-    .prioritization-module .mode-badge {
-        display: inline-block;
-        padding: 6px 12px;
-        border-radius: 16px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
-    }
-
-    .prioritization-module .mode-badge.mode-revenue-potential {
-        background: #d1fae5;
-        color: #065f46;
-    }
-
-    .prioritization-module .mode-badge.mode-compliance-first {
-        background: #fef3c7;
-        color: #92400e;
-    }
-
-    .prioritization-module .mode-badge.mode-overhaul {
-        background: #fee2e2;
-        color: #991b1b;
-    }
 
     /* Gap Badges */
     .prioritization-module .gap-badge {
@@ -2265,7 +2193,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Gap prioritization data structure — declared near the top of this script
     // block so early renderCombinedTable() calls don't hit a TDZ ReferenceError.
 
-    // Determine mode based on compliance and coverage ratios
+    // Internal default-gap-sequencer. The returned `mode` string is no longer
+    // surfaced in the UI (the Mode column, badge chips, and explanation
+    // accordion were removed) but the ratio-based classification still drives
+    // the default gap ordering for each stream. The mode field also persists
+    // in saved-report data so older snapshots continue to load.
     function determineMode(stream) {
         // Calculate compliance ratio: Revenue / Billed
         const billedAmount = stream.complianceGap + stream.currentRevenue;
@@ -2323,16 +2255,6 @@ document.addEventListener('DOMContentLoaded', function() {
             complianceRatio,
             coverageRatio
         };
-    }
-
-    // Get mode badge class
-    function getModeBadgeClass(mode) {
-        switch (mode) {
-            case 'Revenue Potential': return 'mode-revenue-potential';
-            case 'Compliance First': return 'mode-compliance-first';
-            case 'Overhaul': return 'mode-overhaul';
-            default: return '';
-        }
     }
 
     // Get gap badge class
@@ -2420,7 +2342,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (gapPrioritizationData.length === 0) {
             tbody.innerHTML = `
                 <tr class="placeholder-row">
-                    <td colspan="6" class="text-center text-muted py-4">
+                    <td colspan="5" class="text-center text-muted py-4">
                         <i class="fas fa-info-circle me-2"></i>@Html.Raw(Localizer["GapSequencing_Placeholder"].Value)
                     </td>
                 </tr>
@@ -2438,9 +2360,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>
                         <span class="stream-badge ${stream.streamType}"></span>
                         ${stream.streamName}
-                    </td>
-                    <td class="text-center">
-                        <span class="mode-badge ${getModeBadgeClass(stream.mode)}">${stream.mode}</span>
                     </td>
                     ${renderPriorityCell(stream, 0)}
                     ${renderPriorityCell(stream, 1)}

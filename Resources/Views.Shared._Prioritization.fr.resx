@@ -38,7 +38,7 @@
 
   <!-- Instructions -->
   <data name="Instructions_Title" xml:space="preserve"><value>Comment utiliser ce module</value></data>
-  <data name="Instructions_Step1" xml:space="preserve"><value>Consultez le tableau &lt;strong&gt;Priorisation des flux&lt;/strong&gt; — les flux sont pré-classés par écart fonctionnel total et la colonne &lt;strong&gt;Part de l'écart&lt;/strong&gt; indique la contribution de chaque flux au total.</value></data>
+  <data name="Instructions_Step1" xml:space="preserve"><value>Consultez le tableau &lt;strong&gt;Priorisation des flux&lt;/strong&gt; — les flux sont initialement classés par écart fonctionnel total et la colonne &lt;strong&gt;Part de l'écart&lt;/strong&gt; indique la contribution de chaque flux au total.</value></data>
   <data name="Instructions_Step2" xml:space="preserve"><value>Réorganisez les flux en faisant glisser les lignes avec la poignée &lt;i class="bi bi-grip-vertical"&gt;&lt;/i&gt;, ou utilisez les boutons &lt;i class="bi bi-arrow-up"&gt;&lt;/i&gt;/&lt;i class="bi bi-arrow-down"&gt;&lt;/i&gt; dans la colonne &lt;strong&gt;Déplacer&lt;/strong&gt;.</value></data>
   <data name="Instructions_Step3" xml:space="preserve"><value>Utilisez le sélecteur &lt;strong&gt;Statut&lt;/strong&gt; pour inclure ou exclure chaque flux — les flux exclus sont automatiquement retirés du classement, de la part et du graphique.</value></data>
   <data name="Instructions_Step4" xml:space="preserve"><value>Passez à l'&lt;strong&gt;Étape 2 (Séquençage des écarts)&lt;/strong&gt; pour choisir un mode (Potentiel de revenus / Conformité d'abord / Refonte) et sélectionner les types d'écarts prioritaires par flux, puis à l'&lt;strong&gt;Étape 3 (Principaux écarts à traiter)&lt;/strong&gt; pour trier par montant ou score d'opportunité.</value></data>
@@ -87,31 +87,15 @@
   <data name="Step2_Title" xml:space="preserve"><value>Priorisation des écarts</value></data>
   <data name="Step2_Description" xml:space="preserve"><value>&lt;strong&gt;Étape 2&lt;/strong&gt; du processus de priorisation : Après le classement des flux, priorisez les écarts (conformité, couverture, valorisation/obligation) au sein de chacun. ROSRA propose un ordre par défaut basé sur les indicateurs de conformité et de couverture ; utilisez les colonnes « Ajuster la priorité » pour modifier la séquence ou sélectionnez « Supprimer » pour retirer un écart de votre plan.</value></data>
 
-  <!-- Mode Accordion -->
-  <data name="Mode_RevenuePotential" xml:space="preserve"><value>Potentiel de recettes</value></data>
-  <data name="Mode_RevenuePotential_Condition" xml:space="preserve"><value>Ratio de conformité ≥ 75 %</value></data>
-  <data name="Mode_RevenuePotential_WhenApplied" xml:space="preserve"><value>Conditions d'application :</value></data>
-  <data name="Mode_RevenuePotential_Description" xml:space="preserve"><value>Un taux de conformité élevé indique généralement que les systèmes de base de collecte et d'enregistrement fonctionnent. Dans ce cas, la priorité est de se concentrer sur les fonctions présentant les &lt;strong&gt;écarts monétaires les plus importants&lt;/strong&gt;, car elles représentent les gains de recettes les plus élevés pour un effort de réforme donné.</value></data>
-  <data name="Mode_ComplianceFirst" xml:space="preserve"><value>Conformité d'abord</value></data>
-  <data name="Mode_ComplianceFirst_Condition" xml:space="preserve"><value>Conformité &lt; 75 % ET couverture ≥ 60 %</value></data>
-  <data name="Mode_ComplianceFirst_WhenApplied" xml:space="preserve"><value>Conditions d'application :</value></data>
-  <data name="Mode_ComplianceFirst_Description" xml:space="preserve"><value>Une part significative des contribuables connus ne paie pas, mais le registre n'est pas fondamentalement défaillant. ROSRA recommande de prioriser les &lt;strong&gt;réformes de conformité&lt;/strong&gt; (facturation, canaux de paiement, application), puis la couverture, et enfin la valorisation/obligation.</value></data>
-  <data name="Mode_Overhaul" xml:space="preserve"><value>Refonte</value></data>
-  <data name="Mode_Overhaul_Condition" xml:space="preserve"><value>Conformité &lt; 75 % ET couverture &lt; 60 %</value></data>
-  <data name="Mode_Overhaul_WhenApplied" xml:space="preserve"><value>Conditions d'application :</value></data>
-  <data name="Mode_Overhaul_Description" xml:space="preserve"><value>Lorsque les deux ratios sont faibles, la base fiscale manquante constitue généralement la contrainte majeure. Renforcer l'application seule a un effet limité si la plupart des unités sont invisibles pour l'administration. La séquence recommandée est &lt;strong&gt;Couverture → Conformité → Valorisation/Obligation&lt;/strong&gt;.</value></data>
-
   <!-- Gap Sequencing Table -->
   <data name="GapSequencing_Title" xml:space="preserve"><value>Séquençage des écarts par flux</value></data>
   <data name="GapSequencing_Col_Rank" xml:space="preserve"><value>Rang</value></data>
   <data name="GapSequencing_Col_Stream" xml:space="preserve"><value>Flux</value></data>
-  <data name="GapSequencing_Col_Mode" xml:space="preserve"><value>Mode</value></data>
   <data name="GapSequencing_Col_Priority1" xml:space="preserve"><value>Priorité 1</value></data>
   <data name="GapSequencing_Col_Priority2" xml:space="preserve"><value>Priorité 2</value></data>
   <data name="GapSequencing_Col_Priority3" xml:space="preserve"><value>Priorité 3</value></data>
   <data name="GapSequencing_Tooltip_Rank" xml:space="preserve"><value>Rang final du flux issu du tableau de priorisation des flux</value></data>
   <data name="GapSequencing_Tooltip_Stream" xml:space="preserve"><value>Nom du flux de recettes</value></data>
-  <data name="GapSequencing_Tooltip_Mode" xml:space="preserve"><value>Mode de priorisation basé sur les ratios d'indicateurs clés</value></data>
   <data name="GapSequencing_Tooltip_Priority1" xml:space="preserve"><value>Premier écart à traiter</value></data>
   <data name="GapSequencing_Tooltip_Priority2" xml:space="preserve"><value>Deuxième écart à traiter</value></data>
   <data name="GapSequencing_Tooltip_Priority3" xml:space="preserve"><value>Troisième écart à traiter</value></data>
@@ -149,13 +133,12 @@
   <data name="Prio_GapByStream_Placeholder" xml:space="preserve"><value>Ajoutez des sources dans l'Analyse des écarts pour voir la ventilation.</value></data>
   <data name="Prio_WhatIs_Title" xml:space="preserve"><value>Qu'est-ce que la priorisation des sources ?</value></data>
   <data name="Prio_WhatIs_Hint" xml:space="preserve"><value>cliquez pour développer</value></data>
-  <data name="Prio_WhatIs_Body" xml:space="preserve"><value>&lt;p&gt;La priorisation des sources classe vos sources de revenus selon leur &lt;strong&gt;écart fonctionnel total&lt;/strong&gt; — l'écart entre la collecte actuelle et ce qui pourrait être réalistement collecté si l'administration était renforcée.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Pourquoi c'est important :&lt;/strong&gt; La plupart des villes ont plusieurs sources de revenus mais une capacité de réforme limitée. Traiter d'abord les sources ayant les plus grands écarts génère le plus grand gain de revenus par unité d'effort.&lt;/p&gt;
-&lt;p class="mb-0"&gt;&lt;strong&gt;Comment utiliser ce tableau :&lt;/strong&gt; Les lignes sont préclassées du plus grand au plus petit écart. Utilisez la poignée de glisser ou les flèches haut/bas pour modifier l'ordre si les priorités locales ou la faisabilité politique exigent une séquence différente. Activez le commutateur Statut pour &lt;strong&gt;exclure&lt;/strong&gt; toute source qui ne s'applique pas (ex. un service que votre municipalité ne fournit pas) — les sources exclues sont retirées des calculs de parts et des recommandations en aval.&lt;/p&gt;</value></data>
+  <data name="Prio_WhatIs_Body" xml:space="preserve"><value>&lt;p&gt;Cette section montre quelles sources de revenus pourraient mériter de l'attention en premier. L'ordre initial est basé sur l'écart d'amélioration estimé pour chaque source, mais vous pouvez l'ajuster pour refléter la faisabilité et les priorités locales.&lt;/p&gt;
+&lt;p class="mb-0"&gt;&lt;strong&gt;Comment utiliser ce tableau :&lt;/strong&gt; Utilisez la poignée de glisser ou les flèches haut/bas pour réorganiser les sources si les priorités locales ou la faisabilité politique exigent une séquence différente. Activez le commutateur Statut pour &lt;strong&gt;exclure&lt;/strong&gt; toute source qui ne s'applique pas (ex. un service que votre municipalité ne fournit pas) — les sources exclues sont retirées des calculs de parts et des recommandations en aval.&lt;/p&gt;</value></data>
   <data name="Prio_WhatIsGap_Title" xml:space="preserve"><value>Qu'est-ce que la priorisation des écarts ?</value></data>
   <data name="Prio_WhatIsGap_Body" xml:space="preserve"><value>&lt;p&gt;La priorisation des écarts décompose chaque source de revenus priorisée selon le &lt;strong&gt;type d'écart&lt;/strong&gt; qui motive sa sous-performance — Conformité, Couverture, Évaluation/Imposition ou les combinaisons mixtes — et vous permet de séquencer quels écarts traiter en premier au sein de chaque source.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Pourquoi c'est important :&lt;/strong&gt; L'écart global d'une source peut sembler identique en apparence, mais un écart de conformité (les gens sont facturés mais ne paient pas) nécessite des réformes très différentes d'un écart de couverture (les unités ne sont même pas enregistrées) ou d'un écart d'évaluation (évalué en dessous de la valeur du marché). Le séquençage indique à l'équipe de réforme par où commencer.&lt;/p&gt;
-&lt;p class="mb-0"&gt;Choisissez l'un des trois &lt;strong&gt;modes&lt;/strong&gt; par source — Potentiel de revenus (le plus gros écart d'abord), Conformité d'abord (collecter ce qui est déjà facturé) ou Refonte (réorganiser toute la source) — et ROSRA suggère un ordre de priorité d'ouverture. Vous pouvez remplacer toute cellule pour s'adapter à la capacité et à la politique locales, ou supprimer un type d'écart qui n'est pas faisable.&lt;/p&gt;</value></data>
+&lt;p class="mb-0"&gt;ROSRA suggère un ordre de priorité d'ouverture pour chaque source en fonction de la taille estimée de chaque écart et de l'état du système de revenus. Vous pouvez remplacer toute cellule pour s'adapter à la capacité et à la politique locales, ou supprimer un type d'écart qui n'est pas faisable.&lt;/p&gt;</value></data>
   <data name="Prio_StreamPrio_Help" xml:space="preserve"><value>Faites glisser les lignes avec la poignée {0}, ou utilisez les boutons {1}{2} pour réorganiser.</value></data>
   <data name="Prio_Col_Rank" xml:space="preserve"><value>Rang</value></data>
   <data name="Prio_Col_Rank_Tooltip" xml:space="preserve"><value>Rang final — numéroté automatiquement de haut en bas pour les sources incluses.</value></data>
@@ -172,8 +155,6 @@
   <data name="Prio_NoStreamData" xml:space="preserve"><value>Aucune donnée de source trouvée. Veuillez d'abord compléter les onglets d'Analyse des écarts.</value></data>
 
   <data name="Prio_GapSequencing_Help" xml:space="preserve"><value>Chaque cellule affiche le type d'écart (sélectionnable) et son montant.</value></data>
-  <data name="Prio_HowModesChosen" xml:space="preserve"><value>Comment les modes de priorisation sont choisis</value></data>
-  <data name="Prio_HowModesChosen_Hint" xml:space="preserve"><value>3 modes · cliquez pour développer</value></data>
 
   <data name="Prio_RevenueImpact_Title" xml:space="preserve"><value>Impact sur les revenus et opportunités d'amélioration</value></data>
   <data name="Prio_RevenueImpact_Sub" xml:space="preserve"><value>Écarts classés par impact absolu sur les revenus et notés selon leur potentiel d'amélioration pour aider à concentrer les efforts de réforme là où cela compte le plus.</value></data>

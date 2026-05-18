@@ -20,6 +20,38 @@
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/animate.css/animate.min.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
+
+    @* Fresh-analysis signal — must run BEFORE any other script so the
+       RosraStateManager's IIFE-time loadFromStorage() (in /js/rosraStateManager.js)
+       sees the flag and skips hydration. Index.cshtml's @@section Scripts block
+       renders AFTER rosraStateManager.js, so the flag has to live up here in
+       the head. ViewData["IsFreshAnalysis"] is set by RosraController.Index
+       when sessionFormData==null && !viewMode (i.e. an explicit clean slate). *@
+    <script>
+        window.__rosraIsFreshAnalysis = @(((bool?)ViewData["IsFreshAnalysis"] ?? false) ? "true" : "false");
+        if (window.__rosraIsFreshAnalysis) {
+            try {
+                // Denylist: wipe everything except a tiny allowlist of
+                // genuinely cross-analysis browser preferences. Prefix-based
+                // allowlists consistently missed keys (prioritizationState,
+                // selectedSolutionsData, top5*, other*) and zombie streams
+                // leaked into the new analysis.
+                var _layoutKeep = {
+                    'adminSidebarCollapsed': 1,
+                    'sidebarCollapsed': 1,
+                    'preferredLanguage': 1,
+                    'cookieConsent': 1
+                };
+                var _wiped = 0;
+                Object.keys(localStorage).forEach(function (k) {
+                    if (!_layoutKeep[k]) { localStorage.removeItem(k); _wiped++; }
+                });
+                console.log('[ROSRA] Fresh analysis: wiped ' + _wiped + ' localStorage keys in <head>');
+            } catch (e) {
+                console.warn('[ROSRA] Fresh analysis: could not wipe localStorage in <head>', e);
+            }
+        }
+    </script>
 </head>
 <body>
     @inject UserManager<ApplicationUser> UserManager

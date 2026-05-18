@@ -137,8 +137,27 @@ namespace RosraApp.Controllers
             // Get or initialize visited tabs from session
             var visitedTabs = GetVisitedTabsFromSession();
 
-            // Get form data from session or initialize new
-            var formData = GetFormDataFromSession() ?? new RosraFormViewModel { Id = 0 };
+            // Get form data from session or initialize new.
+            // sessionFormData == null is the signal that this is a fresh /Rosra
+            // visit with no prior work — the client should start with a clean
+            // localStorage so zombie streams from earlier sessions don't bleed
+            // into the new analysis.
+            var sessionFormData = GetFormDataFromSession();
+            var formData = sessionFormData ?? new RosraFormViewModel { Id = 0 };
+            // Fresh-analysis signal: when the session carries no prior form
+            // data and this isn't a saved-report view, the client should start
+            // with empty in-memory state. Without this the RosraStateManager's
+            // auto-hydrate from localStorage drags in zombie streams from a
+            // prior session (e.g. user starts a new analysis with 2 streams
+            // and sees 3 in Recommendations because the 3rd was persisted
+            // last time and never cleared).
+            //
+            // Stored under ViewData so _Layout.cshtml can emit the JS flag in
+            // <head> — that's the only point early enough to set the flag
+            // before rosraStateManager.js's IIFE-time loadFromStorage() runs.
+            var isFresh = sessionFormData == null && !viewMode;
+            ViewData["IsFreshAnalysis"] = isFresh;
+            ViewBag.IsFreshAnalysis = isFresh;
 
 
             // Ensure Id is 0 for new reports
@@ -257,7 +276,7 @@ namespace RosraApp.Controllers
                 {
                     Id = "top-down",
                     Title = _localizer["Tab_TopDown"].Value,
-                    Description = "Quick OSR Potential Estimate",
+                    Description = "Quick OSR potential estimate",
                     Icon = "bi bi-arrow-down-circle",
                     IsActive = activeUmbrellaId == "top-down",
                     HasStepper = false,
@@ -266,7 +285,7 @@ namespace RosraApp.Controllers
                         new TabViewModel
                         {
                             Id = "potential-estimates",
-                            Title = "Quick OSR Potential Estimate",
+                            Title = "Quick Estimate",
                             IsActive = true,
                             IsVisited = true,
                             ContentPartialName = "_PotentialEstimates"
@@ -277,7 +296,7 @@ namespace RosraApp.Controllers
                 {
                     Id = "bottom-up",
                     Title = _localizer["Tab_BottomUp"].Value,
-                    Description = "Detailed 4-Step Pipeline",
+                    Description = "Stream-by-stream detailed analysis",
                     Icon = "bi bi-arrow-up-circle",
                     IsActive = activeUmbrellaId == "bottom-up",
                     HasStepper = true,
@@ -1491,14 +1510,14 @@ namespace RosraApp.Controllers
                 }
             };
 
-            // Create umbrella tabs - Top-Down active by default in view mode
+            // Create umbrella tabs - Quick Estimate active by default in view mode
             var umbrellaTabs = new List<UmbrellaTabViewModel>
             {
                 new UmbrellaTabViewModel
                 {
                     Id = "top-down",
                     Title = _localizer["Tab_TopDown"].Value,
-                    Description = "Quick OSR Potential Estimate",
+                    Description = "Quick OSR potential estimate",
                     Icon = "bi bi-arrow-down-circle",
                     IsActive = true,
                     HasStepper = false,
@@ -1507,7 +1526,7 @@ namespace RosraApp.Controllers
                         new TabViewModel
                         {
                             Id = "potential-estimates",
-                            Title = "Quick OSR Potential Estimate",
+                            Title = "Quick Estimate",
                             IsActive = true,
                             IsVisited = true,
                             ContentPartialName = "_PotentialEstimates"
@@ -1518,7 +1537,7 @@ namespace RosraApp.Controllers
                 {
                     Id = "bottom-up",
                     Title = _localizer["Tab_BottomUp"].Value,
-                    Description = "Detailed 4-Step Pipeline",
+                    Description = "Stream-by-stream detailed analysis",
                     Icon = "bi bi-arrow-up-circle",
                     IsActive = false,
                     HasStepper = true,

@@ -341,6 +341,40 @@
                 return removed;
             }
 
+            // Each saved selection carries a streamRank that was frozen in at
+            // Overview Selection save time (_OverviewSelection.cshtml writes
+            // streamInfo.rank into every entry). If the user later reorders
+            // streams on the Prioritization tab, those frozen ranks become
+            // stale and Recommendations renders e.g. "Rank #3" for a stream
+            // that's now ranked #2. Recompute streamRank here from the live
+            // RosraStateManager using the exact same algorithm as
+            // _Prioritization.cshtml::renderCombinedTable (default by total
+            // functional gap desc → manualRank = adjustedRank || defaultRank
+            // → sort by manualRank → renumber 1..N) so the live rank always
+            // wins over whatever is saved.
+            function resolveLiveStreamRanks(solutions) {
+                if (!Array.isArray(solutions) || typeof RosraStateManager === 'undefined') return solutions || [];
+                const all = RosraStateManager.getStreams();
+                if (!all.length) return solutions;
+
+                const populated = all.filter(s => (parseFloat(s.totalFunctionalGap) || 0) > 0);
+                populated.slice().sort((a, b) => (b.totalFunctionalGap || 0) - (a.totalFunctionalGap || 0))
+                    .forEach((s, i) => { s._defaultRank = i + 1; });
+                const included = populated.filter(s => s.included !== false);
+                included.forEach(s => { s._manualRank = (s.adjustedRank != null) ? s.adjustedRank : s._defaultRank; });
+                const ranked = included.slice().sort((a, b) => (a._manualRank || 999) - (b._manualRank || 999));
+
+                const nameToRank = new Map();
+                ranked.forEach((s, i) => { nameToRank.set(s.name, i + 1); });
+
+                return solutions.map(sel => {
+                    if (!sel || !sel.streamName) return sel;
+                    const live = nameToRank.get(sel.streamName);
+                    if (live == null) return sel;
+                    return { ...sel, streamRank: live };
+                });
+            }
+
             // Drop solutions belonging to streams the user excluded in Prioritization (step 2),
             // OR whose gap-type was set to (Remove) in the Gap Sequencing table.
             // Anything excluded at either level should produce no recommendations.
@@ -372,7 +406,7 @@
                     if (typeof FormStateManager !== 'undefined') {
                         const data = FormStateManager.getData('rosraSelectedSolutions');
                         if (data && Array.isArray(data)) {
-                            selectedSolutions = filterByIncludedStreams(normaliseSelections(data));
+                            selectedSolutions = resolveLiveStreamRanks(filterByIncludedStreams(normaliseSelections(data)));
                             console.log('Recommendations: Loaded', selectedSolutions.length, 'solutions from FormStateManager');
                             return;
                         }
@@ -381,7 +415,7 @@
                     // Fallback to localStorage
                     const stored = localStorage.getItem('rosraSelectedSolutions');
                     if (stored) {
-                        selectedSolutions = filterByIncludedStreams(normaliseSelections(JSON.parse(stored)));
+                        selectedSolutions = resolveLiveStreamRanks(filterByIncludedStreams(normaliseSelections(JSON.parse(stored))));
                         console.log('Recommendations: Loaded', selectedSolutions.length, 'solutions from localStorage (fallback)');
                     }
                 } catch (e) {
@@ -1631,7 +1665,7 @@
             }
 
             // Build a branded report filename from the Local Government Profile fields.
-            // Format: ROSRA_Revenue-Action-Plan_<City>_<Country>_<YYYY-MM-DD>.<ext>
+            // Format: ROSRA_Diagnostic-Report_<City>_<Country>_<YYYY-MM-DD>.<ext>
             // Falls back gracefully if the user hasn't filled in those fields.
             function _brandedReportFilename(ext) {
                 const get = id => {
@@ -1649,7 +1683,7 @@
                 const cityOrRegion = slug(get('city') || get('region'));
                 const country      = slug(get('country'));
 
-                const parts = ['ROSRA', 'Revenue-Action-Plan'];
+                const parts = ['ROSRA', 'Diagnostic-Report'];
                 if (cityOrRegion) parts.push(cityOrRegion);
                 if (country)      parts.push(country);
                 parts.push(dateStamp);
@@ -2481,10 +2515,30 @@
                         break-after: avoid; page-break-after: avoid;
                     }
                     li { break-inside: avoid; page-break-inside: avoid; }
-                    .report-table { break-inside: auto; }
+                    /* Keep each .report-table together on one page when possible.
+                       Earlier this was 'break-inside: auto' which silently let
+                       the Streams & Gaps Breakdown split across pages, leaving
+                       the last row + Total row stranded alone on the next page.
+                       'avoid' tells Chromium to push the whole table to the
+                       next page rather than mid-table break. If a table is
+                       genuinely larger than one page (rare — ROSRA tables
+                       are at most ~10 rows), the row/thead rules below kick
+                       in as a fallback so it still reads cleanly. */
+                    .report-table {
+                        break-inside: avoid;
+                        page-break-inside: avoid;
+                    }
                     .report-table thead { display: table-header-group; }
                     .report-table tfoot { display: table-footer-group; }
+                    /* Never split inside a row, and never start a new page
+                       with the Totals row alone — keep it glued to the row
+                       above so the table's "bottom line" always reads next
+                       to its data. */
                     .report-table tr { break-inside: avoid; page-break-inside: avoid; }
+                    .report-table tr.tr-totals { break-before: avoid; page-break-before: avoid; }
+                    /* Keep section heading + body together so the table never
+                       starts a new page with its heading orphaned on the prior. */
+                    .qa-block-title { break-after: avoid; page-break-after: avoid; }
 
                     @@page { size: A4; margin: 18mm 14mm; }
                     @@media print {
@@ -2496,7 +2550,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Revenue Enhancement Action Plan</title>
+<title>ROSRA Diagnostic Report</title>
 <style>${styles}</style>
 </head>
 <body>`;
@@ -2549,9 +2603,9 @@
         ${covLogoUn}
     </div>
     <div class="cover-body">
-        <span class="cover-tag">Revenue Optimization</span>
-        <h1 class="cover-title">Revenue Enhancement<br>Action Plan</h1>
-        <p class="cover-sub">A tailored, evidence-based plan to close the gap between current own-source revenue collection and what your local government could realistically collect.</p>
+        <span class="cover-tag">Diagnostic Report</span>
+        <h1 class="cover-title">ROSRA<br>Diagnostic Report</h1>
+        <p class="cover-sub">An evidence-based diagnostic to help local governments understand OSR performance, identify key revenue gaps, and move toward practical reform choices.</p>
         <div class="cover-country">
             ${covFlagHtml}
             <div>
@@ -2566,18 +2620,38 @@
         ${covSdgChip}
     </div>
     <div class="cover-footer">
-        <div class="cover-footer-text">Prepared with ROSRA — a UN-Habitat assessment tool for sub-national governments. Outputs in this report reflect the inputs and prioritisation decisions captured during the assessment.</div>
+        <div class="cover-footer-text">Prepared with ROSRA, a UN-Habitat assessment tool for subnational governments. Results in this report reflect the data entered and prioritization choices saved during the assessment.</div>
     </div>
 </section>`;
                 })();
                 html += ``;
 
+                // ===== How to read this report =====
+                // Orientation page placed right after the cover so the reader
+                // knows the report is a decision-support diagnostic, not a fixed
+                // revenue target. Gated on includeExecSummary so it ships with
+                // the first-section toggle and disappears if the user opts out.
+                if (options.includeExecSummary) {
+                    html += `<section class="qa-page">
+    <div class="qa-section-label">Orientation</div>
+    <h1 class="qa-section-title">How to read this report</h1>
+    <p class="qa-section-sub">This report summarizes the results generated through ROSRA. It should be read as a decision-support diagnostic, not as a fixed revenue target or automatic reform instruction.</p>
+    <ol style="margin:18px 0 22px;padding-left:1.1rem;list-style:decimal;color:#1f2937;font-size:0.95rem;line-height:1.5;">
+        <li style="margin-bottom:10px;"><strong>Profile and estimated OSR potential.</strong> Shows the local government profile, current OSR, and estimated room for improvement.</li>
+        <li style="margin-bottom:10px;"><strong>Gap analysis.</strong> Shows where revenue is estimated to be lost across selected revenue streams.</li>
+        <li style="margin-bottom:10px;"><strong>Prioritization results.</strong> Shows the stream and gap order saved in ROSRA after the user's choices and adjustments.</li>
+        <li><strong>Recommendations.</strong> Directs the user to the ROSRA Recommendations page, where selected reform options are expanded into practical solution cards.</li>
+    </ol>
+    <p style="font-size:0.82rem;color:#475569;font-style:italic;border-left:3px solid #00B2E3;padding:10px 14px;background:#f0fafd;border-radius:0 6px 6px 0;">Results depend on the data entered in ROSRA and the prioritization choices made during the assessment. They should be used to guide discussion and reform planning, not as fixed revenue targets.</p>
+</section>`;
+                }
+
                 // Shared helper for the gap-related sections below
                 const pct = (part, whole) => whole > 0 ? Math.round((part / whole) * 100) : 0;
 
-                // ===== Quick Analysis =====
-                // Local Government Profile (card with country flag + key fields)
-                // plus the "What you collect vs what you could collect" chart.
+                // ===== Local Government Profile =====
+                // Card with country flag + key fields plus the
+                // "Current OSR and estimated OSR potential" chart.
                 // Mirrors the snapshot the user sees on the first analysis tab.
                 if (options.includeExecSummary) {
                     const val = id => {
@@ -2644,7 +2718,7 @@
     </div>
 </div>`;
 
-                    // Capture the "What you collect vs what you could collect" view.
+                    // Capture the "Current OSR vs estimated OSR potential" chart.
                     // Two strategies (in order):
                     //   1. Chart.js registered instance via window.RosraChartRegistry —
                     //      best result, but only present when the user has triggered the
@@ -2662,9 +2736,9 @@
                             if (dataUrl && dataUrl.length > 2500) {
                                 chartImg = `<div class="qa-chart-card">
     <div class="units-strip">
-        <div class="title">What you collect vs what you could collect</div>
+        <div class="title">Current OSR and estimated OSR potential</div>
     </div>
-    <img src="${dataUrl}" alt="What you collect vs what you could collect" style="max-width:100%;height:auto;display:block;">
+    <img src="${dataUrl}" alt="Current OSR and estimated OSR potential" style="max-width:100%;height:auto;display:block;">
 </div>`;
                             }
                         } catch (_) { /* skip */ }
@@ -2777,11 +2851,12 @@
                             const curSym = document.getElementById('currencySymbol')?.value || '';
                             const curPrefix = curSym ? curSym + ' ' : '';
                             const unitsLabel = 'AMOUNTS IN ' + (curSym ? curSym.toUpperCase() : 'LCU') + ' (B)';
-                            // Gap as a percentage of potential — same calc as the website's
-                            // "X% of top-peer level" label on the gap bracket.
+                            // Current OSR as a percentage of estimated potential —
+                            // shown beneath the gap bracket as the "how close to potential"
+                            // signal — replaces the older comparative framing.
                             const gapN = potentialN - actualN;
-                            const gapPctOfPotential = potentialN > 0
-                                ? Math.round((gapN / potentialN) * 100) + '%'
+                            const currentPctOfPotential = potentialN > 0
+                                ? Math.round((actualN / potentialN) * 100) + '%'
                                 : null;
 
                             // Build y-axis tick lines + labels
@@ -2806,7 +2881,11 @@
                             const bracketTop = yPotentialTop;
                             const bracketBot = yPotentialGapBottom;
                             const bracketMid = (bracketTop + bracketBot) / 2;
-                            const pctText = gapPctOfPotential ? `${gapPctOfPotential} of top-peer level` : '';
+                            // Two-line label so it doesn't overflow the chart's
+                            // right padding. The bracket sits at xPotential + barW + 18,
+                            // and the full single-line string would run past the page edge.
+                            const pctTextLine1 = currentPctOfPotential ? `${currentPctOfPotential} — Current OSR` : '';
+                            const pctTextLine2 = currentPctOfPotential ? `as % of estimated potential` : '';
 
                             // Dashed connector from Actual top across to Potential cyan top
                             const connectorY = yActualTop;
@@ -2814,7 +2893,7 @@
 
                             chartImg = `<div class="qa-chart-card">
     <div class="units-strip">
-        <div class="title">What you collect vs what you could collect</div>
+        <div class="title">Current OSR and estimated OSR potential</div>
         <div class="units">${unitsLabel}</div>
     </div>
     <div>
@@ -2833,14 +2912,16 @@
             <text x="${xPotential + barW / 2}" y="${(yPotentialGapBottom + (padT + chartH)) / 2 + 5}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">${fmtShort(actualN)}</text>
             <!-- Gap bracket -->
             <path d="M ${bracketX - 6} ${bracketTop} L ${bracketX} ${bracketTop} L ${bracketX} ${bracketBot} L ${bracketX - 6} ${bracketBot}" stroke="#FD9D24" stroke-width="1.5" fill="none"/>
-            <text x="${bracketX + 8}" y="${bracketMid - 6}" font-size="12" font-weight="700" fill="#FD9D24">Gap</text>
+            <text x="${bracketX + 8}" y="${bracketMid - 18}" font-size="10" font-weight="700" fill="#FD9D24">Estimated</text>
+            <text x="${bracketX + 8}" y="${bracketMid - 6}" font-size="10" font-weight="700" fill="#FD9D24">improvement gap</text>
             <text x="${bracketX + 8}" y="${bracketMid + 12}" font-size="14" font-weight="700" fill="#FD9D24">${fmtShort(gapN)}</text>
-            ${pctText ? `<text x="${bracketX + 8}" y="${bracketMid + 32}" font-size="11" font-weight="500" fill="#94a3b8">${pctText}</text>` : ''}
+            ${pctTextLine1 ? `<text x="${bracketX + 8}" y="${bracketMid + 32}" font-size="11" font-weight="500" fill="#94a3b8">${pctTextLine1}</text>` : ''}
+            ${pctTextLine2 ? `<text x="${bracketX + 8}" y="${bracketMid + 44}" font-size="11" font-weight="500" fill="#94a3b8">${pctTextLine2}</text>` : ''}
             <!-- X-axis baseline -->
             <line x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}" stroke="#1f2937" stroke-width="1"/>
             <!-- X-axis labels -->
-            <text x="${xActual + barW / 2}" y="${padT + chartH + 22}" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Actual revenue</text>
-            <text x="${xPotential + barW / 2}" y="${padT + chartH + 22}" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Potential revenue</text>
+            <text x="${xActual + barW / 2}" y="${padT + chartH + 22}" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Current OSR</text>
+            <text x="${xPotential + barW / 2}" y="${padT + chartH + 22}" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Estimated OSR potential</text>
         </svg>
     </div>
 </div>`;
@@ -2850,9 +2931,10 @@
                     html += `<section class="qa-page">
     <div class="qa-section-label">Section 01 &middot; Snapshot</div>
     <h2 class="qa-section-title">Local Government Profile</h2>
-    <p class="qa-section-sub">A snapshot of the assessment context — the city, its fiscal indicators, and the headline gap between current and potential own-source revenue.</p>
+    <p class="qa-section-sub">A snapshot of the local government, key fiscal inputs, and estimated OSR potential generated through ROSRA.</p>
     ${lgpCard}
     ${chartImg}
+    ${chartImg ? `<p class="qa-chart-note" style="font-size:0.78rem;color:#64748b;margin-top:10px;font-style:italic;line-height:1.4;">This estimate shows possible room for improvement under the assumptions used in the analysis. Actual results depend on data quality, legal conditions, administrative capacity, and implementation choices.</p>` : ''}
 </section>`;
                 }
 
@@ -2863,11 +2945,10 @@
                 // Wrapped in .qa-page so it forces a page-break after.
                 if (options.includeGapAnalysis) {
                     const rawStreams = (typeof RosraStateManager !== 'undefined') ? RosraStateManager.getStreams() : [];
-                    // Drop empty placeholder streams: every generic stream gets a
-                    // unique internal id but users can leave a slot unfilled,
-                    // which produces a row with no gap data anywhere. Hide those
-                    // here so the chart + table aren't padded with zero-rows.
-                    const streams = rawStreams.filter(s =>
+                    // Drop empty placeholder streams (no gap data anywhere) AND
+                    // streams the user excluded in Prioritization. The brief
+                    // says excluded streams must not appear anywhere in the PDF.
+                    const populatedStreams = rawStreams.filter(s =>
                         (s.totalFunctionalGap || 0) > 0 ||
                         (s.complianceGap     || 0) > 0 ||
                         (s.coverageGap       || 0) > 0 ||
@@ -2876,14 +2957,97 @@
                         (s.currentRevenue    || 0) > 0 ||
                         (s.potentialRevenue  || 0) > 0
                     );
+
+                    // Removed gap types per stream (Step 2 Gap Sequencing).
+                    // Returned as Map(streamName -> Set of lowercased gap-type
+                    // strings the user marked Remove). Treat undefined entries
+                    // as empty sets.
+                    const removedByName = (typeof getRemovedGapsByStream === 'function')
+                        ? getRemovedGapsByStream()
+                        : new Map();
+                    const isGapRemoved = (s, gapType) => {
+                        const set = removedByName.get(s.name);
+                        return !!(set && set.has(String(gapType).toLowerCase()));
+                    };
+                    // Zero-out any gap value the user has removed AND adjust
+                    // totalFunctionalGap accordingly. Earlier this rebuilt
+                    // TFG as compliance + coverage + valuation/liability,
+                    // which silently dropped property tax's mixed-valuation
+                    // gaps (mixedGapReg + mixedGapUnreg) — so Property Tax
+                    // appeared as ~Sh 229B in Gap Analysis but ~Sh 474.8B in
+                    // Stream Prioritization (its true total). Fix: subtract
+                    // only the actually-removed components from the original
+                    // TFG so streams with no removals keep their full value
+                    // and the residual thirdOf formula has the right base.
+                    const applyRemovals = (s) => {
+                        const out = { ...s };
+                        let removedSum = 0;
+                        if (isGapRemoved(s, 'compliance')) {
+                            removedSum += (out.complianceGap || 0);
+                            out.complianceGap = 0;
+                        }
+                        if (isGapRemoved(s, 'coverage')) {
+                            removedSum += (out.coverageGap || 0);
+                            out.coverageGap = 0;
+                        }
+                        if (isGapRemoved(s, 'valuation')) {
+                            // Property tax's mixed valuation gaps are also
+                            // valuation effects — removing the "valuation"
+                            // type drops all of them.
+                            removedSum += (out.valuationGap || 0)
+                                       + (out.mixedGapReg || 0)
+                                       + (out.mixedGapUnreg || 0);
+                            out.valuationGap = 0;
+                            out.mixedGapReg  = 0;
+                            out.mixedGapUnreg = 0;
+                        }
+                        if (isGapRemoved(s, 'liability')) {
+                            // Non-property streams: liability + any mixed
+                            // compliance/coverage interaction gaps.
+                            removedSum += (out.liabilityGap || 0)
+                                       + (out.mixedGapCompliance || 0)
+                                       + (out.mixedGapCoverage || 0);
+                            out.liabilityGap = 0;
+                            out.mixedGapCompliance = 0;
+                            out.mixedGapCoverage   = 0;
+                        }
+                        out.totalFunctionalGap = Math.max(0, (s.totalFunctionalGap || 0) - removedSum);
+                        return out;
+                    };
+
+                    const streams = populatedStreams
+                        .filter(s => s.included !== false)
+                        .map(applyRemovals)
+                        .filter(s => (s.totalFunctionalGap || 0) > 0);
                     html += `<div class="qa-page">
     <div class="qa-section-label">SECTION 02 &middot; GAP ANALYSIS</div>
     <h1 class="qa-section-title">Gap Analysis Results</h1>`;
 
                     if (!streams.length) {
-                        html += `<p class="qa-section-sub">No revenue stream data captured.</p></div>`;
+                        html += `<p class="qa-section-sub">No revenue streams were selected for this report.</p></div>`;
                     } else {
-                        const thirdOf      = s => (s.type === 'property-tax') ? (s.valuationGap || 0) : (s.liabilityGap || 0);
+                        // RESIDUAL FORMULA — keeps the Gap Analysis table totals
+                        // consistent with the Stream Prioritization page. For
+                        // Property Tax, totalFunctionalGap = compliance +
+                        // coverage + valuation + mixedGapReg + mixedGapUnreg
+                        // (5 non-overlapping cohorts: outstanding amount,
+                        // missing units at avg rate, compliant at market
+                        // uplift, registered-non-compliant at market uplift,
+                        // unregistered at market uplift). If the third column
+                        // only carried s.valuationGap, the row total would
+                        // be ~2x smaller than what RosraStateManager stores
+                        // and what page 4 (Stream Prioritization) displays.
+                        // Taking the residual (TFG − compliance − coverage)
+                        // absorbs both mixed-valuation gaps for property tax
+                        // and any mixed compliance/coverage interaction for
+                        // non-property streams into a single "Valuation /
+                        // Liability" column. Per the feedback explainer,
+                        // mixed gaps belong in this column anyway — they
+                        // are valuation/liability effects on different
+                        // taxpayer cohorts.
+                        const thirdOf      = s => Math.max(0,
+                            (s.totalFunctionalGap || 0) - (s.complianceGap || 0) - (s.coverageGap || 0)
+                        );
                         const thirdLabelOf = s => (s.type === 'property-tax') ? 'Valuation' : 'Liability';
                         const totals = streams.reduce((a, s) => ({
                             currentRevenue:   a.currentRevenue   + (s.currentRevenue   || 0),
@@ -2893,6 +3057,75 @@
                             coverage:         a.coverage         + (s.coverageGap      || 0),
                             third:            a.third            + thirdOf(s)
                         }), { currentRevenue: 0, potentialRevenue: 0, totalGap: 0, compliance: 0, coverage: 0, third: 0 });
+
+                        // ===== Runtime gap-math invariants =====
+                        // These checks fire on every Gap Analysis render so any
+                        // future transform that silently corrupts gap values
+                        // (e.g. an upstream filter that rebuilds
+                        // totalFunctionalGap from the wrong components, like
+                        // the applyRemovals bug that dropped mixed-valuation
+                        // gaps and made Property Tax show Sh 229B instead of
+                        // Sh 474.8B) surfaces immediately in the console
+                        // instead of going unnoticed in the exported report.
+                        //
+                        // The checks intentionally don't throw — the page
+                        // still renders, just with a clear diagnostic
+                        // pointing at the offending stream and components.
+                        try {
+                            const _fmt = n => (Math.round(n / 1e6) / 1000) + 'B';
+                            // Tolerance: 0.5% of TFG OR 1M, whichever is larger.
+                            // Float arithmetic on B-scale numbers needs slack.
+                            const _tol = (tfg) => Math.max(1e6, Math.abs(tfg) * 0.005);
+                            const _origStreams = (typeof RosraStateManager !== 'undefined')
+                                ? RosraStateManager.getStreams()
+                                : [];
+                            const _origById = new Map(_origStreams.map(o => [o.id, o]));
+
+                            streams.forEach(s => {
+                                const sumDisplayed = (s.complianceGap || 0) + (s.coverageGap || 0) + thirdOf(s);
+                                const tfg = s.totalFunctionalGap || 0;
+
+                                // Invariant A (renderer): displayed columns must sum to TFG.
+                                if (Math.abs(sumDisplayed - tfg) > _tol(tfg)) {
+                                    console.warn('[ROSRA gap invariant A] Row sum != totalFunctionalGap for "' + s.name + '"',
+                                        '\n  compliance + coverage + third =', _fmt(s.complianceGap || 0), '+', _fmt(s.coverageGap || 0), '+', _fmt(thirdOf(s)), '=', _fmt(sumDisplayed),
+                                        '\n  totalFunctionalGap            =', _fmt(tfg),
+                                        '\n  diff                          =', _fmt(sumDisplayed - tfg),
+                                        '\n  Something upstream is computing the row total inconsistently with TFG.');
+                                }
+
+                                // Invariant B (filter): if no gap-types were
+                                // removed for this stream, applyRemovals
+                                // should preserve TFG verbatim. Detect by
+                                // comparing against the source-of-truth TFG
+                                // in RosraStateManager.
+                                const orig = _origById.get(s.id);
+                                const removedSet = removedByName.get(s.name);
+                                const hasRemovals = !!(removedSet && removedSet.size > 0);
+                                if (orig && !hasRemovals) {
+                                    const origTfg = orig.totalFunctionalGap || 0;
+                                    if (Math.abs(origTfg - tfg) > _tol(origTfg)) {
+                                        console.warn('[ROSRA gap invariant B] applyRemovals corrupted TFG for "' + s.name + '" (no gap-types were removed)',
+                                            '\n  RosraStateManager TFG  =', _fmt(origTfg),
+                                            '\n  Post-applyRemovals TFG =', _fmt(tfg),
+                                            '\n  diff                   =', _fmt(tfg - origTfg),
+                                            '\n  applyRemovals must be idempotent when no gap-types are removed.');
+                                    }
+                                }
+                            });
+
+                            // Invariant C (table totals): displayed column
+                            // totals must sum to the displayed grand total.
+                            const _sumTotals = (totals.compliance || 0) + (totals.coverage || 0) + (totals.third || 0);
+                            if (Math.abs(_sumTotals - (totals.totalGap || 0)) > _tol(totals.totalGap || 0)) {
+                                console.warn('[ROSRA gap invariant C] Total row column sums != Total Gap',
+                                    '\n  C + Cov + V/L =', _fmt(_sumTotals),
+                                    '\n  Total Gap     =', _fmt(totals.totalGap || 0),
+                                    '\n  diff          =', _fmt(_sumTotals - (totals.totalGap || 0)));
+                            }
+                        } catch (_invErr) {
+                            console.warn('[ROSRA gap invariant] check threw — non-fatal, render continues', _invErr);
+                        }
 
                         const curSym = getCurrencyFromContext() || '$';
 
@@ -2906,7 +3139,16 @@
                             return Math.round(v).toString();
                         };
 
-                        html += `<p class="qa-section-sub">Streams ranked by total functional gap, broken out by gap type. Each bar's length is the stream's share of the largest gap; colour segments show how that gap composes across Compliance, Coverage, and Valuation / Liability.</p>`;
+                        html += `<p class="qa-section-sub">This section shows where revenue is estimated to be lost across the selected revenue streams. Each bar shows the size of the estimated gap by stream and breaks it down by gap type.</p>`;
+
+                        // --- "What the gaps mean" plain-language explainer ---
+                        html += `<div class="prio-explainer" style="margin-bottom:18px;">
+    <div class="prio-explainer-title">What the gaps mean</div>
+    <p><strong>Compliance gap.</strong> Revenue that has been billed but not collected.</p>
+    <p><strong>Coverage gap.</strong> Revenue not billed because taxpayers, properties, businesses, or users are missing from the register.</p>
+    <p><strong>Valuation / Liability gap.</strong> Revenue lost because the amount charged is too low or the applicable fee, rate, or liability is not being correctly applied.</p>
+    <p><strong>Mixed gaps.</strong> Revenue losses where more than one issue overlaps, such as missing units that would also be undercharged if added to the system.</p>
+</div>`;
 
                         // --- SVG horizontal stacked bar chart (editorial) ---
                         // Mirrors the Prioritization tab's gapParetoChart but is
@@ -2979,7 +3221,6 @@
                             const yBar       = y + 32;
                             const rawLabel   = s.name || s.id || '';
                             const labelText  = rawLabel.length > 30 ? rawLabel.slice(0, 29) + '…' : rawLabel;
-                            const excluded   = s.included === false;
 
                             // Inline segment labels (only if segment is wide enough)
                             const inlineLabel = (x, w, value, color) => {
@@ -2988,7 +3229,7 @@
                             };
 
                             return `<g font-family="'Inter','Segoe UI',sans-serif">
-        <text x="${xLabel}" y="${yName}"  text-anchor="end" font-size="13" font-weight="700" fill="#0f2742">${esc(labelText)}${excluded ? ' <tspan font-size="9" fill="#94a3b8" font-weight="600"> · EXCL.</tspan>' : ''}</text>
+        <text x="${xLabel}" y="${yName}"  text-anchor="end" font-size="13" font-weight="700" fill="#0f2742">${esc(labelText)}</text>
         <text x="${xLabel}" y="${yShare}" text-anchor="end" font-size="10" font-weight="500" fill="#64748b">${sharePct}% of total gap</text>
 
         <rect x="${xBarStart}"            y="${yBar}" width="${cw.toFixed(2)}" height="${barH}" fill="${colCompliance}" rx="3"/>
@@ -3033,7 +3274,7 @@
 </tr></thead><tbody>`;
                         sortedStreams.forEach(s => {
                             html += `<tr>
-    <td>${esc(s.name || s.id || '')}${s.included === false ? ' <span class="badge">excluded</span>' : ''}</td>
+    <td>${esc(s.name || s.id || '')}</td>
     <td style="text-align:right">${esc(formatCurrencyCompact(s.complianceGap || 0))}</td>
     <td style="text-align:right">${esc(formatCurrencyCompact(s.coverageGap   || 0))}</td>
     <td style="text-align:right">${esc(formatCurrencyCompact(thirdOf(s)))} <span style="color:#7a8a99;font-size:0.78rem;">(${esc(thirdLabelOf(s))})</span></td>
@@ -3097,7 +3338,7 @@
     <h1 class="qa-section-title">Stream Prioritization</h1>`;
 
                     if (!ranked.length) {
-                        html += `<p class="qa-section-sub">No streams included for prioritization.</p></div>`;
+                        html += `<p class="qa-section-sub">No revenue streams were selected for this report.</p></div>`;
                     } else {
                         const totalRankedGap = ranked.reduce((a, s) => a + (s.totalFunctionalGap || 0), 0);
                         const maxGap = Math.max(1, ...ranked.map(s => s.totalFunctionalGap || 0));
@@ -3122,41 +3363,33 @@
                         // bronze) — matches the website's coloured rank pills.
                         const rankClass = (r) => r === 1 ? 'prio-rank-1' : r === 2 ? 'prio-rank-2' : r === 3 ? 'prio-rank-3' : 'prio-rank-n';
 
-                        // --- "What is Stream Prioritization?" explainer ---
+                        // --- Stream Prioritization explainer ---
                         html += `<div class="prio-explainer">
-    <div class="prio-explainer-title">What is Stream Prioritization?</div>
-    <p>Stream Prioritization ranks your revenue streams by their <strong>Total Functional Gap</strong> &mdash; the difference between current collection and what could realistically be collected if administration were strengthened.</p>
-    <p><strong>Why it matters:</strong> Most cities have several revenue streams but limited reform capacity. Tackling the streams with the biggest gaps first generates the largest revenue uplift per unit of effort.</p>
-    <p><strong>How to read this table:</strong> Rows are pre-ranked from largest gap to smallest. Streams marked <em>Excluded</em> have been dropped from share calculations and the downstream recommendations because they don't apply to this local government (e.g. a service the municipality doesn't provide).</p>
+    <p>This section shows which revenue streams may deserve attention first. The order is based on the gap analysis, but it may also reflect choices made by the user in the platform, such as re-ordering streams, excluding streams that do not apply, or adjusting the sequence to reflect local feasibility and priorities.</p>
+    <p>This table shows the final prioritization generated through ROSRA. The order may reflect both the diagnostic results and adjustments made during the assessment, including re-ordering, exclusions, or removal of items that are not relevant or feasible.</p>
 </div>`;
 
                         // --- Prioritization table — uses .report-table (same as
-                        // page 3's Streams & Gaps Breakdown) for a consistent look ---
+                        // page 3's Streams & Gaps Breakdown) for a consistent look.
+                        // Excluded streams are dropped upstream (per brief), so the
+                        // Status column is no longer needed.
+                        const shareCellText = totalRankedGap > 0
+                            ? (s => share1(s.totalFunctionalGap || 0, totalRankedGap) + '%')
+                            : (() => 'N/A');
                         const renderIncludedRow = (s) => {
-                            const share  = share1(s.totalFunctionalGap || 0, totalRankedGap);
-                            const barPct = Math.max(2, Math.round(((s.totalFunctionalGap || 0) / maxGap) * 100));
+                            const barPct = totalRankedGap > 0
+                                ? Math.max(2, Math.round(((s.totalFunctionalGap || 0) / maxGap) * 100))
+                                : 0;
                             return `<tr>
     <td style="text-align:center;width:50px"><span class="prio-rank ${rankClass(s.finalRank)}">${esc(String(s.finalRank))}</span></td>
     <td><span class="prio-stream-dot" style="background:${streamDotColor(s)}"></span><strong>${esc(s.name || '')}</strong></td>
     <td style="text-align:right"><strong>${esc(formatCurrencyCompact(s.totalFunctionalGap || 0))}</strong></td>
-    <td style="text-align:right;width:60px">${share}%</td>
+    <td style="text-align:right;width:60px">${shareCellText(s)}</td>
     <td style="width:170px">
         <div class="share-bar" style="min-width:120px"><div class="share-bar-fill" style="width:${barPct}%"></div></div>
     </td>
-    <td style="width:90px"><span class="prio-status">Include</span></td>
 </tr>`;
                         };
-
-                        // Excluded streams (still populated, just dropped from prioritization)
-                        const excludedPopulated = populated.filter(s => s.included === false);
-                        const renderExcludedRow = (s) => `<tr class="row-excluded">
-    <td style="text-align:center"><span class="prio-em">&mdash;</span></td>
-    <td><span class="prio-stream-dot" style="background:${streamDotColor(s)};opacity:0.5"></span>${esc(s.name || '')}</td>
-    <td style="text-align:right">${esc(formatCurrencyCompact(s.totalFunctionalGap || 0))}</td>
-    <td style="text-align:right"><span class="prio-em">&mdash;</span></td>
-    <td><span class="prio-em">&mdash;</span></td>
-    <td><span class="prio-status status-exclude">Exclude</span></td>
-</tr>`;
 
                         html += `<table class="report-table">
 <thead><tr>
@@ -3165,18 +3398,15 @@
     <th style="text-align:right;width:110px">Total Gap</th>
     <th style="text-align:right;width:60px">Share</th>
     <th style="width:170px">&nbsp;</th>
-    <th style="width:90px">Status</th>
 </tr></thead>
 <tbody>
     ${ranked.map(renderIncludedRow).join('')}
-    ${excludedPopulated.map(renderExcludedRow).join('')}
     <tr class="tr-totals">
         <td style="text-align:center"><span class="prio-em">&mdash;</span></td>
-        <td><strong>Total (Included Streams)</strong></td>
+        <td><strong>Total selected streams</strong></td>
         <td style="text-align:right"><strong>${esc(formatCurrencyCompact(totalRankedGap))}</strong></td>
-        <td style="text-align:right"><strong>100%</strong></td>
+        <td style="text-align:right"><strong>${totalRankedGap > 0 ? '100%' : 'N/A'}</strong></td>
         <td>&nbsp;</td>
-        <td><span class="prio-em">&mdash;</span></td>
     </tr>
 </tbody>
 </table>`;
@@ -3205,45 +3435,50 @@
                     const rankedGP = includedGP.slice().sort((a, b) => (a._manualRank || 999) - (b._manualRank || 999))
                         .map((s, i) => ({ ...s, finalRank: i + 1 }));
 
-                    // Group priority items by streamId, then map onto each ranked stream.
+                    // Removed gap types per stream (Step 2 Gap Sequencing). Used to
+                    // drop priority entries the user marked Remove so they don't
+                    // appear in the report. Map keys are stream NAMES (matching
+                    // what getMasterPriorityList emits) with lowercased gap-type
+                    // strings in each Set.
+                    const removedByNameGP = (typeof getRemovedGapsByStream === 'function')
+                        ? getRemovedGapsByStream()
+                        : new Map();
+
+                    // Group priority items by streamId, dropping any whose gapType
+                    // the user removed for that stream. Then renumber the survivors
+                    // 1..N so badges read 1, 2, 3 sequentially (no gaps).
                     const byStreamId = new Map();
                     priority.forEach(p => {
+                        const removedSet = removedByNameGP.get(p.streamName);
+                        if (removedSet && p.gapType && removedSet.has(String(p.gapType).toLowerCase())) return;
                         if (!byStreamId.has(p.streamId)) byStreamId.set(p.streamId, []);
                         byStreamId.get(p.streamId).push(p);
                     });
+                    byStreamId.forEach(list => list.sort((a, b) => (a.gapPriority || 999) - (b.gapPriority || 999)));
 
-                    const streamRows = rankedGP.map(s => {
-                        const items = byStreamId.get(s.id) || [];
-                        const byPri = {};
-                        items.forEach(it => { byPri[it.gapPriority] = it; });
-                        return {
-                            id: s.id,
-                            name: s.name,
-                            rank: s.finalRank,
-                            mode: RosraStateManager.getStreamMode(s.id),
-                            p1: byPri[1] || null,
-                            p2: byPri[2] || null,
-                            p3: byPri[3] || null
-                        };
-                    });
+                    // Cap column count at 6 for layout sanity. Brief allows
+                    // dynamic expansion when >3 priorities exist.
+                    const MAX_PRIORITY_COLS = 6;
+                    const streamRows = rankedGP
+                        .map(s => {
+                            const items = (byStreamId.get(s.id) || []).slice(0, MAX_PRIORITY_COLS);
+                            return {
+                                id: s.id,
+                                name: s.name,
+                                rank: s.finalRank,
+                                items: items
+                            };
+                        })
+                        // Per brief: omit streams that have no remaining gap types.
+                        .filter(row => row.items.length > 0);
 
                     html += `<div class="qa-page">
     <div class="qa-section-label">SECTION 04 &middot; GAP PRIORITIZATION</div>
     <h1 class="qa-section-title">Gap Prioritization</h1>`;
 
-                    if (!streamRows.length || !priority.length) {
-                        html += `<p class="qa-section-sub">No sequenced gaps available.</p></div>`;
+                    if (!streamRows.length) {
+                        html += `<p class="qa-section-sub">No gap types selected.</p></div>`;
                     } else {
-                        const modeLabel = {
-                            'revenue-potential': 'Revenue Potential',
-                            'compliance-first':  'Compliance First',
-                            'overhaul':          'Overhaul'
-                        };
-                        const modeClass = {
-                            'revenue-potential': 'mode-rp',
-                            'compliance-first':  'mode-cf',
-                            'overhaul':          'mode-oh'
-                        };
                         const genericPaletteGP = ['#00689D', '#10b981', '#EF4444', '#A855F7'];
                         const streamDotColorGP = (id) => {
                             if (id === 'property-tax')     return '#2BB8E2';
@@ -3257,19 +3492,19 @@
                         const rankClassGP = (r) => r === 1 ? 'prio-rank-1' : r === 2 ? 'prio-rank-2' : r === 3 ? 'prio-rank-3' : 'prio-rank-n';
                         const cap = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 
-                        // --- "What is Gap Prioritization?" explainer ---
+                        // --- Gap Prioritization explainer ---
                         html += `<div class="prio-explainer">
-    <div class="prio-explainer-title">What is Gap Prioritization?</div>
-    <p>Gap Prioritization breaks each prioritized revenue stream down by the <strong>type of gap</strong> driving its underperformance &mdash; Compliance, Coverage, Valuation/Liability, or the mixed combinations &mdash; and lets you sequence which gaps to tackle first within each stream.</p>
-    <p><strong>Why it matters:</strong> A stream's overall gap may look the same on the surface, but a Compliance gap (people billed but not paying) needs very different reforms from a Coverage gap (units not even on the books) or a Valuation gap (assessed below market value). Sequencing tells the reform team where to start.</p>
-    <p>Pick one of three <strong>modes</strong> per stream &mdash; Revenue Potential (biggest dollar gap first), Compliance First (collect what's already billed), or Overhaul (re-engineer the whole stream) &mdash; and ROSRA suggests an opening priority order. The team can override any cell to fit local capacity and politics, or remove a gap-type that's not feasible.</p>
+    <p>This section shows the order in which gap types were prioritized within each selected stream. The order may reflect the estimated size of each gap, the condition of the revenue system, and any adjustments made during the ROSRA assessment.</p>
 </div>`;
 
-                        // --- Streams × Priorities table (uses .report-table) ---
+                        // Dynamic column count = max remaining items across streams.
+                        // If no stream has more than 3, the table stays compact at 3 cols.
+                        const colCount = Math.max(3, ...streamRows.map(r => r.items.length));
+
                         const renderPriCell = (priNum, item) => {
-                            if (!item) return '<span class="prio-em">&mdash;</span>';
+                            if (!item) return '';
                             return `<div class="prio-pcell">
-        <span class="prio-pb prio-pb-${priNum}">${priNum}</span>
+        <span class="prio-pb prio-pb-${priNum > 3 ? 'n' : priNum}">${priNum}</span>
         <div class="prio-pcell-body">
             <div class="prio-pcell-type">${esc(cap(item.gapType || ''))}</div>
             <div class="prio-pcell-amount">${esc(formatCurrencyCompact(item.gapAmount || 0))}</div>
@@ -3277,24 +3512,27 @@
     </div>`;
                         };
 
+                        let headHtml = '';
+                        for (let i = 1; i <= colCount; i++) {
+                            headHtml += `<th>Priority ${i}</th>`;
+                        }
+
                         html += `<table class="report-table">
 <thead><tr>
     <th style="width:50px;text-align:center">Rank</th>
     <th>Stream</th>
-    <th style="width:130px">Mode</th>
-    <th>Priority 1</th>
-    <th>Priority 2</th>
-    <th>Priority 3</th>
+    ${headHtml}
 </tr></thead>
 <tbody>`;
                         streamRows.forEach(row => {
+                            let cellsHtml = '';
+                            for (let i = 0; i < colCount; i++) {
+                                cellsHtml += `<td>${renderPriCell(i + 1, row.items[i])}</td>`;
+                            }
                             html += `<tr>
     <td style="text-align:center"><span class="prio-rank ${rankClassGP(row.rank)}">${row.rank}</span></td>
     <td><span class="prio-stream-dot" style="background:${streamDotColorGP(row.id)}"></span><strong>${esc(row.name)}</strong></td>
-    <td><span class="mode-chip mode-chip-upper ${modeClass[row.mode] || ''}">${esc(modeLabel[row.mode] || row.mode || '')}</span></td>
-    <td>${renderPriCell(1, row.p1)}</td>
-    <td>${renderPriCell(2, row.p2)}</td>
-    <td>${renderPriCell(3, row.p3)}</td>
+    ${cellsHtml}
 </tr>`;
                         });
                         html += `</tbody></table>`;
@@ -3315,21 +3553,29 @@
                     const platformOrigin = (typeof window !== 'undefined' && window.location && window.location.origin)
                         ? window.location.origin
                         : '';
-                    const recommendationsUrl = platformOrigin
-                        ? platformOrigin + '/Rosra#recommendations'
+                    // If the user generated the PDF while viewing a saved report
+                    // (URL shape /Rosra/View/{publicId}), link back to that exact
+                    // saved analysis. Otherwise fall back to the live /Rosra page.
+                    const currentPath = (typeof window !== 'undefined' && window.location && window.location.pathname) || '';
+                    const savedReportMatch = currentPath.match(/\/Rosra\/View\/([0-9a-fA-F-]{36})/);
+                    const reportPath = savedReportMatch
+                        ? `/Rosra/View/${savedReportMatch[1]}#recommendations`
                         : '/Rosra#recommendations';
+                    const recommendationsUrl = platformOrigin
+                        ? platformOrigin + reportPath
+                        : reportPath;
                     const recommendationsDisplay = platformOrigin
-                        ? platformOrigin.replace(/^https?:\/\//, '') + '/Rosra'
-                        : '/Rosra';
+                        ? platformOrigin.replace(/^https?:\/\//, '') + reportPath.replace(/#.*$/, '')
+                        : reportPath.replace(/#.*$/, '');
 
                     html += `<div class="qa-page">
     <div class="qa-section-label">SECTION 05 &middot; RECOMMENDATIONS</div>
-    <h1 class="qa-section-title">Recommended Solutions</h1>
-    <p class="qa-section-sub">Based on your prioritized streams and gap types, ROSRA has identified the reform options most relevant to this assessment. This report does not reproduce the full solution catalogue. To review each solution &mdash; including implementation steps, timeline, feasibility considerations, stakeholders and monitoring guidance &mdash; open the Recommendations page of the platform.</p>
+    <h1 class="qa-section-title">Continue to Recommendations</h1>
+    <p class="qa-section-sub">Use this report to understand the main OSR opportunity, revenue gaps, and prioritization results. To move from diagnosis to action, continue to the Recommendations page in ROSRA, where the selected reform options are organized by stream and priority and expanded into practical solution cards.</p>
     <a class="rec-platform-cta" href="${esc(recommendationsUrl)}" target="_blank" rel="noopener" style="display:block;margin-top:24px;padding:18px 22px;background:linear-gradient(135deg,#E6F4FB 0%,#F0FAFD 100%);border:1.5px solid #00B2E3;border-radius:12px;text-decoration:none;color:#0F2742;">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;">
             <div>
-                <div style="font-weight:700;font-size:1.05rem;color:#00689D;letter-spacing:0.01em;">Open Recommendations on the ROSRA platform &rarr;</div>
+                <div style="font-weight:700;font-size:1.05rem;color:#00689D;letter-spacing:0.01em;">Open Recommendations in ROSRA &rarr;</div>
                 <div style="font-size:0.85rem;color:#475569;margin-top:4px;font-family:'Courier New',monospace;">${esc(recommendationsDisplay)}</div>
             </div>
         </div>
