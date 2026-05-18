@@ -839,6 +839,17 @@
             </div>
         </div>
 
+        @* In view/print mode the report introduces the WoFi estimator as its own
+           "Quick OSR Estimate" section (per v2 brief §5). Hidden in the interactive UI
+           because the tool already shows the WoFi card with its own header strip. *@
+        @if (isViewMode)
+        {
+            <div class="col-12 report-quick-estimate-header">
+                <div class="print-section-title" style="margin-top:1.5rem;">@SharedLocalizer["Report_QuickEstimate_Title"]</div>
+                <p class="report-section-body">@SharedLocalizer["Report_QuickEstimate_Body"]</p>
+            </div>
+        }
+
         <!-- Bottom Panel - WoFi Top-Down OSR Potential Estimator — hidden until "Get Analysis" is clicked -->
         <div class="col-12" id="analysisPanelWrap" style="display:none;">
             <div class="analysis-panel">
@@ -5466,6 +5477,18 @@
                 setText('wofiFrontierIndexValue', (idx * 100).toFixed(0) + '%');
                 setText('wofiFrontierInterpretation', INTERP_TEXT[result.frontierInterpretation] || '');
 
+                // Cache the raw numeric WoFi result on window so the
+                // Recommendations "Generate Report" flow can always rebuild the
+                // "Current revenue + estimated gap = potential" chart, even when
+                // the live Chart.js canvas isn't capturable (e.g. hidden tab,
+                // 0-sized layout) or the formatted tile text fails to parse.
+                window.__RosraWofiResult = {
+                    actualOsr:    result.actualOsr,
+                    potentialOsr: result.potentialOsr,
+                    osrGap:       result.osrGap,
+                    frontierIndex: result.frontierIndex,
+                };
+
                 // Bar — Chart.js two-bar stacked column with gap bracket
                 var unitsEl = document.getElementById('wofiBarUnits');
                 if (unitsEl) {
@@ -5675,6 +5698,10 @@
                         }
                     }
                 });
+
+                // Expose to the global chart registry so the Recommendations
+                // report export can pick it up via window.captureAllCharts().
+                if (window.registerChart) registerChart('actualVsPotentialChart', actualVsPotentialChart);
             }
 
             function runEstimator() {
@@ -5734,6 +5761,12 @@
                     }, 50);
                 });
             }
+
+            // Expose runEstimator so the Recommendations report-generation flow
+            // can force a recompute when __RosraWofiResult isn't yet cached
+            // (e.g., user clicks Generate Report before the auto-fired estimator
+            // has resolved, or they navigated straight to the recommendations tab).
+            window.RosraWofiRunEstimator = runEstimator;
         })();
 
         // "Next step → Analyse Each Revenue Stream" CTA — switches umbrella tab to the per-stream pipeline

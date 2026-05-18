@@ -1078,6 +1078,11 @@
 
 <script src="~/lib/chart.js/chart.umd.min.js" asp-append-version="true"></script>
 <script>
+// Localised strings used by the Prioritization include/exclude guard (v2 brief §6.4).
+// Stashed on window so other modules on the page can reuse the same wording.
+window.SharedStrings = window.SharedStrings || {};
+window.SharedStrings.streamMinRequired = '@Html.Raw(SharedLocalizer["Stream_AtLeastOneRequired"].Value.Replace("'", "\\'"))';
+
 document.addEventListener('DOMContentLoaded', function() {
     // Server-side authoritative list of generic-stream IDs that exist in the
     // currently saved/active report. RosraStateManager state can be polluted
@@ -1615,6 +1620,20 @@ document.addEventListener('DOMContentLoaded', function() {
     window.handleIncludeExcludeChange = function(selectElement) {
         const streamId = selectElement.dataset.streamId;
         const included = selectElement.value === 'include';
+
+        // v2 brief §6.4: at least one stream must remain included so the diagnostic
+        // is still meaningful. Block the exclusion + revert the select if this
+        // would zero everything out.
+        if (!included) {
+            const remainingIncluded = streams.filter(s => s.included && s.id !== streamId).length;
+            if (remainingIncluded < 1) {
+                const msg = (window.SharedStrings && window.SharedStrings.streamMinRequired)
+                    || 'At least one revenue stream must remain included to generate the diagnostic.';
+                alert(msg);
+                selectElement.value = 'include';
+                return;
+            }
+        }
 
         // Update stream data
         const stream = streams.find(s => s.id === streamId);

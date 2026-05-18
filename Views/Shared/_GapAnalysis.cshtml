@@ -885,6 +885,9 @@
         </div>
     </div>
 
+    <!-- Banner showing any excluded streams with re-include links (populated by JS) -->
+    <div id="excludedStreamsBanner" style="display:none;"></div>
+
     <!-- Modern Tab Navigation -->
     <div class="gap-tabs-nav" role="tablist" id="gapTabsNav">
         <!-- Property Tax Tab (Fixed - Renameable) -->
@@ -900,8 +903,8 @@
         </button>
         <input type="hidden" id="propertyTaxDisplayName" name="PropertyTaxDisplayName" value="@Model.PropertyTaxDisplayName" />
 
-        <!-- Business License Tab (Fixed - Renameable) -->
-        <button type="button" class="gap-tab-btn" onclick="showTab('license')" data-tab="license">
+        <!-- Business License Tab (Fixed - Renameable - Excludable per v2 brief §6) -->
+        <button type="button" class="gap-tab-btn" id="license-btn" onclick="showTab('license')" data-tab="license">
             <i class="bi bi-file-earmark-text"></i>
             <span class="stream-name-label" id="businessLicenseLabel">@Model.BusinessLicenseDisplayName</span>
             @if (!isViewMode)
@@ -909,6 +912,7 @@
                 <span class="rename-tab-btn" onclick="event.stopPropagation(); openRenameModal('license', '@Model.BusinessLicenseDisplayName');" title="@Localizer["RenameTab_Tooltip"]">
                     <i class="bi bi-pencil"></i>
                 </span>
+                <span class="close-tab" onclick="event.stopPropagation(); excludeBusinessLicense();" title="@SharedLocalizer["Stream_ExcludeBusinessLicenseConfirm"]">&times;</span>
             }
         </button>
         <input type="hidden" id="businessLicenseDisplayName" name="BusinessLicenseDisplayName" value="@Model.BusinessLicenseDisplayName" />
@@ -1182,6 +1186,134 @@
     let streamCount = @(Model.GenericStreams?.Count ?? 0);
     let deleteStreamIndex = -1;
     let renameStreamId = null;
+
+    // Localised UI strings injected from SharedResources so the validation /
+    // exclusion messages stay aligned with whatever language the user picked.
+    const STREAM_MIN_REQUIRED_MSG = '@Html.Raw(SharedLocalizer["Stream_AtLeastOneRequired"].Value.Replace("'", "\\'"))';
+    const EXCLUDE_BL_CONFIRM_MSG = '@Html.Raw(SharedLocalizer["Stream_ExcludeBusinessLicenseConfirm"].Value.Replace("'", "\\'"))';
+
+    /**
+     * Count how many revenue streams are currently active (not excluded and not
+     * removed). Used by the minimum-stream guard.
+     *
+     * Definition of "active":
+     *   - property-tax tab is always in the DOM, but excluded if RosraStateManager
+     *     marks it included=false (rare but possible after Prioritization).
+     *   - business-license tab is excluded when the user clicked × on its tab.
+     *   - generic streams are counted from their tab buttons in #dynamicStreamTabs.
+     */
+    function countActiveStreams() {
+        let count = 0;
+        // Property Tax — always present, but check RosraStateManager exclusion.
+        const ptBtn = document.querySelector('[data-tab="property-tax"]');
+        if (ptBtn && !ptBtn.classList.contains('stream-excluded') && ptBtn.style.display !== 'none') count++;
+
+        // Business License — same check.
+        const blBtn = document.getElementById('license-btn');
+        if (blBtn && !blBtn.classList.contains('stream-excluded') && blBtn.style.display !== 'none') count++;
+
+        // Generic streams in the dynamic tab container.
+        const generics = document.querySelectorAll('#dynamicStreamTabs .gap-tab-btn');
+        generics.forEach(btn => {
+            if (!btn.classList.contains('stream-excluded') && btn.style.display !== 'none') count++;
+        });
+
+        return count;
+    }
+
+    /**
+     * Exclude Business License from the analysis. Per v2 brief §6 BL must be
+     * removable/excludable just like other streams.
+     *
+     * Implementation note: we keep the DOM node (model bindings stay safe) and
+     * just flip RosraStateManager.included = false. All downstream consumers
+     * (Prioritization, Recommendations, PDF report) already filter on the
+     * `included` flag, so the propagation is automatic.
+     *
+     * The tab is hidden from the gap-analysis tab strip and a small re-include
+     * banner is shown so the user can recover from a misclick.
+     */
+    window.excludeBusinessLicense = function () {
+        if (countActiveStreams() <= 1) {
+            alert(STREAM_MIN_REQUIRED_MSG);
+            return;
+        }
+        if (!confirm(EXCLUDE_BL_CONFIRM_MSG)) return;
+
+        if (typeof RosraStateManager !== 'undefined') {
+            RosraStateManager.setStreamIncluded('business-license', false);
+            // Clear any manual rank that may have been assigned earlier — the
+            // Prioritization screen expects excluded streams to carry no rank.
+            if (RosraStateManager.setStreamRank) {
+                RosraStateManager.setStreamRank('business-license', null);
+            }
+        }
+
+        const blBtn = document.getElementById('license-btn');
+        if (blBtn) {
+            blBtn.classList.add('stream-excluded');
+            blBtn.style.display = 'none';
+        }
+
+        // If the user was viewing the BL tab when they clicked exclude, snap
+        // back to Property Tax which is always the canonical landing tab.
+        const activeBtn = document.querySelector('.gap-tab-btn.active');
+        if (!activeBtn || activeBtn.id === 'license-btn') {
+            if (typeof showTab === 'function') showTab('property-tax');
+        }
+
+        renderExcludedStreamsBanner();
+    };
+
+    /**
+     * Re-include Business License. Pairs with the banner shown after exclusion.
+     */
+    window.reincludeBusinessLicense = function () {
+        if (typeof RosraStateManager !== 'undefined') {
+            RosraStateManager.setStreamIncluded('business-license', true);
+        }
+        const blBtn = document.getElementById('license-btn');
+        if (blBtn) {
+            blBtn.classList.remove('stream-excluded');
+            blBtn.style.display = '';
+        }
+        renderExcludedStreamsBanner();
+    };
+
+    /**
+     * Render (or remove) the "Excluded streams" banner above the tab strip.
+     * The banner lists any currently-excluded streams and offers a re-include
+     * link per stream so users aren't trapped after a misclick.
+     */
+    function renderExcludedStreamsBanner() {
+        const host = document.getElementById('excludedStreamsBanner');
+        if (!host) return;
+
+        let html = '';
+        // Business License
+        if (typeof RosraStateManager !== 'undefined') {
+            const streams = RosraStateManager.getStreams ? RosraStateManager.getStreams() : [];
+            const bl = streams.find(s => s.id === 'business-license');
+            if (bl && bl.included === false) {
+                html += '<span class="excluded-stream-pill">'
+                     + '<i class="bi bi-eye-slash me-1"></i>'
+                     + (bl.name || 'Business License')
+                     + ' &mdash; <a href="#" onclick="event.preventDefault(); reincludeBusinessLicense();">@SharedLocalizer["Stream_Reinclude"]</a>'
+                     + '</span>';
+            }
+        }
+
+        if (html) {
+            host.innerHTML = '<div class="excluded-streams-banner">'
+                          + '<strong>@SharedLocalizer["Stream_Excluded_Badge"]:</strong> '
+                          + html
+                          + '</div>';
+            host.style.display = '';
+        } else {
+            host.innerHTML = '';
+            host.style.display = 'none';
+        }
+    }
 
     // ===== STREAM RENAMING FUNCTIONALITY =====
     // Open Rename Modal
@@ -1636,8 +1768,12 @@
         showTab(streamId);
     }
 
-    // Delete Stream
+    // Delete Stream — guarded so the user can't delete the last remaining stream.
     function deleteStream(index) {
+        if (countActiveStreams() <= 1) {
+            alert(STREAM_MIN_REQUIRED_MSG);
+            return;
+        }
         deleteStreamIndex = index;
         const streamBtn = document.getElementById('stream' + index + '-btn');
         const streamName = streamBtn ? streamBtn.querySelector('.stream-name-label').textContent : 'Stream ' + (index + 1);
@@ -1757,11 +1893,60 @@
         refreshGapAnalysisExclusionBadges();
         if (typeof RosraStateManager !== 'undefined' && RosraStateManager.subscribe) {
             RosraStateManager.subscribe('streams', refreshGapAnalysisExclusionBadges);
+            // Banner of excluded streams with re-include links — kept in sync via the same channel.
+            RosraStateManager.subscribe('streams', renderExcludedStreamsBanner);
         }
+
+        // If state restored from a prior session has BL excluded, mirror that
+        // into the DOM (hide the tab + show the re-include banner). This runs
+        // *after* RosraStateManager has rehydrated from localStorage.
+        setTimeout(function () {
+            if (typeof RosraStateManager === 'undefined') return;
+            const bl = RosraStateManager.getStreams().find(s => s.id === 'business-license');
+            if (bl && bl.included === false) {
+                const blBtn = document.getElementById('license-btn');
+                if (blBtn) {
+                    blBtn.classList.add('stream-excluded');
+                    blBtn.style.display = 'none';
+                }
+            }
+            renderExcludedStreamsBanner();
+        }, 250);
     });
 </script>
 
 <style>
+    /* Banner shown above the gap-analysis tab strip when one or more streams
+       are excluded. Lists each excluded stream with a "Re-include" link so the
+       user can recover from a misclick without hunting for it in Prioritization. */
+    .excluded-streams-banner {
+        background: #fef3c7;
+        border: 1px solid #fcd34d;
+        color: #78350f;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin: 0 0 12px;
+        font-size: 0.85rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .excluded-streams-banner strong { color: #92400e; }
+    .excluded-stream-pill {
+        background: #fff;
+        border: 1px solid #fcd34d;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+    }
+    .excluded-stream-pill a {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .excluded-stream-pill a:hover { text-decoration: underline; }
+
     .gap-tab-btn.gap-tab-excluded .stream-name-label {
         text-decoration: line-through;
         opacity: 0.7;
