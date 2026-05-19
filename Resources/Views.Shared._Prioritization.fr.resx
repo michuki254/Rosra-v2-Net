@@ -73,7 +73,7 @@
   <data name="FinalStream_Footer_Total" xml:space="preserve"><value>Total (flux inclus)</value></data>
 
   <!-- Charts -->
-  <data name="Chart_BarTitle" xml:space="preserve"><value>Écart de revenus par source</value></data>
+  <data name="Chart_BarTitle" xml:space="preserve"><value>Résumé de l'analyse des écarts</value></data>
   <data name="Chart_PieTitle" xml:space="preserve"><value>Part de l'écart total</value></data>
   <data name="Chart_Placeholder" xml:space="preserve"><value>Complétez l'analyse des écarts pour afficher les données graphiques</value></data>
 

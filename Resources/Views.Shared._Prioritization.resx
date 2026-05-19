@@ -73,7 +73,7 @@
   <data name="FinalStream_Footer_Total" xml:space="preserve"><value>Total (Included Streams)</value></data>
 
   <!-- Charts -->
-  <data name="Chart_BarTitle" xml:space="preserve"><value>Revenue Gap by Stream</value></data>
+  <data name="Chart_BarTitle" xml:space="preserve"><value>Summary of the Gap Analysis</value></data>
   <data name="Chart_PieTitle" xml:space="preserve"><value>Share of Total Gap</value></data>
   <data name="Chart_Placeholder" xml:space="preserve"><value>Complete Gap Analysis to see chart data</value></data>
 

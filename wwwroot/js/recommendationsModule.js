@@ -3142,7 +3142,7 @@
                         html += `<p class="qa-section-sub">This section shows where revenue is estimated to be lost across the selected revenue streams. Each bar shows the size of the estimated gap by stream and breaks it down by gap type.</p>`;
 
                         // --- "What the gaps mean" plain-language explainer ---
-                        html += `<div class="prio-explainer" style="margin-bottom:18px;">
+                        html += `<div class="prio-explainer" style="margin-bottom:14px;">
     <div class="prio-explainer-title">What the gaps mean</div>
     <p><strong>Compliance gap.</strong> Revenue that has been billed but not collected.</p>
     <p><strong>Coverage gap.</strong> Revenue not billed because taxpayers, properties, businesses, or users are missing from the register.</p>
@@ -3150,110 +3150,426 @@
     <p><strong>Mixed gaps.</strong> Revenue losses where more than one issue overlaps, such as missing units that would also be undercharged if added to the system.</p>
 </div>`;
 
-                        // --- SVG horizontal stacked bar chart (editorial) ---
-                        // Mirrors the Prioritization tab's gapParetoChart but is
-                        // rendered as inline SVG so it survives the network-blocked
-                        // PDF pipeline. Polished with x-axis gridlines, per-row
-                        // % share, larger bars, and totals in the legend.
+                        // --- Per-stream Gap Matrix (mirrors the site's 3x2
+                        // matrix on the Property Tax / Business License gap
+                        // analysis tabs). Each stream gets one compact card
+                        // showing the six cohort-rate cells whose sum equals
+                        // its Total Functional Gap. The matrix is what makes
+                        // the residual-third formula in this report tangible:
+                        // Property Tax's "Valuation / Liability" column on the
+                        // breakdown table aggregates the right-column cells
+                        // (Mixed Unreg + Mixed Reg + Valuation), not just
+                        // the single Valuation cell. Colors match the site
+                        // exactly so the reader recognises the visual.
+                        const fmtMatrix = n => {
+                            const v = Number(n) || 0;
+                            const cur = getCurrencyFromContext() || '$';
+                            if (Math.abs(v) >= 1e9) return cur + ' ' + (v/1e9).toFixed(2) + 'B';
+                            if (Math.abs(v) >= 1e6) return cur + ' ' + (v/1e6).toFixed(2) + 'M';
+                            if (Math.abs(v) >= 1e3) return cur + ' ' + (v/1e3).toFixed(1) + 'K';
+                            return cur + ' ' + Math.round(v).toLocaleString();
+                        };
+                        const buildGapMatrix = (s) => {
+                            const isPT = s.type === 'property-tax';
+                            // Map the six cells to the right gap fields per stream type.
+                            // The "Mixed" semantics differ:
+                            //   • Property tax  : mixedGapReg (registered-non-compliant × market uplift)
+                            //                     mixedGapUnreg (unregistered × market uplift)
+                            //   • Non-property : mixedGapCompliance (compliance-side overlap)
+                            //                    mixedGapCoverage (coverage-side overlap)
+                            // For non-property streams without a "market uplift" column,
+                            // the right-column cells absorb the mixed gaps anyway so the
+                            // matrix totals to TFG.
+                            const cellCoverage   = s.coverageGap   || 0;
+                            const cellMixedTop   = isPT ? (s.mixedGapUnreg || 0)   : (s.mixedGapCoverage || 0);
+                            const cellCompliance = s.complianceGap || 0;
+                            const cellMixedMid   = isPT ? (s.mixedGapReg   || 0)   : (s.mixedGapCompliance || 0);
+                            const cellRevenue    = s.currentRevenue || 0;
+                            const cellValLiab    = isPT ? (s.valuationGap || 0)   : (s.liabilityGap || 0);
+                            const valLiabLabel   = isPT ? 'Valuation gap' : 'Liability gap';
+                            const mixedTopLabel  = isPT ? 'Mixed val. / unreg.' : 'Mixed coverage';
+                            const mixedMidLabel  = isPT ? 'Mixed val. / reg.'   : 'Mixed compliance';
+
+                            // === Proportional sizing with guard rails ===
+                            // Row height = sum of that row's two cells (cohort total).
+                            // Column width = sum of that column's three cells (rate-axis total).
+                            // Use CSS minmax(MIN_PX, fr) so the grid is a treemap when
+                            // the data is balanced, but tiny rows/columns never collapse
+                            // below the minimum size their labels need to render.
+                            // Without the minmax, a 95%/5% split clips "Mixed coverage",
+                            // "Mixed compliance", "Liability gap" labels in the narrow
+                            // column.
+                            const row1Sum = cellCoverage   + cellMixedTop;   // Unregistered
+                            const row2Sum = cellCompliance + cellMixedMid;   // Non-compliant
+                            const row3Sum = cellRevenue    + cellValLiab;    // Compliant
+                            const col1Sum = cellCoverage   + cellCompliance + cellRevenue; // At avg rate
+                            const col2Sum = cellMixedTop   + cellMixedMid   + cellValLiab; // Market uplift
+                            const matrixTotal = row1Sum + row2Sum + row3Sum;
+                            // Ensure non-zero fr so the grid doesn't divide by zero.
+                            const r1 = Math.max(1, row1Sum);
+                            const r2 = Math.max(1, row2Sum);
+                            const r3 = Math.max(1, row3Sum);
+                            const c1 = Math.max(1, col1Sum);
+                            const c2 = Math.max(1, col2Sum);
+                            // Minimum pixel sizes — every cell stays readable even
+                            // when its row/column is data-tiny.
+                            const COL_MIN_PX = 110;  // fits "Mixed val. / unreg." + value on 1-2 lines
+                            const ROW_MIN_PX = 80;   // fits label + value comfortably
+                            const matrixHeight = 380; // px — total matrix height for full-width block layout
+
+                            // For axis labels (column %), show the proportional split.
+                            const pct = (part, whole) => whole > 0 ? Math.round(part / whole * 100) : 0;
+                            const c1Pct = pct(col1Sum, matrixTotal);
+                            const c2Pct = pct(col2Sum, matrixTotal);
+
+                            const cell = (bg, label, val) => `
+        <div style="background:${bg};color:#fff;padding:8px 6px;display:flex;flex-direction:column;justify-content:center;align-items:center;border-radius:2px;overflow:hidden;">
+            <div style="font-size:0.82rem;line-height:1.15;text-align:center;opacity:0.95;font-weight:500;">${esc(label)}</div>
+            <div style="font-size:0.92rem;font-weight:700;line-height:1.2;margin-top:3px;">${esc(fmtMatrix(val))}</div>
+        </div>`;
+                            const rowLabel = (text) => `
+        <div style="display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:0.72rem;color:#475569;font-weight:600;text-align:right;line-height:1.2;">${text}</div>`;
+
+                            // Returns ONLY the matrix grid + axis-label row — the
+                            // stream-block wrapper now owns the surrounding card
+                            // and the stream-name header (so the chart + matrix
+                            // share one header).
+                            return `<div style="break-inside:avoid;page-break-inside:avoid;">
+    <div style="display:grid;grid-template-columns:110px minmax(${COL_MIN_PX}px,${c1.toFixed(0)}fr) minmax(${COL_MIN_PX}px,${c2.toFixed(0)}fr);grid-template-rows:minmax(${ROW_MIN_PX}px,${r1.toFixed(0)}fr) minmax(${ROW_MIN_PX}px,${r2.toFixed(0)}fr) minmax(${ROW_MIN_PX}px,${r3.toFixed(0)}fr);gap:3px;min-height:${matrixHeight}px;">
+        ${rowLabel('Unregistered<br/>cohort')}
+        ${cell('#F28E2B', 'Coverage gap',      cellCoverage)}
+        ${cell('#B07AA1', mixedTopLabel,       cellMixedTop)}
+        ${rowLabel('Non-compliant<br/>cohort')}
+        ${cell('#E15759', 'Compliance gap',    cellCompliance)}
+        ${cell('#76B7B2', mixedMidLabel,       cellMixedMid)}
+        ${rowLabel('Compliant<br/>cohort')}
+        ${cell('#00B2E3', 'Current revenue',   cellRevenue)}
+        ${cell('#4E79A7', valLiabLabel,        cellValLiab)}
+    </div>
+    <div style="display:grid;grid-template-columns:110px minmax(${COL_MIN_PX}px,${c1.toFixed(0)}fr) minmax(${COL_MIN_PX}px,${c2.toFixed(0)}fr);gap:3px;margin-top:6px;font-size:0.72rem;color:#64748b;font-weight:600;">
+        <div></div>
+        <div style="text-align:center;">At avg billed rate &middot; ${c1Pct}%</div>
+        <div style="text-align:center;">Market / liability uplift &middot; ${c2Pct}%</div>
+    </div>
+</div>`;
+                        };
+
+                        // --- Per-stream Actual vs Potential mini-chart ---
+                        // Same shape as the WoFi headline chart but compact.
+                        // Two bars side by side: Current OSR (cyan) and the
+                        // stacked Potential (cyan base + orange gap). Gives
+                        // the reader a quick "how much room is left" read
+                        // immediately next to the cohort matrix.
+                        const buildActualVsPotential = (s) => {
+                            const cur = s.currentRevenue || 0;
+                            const gap = s.totalFunctionalGap || 0;
+                            const pot = cur + gap;
+                            if (pot <= 0) {
+                                return `<div style="display:flex;align-items:center;justify-content:center;height:320px;color:#94a3b8;font-size:0.85rem;font-style:italic;background:#f8fafc;border-radius:6px;">No revenue data captured</div>`;
+                            }
+                            // SVG dimensions tuned for full content width to
+                            // match the site's "Actual vs potential" chart.
+                            const W = 720, H = 340;
+                            const padL = 70, padR = 170, padT = 40, padB = 50;
+                            const chartW = W - padL - padR;
+                            const chartH = H - padT - padB;
+                            // Nice y-axis max
+                            const niceMax = (() => {
+                                const v = pot * 1.15;
+                                const mag = Math.pow(10, Math.floor(Math.log10(v)));
+                                const norm = v / mag;
+                                const niceNorm = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 2.5 ? 2.5 : norm <= 5 ? 5 : 10;
+                                return niceNorm * mag;
+                            })();
+                            const yFor = v => padT + chartH - (v / niceMax) * chartH;
+                            const fmtShort = n => {
+                                if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+                                if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+                                if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(0) + 'K';
+                                return Math.round(n).toLocaleString();
+                            };
+                            const curSymLocal = getCurrencyFromContext() || '$';
+                            const curPrefix = curSymLocal ? curSymLocal + ' ' : '';
+                            // Grid lines + y-axis labels
+                            const ticks = 5;
+                            let gridSvg = '';
+                            for (let i = 0; i <= ticks; i++) {
+                                const v = (i / ticks) * niceMax;
+                                const y = yFor(v);
+                                gridSvg += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="#eef0f3" stroke-width="1"/>`;
+                                gridSvg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="11" font-weight="700" fill="#1f2937">${fmtShort(v)}</text>`;
+                            }
+                            const barW = 110;
+                            const xCur = padL + chartW * 0.30 - barW / 2;
+                            const xPot = padL + chartW * 0.72 - barW / 2;
+                            const yCurTop = yFor(cur);
+                            const yPotTop = yFor(pot);
+                            const yPotGapBot = yFor(cur);
+                            // Dashed connector from Current top to base of gap
+                            const connector = `<line x1="${xCur + barW}" y1="${yCurTop}" x2="${xPot}" y2="${yCurTop}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 4"/>`;
+                            // Gap bracket on the right side
+                            const bracketX = xPot + barW + 18;
+                            const bracketMid = (yPotTop + yPotGapBot) / 2;
+                            const gapPct = pot > 0 ? Math.round((gap / pot) * 100) : 0;
+                            const gapBracket = gap > 0 ? `
+            <path d="M ${bracketX - 6} ${yPotTop} L ${bracketX} ${yPotTop} L ${bracketX} ${yPotGapBot} L ${bracketX - 6} ${yPotGapBot}" stroke="#FD9D24" stroke-width="1.5" fill="none"/>
+            <text x="${bracketX + 8}" y="${bracketMid - 6}" font-size="12" font-weight="700" fill="#FD9D24">Gap</text>
+            <text x="${bracketX + 8}" y="${bracketMid + 12}" font-size="14" font-weight="700" fill="#FD9D24">${fmtShort(gap)}</text>
+            <text x="${bracketX + 8}" y="${bracketMid + 32}" font-size="11" font-weight="500" fill="#94a3b8">${gapPct}% of potential</text>` : '';
+                            // Segment heights — only paint in-bar labels when
+                            // the segment is tall enough to fit the text. Below
+                            // ~22px the label clips against the bar edges or
+                            // overlaps the x-axis baseline. Numbers always still
+                            // appear in the dark "Sh XX.XB" total above each bar.
+                            const LABEL_MIN_PX = 22;
+                            const curBarH       = (padT + chartH) - yCurTop;
+                            const potCyanBaseH  = (padT + chartH) - yPotGapBot;
+                            const potGapH       = yPotGapBot - yPotTop;
+                            const inBarLabel = (x, yCenter, text) => `
+            <text x="${x}" y="${yCenter}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">${text}</text>`;
+                            return `<div style="background:#ffffff;border-radius:6px;padding:8px;border:1px solid #f1f5f9;">
+        <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;font-family:'Inter','Segoe UI',Arial,sans-serif;font-feature-settings:'tnum';">
+            ${gridSvg}
+            ${connector}
+            <!-- Current OSR bar (cyan, full height) -->
+            <rect x="${xCur}" y="${yCurTop}" width="${barW}" height="${curBarH}" fill="#00b2e3"/>
+            <text x="${xCur + barW/2}" y="${yCurTop - 8}" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2937">${curPrefix}${fmtShort(cur)}</text>
+            ${curBarH >= LABEL_MIN_PX ? inBarLabel(xCur + barW/2, (yCurTop + (padT + chartH)) / 2 + 5, fmtShort(cur)) : ''}
+            <!-- Potential bar: cyan base + orange gap -->
+            <rect x="${xPot}" y="${yPotGapBot}" width="${barW}" height="${potCyanBaseH}" fill="#00b2e3"/>
+            <rect x="${xPot}" y="${yPotTop}" width="${barW}" height="${potGapH}" fill="#FD9D24"/>
+            <text x="${xPot + barW/2}" y="${yPotTop - 8}" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2937">${curPrefix}${fmtShort(pot)}</text>
+            ${potGapH      >= LABEL_MIN_PX ? inBarLabel(xPot + barW/2, (yPotTop + yPotGapBot) / 2 + 5, fmtShort(gap)) : ''}
+            ${potCyanBaseH >= LABEL_MIN_PX ? inBarLabel(xPot + barW/2, (yPotGapBot + (padT + chartH)) / 2 + 5, fmtShort(cur)) : ''}
+            ${gapBracket}
+            <!-- X-axis baseline -->
+            <line x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}" stroke="#1f2937" stroke-width="1"/>
+            <!-- X-axis labels -->
+            <text x="${xCur + barW/2}" y="${padT + chartH + 22}" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Actual Revenue</text>
+            <text x="${xPot + barW/2}" y="${padT + chartH + 22}" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Potential Revenue</text>
+        </svg>
+    </div>`;
+                        };
+
+                        // --- Per-stream block: stream header + "Actual vs
+                        // potential" chart (with title bar + AMOUNTS IN UNIT
+                        // tag, like the site) + reading note + matrix title +
+                        // cohort matrix + description. Mirrors the layout the
+                        // user sees on the Property Tax / Business License
+                        // gap analysis tabs.
+                        const unitTag = (() => {
+                            const sym = getCurrencyFromContext() || '';
+                            return 'AMOUNTS IN ' + (sym ? sym.toUpperCase() : 'LCU') + ' (B)';
+                        })();
+                        const buildStreamBlock = (s) => {
+                            const tfg = s.totalFunctionalGap || 0;
+                            const cur = s.currentRevenue   || 0;
+                            const pot = cur + tfg;
+                            return `<div style="break-inside:avoid;page-break-inside:avoid;background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin:14px 0;">
+    <!-- Stream header -->
+    <div style="border-bottom:1px solid #f1f5f9;padding-bottom:8px;margin-bottom:12px;">
+        <h4 style="margin:0 0 4px;font-size:1.05rem;font-weight:700;color:#0f2742;font-family:'Playfair Display',Georgia,serif;letter-spacing:-0.005em;">${esc(s.name || '')}</h4>
+        <div style="font-size:0.78rem;color:#64748b;line-height:1.4;">
+            Current OSR <strong style="color:#0f2742;">${esc(fmtMatrix(cur))}</strong>
+            &middot; Estimated potential <strong style="color:#0f2742;">${esc(fmtMatrix(pot))}</strong>
+            &middot; Total gap <strong style="color:#E65100;">${esc(fmtMatrix(tfg))}</strong>
+        </div>
+    </div>
+    <!-- Actual vs potential chart title bar -->
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+        <div style="font-size:0.85rem;font-weight:700;color:#0f2742;">Actual vs potential</div>
+        <div style="font-size:0.65rem;font-weight:600;color:#94a3b8;letter-spacing:0.04em;">${esc(unitTag)}</div>
+    </div>
+    ${buildActualVsPotential(s)}
+    <!-- How to read note -->
+    <p style="font-size:0.72rem;color:#475569;margin:8px 0 14px;border-left:3px solid #cbd5e1;padding:6px 10px;background:#f8fafc;border-radius:0 4px 4px 0;line-height:1.4;">
+        <strong>How to read the two bars:</strong> Bar 1 is the revenue collected to date. Bar 2 is the estimated potential — the gap between them is the actionable improvement opportunity for this stream.
+    </p>
+    <!-- Matrix title -->
+    <div style="text-align:center;font-size:0.92rem;font-weight:700;color:#0f2742;font-family:'Playfair Display',Georgia,serif;margin:4px 0 8px;border-top:1px solid #f1f5f9;padding-top:10px;">
+        ${esc(s.name || '')} Gap Analysis
+    </div>
+    ${buildGapMatrix(s)}
+    <!-- Description -->
+    <p style="font-size:0.72rem;color:#475569;margin:10px 0 0;line-height:1.4;text-align:center;">
+        <strong>Description:</strong> This matrix shows the gap analysis across two dimensions — the cohort (vertical axis from compliant to estimated total) and the billing rate (horizontal axis from average billed to achievable rate). Each colored cell is a different revenue or gap component; together they sum to the stream's estimated potential.
+    </p>
+</div>`;
+                        };
+                        html += `<h3 class="qa-block-title" style="font-size:0.95rem;margin-top:14px;">Per-stream breakdown</h3>`;
+                        // One block per row — full width. The chart and matrix
+                        // stack inside each block. This mirrors the site layout
+                        // the user wants reproduced in the PDF.
+                        html += streams.map(buildStreamBlock).join('');
+
+                        // --- SVG horizontal stacked bar — mirrors the SITE's
+                        // gapParetoChart appearance (Chart.js look) so the PDF
+                        // and the Prioritization tab read identically. Five gap
+                        // colors (Compliance red, Coverage orange, Valuation/
+                        // Liability blue, Mixed Compliance purple, Mixed
+                        // Coverage pink), plan-status fade, "(no plan)" / "
+                        // (partial plan)" label suffix, total amount at end of
+                        // bar, bottom-aligned legend.
                         const sortedStreams = [...streams].sort((a, b) => (b.totalFunctionalGap || 0) - (a.totalFunctionalGap || 0));
-                        const maxGap = Math.max(1, ...sortedStreams.map(s => s.totalFunctionalGap || 0));
+
+                        // Three gap-type series. The third segment uses the
+                        // RESIDUAL (TFG − compliance − coverage) so each
+                        // stream's bar total matches both totalFunctionalGap
+                        // AND the Streams & Gaps Breakdown table below — the
+                        // 5-segment version diverged from the table because
+                        // s.valuationGap alone misses Property Tax's mixed
+                        // val./reg. + val./unreg. cohorts (~308B for the
+                        // Dar es Salaam Property Tax sample). Mixed-gap
+                        // composition is still visible on the per-stream
+                        // matrix cards below.
+                        const gapSeries = [
+                            { key: 'compliance', label: 'Compliance Gap',         color: '#F44336' },
+                            { key: 'coverage',   label: 'Coverage Gap',           color: '#FF9800' },
+                            { key: 'thirdGap',   label: 'Valuation / Liability',  color: '#3b82f6' }
+                        ];
+                        const gapValue = (s, key) => {
+                            switch (key) {
+                                case 'compliance': return s.complianceGap || 0;
+                                case 'coverage':   return s.coverageGap   || 0;
+                                case 'thirdGap':   return thirdOf(s);
+                                default: return 0;
+                            }
+                        };
+
+                        // Plan-status derived from prioritizationState (mirrors
+                        // the site's getStreamPlanStatus): all gap types removed
+                        // → 'none', some removed → 'partial', none → 'full'.
+                        const removedByName = (typeof getRemovedGapsByStream === 'function')
+                            ? getRemovedGapsByStream()
+                            : new Map();
+                        const planStatusOf = (s) => {
+                            const set = removedByName.get(s.name);
+                            if (!set || set.size === 0) return 'full';
+                            // Stream's relevant gap-types (only Compliance, Coverage,
+                            // Valuation OR Liability — mixed gaps aren't separately
+                            // removable on the site).
+                            const isPT = s.type === 'property-tax';
+                            const relevant = ['compliance', 'coverage', isPT ? 'valuation' : 'liability'];
+                            const removedRelevant = relevant.filter(t => set.has(t)).length;
+                            if (removedRelevant === 0) return 'full';
+                            if (removedRelevant >= relevant.length) return 'none';
+                            return 'partial';
+                        };
+                        const planAlpha = (ps) => ps === 'none' ? 0.25 : ps === 'partial' ? 0.55 : 1;
+                        const planSuffix = (ps) => ps === 'none' ? '  (no plan)' : ps === 'partial' ? '  (partial plan)' : '';
+
+                        // Per-stream row totals across all 5 series (matches the
+                        // site exactly — totalFunctionalGap is the sum of all 5).
+                        const streamSeriesTotal = (s) => gapSeries.reduce((sum, g) => sum + gapValue(s, g.key), 0);
+                        const maxGap = Math.max(1, ...sortedStreams.map(streamSeriesTotal));
+
+                        // Aggregate totals per series for the legend (sums across
+                        // all displayed streams). Recomputed here so the legend
+                        // figures are independent of the 3-column breakdown table.
+                        const seriesTotals = gapSeries.map(gs => ({
+                            label: gs.label,
+                            color: gs.color,
+                            amount: sortedStreams.reduce((sum, s) => sum + gapValue(s, gs.key), 0)
+                        }));
+
+                        // Helpers to apply alpha to hex colors.
+                        const hexToRgba = (hex, alpha) => {
+                            const h = hex.replace('#','');
+                            const r = parseInt(h.substring(0,2), 16);
+                            const g = parseInt(h.substring(2,4), 16);
+                            const b = parseInt(h.substring(4,6), 16);
+                            return `rgba(${r},${g},${b},${alpha})`;
+                        };
 
                         const W         = 720;
                         const padX      = 18;
-                        const padTop    = 68;   // legend + sublegend totals
-                        const xAxisH    = 32;   // tick labels + axis line
-                        const labelColW = 200;
+                        const padTop    = 60;
+                        const xAxisH    = 30;
+                        const legendH   = 38;     // bottom legend strip
+                        const labelColW = 220;    // wider — accommodates "(partial plan)" suffix
                         const valueColW = 110;
-                        const rowH      = 52;   // tall rows: stream name + % subtitle + bar
-                        const barH      = 22;   // chunkier bars
+                        const rowH      = 50;
+                        const barH      = 24;
                         const chartW    = W - labelColW - valueColW - padX * 2;
-                        const H         = padTop + xAxisH + sortedStreams.length * rowH;
+                        const H         = padTop + xAxisH + sortedStreams.length * rowH + legendH;
                         const xBarStart = padX + labelColW;
                         const yAxisBase = padTop + sortedStreams.length * rowH;
 
-                        const colCompliance = '#00689D';
-                        const colCoverage   = '#10b981';
-                        const colThird      = '#f59e0b';
-
-                        // --- Legend with totals (matches the breakdown table footer) ---
-                        const legendEntry = (x, color, label, amount) => `
-        <rect x="${x}"       y="16"  width="11" height="11" fill="${color}" rx="2"/>
-        <text x="${x + 17}"  y="25"  font-size="11" font-weight="600" fill="#1f2937">${esc(label)}</text>
-        <text x="${x + 17}"  y="40"  font-size="10" font-weight="500" fill="#64748b">${esc(curSym)} ${esc(fmtGap(amount))}</text>`;
-
-                        const legend = `<g font-family="'Inter','Segoe UI',sans-serif">
-        ${legendEntry(padX,        colCompliance, 'Compliance',           totals.compliance)}
-        ${legendEntry(padX + 150,  colCoverage,   'Coverage',             totals.coverage)}
-        ${legendEntry(padX + 290,  colThird,      'Valuation / Liability', totals.third)}
-    </g>`;
-
-                        // --- X-axis: 5 evenly spaced ticks (0, 25%, 50%, 75%, 100%) ---
+                        // X-axis: 5 evenly spaced ticks
                         const tickCount = 5;
-                        const niceMax   = maxGap;
                         const axisTicks = Array.from({ length: tickCount }, (_, i) => {
                             const frac = i / (tickCount - 1);
-                            return {
-                                x: xBarStart + frac * chartW,
-                                val: niceMax * frac
-                            };
+                            return { x: xBarStart + frac * chartW, val: maxGap * frac };
                         });
-
                         const gridLines = axisTicks.map(t => `
-        <line x1="${t.x.toFixed(2)}" y1="${padTop - 6}" x2="${t.x.toFixed(2)}" y2="${yAxisBase}" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="2,3"/>`).join('');
-
+        <line x1="${t.x.toFixed(2)}" y1="${padTop - 6}" x2="${t.x.toFixed(2)}" y2="${yAxisBase}" stroke="#eef0f3" stroke-width="1"/>`).join('');
                         const axisLabels = axisTicks.map(t => `
-        <text x="${t.x.toFixed(2)}" y="${yAxisBase + 18}" text-anchor="middle" font-size="10" font-weight="500" fill="#94a3b8">${esc(curSym)} ${esc(fmtGap(t.val))}</text>`).join('');
-
+        <text x="${t.x.toFixed(2)}" y="${yAxisBase + 18}" text-anchor="middle" font-size="10" font-weight="600" fill="#94a3b8">${esc(curSym)} ${esc(fmtGap(t.val))}</text>`).join('');
                         const axisLine = `<line x1="${xBarStart}" y1="${yAxisBase + 2}" x2="${xBarStart + chartW}" y2="${yAxisBase + 2}" stroke="#cbd5e1" stroke-width="1"/>`;
 
-                        // --- Rows ---
+                        // Bottom legend — 5 entries, evenly distributed across
+                        // the full SVG width so longer labels like "Valuation /
+                        // Liability" and "Mixed (Coverage)" don't overlap. Each
+                        // item gets (W - 2*padX) / 5 ≈ 137px which fits the
+                        // widest label at 11px font.
+                        const legendY = yAxisBase + xAxisH + 18;
+                        const legendItemW = (W - padX * 2) / seriesTotals.length;
+                        const legend = `<g font-family="'Inter','Segoe UI',sans-serif">${
+                            seriesTotals.map((it, i) => {
+                                const x = padX + i * legendItemW;
+                                return `
+        <rect x="${x}"       y="${legendY}"      width="11" height="11" fill="${it.color}" rx="2"/>
+        <text x="${x + 17}"  y="${legendY + 9}"  font-size="10" font-weight="600" fill="#1f2937">${esc(it.label)}</text>`;
+                            }).join('')
+                        }</g>`;
+
+                        // Rows — each stream a row with multi-segment stacked bar.
                         const rows = sortedStreams.map((s, i) => {
-                            const y          = padTop + i * rowH;
-                            const total      = s.totalFunctionalGap || 0;
-                            const cw         = (s.complianceGap || 0) / maxGap * chartW;
-                            const ow         = (s.coverageGap   || 0) / maxGap * chartW;
-                            const tw         = thirdOf(s)             / maxGap * chartW;
+                            const ps         = planStatusOf(s);
+                            const alpha      = planAlpha(ps);
+                            const total      = streamSeriesTotal(s);
                             const sharePct   = totals.totalGap > 0 ? Math.round(total / totals.totalGap * 100) : 0;
+                            const y          = padTop + i * rowH;
                             const xLabel     = padX + labelColW - 12;
                             const xValue     = padX + labelColW + chartW + 8;
                             const yName      = y + 14;
                             const yShare     = y + 28;
                             const yBar       = y + 32;
-                            const rawLabel   = s.name || s.id || '';
-                            const labelText  = rawLabel.length > 30 ? rawLabel.slice(0, 29) + '…' : rawLabel;
+                            const rawLabel   = (s.name || s.id || '') + planSuffix(ps);
+                            const labelText  = rawLabel.length > 36 ? rawLabel.slice(0, 35) + '…' : rawLabel;
 
-                            // Inline segment labels (only if segment is wide enough)
-                            const inlineLabel = (x, w, value, color) => {
-                                if (w < 42) return '';
-                                return `<text x="${(x + w/2).toFixed(2)}" y="${yBar + barH/2 + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">${esc(fmtGap(value))}</text>`;
-                            };
+                            // Build segments left-to-right.
+                            let xCursor = xBarStart;
+                            const segments = gapSeries.map(gs => {
+                                const v = gapValue(s, gs.key);
+                                const w = v / maxGap * chartW;
+                                const seg = `<rect x="${xCursor.toFixed(2)}" y="${yBar}" width="${w.toFixed(2)}" height="${barH}" fill="${hexToRgba(gs.color, alpha)}" />`;
+                                const lbl = (w >= 42)
+                                    ? `<text x="${(xCursor + w/2).toFixed(2)}" y="${yBar + barH/2 + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">${esc(fmtGap(v))}</text>`
+                                    : '';
+                                xCursor += w;
+                                return seg + lbl;
+                            }).join('');
 
                             return `<g font-family="'Inter','Segoe UI',sans-serif">
-        <text x="${xLabel}" y="${yName}"  text-anchor="end" font-size="13" font-weight="700" fill="#0f2742">${esc(labelText)}</text>
+        <text x="${xLabel}" y="${yName}"  text-anchor="end" font-size="13" font-weight="700" fill="${ps === 'none' ? '#94a3b8' : '#0f2742'}">${esc(labelText)}</text>
         <text x="${xLabel}" y="${yShare}" text-anchor="end" font-size="10" font-weight="500" fill="#64748b">${sharePct}% of total gap</text>
-
-        <rect x="${xBarStart}"            y="${yBar}" width="${cw.toFixed(2)}" height="${barH}" fill="${colCompliance}" rx="3"/>
-        <rect x="${xBarStart + cw}"       y="${yBar}" width="${ow.toFixed(2)}" height="${barH}" fill="${colCoverage}"   rx="3"/>
-        <rect x="${xBarStart + cw + ow}"  y="${yBar}" width="${tw.toFixed(2)}" height="${barH}" fill="${colThird}"      rx="3"/>
-        ${inlineLabel(xBarStart,           cw, s.complianceGap || 0)}
-        ${inlineLabel(xBarStart + cw,      ow, s.coverageGap   || 0)}
-        ${inlineLabel(xBarStart + cw + ow, tw, thirdOf(s))}
-
-        <text x="${xValue}" y="${yBar + barH/2 + 5}" font-size="13" font-weight="700" fill="#0f2742">${esc(curSym)} ${esc(fmtGap(total))}</text>
+        ${segments}
+        <text x="${xValue}" y="${yBar + barH/2 + 5}" font-size="13" font-weight="700" fill="${ps === 'none' ? '#94a3b8' : '#0f2742'}">${esc(curSym)} ${esc(fmtGap(total))}</text>
     </g>`;
                         }).join('');
 
                         html += `<div class="qa-chart-card">
     <div class="units-strip">
-        <div class="title">Revenue Gap by Stream</div>
+        <div class="title">Summary of the Gap Analysis</div>
         <div class="units">AMOUNTS IN ${esc(curSym)}</div>
     </div>
     <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;font-family:'Inter','Segoe UI',Arial,sans-serif;font-feature-settings:'tnum';">
         ${gridLines}
-        ${legend}
         ${rows}
         ${axisLine}
         ${axisLabels}
+        ${legend}
     </svg>
 </div>`;
 
