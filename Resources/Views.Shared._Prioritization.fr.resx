@@ -154,7 +154,7 @@
   <data name="Prio_Col_Move_Tooltip" xml:space="preserve"><value>Déplacer cette source vers le haut ou le bas.</value></data>
   <data name="Prio_NoStreamData" xml:space="preserve"><value>Aucune donnée de source trouvée. Veuillez d'abord compléter les onglets d'Analyse des écarts.</value></data>
 
-  <data name="Prio_GapSequencing_Help" xml:space="preserve"><value>Chaque cellule affiche le type d'écart (sélectionnable) et son montant.</value></data>
+  <data name="Prio_GapSequencing_Help" xml:space="preserve"><value>Chaque cellule affiche le type d'écart (sélectionnable) et son montant. Glissez une cellule ou utilisez les flèches pour réordonner les priorités d'un flux.</value></data>
 
   <data name="Prio_RevenueImpact_Title" xml:space="preserve"><value>Impact sur les revenus et opportunités d'amélioration</value></data>
   <data name="Prio_RevenueImpact_Sub" xml:space="preserve"><value>Écarts classés par impact absolu sur les revenus et notés selon leur potentiel d'amélioration pour aider à concentrer les efforts de réforme là où cela compte le plus.</value></data>

@@ -707,6 +707,73 @@
         padding-top: 0.3rem;
     }
 
+    /* ===== Intra-row Gap Priority controls (drag handle + left/right arrows) =====
+       Lets the user re-order the 3 priority slots within a single stream row,
+       either by dragging the grip from one priority cell onto another, or by
+       clicking the left/right arrow buttons beneath each cell. */
+    .prioritization-module .priority-cell { position: relative; }
+    .prioritization-module .priority-cell.gap-cell-dragging > .gap-display,
+    .prioritization-module .priority-cell.gap-cell-dragging > .priority-cell-amount,
+    .prioritization-module .priority-cell.gap-cell-dragging > .priority-cell-controls {
+        opacity: 0.4;
+    }
+    .prioritization-module .priority-cell.gap-cell-drag-over {
+        outline: 2px dashed #00B2E3;
+        outline-offset: -3px;
+        background: #F0F9FC;
+        border-radius: 8px;
+    }
+    .prioritization-module .gap-drag-grip {
+        display: inline-flex;
+        align-items: center;
+        color: #94a3b8;
+        cursor: grab;
+        user-select: none;
+        font-size: 1rem;
+        line-height: 1;
+        padding: 2px 1px;
+    }
+    .prioritization-module .gap-drag-grip:active { cursor: grabbing; }
+    .prioritization-module .priority-cell:hover .gap-drag-grip { color: var(--un-blue, #00B2E3); }
+    .prioritization-module .gap-drag-grip-disabled {
+        display: inline-block;
+        width: 14px; /* keep layout stable for cells that can't move */
+        visibility: hidden;
+    }
+    .prioritization-module .priority-cell-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin-top: 0.3rem;
+    }
+    .prioritization-module .gap-shift-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 22px;
+        padding: 0;
+        line-height: 1;
+        border: 1px solid #cbd5e1;
+        background: #fff;
+        color: #475569;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        cursor: pointer;
+        transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .prioritization-module .gap-shift-btn:hover:not(:disabled) {
+        background: #E0F2FE;
+        border-color: #00B2E3;
+        color: #00689D;
+    }
+    .prioritization-module .gap-shift-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+    .prioritization-module .gap-shift-btn i { font-size: 0.75rem; }
+
     /* Top Gaps to Tackle — sortable headers */
     .prioritization-module .top-gaps-sort {
         cursor: pointer;
@@ -2374,14 +2441,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         tbody.innerHTML = html;
+        attachGapPriorityCellHandlers();
     }
 
-    // Render individual priority cell — combined cell shows the dropdown AND the amount
+    // Render individual priority cell — combined cell shows the dropdown AND the amount.
+    // Each cell is also a drop target for the intra-row drag-and-drop reorder, and
+    // exposes a left/right arrow pair so the user can shift a priority by one slot
+    // without dragging.
     function renderPriorityCell(stream, priorityIndex) {
         const gapData = stream.currentSequence[priorityIndex];
         const gapType = gapData ? gapData.type : null;
         const isRemoved = gapData ? gapData.removed : true;
         const isOverridden = gapData ? gapData.isOverridden : false;
+        const totalSlots = stream.currentSequence.length;
 
         const displayGap = isRemoved ? 'Remove' : gapType;
         const overriddenDot = isOverridden ? '<span class="overridden-indicator" title="Overridden from default"></span>' : '';
@@ -2393,9 +2465,27 @@ document.addEventListener('DOMContentLoaded', function() {
             ? '<div class="priority-cell-amount text-muted">—</div>'
             : `<div class="priority-cell-amount fw-semibold">${amount ?? '—'}</div>`;
 
+        // Drag handle + arrows are only active on cells that hold a real gap-type.
+        // Removed slots show a spacer so the cell layout stays aligned.
+        const canMove = !isRemoved;
+        const gripHtml = canMove
+            ? `<i class="bi bi-grip-vertical gap-drag-grip"
+                   draggable="true"
+                   data-stream-id="${stream.streamId}"
+                   data-priority-index="${priorityIndex}"
+                   title="Drag to reorder this priority within the row"
+                   aria-label="Drag priority ${priorityIndex + 1} to a new slot"></i>`
+            : '<span class="gap-drag-grip-disabled" aria-hidden="true"></span>';
+
+        const leftDisabled  = (!canMove || priorityIndex === 0)              ? 'disabled' : '';
+        const rightDisabled = (!canMove || priorityIndex === totalSlots - 1) ? 'disabled' : '';
+
         return `
-            <td class="text-center priority-cell">
+            <td class="text-center priority-cell"
+                data-stream-id="${stream.streamId}"
+                data-priority-index="${priorityIndex}">
                 <div class="gap-display">
+                    ${gripHtml}
                     <span class="priority-number priority-${priorityIndex + 1}">${priorityIndex + 1}</span>
                     <select class="form-select form-select-sm"
                             data-stream-id="${stream.streamId}"
@@ -2406,6 +2496,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     ${overriddenDot}
                 </div>
                 ${amountMarkup}
+                <div class="priority-cell-controls">
+                    <button type="button" class="gap-shift-btn"
+                            data-stream-id="${stream.streamId}"
+                            data-priority-index="${priorityIndex}"
+                            data-direction="left"
+                            ${leftDisabled}
+                            title="Move this priority left"
+                            aria-label="Move priority ${priorityIndex + 1} left"
+                            onclick="window.handleGapShiftClick(this)">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button type="button" class="gap-shift-btn"
+                            data-stream-id="${stream.streamId}"
+                            data-priority-index="${priorityIndex}"
+                            data-direction="right"
+                            ${rightDisabled}
+                            title="Move this priority right"
+                            aria-label="Move priority ${priorityIndex + 1} right"
+                            onclick="window.handleGapShiftClick(this)">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
             </td>
         `;
     }
@@ -2449,6 +2561,160 @@ document.addEventListener('DOMContentLoaded', function() {
         // Save state
         savePrioritizationState();
     };
+
+    // ===== Intra-row reorder of gap priorities =====
+    // Drag the grip from one priority cell onto another (same stream row only),
+    // or click the left/right arrows to shift by one slot. Both routes call
+    // swapGapSlots(), which mutates currentSequence, recomputes the per-slot
+    // isOverridden flag from defaultSequence, syncs the new priorities back to
+    // RosraStateManager (so the PDF export's master priority list matches the
+    // on-screen order), and re-renders every downstream view.
+    window.handleGapShiftClick = function(btn) {
+        if (!btn || btn.disabled) return;
+        const streamId  = btn.dataset.streamId;
+        const fromIdx   = parseInt(btn.dataset.priorityIndex, 10);
+        const direction = btn.dataset.direction;
+        if (!streamId || isNaN(fromIdx) || !direction) return;
+        const toIdx = fromIdx + (direction === 'left' ? -1 : 1);
+        swapGapSlots(streamId, fromIdx, toIdx);
+    };
+
+    function swapGapSlots(streamId, fromIdx, toIdx) {
+        const stream = gapPrioritizationData.find(s => s.streamId === streamId);
+        if (!stream || !Array.isArray(stream.currentSequence)) return;
+        const len = stream.currentSequence.length;
+        if (fromIdx < 0 || fromIdx >= len) return;
+        if (toIdx   < 0 || toIdx   >= len) return;
+        if (fromIdx === toIdx) return;
+
+        // Swap the two entries — index === priority slot (0 = P1, 1 = P2, 2 = P3).
+        const a = stream.currentSequence[fromIdx];
+        const b = stream.currentSequence[toIdx];
+        stream.currentSequence[fromIdx] = b;
+        stream.currentSequence[toIdx]   = a;
+
+        // Recompute isOverridden from the original defaultSequence so the
+        // overridden-dot indicator and the persisted "overridden" flag stay
+        // truthful after a reorder.
+        stream.currentSequence.forEach((seq, i) => {
+            if (!seq) return;
+            const defaultType = Array.isArray(stream.defaultSequence) ? stream.defaultSequence[i] : null;
+            const currType = seq.removed ? 'Remove' : seq.type;
+            seq.isOverridden = (defaultType != null) && (currType !== defaultType);
+        });
+
+        // Persist FIRST. RosraStateManager.setGapPriority (called below) fires
+        // a 'streams' notification whose subscriber re-runs initializeGapPrioritization
+        // → applySavedGapPrioritization, which reads the saved state back. If we
+        // saved after syncing, the subscriber would read STALE state and revert
+        // our swap on screen. Saving first means the rebuild restores the swap.
+        savePrioritizationState();
+
+        // Mirror the new order into RosraStateManager.gapPriorities so
+        // recommendationsModule's PDF export (which builds the priority
+        // matrix from getMasterPriorityList) reflects the user's choice.
+        syncGapPrioritiesToStateManager(stream);
+
+        // Re-render every view that depends on the priority order.
+        // If the RosraStateManager subscriber is active, initializeGapPrioritization
+        // has already re-rendered the gap-sequencing table — but these calls are
+        // idempotent and cover the (rare) case where the subscriber wasn't bound.
+        renderGapSequencingTable();
+        renderGapAmountsTable();
+        renderGapSummary();
+        renderMasterPriorityList();
+        renderTopGapsTable();
+        renderFinalTable();
+        updateCharts();
+    }
+
+    // Map a stream's currentSequence (priority slot → gap-type) into the
+    // gapPriorities shape RosraStateManager exposes:
+    //   { compliance: <slot>, coverage: <slot>, third: <slot> }
+    // where 'third' covers both Valuation (property tax) and Liability (others).
+    // We deliberately ignore Removed slots: their gap-type keeps its previous
+    // priority number, which getMasterPriorityList then drops via the removed-
+    // gap filter built from currentSequence itself.
+    function syncGapPrioritiesToStateManager(stream) {
+        if (typeof RosraStateManager === 'undefined') return;
+        if (typeof RosraStateManager.setGapPriority !== 'function') return;
+        if (!stream || !Array.isArray(stream.currentSequence)) return;
+
+        stream.currentSequence.forEach((seq, idx) => {
+            if (!seq || seq.removed) return;
+            const t = String(seq.type || '').toLowerCase();
+            let key = null;
+            if (t === 'compliance')  key = 'compliance';
+            else if (t === 'coverage') key = 'coverage';
+            else if (t === 'valuation' || t === 'liability') key = 'third';
+            if (key) {
+                RosraStateManager.setGapPriority(stream.streamId, key, idx + 1);
+            }
+        });
+    }
+
+    // Attach drag-and-drop handlers to every priority cell in the gap-sequencing
+    // table. Called after each renderGapSequencingTable() because re-rendering
+    // wipes out previously bound listeners.
+    let __gapCellDragSource = null;
+    function attachGapPriorityCellHandlers() {
+        const tbody = document.getElementById('gapSequencingBody');
+        if (!tbody) return;
+
+        // Grips initiate the drag — anchoring drag to the grip keeps the cell's
+        // <select> open/close behaviour intact (a draggable <td> would otherwise
+        // hijack pointer events from the dropdown on some browsers).
+        tbody.querySelectorAll('.gap-drag-grip[draggable="true"]').forEach(grip => {
+            grip.addEventListener('dragstart', (e) => {
+                const streamId = grip.dataset.streamId;
+                const fromIdx  = parseInt(grip.dataset.priorityIndex, 10);
+                if (!streamId || isNaN(fromIdx)) return;
+                __gapCellDragSource = { streamId, fromIdx };
+                const cell = grip.closest('.priority-cell');
+                if (cell) cell.classList.add('gap-cell-dragging');
+                try {
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', `${streamId}:${fromIdx}`);
+                } catch (_) { /* IE / Safari fall-back */ }
+            });
+            grip.addEventListener('dragend', () => {
+                tbody.querySelectorAll('.priority-cell.gap-cell-dragging')
+                     .forEach(c => c.classList.remove('gap-cell-dragging'));
+                tbody.querySelectorAll('.priority-cell.gap-cell-drag-over')
+                     .forEach(c => c.classList.remove('gap-cell-drag-over'));
+                __gapCellDragSource = null;
+            });
+        });
+
+        // Every priority cell is a drop target, but we restrict drops to the
+        // same stream row — dragging across rows would silently reshape another
+        // stream's plan, which the user wouldn't expect.
+        tbody.querySelectorAll('td.priority-cell[data-stream-id]').forEach(cell => {
+            cell.addEventListener('dragover', (e) => {
+                if (!__gapCellDragSource) return;
+                if (cell.dataset.streamId !== __gapCellDragSource.streamId) return;
+                const toIdx = parseInt(cell.dataset.priorityIndex, 10);
+                if (isNaN(toIdx) || toIdx === __gapCellDragSource.fromIdx) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                cell.classList.add('gap-cell-drag-over');
+            });
+            cell.addEventListener('dragleave', () => {
+                cell.classList.remove('gap-cell-drag-over');
+            });
+            cell.addEventListener('drop', (e) => {
+                e.preventDefault();
+                cell.classList.remove('gap-cell-drag-over');
+                if (!__gapCellDragSource) return;
+                if (cell.dataset.streamId !== __gapCellDragSource.streamId) return;
+                const toIdx = parseInt(cell.dataset.priorityIndex, 10);
+                if (isNaN(toIdx)) return;
+                const { streamId, fromIdx } = __gapCellDragSource;
+                __gapCellDragSource = null;
+                swapGapSlots(streamId, fromIdx, toIdx);
+            });
+        });
+    }
 
     // Gap Amounts table is now combined into renderPriorityCell() — this stub keeps callers safe.
     function renderGapAmountsTable() { /* merged into the gap sequencing cells */ }

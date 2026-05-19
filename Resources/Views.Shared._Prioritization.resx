@@ -157,7 +157,7 @@
   <data name="Prio_NoStreamData" xml:space="preserve"><value>No stream data found. Please complete the Gap Analysis tabs first.</value></data>
 
   <!-- Step 2: Gap Sequencing helper note + mode explanation toggle -->
-  <data name="Prio_GapSequencing_Help" xml:space="preserve"><value>Each cell shows the gap type (selectable) and its amount.</value></data>
+  <data name="Prio_GapSequencing_Help" xml:space="preserve"><value>Each cell shows the gap type (selectable) and its amount. Drag a cell or use the arrows to re-rank priorities within a stream.</value></data>
 
   <!-- Step 3: Top Gaps to Tackle -->
   <data name="Prio_RevenueImpact_Title" xml:space="preserve"><value>Revenue Impact &amp; Improvement Opportunities</value></data>

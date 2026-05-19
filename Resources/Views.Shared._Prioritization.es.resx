@@ -154,7 +154,7 @@
   <data name="Prio_Col_Move_Tooltip" xml:space="preserve"><value>Mover este flujo arriba o abajo.</value></data>
   <data name="Prio_NoStreamData" xml:space="preserve"><value>No se encontraron datos de flujos. Por favor complete primero las pestañas de Análisis de brechas.</value></data>
 
-  <data name="Prio_GapSequencing_Help" xml:space="preserve"><value>Cada celda muestra el tipo de brecha (seleccionable) y su monto.</value></data>
+  <data name="Prio_GapSequencing_Help" xml:space="preserve"><value>Cada celda muestra el tipo de brecha (seleccionable) y su monto. Arrastre una celda o use las flechas para reordenar las prioridades dentro de un flujo.</value></data>
 
   <data name="Prio_RevenueImpact_Title" xml:space="preserve"><value>Impacto en los ingresos y oportunidades de mejora</value></data>
   <data name="Prio_RevenueImpact_Sub" xml:space="preserve"><value>Brechas clasificadas por impacto absoluto en los ingresos y puntuadas por potencial de mejora para ayudar a enfocar los esfuerzos de reforma donde más importan.</value></data>
