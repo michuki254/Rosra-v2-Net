@@ -79,6 +79,9 @@ FakesAssemblies/
 
 # Environment settings
 appsettings.Development.json
+# Audit L-1: keep Production settings out of git entirely. A template is committed at
+# appsettings.Production.json.example so the structure is still discoverable.
+appsettings.Production.json
 *.env
 
 # Publish output

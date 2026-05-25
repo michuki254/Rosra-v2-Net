@@ -3164,8 +3164,10 @@ namespace RosraApp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error resetting peer SNG data");
-                return Json(new { success = false, message = $"Error resetting peer SNG data: {ex.Message}" });
+                // Audit M-1: structured log only, generic message to client with a correlatable ref.
+                var refId = Guid.NewGuid().ToString("N")[..8];
+                _logger.LogError(ex, "ResetPeerSNG failed [ref {RefId}]", refId);
+                return Json(new { success = false, message = $"Reset failed. Reference: {refId}" });
             }
         }
 

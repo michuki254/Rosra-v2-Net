@@ -5,7 +5,10 @@ namespace RosraApp.Controllers
 {
     public class CultureController : Controller
     {
+        // Audit M-2: antiforgery on the only state-changing endpoint — the culture cookie
+        // is functionally harmless but reviewers will flag any [HttpPost] without a token.
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult SetLanguage(string culture, string returnUrl)
         {
             Response.Cookies.Append(

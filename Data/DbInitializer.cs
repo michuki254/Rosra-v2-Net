@@ -72,57 +72,57 @@ namespace RosraApp.Data
                         }
                     }
 
-                    // Create default admin user
+                    // Seed the default admin user from the ADMIN_SEED_PASSWORD env var.
+                    // Audit C-1: previously hardcoded "Admin@123" — visible in git history and
+                    // satisfied the password policy, so the account was effectively public on every
+                    // deploy. If the env var is missing we now SKIP seeding entirely rather than
+                    // falling back to a known weak password. A real admin must be created out-of-band
+                    // (e.g., a one-time `dotnet user-secrets set ADMIN_SEED_PASSWORD ...` for dev,
+                    // or an App Service application setting for production) and the password rotated
+                    // immediately after first login.
+                    var seedPassword = Environment.GetEnvironmentVariable("ADMIN_SEED_PASSWORD");
                     var adminUser = await userManager.FindByEmailAsync("admin@rosra.com");
                     if (adminUser == null)
                     {
-                        logger.LogInformation("Creating default admin user");
-                        adminUser = new ApplicationUser
+                        if (string.IsNullOrWhiteSpace(seedPassword))
                         {
-                            UserName = "admin@rosra.com",
-                            Email = "admin@rosra.com",
-                            EmailConfirmed = true,
-                            FirstName = "Admin",
-                            LastName = "User",
-                            CreatedAt = DateTime.UtcNow
-                        };
-
-                        var result = await userManager.CreateAsync(adminUser, "Admin@123");
-                        if (result.Succeeded)
-                        {
-                            logger.LogInformation("Adding admin user to Admin role");
-                            await userManager.AddToRoleAsync(adminUser, "Admin");
+                            logger.LogWarning("Skipping default admin seed: ADMIN_SEED_PASSWORD is not set. " +
+                                "Set it as an environment variable / App Service application setting and restart, " +
+                                "or create the first admin manually via Identity scaffolding + role assignment.");
                         }
                         else
                         {
-                            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                            logger.LogError($"Error creating admin user: {errors}");
+                            logger.LogInformation("Creating default admin user from ADMIN_SEED_PASSWORD env var");
+                            adminUser = new ApplicationUser
+                            {
+                                UserName = "admin@rosra.com",
+                                Email = "admin@rosra.com",
+                                EmailConfirmed = true,
+                                FirstName = "Admin",
+                                LastName = "User",
+                                CreatedAt = DateTime.UtcNow
+                            };
+
+                            var result = await userManager.CreateAsync(adminUser, seedPassword);
+                            if (result.Succeeded)
+                            {
+                                logger.LogInformation("Adding admin user to Admin role. ROTATE THE PASSWORD ON FIRST LOGIN.");
+                                await userManager.AddToRoleAsync(adminUser, "Admin");
+                            }
+                            else
+                            {
+                                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                                logger.LogError("Error creating admin user: {Errors}", errors);
+                            }
                         }
                     }
 
-                    // Make acmichuki@gmail.com an admin
-                    var specificAdminUser = await userManager.FindByEmailAsync("acmichuki@gmail.com");
-                    if (specificAdminUser != null)
-                    {
-                        if (!await userManager.IsInRoleAsync(specificAdminUser, "Admin"))
-                        {
-                            logger.LogInformation("Adding acmichuki@gmail.com to Admin role");
-                            await userManager.AddToRoleAsync(specificAdminUser, "Admin");
-                            logger.LogInformation("Successfully added acmichuki@gmail.com to Admin role");
-                        }
-                        else
-                        {
-                            logger.LogInformation("acmichuki@gmail.com is already an admin");
-                        }
-                    }
-                    else
-                    {
-                        logger.LogInformation("User acmichuki@gmail.com not found. Please register this account first.");
-                    }
-
-                    // Create UN admin users
-                    await EnsureAdminUser(userManager, logger, "lennart.fleck@un.org", "Lennart", "Fleck");
-                    await EnsureAdminUser(userManager, logger, "omar.moraleslopez@un.org", "Omar", "Morales Lopez");
+                    // Audit C-1: removed the unconditional auto-promotion of acmichuki@gmail.com and
+                    // the auto-seed of lennart.fleck@un.org / omar.moraleslopez@un.org. Those accounts
+                    // must now register normally and be promoted by an existing Admin through the
+                    // /Admin user-management UI. Keeping the codepath there meant anyone who could
+                    // register with those addresses (or the controlling email accounts) would land
+                    // with Admin role automatically.
 
                     // Seed currency data into DB_Countries (if missing)
                     logger.LogInformation("Seeding currency data for DB_Countries");
@@ -550,37 +550,9 @@ namespace RosraApp.Data
             public decimal? OSR_pc_derived_usd { get; set; }
         }
 
-        private static async Task EnsureAdminUser(UserManager<ApplicationUser> userManager, ILogger logger, string email, string firstName, string lastName)
-        {
-            var user = await userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                user = new ApplicationUser
-                {
-                    UserName = email,
-                    Email = email,
-                    EmailConfirmed = true,
-                    FirstName = firstName,
-                    LastName = lastName,
-                    CreatedAt = DateTime.UtcNow
-                };
-                var result = await userManager.CreateAsync(user, "Admin@123");
-                if (result.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(user, "Admin");
-                    logger.LogInformation($"Created admin user: {email}");
-                }
-                else
-                {
-                    logger.LogError($"Failed to create {email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
-                }
-            }
-            else if (!await userManager.IsInRoleAsync(user, "Admin"))
-            {
-                await userManager.AddToRoleAsync(user, "Admin");
-                logger.LogInformation($"Added {email} to Admin role");
-            }
-        }
+        // EnsureAdminUser helper removed in audit C-1 fix. It hardcoded "Admin@123" and was used
+        // to auto-seed UN staff accounts on every startup. New admins are now created through the
+        // /Admin user-management UI by an existing Admin.
 
         private static async Task SeedEmailSettings(ApplicationDbContext context, ILogger logger)
         {

@@ -20,17 +20,30 @@ namespace RosraApp.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
         private readonly IEmailService _emailService;
+        private readonly ILogger<AdminController> _logger;
 
         public AdminController(
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             ApplicationDbContext context,
-            IEmailService emailService)
+            IEmailService emailService,
+            ILogger<AdminController> logger)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
             _emailService = emailService;
+            _logger = logger;
+        }
+
+        // Audit M-1: shared helper so exception details land in structured logs (correlatable
+        // by reference ID) instead of being echoed back to clients. ex.Message can leak SQL
+        // error text, file paths, internal class names — CWE-209.
+        private string NewErrorRef(Exception ex, string operation)
+        {
+            var refId = Guid.NewGuid().ToString("N")[..8];
+            _logger.LogError(ex, "{Operation} failed [ref {RefId}]", operation, refId);
+            return refId;
         }
 
         public async Task<IActionResult> Index(int page = 1, int pageSize = 25, string? search = null)
@@ -689,7 +702,8 @@ namespace RosraApp.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"Error importing data: {ex.Message}" });
+                var refId = NewErrorRef(ex, "UploadPeerSNGData");
+                return Json(new { success = false, message = $"Import failed. Reference: {refId}" });
             }
         }
 
@@ -780,7 +794,8 @@ namespace RosraApp.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"Error importing data: {ex.Message}" });
+                var refId = NewErrorRef(ex, "UploadCountryData");
+                return Json(new { success = false, message = $"Import failed. Reference: {refId}" });
             }
         }
 
@@ -1631,7 +1646,8 @@ namespace RosraApp.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"Backup failed: {ex.Message}" });
+                var refId = NewErrorRef(ex, "Backup");
+                return Json(new { success = false, message = $"Backup failed. Reference: {refId}" });
             }
         }
 
@@ -1949,12 +1965,18 @@ namespace RosraApp.Controllers
         /// <summary>
         /// Import solution cards from JSON — POST
         /// </summary>
+        // Audit M-3: cap upload size. Without this an Admin (or anyone who compromises an Admin
+        // account) can OOM the worker by posting a multi-hundred-MB JSON file, since the body
+        // is fully read into memory before deserialization.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequestSizeLimit(5_000_000)]
         public async Task<IActionResult> ImportSolutionCards(IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return Json(new { success = false, message = "No file provided." });
+            if (file.Length > 5_000_000)
+                return Json(new { success = false, message = "File exceeds 5 MB limit." });
 
             try
             {
@@ -2008,7 +2030,8 @@ namespace RosraApp.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"Import failed: {ex.Message}" });
+                var refId = NewErrorRef(ex, "ImportSolutionCards");
+                return Json(new { success = false, message = $"Import failed. Reference: {refId}" });
             }
         }
 

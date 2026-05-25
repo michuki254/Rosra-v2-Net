@@ -1,5 +1,6 @@
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
             errorNumbersToAdd: null)));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+// Audit C-2: persist Data Protection keys to a stable location. The default key store is
+// %LOCALAPPDATA% which is wiped on every App Service restart/redeploy/scale-out, which would
+// (a) log every user out on each restart and (b) make the SMTP password encrypted by
+// EmailService unrecoverable. On Azure App Service %HOME% is a persisted, shared file share;
+// elsewhere we fall back to ContentRootPath so dev still works.
+var dpKeysDir = Environment.GetEnvironmentVariable("HOME") is { Length: > 0 } home
+    ? Path.Combine(home, "DataProtection-Keys")
+    : Path.Combine(builder.Environment.ContentRootPath, ".dp-keys");
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(dpKeysDir))
+    .SetApplicationName("RosraApp");
+
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
@@ -41,10 +54,20 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 
 // Point [Authorize] redirects at the custom AccountController instead of the
 // default scaffolded /Identity/Account/Login page.
+//
+// Audit M-4: pin the auth cookie to SameSite=Strict and Secure=Always. Strict eliminates
+// CSRF-via-auth-cookie on cross-site navigations; Always forces HTTPS even if the host
+// terminates TLS in front of us. Also cap absolute lifetime with sliding renewal so
+// stolen cookies don't live forever.
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.ExpireTimeSpan = TimeSpan.FromHours(2);
+    options.SlidingExpiration = true;
 });
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
@@ -113,6 +136,9 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    // Audit M-4: Strict + Always for the session cookie too.
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 // Add memory cache for reference data
@@ -217,7 +243,10 @@ app.Use(async (context, next) =>
 {
     context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
     context.Response.Headers.Append("X-Frame-Options", "SAMEORIGIN");
-    context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+    // Audit L-3: per current OWASP guidance the legacy XSS auditor should be disabled,
+    // not enabled. Modern browsers ignore the header; old Edge/Chrome implementations
+    // had their own XSS bypasses. CSP is the real defence here.
+    context.Response.Headers.Append("X-XSS-Protection", "0");
     context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
     context.Response.Headers.Append("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
     // In Development, allow ws: so dotnet-watch browser-refresh can connect over localhost.

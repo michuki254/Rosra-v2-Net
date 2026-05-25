@@ -17,13 +17,24 @@ namespace RosraApp.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<DashboardController> _logger;
 
         public DashboardController(
             UserManager<ApplicationUser> userManager,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            ILogger<DashboardController> logger)
         {
             _userManager = userManager;
             _context = context;
+            _logger = logger;
+        }
+
+        // Audit M-1: don't echo ex.Message back to clients — log structured + return a reference.
+        private string NewErrorRef(Exception ex, string operation)
+        {
+            var refId = Guid.NewGuid().ToString("N")[..8];
+            _logger.LogError(ex, "{Operation} failed [ref {RefId}]", operation, refId);
+            return refId;
         }
 
         public async Task<IActionResult> Index(int page = 1, int pageSize = 12, string? search = null, string? tab = null)
@@ -174,7 +185,8 @@ namespace RosraApp.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
+                var refId = NewErrorRef(ex, "DeleteReport");
+                return Json(new { success = false, message = $"Could not delete report. Reference: {refId}" });
             }
         }
 
@@ -215,7 +227,8 @@ namespace RosraApp.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
+                var refId = NewErrorRef(ex, "RestoreReport");
+                return Json(new { success = false, message = $"Could not restore report. Reference: {refId}" });
             }
         }
 
@@ -259,7 +272,8 @@ namespace RosraApp.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
+                var refId = NewErrorRef(ex, "ArchiveReport");
+                return Json(new { success = false, message = $"Could not update report. Reference: {refId}" });
             }
         }
 
