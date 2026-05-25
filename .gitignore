@@ -94,6 +94,9 @@ publish-azure.zip
 # Claude Code
 .claude/
 
+# Codex CLI
+.codex/
+
 # Stale project copy
 TempRosraApp/
 
