@@ -10,7 +10,11 @@
         <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
     </li>
     <li class="nav-item">
-        <form class="form-inline" asp-controller="Account" asp-action="Logout">
+        @* Audit M-7: must be POST (and the Razor TagHelper auto-emits the antiforgery
+           token when method="post"). The previous form had no method attribute and was
+           submitting as GET, which both bypassed [HttpPost] on the controller and now
+           bypasses [ValidateAntiForgeryToken]. *@
+        <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
             <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
         </form>
     </li>

@@ -719,12 +719,12 @@
                                 <div class="gap-header" onclick="RecommendationsModule.toggleGap('${gapKey}')" style="cursor:pointer;">
                                     <div class="gap-info">
                                         <span class="gap-indicator ${gapClass}"></span>
-                                        <span class="gap-title">${gapType}</span>
+                                        <span class="gap-title">${escapeForTemplate(gapType)}</span>
                                         <span class="gap-badge">(Priority ${gapData.priority})</span>
                                     </div>
                                     <div style="display:flex; align-items:center; gap:10px;">
                                         <span>${gapData.solutions.length} solution${gapData.solutions.length !== 1 ? 's' : ''}</span>
-                                        <button type="button" class="gap-toggle-btn" id="gap-icon-${gapKey}" aria-label="Collapse ${gapType}" title="Collapse" onclick="event.stopPropagation(); RecommendationsModule.toggleGap('${gapKey}')">
+                                        <button type="button" class="gap-toggle-btn" id="gap-icon-${gapKey}" aria-label="Collapse ${escapeForTemplate(gapType)}" title="Collapse" onclick="event.stopPropagation(); RecommendationsModule.toggleGap('${gapKey}')">
                                             <i class="bi bi-dash-lg"></i>
                                         </button>
                                     </div>
@@ -780,7 +780,7 @@
                 const fullIdLabel = buildFullIdLabel(solution.solutionId, fullSolution);
 
                 return `
-                    <div class="solution-card" data-solution-id="${solution.solutionId}"
+                    <div class="solution-card" data-solution-id="${escapeForTemplate(solution.solutionId)}"
                          data-timeline="${escapeForTemplate(solution.timeline || '')}"
                          data-political="${escapeForTemplate(fullSolution.politicalFeasibility || '')}"
                          data-gap="${escapeForTemplate(String(solution.gapType || '').toLowerCase())}"
@@ -788,7 +788,7 @@
                         <div class="solution-card-header" onclick="RecommendationsModule.toggleSolution('${solution.solutionId}')">
                             <div class="solution-title-section">
                                 <div class="solution-id">${escapeForTemplate(fullIdLabel)}</div>
-                                <div class="solution-title">${fullSolution.title}</div>
+                                <div class="solution-title">${escapeForTemplate(fullSolution.title)}</div>
                                 <div class="solution-meta">
                                     <span class="rec-badge rec-badge--timeline timeline-${timelineClass}">
                                         <span class="rec-badge-label">Timeline</span>${escapeForTemplate(solution.timeline || '—')}
@@ -846,13 +846,29 @@
             }
 
             // Helper function to escape content for safe embedding in template literals
+            // Audit L-8: previously this only escaped template-literal delimiters
+            // (`\`, `` ` ``, `${`) — which prevented JS template injection but DID NOT
+            // escape HTML. Every call site interpolates the result into an `innerHTML =`
+            // template that builds DOM. That meant a solution-card field like
+            // `<img src=x onerror=alert(1)>` (uploadable by Admins through
+            // ImportSolutionCards) would execute. Now does proper HTML-entity encoding
+            // (also safe inside HTML attributes), while still escaping the template
+            // delimiters so a literal `${foo}` in user text isn't re-evaluated.
             function escapeForTemplate(str) {
-                if (!str) return '';
+                if (str == null) return '';
                 return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;')
                     .replace(/\\/g, '\\\\')
                     .replace(/`/g, '\\`')
-                    .replace(/\${/g, '\\${');
+                    .replace(/\$\{/g, '\\${');
             }
+            // Public alias under the right name. Internal call sites continue to use
+            // escapeForTemplate to keep the diff small; new code should call escapeHtml.
+            const escapeHtml = escapeForTemplate;
 
             // Replace inline card references like "PT-COM-02 (Bill delivery)" or bare "PT-COM-02"
             // with the full solution title, so non-expert readers see plain language.
@@ -4149,7 +4165,7 @@
                     <!DOCTYPE html>
                     <html>
                     <head>
-                        <title>${solutionId}: ${fullSolution.title}</title>
+                        <title>${escapeForTemplate(solutionId)}: ${escapeForTemplate(fullSolution.title)}</title>
                         <style>
                             body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; color: #1e293b; }
                             h1 { color: #1976D2; font-size: 1.5em; margin-bottom: 4px; }

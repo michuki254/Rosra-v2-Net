@@ -125,7 +125,12 @@ namespace RosraApp.Controllers
             return View(model);
         }
 
+        // Audit M-7: antiforgery on logout. Low real-world impact (an attacker forcing a
+        // user to log out and re-authenticate is mild), but standard scanners flag any
+        // [HttpPost] without a token. The logout form in _Layout.cshtml already posts the
+        // antiforgery token, so no view changes required.
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();

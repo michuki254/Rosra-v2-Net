@@ -64,6 +64,15 @@ namespace RosraApp.Controllers
             _wofiEstimator = wofiEstimator;
         }
 
+        // Audit M-1: structured log + correlatable reference id; never echo ex.Message back
+        // to the client (CWE-209 — leaks SQL error text, file paths, internal class names).
+        private string NewErrorRef(Exception ex, string operation)
+        {
+            var refId = Guid.NewGuid().ToString("N")[..8];
+            _logger.LogError(ex, "{Operation} failed [ref {RefId}]", operation, refId);
+            return refId;
+        }
+
         // ---------------------------------------------------------------
         // WoFi top-down OSR potential estimator endpoints.
         // ---------------------------------------------------------------
@@ -508,8 +517,8 @@ namespace RosraApp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to save sample as user's report");
-                TempData["ErrorMessage"] = "Failed to save report: " + ex.Message;
+                var refId = NewErrorRef(ex, "SaveSampleAsUserReport");
+                TempData["ErrorMessage"] = $"Failed to save report. Reference: {refId}";
                 return RedirectToAction("Index");
             }
         }
@@ -917,7 +926,8 @@ namespace RosraApp.Controllers
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Failed to save report: " + ex.Message;
+                var refId = NewErrorRef(ex, "SaveReport");
+                TempData["ErrorMessage"] = $"Failed to save report. Reference: {refId}";
             }
 
             return RedirectToAction("Index");
@@ -2713,8 +2723,8 @@ namespace RosraApp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error uploading peer SNGs");
-                return Json(new { success = false, message = "Error uploading peer data: " + ex.Message });
+                var refId = NewErrorRef(ex, "UploadPeerSNGs");
+                return Json(new { success = false, message = $"Upload failed. Reference: {refId}" });
             }
         }
 
@@ -2778,8 +2788,8 @@ namespace RosraApp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error validating peer SNGs");
-                return Json(new { success = false, message = "Error validating peer data: " + ex.Message });
+                var refId = NewErrorRef(ex, "ValidatePeerSNGs");
+                return Json(new { success = false, message = $"Validation failed. Reference: {refId}" });
             }
         }
 
@@ -3228,8 +3238,8 @@ namespace RosraApp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in AdminSavePeerSNGs");
-                return Json(new { success = false, message = "Error saving reference data: " + ex.Message });
+                var refId = NewErrorRef(ex, "AdminSavePeerSNGs");
+                return Json(new { success = false, message = $"Save failed. Reference: {refId}" });
             }
         }
 

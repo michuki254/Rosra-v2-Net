@@ -1990,10 +1990,20 @@ namespace RosraApp.Controllers
                 int imported = 0, skipped = 0;
                 var userId = _userManager.GetUserId(User);
 
+                // Audit L-8: only accept solutionId values that match the documented
+                // format (uppercase letters, digits, hyphen; 1–32 chars — e.g. "PT-COM-01",
+                // "A1", "GEN-04"). Without this an Admin could import a card whose ID
+                // contains JS / HTML and trigger stored XSS on other Admins viewing the
+                // editor or in any place the ID is interpolated into DOM/onclick handlers.
+                var solutionIdPattern = new System.Text.RegularExpressions.Regex(
+                    "^[A-Z0-9][A-Z0-9-]{0,31}$",
+                    System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
                 foreach (var cardJson in cards)
                 {
                     var solutionId = cardJson.TryGetProperty("solutionId", out var sid) ? sid.GetString() : null;
                     if (string.IsNullOrEmpty(solutionId)) { skipped++; continue; }
+                    if (!solutionIdPattern.IsMatch(solutionId)) { skipped++; continue; }
 
                     // Skip if already exists
                     if (await _context.SolutionCards.IgnoreQueryFilters().AnyAsync(c => c.SolutionId == solutionId))
