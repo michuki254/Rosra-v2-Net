@@ -1301,7 +1301,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (gap > 0 && !alreadyExists) {
                 streams.push({
                     id: streamId,
-                    name: streamName || `Generic Stream ${i + 1}`,
+                    name: streamName || `Non-Property Stream ${i + 1}`,
                     type: 'generic-stream',
                     totalFunctionalGap: gap,
                     currentRevenue: parseFloat(localStorage.getItem(streamId + 'CurrentValue')) || 0,
@@ -2070,9 +2070,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ======================= STATE PERSISTENCE =======================
 
-    // Save prioritization state to FormStateManager (and localStorage backup)
+    // Save prioritization state to FormStateManager (and localStorage backup).
+    // Also bumps window.__rosraAutoSaveDirty so the 60-s auto-save in
+    // Index.cshtml picks up drag-rank / gap-priority changes that don't fire
+    // a native form input/change event.
     function savePrioritizationState() {
         try {
+            window.__rosraAutoSaveDirty = true;
             // Build state object with stream customizations and gap priorities
             const state = {
                 streamCustomizations: streams.map(s => ({
@@ -2102,6 +2106,68 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (e) {
             console.error('Prioritization: Error saving state', e);
         }
+    }
+
+    // ------------------------------------------------------------------------
+    // Flusher: pushes the in-memory prioritization state into the
+    // <input id="prioritizationData"> on the form so it's POSTed.
+    // Called by RosraTabFlushers.flushAll() before save/auto-save.
+    //
+    // IMPORTANT GUARD: the Prioritization tab initializes `streams` to an
+    // empty array on every page load. The saved JSON in the hidden field
+    // only gets hydrated into `streams` after the user visits the
+    // Prioritization tab (loadPrioritizationData runs lazily). If we flush
+    // an empty array on save while the user is still on an earlier tab, we
+    // would clobber the previously-persisted rich data with `[]`. So: if
+    // we have nothing in memory AND the hidden field already carries rich
+    // data, leave the field alone.
+    // ------------------------------------------------------------------------
+    function flushPrioritizationToForm() {
+        var field = document.getElementById('prioritizationData');
+
+        // Skip the write when in-memory state is empty. The hidden field
+        // keeps whatever the server rendered on this request, which is the
+        // last-saved value.
+        var noStreamsInMemory = !streams || streams.length === 0;
+        var noGapDataInMemory = !gapPrioritizationData || gapPrioritizationData.length === 0;
+        if (noStreamsInMemory && noGapDataInMemory) {
+            if (window.__rosraDebug) {
+                console.log('[flushPrioritizationToForm] in-memory state is empty — leaving #prioritizationData untouched (' +
+                    (field && field.value ? field.value.length : 0) + ' bytes preserved)');
+            }
+            return;
+        }
+
+        // Build the rich state synchronously so we know exactly what's about
+        // to be POSTed — don't rely on savePrioritizationState having run.
+        var state = {
+            streamCustomizations: streams.map(function (s) {
+                return { id: s.id, included: s.included, adjustedRank: s.adjustedRank };
+            }),
+            gapPrioritization: gapPrioritizationData.map(function (g) {
+                return {
+                    streamId: g.streamId,
+                    streamName: g.streamName,
+                    streamType: g.streamType,
+                    currentSequence: g.currentSequence.map(function (seq) {
+                        return { type: seq.type, removed: !!seq.removed, isOverridden: !!seq.isOverridden };
+                    })
+                };
+            }),
+            timestamp: new Date().toISOString()
+        };
+
+        if (field) field.value = JSON.stringify(state);
+
+        // Keep FormStateManager / localStorage in sync as a side effect.
+        try { savePrioritizationState(); } catch (e) { /* non-fatal */ }
+    }
+
+    // Self-register with the tab-flusher registry the moment _Prioritization
+    // loads. Guarded so older pages that load this partial without the
+    // registry still work.
+    if (typeof window.RosraTabFlushers !== 'undefined') {
+        window.RosraTabFlushers.register('prioritization', flushPrioritizationToForm);
     }
 
     // Load prioritization state from FormStateManager (or localStorage fallback).

@@ -201,6 +201,10 @@ namespace RosraApp.Models.ViewModels
     {
         public string StreamType { get; set; } = ""; // "Property Tax", "Business License", "Short-Term", "Long-Term", "Mixed", or custom name
         public string StreamName { get; set; } = "";
+        // Sub-type label, e.g. "A — Business licences" or just "A" or "Permit fee".
+        // Composed from the non-property subgroup letter (A/B/C) and the
+        // free-text Subtype field on the matching ViewModel. Empty for Property Tax.
+        public string SubType { get; set; } = "";
         public decimal Revenue { get; set; }
         public decimal Billed { get; set; }
         public decimal Outstanding { get; set; }
@@ -208,16 +212,30 @@ namespace RosraApp.Models.ViewModels
         public int CompliantUnits { get; set; }
         public decimal ComplianceGap { get; set; }
         public decimal CoverageGap { get; set; }
-        public decimal LiabilityGap { get; set; }
+        public decimal ValuationGap { get; set; }       // Property Tax stream only
+        public decimal LiabilityGap { get; set; }       // BL / Generic / Long-Term streams
+        public decimal MixedGapCompliance { get; set; } // BL + Mixed stream
+        public decimal MixedGapCoverage { get; set; }   // BL + Mixed stream
         public decimal TotalPotentialRevenue { get; set; }
+        public decimal TotalFunctionalGap { get; set; } // Sum of all applicable gap types
     }
 
     public class PrioritizationItem
     {
-        public int Rank { get; set; }
+        public int StreamRank { get; set; }
+        public string StreamId { get; set; } = "";
         public string StreamName { get; set; } = "";
-        public decimal TotalGap { get; set; }
-        public decimal SharePercent { get; set; }
+        public string StreamType { get; set; } = "";
+        public bool Included { get; set; } = true;
+        public List<GapPriorityEntry> GapSequence { get; set; } = new();
+    }
+
+    public class GapPriorityEntry
+    {
+        public int Rank { get; set; }            // 1-based position in the sequence
+        public string Type { get; set; } = "";   // Compliance / Coverage / Valuation / Liability / Remove
+        public bool Removed { get; set; }
+        public bool IsOverridden { get; set; }
     }
 
     public class SolutionItem

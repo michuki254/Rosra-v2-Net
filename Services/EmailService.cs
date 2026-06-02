@@ -83,6 +83,8 @@ namespace RosraApp.Services
                 NotificationType.ReportUnlocked => settings.EnableReportUnlocked,
                 NotificationType.WelcomeEmail => settings.EnableWelcomeEmail,
                 NotificationType.TestEmail => true, // always allow test
+                NotificationType.PasswordReset => true,
+                NotificationType.EmailConfirmation => true,
                 _ => false
             };
         }

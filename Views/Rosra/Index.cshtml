@@ -1440,11 +1440,22 @@
                     autoSaveDirty = true;
                 });
 
+                // JS-only state changes (drag-rank, gap reorder, etc.) bump a
+                // shared global instead of firing input events. Helper that the
+                // auto-save tick and the beforeunload handler both consult.
+                function isAutoSaveDirty() {
+                    return autoSaveDirty || window.__rosraAutoSaveDirty === true;
+                }
+                function clearAutoSaveDirty() {
+                    autoSaveDirty = false;
+                    window.__rosraAutoSaveDirty = false;
+                }
+
                 // Start auto-save interval (only if authenticated and not view mode)
                 if (isAuthenticated) {
                     autoSaveTimer = setInterval(function() {
-                        if (!autoSaveDirty) return;
-                        autoSaveDirty = false;
+                        if (!isAutoSaveDirty()) return;
+                        clearAutoSaveDirty();
 
                         if (typeof collectTabDataFromLocalStorage === 'function') collectTabDataFromLocalStorage();
 
@@ -1482,41 +1493,44 @@
                     }, 60000); // 60 seconds
                 }
 
-                // Function to collect all tab data from localStorage
+                // ── beforeunload: flush + best-effort sendBeacon save ──
+                //
+                // When the user closes the tab or navigates away mid-edit, we
+                // try to push the latest tab state into the hidden form fields
+                // and POST it to AutoSaveReport via sendBeacon (which the
+                // browser delivers reliably even after unload). This is a
+                // safety net; the primary save paths are the Save button and
+                // the 60-s auto-save.
+                if (isAuthenticated) {
+                    window.addEventListener('beforeunload', function () {
+                        try {
+                            if (typeof window.RosraTabFlushers !== 'undefined') {
+                                window.RosraTabFlushers.flushAll();
+                            }
+                            if (!isAutoSaveDirty()) return;
+                            if (typeof navigator.sendBeacon !== 'function') return;
+
+                            var data = new FormData(document.getElementById('rosraForm'));
+                            var url = '@Url.Action("AutoSaveReport", "Rosra")';
+                            navigator.sendBeacon(url, data);
+                        } catch (e) {
+                            // Swallow — we're already unloading; logs would be dropped anyway.
+                        }
+                    });
+                }
+
+                // Compatibility shim: callers still invoke
+                // collectTabDataFromLocalStorage() but every tab's flush logic
+                // now lives in a self-registered flusher (see
+                // RosraTabFlushers). This shim just delegates to flushAll().
                 function collectTabDataFromLocalStorage() {
-                    console.log('Collecting tab data from localStorage...');
+                    if (typeof window.RosraTabFlushers !== 'undefined') {
+                        window.RosraTabFlushers.flushAll();
+                    }
+                }
 
-                    // 1. Collect Prioritization data (stream rankings, adjustments)
-                    var prioritizationData = {
-                        propertyTax: {
-                            gap: parseFloat(localStorage.getItem('propertyTaxGapValue')) || 0,
-                            currentRevenue: parseFloat(localStorage.getItem('propertyTaxCurrentValue')) || 0,
-                            potentialRevenue: parseFloat(localStorage.getItem('propertyTaxPotentialValue')) || 0,
-                            complianceGap: parseFloat(localStorage.getItem('propertyTaxComplianceGap')) || 0,
-                            coverageGap: parseFloat(localStorage.getItem('propertyTaxCoverageGap')) || 0,
-                            valuationGap: parseFloat(localStorage.getItem('propertyTaxValuationGap')) || 0
-                        },
-                        license: {
-                            gap: parseFloat(localStorage.getItem('licenseGapValue')) || 0,
-                            currentRevenue: parseFloat(localStorage.getItem('licenseCurrentValue')) || 0,
-                            potentialRevenue: parseFloat(localStorage.getItem('licensePotentialValue')) || 0,
-                            complianceGap: parseFloat(localStorage.getItem('licenseComplianceGap')) || 0,
-                            coverageGap: parseFloat(localStorage.getItem('licenseCoverageGap')) || 0,
-                            liabilityGap: parseFloat(localStorage.getItem('licenseLiabilityGap')) || 0
-                        },
-                        totals: {
-                            currentTotal: parseFloat(localStorage.getItem('totalCurrentRevenue')) || 0,
-                            potentialTotal: parseFloat(localStorage.getItem('totalPotentialRevenue')) || 0,
-                            gapTotal: parseFloat(localStorage.getItem('totalRevenueGap')) || 0,
-                            largestGapSource: localStorage.getItem('largestGapSource') || '',
-                            largestGapValue: parseFloat(localStorage.getItem('largestGapValue')) || 0
-                        },
-                        timestamp: new Date().toISOString()
-                    };
-                    $("#prioritizationData").val(JSON.stringify(prioritizationData));
-                    console.log('Prioritization data collected:', prioritizationData);
-
-                    // 2. Collect Overview Selection data (selected solutions, skipped solutions)
+                // ---- Overview Selection flusher ------------------------------------
+                function flushOverviewSelectionsToForm() {
                     var overviewSelections = localStorage.getItem('rosraOverviewSelections');
                     var selectedSolutionsList = localStorage.getItem('rosraSelectedSolutions');
                     var selectedSolutionsData = {
@@ -1525,18 +1539,26 @@
                         timestamp: new Date().toISOString()
                     };
                     $("#selectedSolutionsData").val(JSON.stringify(selectedSolutionsData));
-                    console.log('Selected solutions data collected:', selectedSolutionsData);
+                }
+                if (typeof window.RosraTabFlushers !== 'undefined') {
+                    window.RosraTabFlushers.register('overviewSelections', flushOverviewSelectionsToForm);
+                }
 
-                    // 3. Collect Implementation Progress data (milestone completions)
+                // ---- Implementation Progress flusher -------------------------------
+                function flushImplementationProgressToForm() {
                     var implementationProgress = localStorage.getItem('rosraImplementationProgress');
                     var implementationProgressData = {
                         progress: implementationProgress ? JSON.parse(implementationProgress) : {},
                         timestamp: new Date().toISOString()
                     };
                     $("#implementationProgressData").val(JSON.stringify(implementationProgressData));
-                    console.log('Implementation progress data collected:', implementationProgressData);
+                }
+                if (typeof window.RosraTabFlushers !== 'undefined') {
+                    window.RosraTabFlushers.register('implementationProgress', flushImplementationProgressToForm);
+                }
 
-                    // 4. Collect Peer SNG data (Within-Country OSR Frontier analysis)
+                // ---- Peer SNG flusher ----------------------------------------------
+                function flushPeerSNGToForm() {
                     // Uses new data isolation schema: custom data stored per-report, not globally
                     var peerSNGData = {
                         dataSource: 'reference', // Default to reference data
@@ -1630,7 +1652,10 @@
                     $("#peerSNGData").val(JSON.stringify(peerSNGData));
                     console.log('Peer SNG data collected:', peerSNGData);
                 }
-                
+                if (typeof window.RosraTabFlushers !== 'undefined') {
+                    window.RosraTabFlushers.register('peerSNG', flushPeerSNGToForm);
+                }
+
                 // Export PDF button click handler
                 $("#exportPdfBtn").click(function() {
                     // Collect all tab data before export

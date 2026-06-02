@@ -192,7 +192,7 @@
                         <label><input type="checkbox" data-col="col-bl-outstanding" /> BL Outstanding</label>
                         <label><input type="checkbox" data-col="col-bl-registered" /> BL Registered</label>
 
-                        <div class="group-label">Generic Streams</div>
+                        <div class="group-label">Non-Property Streams</div>
                         <label><input type="checkbox" data-col="col-gen-count" /> Stream Count</label>
                         <label><input type="checkbox" data-col="col-gen-names" /> Stream Names</label>
                         <label><input type="checkbox" data-col="col-gen-rev" /> Total Revenue</label>
@@ -201,11 +201,23 @@
                         <label><input type="checkbox" data-col="col-created" checked /> Created</label>
                         <label><input type="checkbox" data-col="col-submitted" /> Submitted</label>
                         <label><input type="checkbox" data-col="col-validated" /> Validated</label>
+
+                        <div class="group-label" style="margin-top:0.6rem; color:#10B981;">
+                            <i class="bi bi-file-earmark-excel me-1"></i>Sheets in Excel Export
+                        </div>
+                        <label><input type="checkbox" data-sheet="main" checked /> Main report list</label>
+                        <label><input type="checkbox" data-sheet="streams" checked /> Stream Details (with all gaps)</label>
+                        <label><input type="checkbox" data-sheet="prioritization" checked /> Prioritization (rank + gap sequence)</label>
+                        <label><input type="checkbox" data-sheet="recommendations" checked /> Recommendations + Solutions</label>
+                        <div style="font-size:0.6875rem; color:#6A6A6A; margin-top:0.25rem;">
+                            The Excel export honours the column check-boxes above and the sheet check-boxes here.
+                        </div>
                     </div>
                 </div>
 
                 <a href="@Url.Action("ExportDataExcel", "Admin", new { Model.Search, Model.Country, Model.Status, Model.CompletionLevel, Model.Author, Model.FinancialYear, Model.DateFrom, Model.DateTo })"
-                   class="btn-export" onclick="showExportToast()">
+                   id="exportExcelLink"
+                   class="btn-export" onclick="return buildExportUrl(this)">
                     <i class="bi bi-file-earmark-excel"></i> Export Excel
                 </a>
             </div>
@@ -242,10 +254,10 @@
                         <th class="col-bl-billed th-bl" style="display:none;">BL Billed</th>
                         <th class="col-bl-outstanding th-bl" style="display:none;">BL Outstanding</th>
                         <th class="col-bl-registered th-bl" style="display:none;">BL Registered</th>
-                        <!-- Generic Streams -->
-                        <th class="col-gen-count th-gen" style="display:none;">Streams #</th>
-                        <th class="col-gen-names th-gen" style="display:none;">Stream Names</th>
-                        <th class="col-gen-rev th-gen" style="display:none;">Gen Revenue</th>
+                        <!-- Non-Property Streams -->
+                        <th class="col-gen-count th-gen" style="display:none;">Non-Property Count</th>
+                        <th class="col-gen-names th-gen" style="display:none;">Non-Property Names</th>
+                        <th class="col-gen-rev th-gen" style="display:none;">Non-Property Revenue</th>
                         <!-- Meta -->
                         <th class="col-author">Author</th>
                         <th class="col-version" style="display:none;">Ver</th>
@@ -280,7 +292,7 @@
                                 <span class="stream-dot @(r.HasShortTerm?"active":"inactive")" title="Short-Term"></span>
                                 <span class="stream-dot @(r.HasLongTerm?"active":"inactive")" title="Long-Term"></span>
                                 <span class="stream-dot @(r.HasMixed?"active":"inactive")" title="Mixed"></span>
-                                <span class="stream-dot @(r.HasGeneric?"active":"inactive")" title="Generic"></span>
+                                <span class="stream-dot @(r.HasGeneric?"active":"inactive")" title="Non-Property"></span>
                                 <span class="stream-dot @(r.HasPeerSNG?"active":"inactive")" title="Peer SNG"></span>
                                 @if (r.Streams.Any())
                                 {
@@ -315,7 +327,7 @@
                             <td class="col-bl-billed num-cell" style="display:none;">@(r.HasLicense?cs+r.BlBilled.ToString("N0"):"—")</td>
                             <td class="col-bl-outstanding num-cell" style="display:none;">@(r.HasLicense?cs+r.BlOutstanding.ToString("N0"):"—")</td>
                             <td class="col-bl-registered num-cell" style="display:none;">@(r.HasLicense?r.BlRegistered.ToString("N0"):"—")</td>
-                            <!-- Generic Streams -->
+                            <!-- Non-Property Streams -->
                             <td class="col-gen-count num-cell" style="display:none;">@(r.HasGeneric?r.GenericStreamCount.ToString():"—")</td>
                             <td class="col-gen-names" style="display:none; max-width:180px; overflow:hidden; text-overflow:ellipsis;" title="@r.GenericStreamNames">@(r.HasGeneric?r.GenericStreamNames:"—")</td>
                             <td class="col-gen-rev num-cell" style="display:none;">@(r.HasGeneric?cs+r.GenericTotalRevenue.ToString("N0"):"—")</td>
@@ -336,8 +348,9 @@
                                     <table style="width:100%; font-size:0.75rem; border-collapse:collapse;">
                                         <thead>
                                             <tr style="background:#EFF6FF;">
-                                                <th style="padding:0.35rem 0.5rem; text-align:left; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Type</th>
                                                 <th style="padding:0.35rem 0.5rem; text-align:left; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Name</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:left; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Type</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:left; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Sub Type</th>
                                                 <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Revenue</th>
                                                 <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Billed</th>
                                                 <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Outstanding</th>
@@ -345,6 +358,10 @@
                                                 <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Compliant</th>
                                                 <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Compliance Gap</th>
                                                 <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Coverage Gap</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;" title="Property Tax only">Valuation Gap</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;" title="Business License, Generic, Long-Term">Liability Gap</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;" title="Mixed gap split by compliance/coverage">Mixed Gap</th>
+                                                <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:700; color:#1E40AF; font-size:0.625rem; text-transform:uppercase; background:#DBEAFE;">Total Functional Gap</th>
                                                 <th style="padding:0.35rem 0.5rem; text-align:right; font-weight:600; color:#3B82F6; font-size:0.625rem; text-transform:uppercase;">Potential Revenue</th>
                                             </tr>
                                         </thead>
@@ -352,9 +369,11 @@
                                             @foreach (var s in r.Streams)
                                             {
                                                 var typeColor = s.StreamType == "Property Tax" ? "#F59E0B" : s.StreamType == "Business License" ? "#8B5CF6" : "#06B6D4";
+                                                var mixedTotal = s.MixedGapCompliance + s.MixedGapCoverage;
                                                 <tr style="border-bottom:1px solid #F0F0F0;">
-                                                    <td style="padding:0.3rem 0.5rem;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:@typeColor;margin-right:4px;"></span>@s.StreamType</td>
                                                     <td style="padding:0.3rem 0.5rem; font-weight:500;">@s.StreamName</td>
+                                                    <td style="padding:0.3rem 0.5rem;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:@typeColor;margin-right:4px;"></span>@s.StreamType</td>
+                                                    <td style="padding:0.3rem 0.5rem; color:#6A6A6A;">@(string.IsNullOrEmpty(s.SubType) ? "—" : s.SubType)</td>
                                                     <td style="padding:0.3rem 0.5rem; text-align:right;">@cs@s.Revenue.ToString("N0")</td>
                                                     <td style="padding:0.3rem 0.5rem; text-align:right;">@cs@s.Billed.ToString("N0")</td>
                                                     <td style="padding:0.3rem 0.5rem; text-align:right;">@cs@s.Outstanding.ToString("N0")</td>
@@ -362,6 +381,10 @@
                                                     <td style="padding:0.3rem 0.5rem; text-align:right;">@s.CompliantUnits.ToString("N0")</td>
                                                     <td style="padding:0.3rem 0.5rem; text-align:right;">@(s.ComplianceGap != 0 ? cs+s.ComplianceGap.ToString("N0") : "—")</td>
                                                     <td style="padding:0.3rem 0.5rem; text-align:right;">@(s.CoverageGap != 0 ? cs+s.CoverageGap.ToString("N0") : "—")</td>
+                                                    <td style="padding:0.3rem 0.5rem; text-align:right;">@(s.ValuationGap != 0 ? cs+s.ValuationGap.ToString("N0") : "—")</td>
+                                                    <td style="padding:0.3rem 0.5rem; text-align:right;">@(s.LiabilityGap != 0 ? cs+s.LiabilityGap.ToString("N0") : "—")</td>
+                                                    <td style="padding:0.3rem 0.5rem; text-align:right;" title="@(mixedTotal > 0 ? $"Compliance: {cs}{s.MixedGapCompliance:N0}, Coverage: {cs}{s.MixedGapCoverage:N0}" : "")">@(mixedTotal != 0 ? cs+mixedTotal.ToString("N0") : "—")</td>
+                                                    <td style="padding:0.3rem 0.5rem; text-align:right; font-weight:700; color:#1E40AF; background:#EFF6FF;">@(s.TotalFunctionalGap != 0 ? cs+s.TotalFunctionalGap.ToString("N0") : "—")</td>
                                                     <td style="padding:0.3rem 0.5rem; text-align:right; font-weight:600;">@(s.TotalPotentialRevenue != 0 ? cs+s.TotalPotentialRevenue.ToString("N0") : "—")</td>
                                                 </tr>
                                             }
@@ -385,26 +408,67 @@
                         {
                             <tr id="prio-@r.Id" style="display:none;">
                                 <td colspan="30" style="padding:0.5rem 1rem 0.75rem 2.5rem; background:#FFFBEB; border-bottom:2px solid #FDE68A;">
-                                    <div style="font-size:0.6875rem; font-weight:700; color:#F59E0B; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;"><i class="bi bi-bar-chart-steps me-1"></i>Prioritization (@r.PrioritizationItems.Count streams)</div>
-                                    <table style="width:100%; max-width:500px; font-size:0.75rem; border-collapse:collapse;">
+                                    <div style="font-size:0.6875rem; font-weight:700; color:#F59E0B; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;"><i class="bi bi-bar-chart-steps me-1"></i>Prioritization (@r.PrioritizationItems.Count(p => p.Included) of @r.PrioritizationItems.Count streams included)</div>
+                                    <table style="width:100%; font-size:0.75rem; border-collapse:collapse;">
                                         <thead><tr style="background:#FEF3C7;">
-                                            <th style="padding:0.3rem 0.5rem; text-align:left; font-weight:600; color:#92400E; font-size:0.625rem;">#</th>
-                                            <th style="padding:0.3rem 0.5rem; text-align:left; font-weight:600; color:#92400E; font-size:0.625rem;">Stream</th>
-                                            <th style="padding:0.3rem 0.5rem; text-align:right; font-weight:600; color:#92400E; font-size:0.625rem;">Gap</th>
-                                            <th style="padding:0.3rem 0.5rem; text-align:right; font-weight:600; color:#92400E; font-size:0.625rem;">Share</th>
+                                            <th style="padding:0.3rem 0.5rem; text-align:center; font-weight:600; color:#92400E; font-size:0.625rem; text-transform:uppercase; width:90px;">Stream Rank</th>
+                                            <th style="padding:0.3rem 0.5rem; text-align:left; font-weight:600; color:#92400E; font-size:0.625rem; text-transform:uppercase;">Stream</th>
+                                            <th style="padding:0.3rem 0.5rem; text-align:center; font-weight:600; color:#92400E; font-size:0.625rem; text-transform:uppercase; width:80px;">Included</th>
+                                            <th style="padding:0.3rem 0.5rem; text-align:left; font-weight:600; color:#92400E; font-size:0.625rem; text-transform:uppercase;">Gap Priority Sequence (Gap Rank)</th>
                                         </tr></thead>
                                         <tbody>
                                             @foreach (var p in r.PrioritizationItems)
                                             {
-                                                <tr style="border-bottom:1px solid #fef3c7;">
-                                                    <td style="padding:0.25rem 0.5rem; color:#92400E; font-weight:600;">@p.Rank</td>
-                                                    <td style="padding:0.25rem 0.5rem;">@p.StreamName</td>
-                                                    <td style="padding:0.25rem 0.5rem; text-align:right;">@cs@p.TotalGap.ToString("N0")</td>
-                                                    <td style="padding:0.25rem 0.5rem; text-align:right;">@p.SharePercent.ToString("N1")%</td>
+                                                var rowOpacity = p.Included ? "1" : "0.55";
+                                                <tr style="border-bottom:1px solid #fef3c7; opacity:@rowOpacity;">
+                                                    <td style="padding:0.25rem 0.5rem; color:#92400E; font-weight:700; text-align:center;">@(p.StreamRank == int.MaxValue ? "—" : p.StreamRank.ToString())</td>
+                                                    <td style="padding:0.25rem 0.5rem; font-weight:500;">@p.StreamName <span style="color:#9CA3AF; font-size:0.625rem;">(@p.StreamType)</span></td>
+                                                    <td style="padding:0.25rem 0.5rem; text-align:center;">
+                                                        @if (p.Included)
+                                                        {
+                                                            <span style="color:#059669; font-weight:600;">Y</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span style="color:#9CA3AF;">N</span>
+                                                        }
+                                                    </td>
+                                                    <td style="padding:0.25rem 0.5rem;">
+                                                        @if (!p.GapSequence.Any())
+                                                        {
+                                                            <span style="color:#9CA3AF;">—</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            @for (int i = 0; i < p.GapSequence.Count; i++)
+                                                            {
+                                                                var g = p.GapSequence[i];
+                                                                var label = string.IsNullOrEmpty(g.Type) ? "—" : g.Type;
+                                                                if (g.Removed || string.Equals(g.Type, "Remove", StringComparison.OrdinalIgnoreCase))
+                                                                {
+                                                                    <span style="text-decoration:line-through; color:#9CA3AF;">@g.Rank.@label</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span style="color:#374151;">
+                                                                        <strong style="color:#92400E;">@g.Rank.</strong>@label@(g.IsOverridden ? "*" : "")
+                                                                    </span>
+                                                                }
+                                                                if (i < p.GapSequence.Count - 1)
+                                                                {
+                                                                    <span style="color:#D97706; margin:0 4px;">→</span>
+                                                                }
+                                                            }
+                                                        }
+                                                    </td>
                                                 </tr>
                                             }
                                         </tbody>
                                     </table>
+                                    @if (r.PrioritizationItems.Any(p => p.GapSequence.Any(g => g.IsOverridden)))
+                                    {
+                                        <div style="font-size:0.625rem; color:#92400E; margin-top:0.35rem; font-style:italic;">* = user-overridden gap order</div>
+                                    }
                                 </td>
                             </tr>
                         }
@@ -525,6 +589,44 @@
         t.innerHTML = '<i class="bi bi-hourglass-split"></i> Generating Excel...';
         document.body.appendChild(t);
         setTimeout(function() { t.style.background = '#10B981'; t.innerHTML = '<i class="bi bi-check-circle-fill"></i> Excel downloaded'; setTimeout(function() { t.style.opacity='0'; setTimeout(function(){t.remove();},300); },3000); },1500);
+    }
+
+    // Build the Export Excel URL from the current column-picker selection.
+    // Columns checked in the picker control which columns appear in the main
+    // sheet; sheet check-boxes control which worksheets are included.
+    // The link's href already carries the existing filter params from the
+    // server; we append `cols` and `sheets` to it without dropping anything.
+    function buildExportUrl(linkEl) {
+        try {
+            var menu = document.getElementById('colPickerMenu');
+            if (!menu) return true; // fall back to plain link
+
+            // Collect distinct, checked column IDs. Some IDs appear on multiple
+            // checkbox rows (col-location wraps Region/City etc.); using a Set
+            // keeps the query string short.
+            var cols = new Set();
+            menu.querySelectorAll('input[type=checkbox][data-col]').forEach(function (cb) {
+                if (cb.checked) cols.add(cb.getAttribute('data-col'));
+            });
+            var sheets = new Set();
+            menu.querySelectorAll('input[type=checkbox][data-sheet]').forEach(function (cb) {
+                if (cb.checked) sheets.add(cb.getAttribute('data-sheet'));
+            });
+
+            var url = new URL(linkEl.href, window.location.origin);
+            // Send the selection. Empty selection (everything unchecked) sends
+            // an empty parameter, which the controller treats as "include all"
+            // — we override that by sending a sentinel so the user truly gets
+            // an empty/minimal export if they ask for it.
+            url.searchParams.set('cols',   cols.size   ? Array.from(cols).join(',')   : '__none__');
+            url.searchParams.set('sheets', sheets.size ? Array.from(sheets).join(',') : '__none__');
+            linkEl.href = url.toString();
+        } catch (e) {
+            console.warn('Export URL build failed; using default link', e);
+        }
+        // Still show the toast.
+        showExportToast();
+        return true;
     }
 </script>
 }

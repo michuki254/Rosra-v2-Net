@@ -36,6 +36,7 @@
   <data name="Nav_HowItWorks" xml:space="preserve"><value>Comment ça marche</value></data>
   <data name="Nav_WhoIsRosraFor" xml:space="preserve"><value>À qui s'adresse ROSRA ?</value></data>
   <data name="Nav_AnalysisProcess" xml:space="preserve"><value>Processus d'analyse</value></data>
+  <data name="Nav_Methodology" xml:space="preserve"><value>Méthodologie</value></data>
   <data name="Nav_DataRequirements" xml:space="preserve"><value>Données requises</value></data>
   <data name="Nav_DataPrivacy" xml:space="preserve"><value>Confidentialité des données</value></data>
   <data name="Nav_Resources" xml:space="preserve"><value>Ressources</value></data>

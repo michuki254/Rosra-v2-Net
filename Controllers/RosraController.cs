@@ -2735,6 +2735,7 @@ namespace RosraApp.Controllers
         /// </summary>
         [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public IActionResult SavePeerSNGs([FromBody] SavePeerSNGsRequest request)
         {
             const int MaxPeers = 200;
@@ -2843,6 +2844,7 @@ namespace RosraApp.Controllers
         /// </summary>
         [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> GetPeerSNGAnalysisWithCustomPeers([FromBody] PeerAnalysisRequest request)
         {
             const int MaxCustomPeers = 200;
@@ -3183,10 +3185,11 @@ namespace RosraApp.Controllers
 
         /// <summary>
         /// Admin-only endpoint to save peer SNG data as global reference data
-        /// Requires CanUploadPeerSNGData permission
+        /// Requires UploadPeerSNGData permission
         /// </summary>
         [HttpPost]
-        [Authorize(Policy = "CanUploadPeerSNGData")]
+        [Authorize(Policy = "UploadPeerSNGData")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AdminSavePeerSNGs([FromBody] SavePeerSNGsRequest request)
         {
             try

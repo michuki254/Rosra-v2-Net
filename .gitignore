@@ -131,3 +131,14 @@ Scripts/wofi_countries.json
 # SQLite databases
 *.db
 app.db
+
+# ASP.NET Core Data Protection keys (encrypted cookies, secrets) — local-only;
+# production persists them under %HOME%/DataProtection-Keys per Program.cs.
+.dp-keys/
+
+# Playwright MCP test artifacts (.playwright-mcp/, screenshots produced during
+# automated dev-time browser testing).
+.playwright-mcp/
+step1-newreport.png
+streams-with-all-gaps.png
+final-prio-detail.png

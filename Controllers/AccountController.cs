@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using RosraApp.Data;
 using RosraApp.Models;
@@ -39,6 +40,7 @@ namespace RosraApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("login")]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -87,6 +89,7 @@ namespace RosraApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("login")]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -142,6 +145,7 @@ namespace RosraApp.Controllers
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("login")]
         public async Task<IActionResult> AjaxLogin([FromBody] LoginViewModel model)
         {
             if (!ModelState.IsValid)
@@ -184,6 +188,7 @@ namespace RosraApp.Controllers
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("login")]
         public async Task<IActionResult> AjaxRegister([FromBody] RegisterViewModel model)
         {
             if (!ModelState.IsValid)

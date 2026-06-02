@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using RosraApp.Data;
 using RosraApp.Models;
 using RosraApp.Models.Enums;
@@ -21,19 +22,22 @@ namespace RosraApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IEmailService _emailService;
         private readonly ILogger<AdminController> _logger;
+        private readonly IMemoryCache _cache;
 
         public AdminController(
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             ApplicationDbContext context,
             IEmailService emailService,
-            ILogger<AdminController> logger)
+            ILogger<AdminController> logger,
+            IMemoryCache cache)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
             _emailService = emailService;
             _logger = logger;
+            _cache = cache;
         }
 
         // Audit M-1: shared helper so exception details land in structured logs (correlatable
@@ -44,6 +48,14 @@ namespace RosraApp.Controllers
             var refId = Guid.NewGuid().ToString("N")[..8];
             _logger.LogError(ex, "{Operation} failed [ref {RefId}]", operation, refId);
             return refId;
+        }
+
+        private void InvalidatePermissionCacheForUsers(IEnumerable<ApplicationUser> users)
+        {
+            foreach (var user in users)
+            {
+                _cache.Remove($"user_permissions_{user.Id}");
+            }
         }
 
         public async Task<IActionResult> Index(int page = 1, int pageSize = 25, string? search = null)
@@ -355,6 +367,7 @@ namespace RosraApp.Controllers
             var result = await _userManager.AddToRoleAsync(user, roleName);
             if (result.Succeeded)
             {
+                _cache.Remove($"user_permissions_{user.Id}");
                 await LogAuditAsync("RoleAssigned", "User", userId, $"Role '{roleName}' assigned to '{user.Email}'");
                 return RedirectToAction(nameof(UserDetails), new { id = userId });
             }
@@ -380,6 +393,7 @@ namespace RosraApp.Controllers
             var result = await _userManager.RemoveFromRoleAsync(user, roleName);
             if (result.Succeeded)
             {
+                _cache.Remove($"user_permissions_{user.Id}");
                 await LogAuditAsync("RoleRemoved", "User", userId, $"Role '{roleName}' removed from '{user.Email}'");
                 return RedirectToAction(nameof(UserDetails), new { id = userId });
             }
@@ -849,6 +863,9 @@ namespace RosraApp.Controllers
 
             await _context.SaveChangesAsync();
 
+            var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name);
+            InvalidatePermissionCacheForUsers(usersInRole);
+
             return Json(new { success = true, message = $"Permissions for role '{role.Name}' updated successfully!" });
         }
 
@@ -1034,13 +1051,23 @@ namespace RosraApp.Controllers
                             item.PtOutstanding = pt.OutstandingAmount ?? 0;
                             item.PtRegistered = pt.RegisteredProperties ?? 0;
                             item.PtCompliant = pt.CompliantProperties ?? 0;
+                            // Compute the derived gap breakdown server-side; same formula as the JS
+                            // analyst sees in _GapAnalysisPropertyTaxFixed.cshtml. See GapCalculator.
+                            var ptGaps = Services.GapCalculator.ComputePropertyTaxGaps(pt);
                             item.Streams.Add(new StreamDetailItem
                             {
                                 StreamType = "Property Tax", StreamName = "Property Tax",
-                                Revenue = pt.RevenueToDate ?? 0, Billed = pt.BilledAmount ?? 0,
+                                Revenue = ptGaps.RevenueToDate, Billed = pt.BilledAmount ?? 0,
                                 Outstanding = pt.OutstandingAmount ?? 0,
                                 RegisteredUnits = pt.RegisteredProperties ?? 0,
-                                CompliantUnits = pt.CompliantProperties ?? 0,
+                                CompliantUnits = (int)Math.Round(ptGaps.CompliantProperties),
+                                ComplianceGap = ptGaps.ComplianceGap,
+                                CoverageGap = ptGaps.CoverageGap,
+                                ValuationGap = ptGaps.ValuationGap,
+                                MixedGapCompliance = ptGaps.MixedGapRegistered,
+                                MixedGapCoverage = ptGaps.MixedGapUnregistered,
+                                TotalPotentialRevenue = ptGaps.TotalPotentialRevenue,
+                                TotalFunctionalGap = ptGaps.TotalFunctionalGap,
                             });
                         }
                     }
@@ -1059,12 +1086,23 @@ namespace RosraApp.Controllers
                             item.BlBilled = bl.BilledAmount ?? 0;
                             item.BlOutstanding = bl.OutstandingAmount ?? 0;
                             item.BlRegistered = bl.RegisteredBusinesses ?? 0;
+                            // Compute derived gaps server-side (mirror of _GapAnalysisLicense.cshtml).
+                            var blGaps = Services.GapCalculator.ComputeBusinessLicenseGaps(bl);
                             item.Streams.Add(new StreamDetailItem
                             {
                                 StreamType = "Business License", StreamName = "Business License",
-                                Revenue = bl.RevenueToDate ?? 0, Billed = bl.BilledAmount ?? 0,
+                                SubType = ComposeSubType(bl.Subgroup, bl.Subtype),
+                                Revenue = blGaps.RevenueToDate, Billed = bl.BilledAmount ?? 0,
                                 Outstanding = bl.OutstandingAmount ?? 0,
                                 RegisteredUnits = bl.RegisteredBusinesses ?? 0,
+                                CompliantUnits = (int)Math.Round(blGaps.CompliantBusinesses),
+                                ComplianceGap = blGaps.ComplianceGap,
+                                CoverageGap = blGaps.CoverageGap,
+                                LiabilityGap = blGaps.LiabilityGap,
+                                MixedGapCompliance = blGaps.MixedGapCompliance,
+                                MixedGapCoverage = blGaps.MixedGapCoverage,
+                                TotalPotentialRevenue = blGaps.TotalPotentialRevenue,
+                                TotalFunctionalGap = blGaps.TotalFunctionalGap,
                             });
                         }
                     }
@@ -1085,16 +1123,31 @@ namespace RosraApp.Controllers
                             item.GenericTotalBilled = streams.Sum(s => s.BilledAmount ?? 0);
                             foreach (var s in streams)
                             {
+                                // Generic streams already carry their own pre-computed gap breakdown
+                                // in the saved JSON (the JS writes them in). Use them directly; also
+                                // backfill TotalFunctionalGap if the saved value is missing/zero.
+                                decimal genCompliance = s.ComplianceGap ?? 0;
+                                decimal genCoverage   = s.CoverageGap ?? 0;
+                                decimal genLiability  = s.LiabilityGap ?? 0;
+                                decimal genMixedComp  = s.MixedGapCompliance ?? 0;
+                                decimal genMixedCov   = s.MixedGapCoverage ?? 0;
+                                decimal genFuncGap    = s.TotalFunctionalGap ?? (genCompliance + genCoverage + genLiability + genMixedComp + genMixedCov);
+
                                 item.Streams.Add(new StreamDetailItem
                                 {
-                                    StreamType = "Generic", StreamName = s.StreamName ?? "Unnamed",
+                                    StreamType = "Non-Property", StreamName = s.StreamName ?? "Unnamed",
+                                    SubType = ComposeSubType(s.Subgroup, s.Subtype),
                                     Revenue = s.RevenueToDate ?? 0, Billed = s.BilledAmount ?? 0,
                                     Outstanding = s.OutstandingAmount ?? 0,
                                     RegisteredUnits = s.RegisteredUnits ?? 0,
-                                    ComplianceGap = s.ComplianceGap ?? 0,
-                                    CoverageGap = s.CoverageGap ?? 0,
-                                    LiabilityGap = s.LiabilityGap ?? 0,
+                                    CompliantUnits = (int)Math.Round(s.CompliantUnits ?? 0),
+                                    ComplianceGap = genCompliance,
+                                    CoverageGap = genCoverage,
+                                    LiabilityGap = genLiability,
+                                    MixedGapCompliance = genMixedComp,
+                                    MixedGapCoverage = genMixedCov,
                                     TotalPotentialRevenue = s.TotalPotentialRevenue ?? 0,
+                                    TotalFunctionalGap = genFuncGap,
                                 });
                             }
                         }
@@ -1116,19 +1169,99 @@ namespace RosraApp.Controllers
                     try
                     {
                         var priDoc = System.Text.Json.JsonDocument.Parse(r.PrioritizationData);
-                        if (priDoc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+                        var root = priDoc.RootElement;
+
+                        // Seeded/legacy shape: { "streams": [ { rank, name, gap, share } ] }
+                        if (root.ValueKind == System.Text.Json.JsonValueKind.Object
+                            && root.TryGetProperty("streams", out var seededStreams)
+                            && seededStreams.ValueKind == System.Text.Json.JsonValueKind.Array)
                         {
+                            foreach (var el in seededStreams.EnumerateArray())
+                            {
+                                int sRank = el.TryGetProperty("rank", out var rkEl) && rkEl.TryGetInt32(out var rkV) ? rkV : int.MaxValue;
+                                var sName = el.TryGetProperty("name", out var nmEl) ? nmEl.GetString() ?? "" :
+                                            el.TryGetProperty("streamName", out var snEl) ? snEl.GetString() ?? "" : "";
+                                item.PrioritizationItems.Add(new PrioritizationItem
+                                {
+                                    StreamRank = sRank,
+                                    StreamName = sName,
+                                    StreamType = InferStreamType(sName),
+                                    Included = true,
+                                });
+                            }
+                            item.PrioritizationItems = item.PrioritizationItems.OrderBy(p => p.StreamRank).ToList();
+                        }
+                        // Live shape: object with streamCustomizations[] (rank, included) and gapPrioritization[] (per-stream gap sequence)
+                        else if (root.ValueKind == System.Text.Json.JsonValueKind.Object
+                            && root.TryGetProperty("streamCustomizations", out var customs)
+                            && customs.ValueKind == System.Text.Json.JsonValueKind.Array)
+                        {
+                            // Build a streamId -> gap sequence map from gapPrioritization for quick lookup
+                            var gapMap = new Dictionary<string, List<GapPriorityEntry>>(StringComparer.OrdinalIgnoreCase);
+                            if (root.TryGetProperty("gapPrioritization", out var gapArr) && gapArr.ValueKind == System.Text.Json.JsonValueKind.Array)
+                            {
+                                foreach (var g in gapArr.EnumerateArray())
+                                {
+                                    var sid = g.TryGetProperty("streamId", out var sidEl) ? sidEl.GetString() ?? "" : "";
+                                    if (string.IsNullOrEmpty(sid)) continue;
+                                    var seq = new List<GapPriorityEntry>();
+                                    if (g.TryGetProperty("currentSequence", out var curSeq) && curSeq.ValueKind == System.Text.Json.JsonValueKind.Array)
+                                    {
+                                        int gr = 1;
+                                        foreach (var s in curSeq.EnumerateArray())
+                                        {
+                                            seq.Add(new GapPriorityEntry
+                                            {
+                                                Rank = gr++,
+                                                Type = s.TryGetProperty("type", out var tEl) ? tEl.GetString() ?? "" : "",
+                                                Removed = s.TryGetProperty("removed", out var rEl) && rEl.ValueKind == System.Text.Json.JsonValueKind.True,
+                                                IsOverridden = s.TryGetProperty("isOverridden", out var oEl) && oEl.ValueKind == System.Text.Json.JsonValueKind.True,
+                                            });
+                                        }
+                                    }
+                                    gapMap[sid] = seq;
+                                }
+                            }
+
+                            // Convert each streamCustomization into a PrioritizationItem
+                            var raw = new List<PrioritizationItem>();
+                            foreach (var el in customs.EnumerateArray())
+                            {
+                                var id = el.TryGetProperty("id", out var idEl) ? idEl.GetString() ?? "" : "";
+                                if (string.IsNullOrEmpty(id)) continue;
+                                int adj = el.TryGetProperty("adjustedRank", out var arEl) && arEl.TryGetInt32(out var arVal) ? arVal : int.MaxValue;
+                                bool inc = !el.TryGetProperty("included", out var incEl) || incEl.ValueKind != System.Text.Json.JsonValueKind.False;
+
+                                var pi = new PrioritizationItem
+                                {
+                                    StreamId = id,
+                                    StreamRank = adj,
+                                    Included = inc,
+                                    StreamName = FriendlyStreamName(id, item.Streams),
+                                    StreamType = FriendlyStreamType(id, item.Streams),
+                                    GapSequence = gapMap.TryGetValue(id, out var seqOut) ? seqOut : new()
+                                };
+                                raw.Add(pi);
+                            }
+
+                            // Sort: included streams by adjustedRank, then excluded streams at the end
+                            item.PrioritizationItems = raw
+                                .OrderBy(p => p.Included ? 0 : 1)
+                                .ThenBy(p => p.StreamRank)
+                                .ToList();
+                        }
+                        else if (root.ValueKind == System.Text.Json.JsonValueKind.Array)
+                        {
+                            // Legacy shape: flat array of {rank, streamName, ...}
                             int rank = 1;
-                            foreach (var el in priDoc.RootElement.EnumerateArray())
+                            foreach (var el in root.EnumerateArray())
                             {
                                 item.PrioritizationItems.Add(new PrioritizationItem
                                 {
-                                    Rank = rank++,
+                                    StreamRank = rank++,
                                     StreamName = el.TryGetProperty("streamName", out var sn) ? sn.GetString() ?? "" :
                                                  el.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "",
-                                    TotalGap = el.TryGetProperty("totalGap", out var tg) ? tg.TryGetDecimal(out var tgv) ? tgv : 0 : 0,
-                                    SharePercent = el.TryGetProperty("sharePercent", out var sp) ? sp.TryGetDecimal(out var spv) ? spv : 0 :
-                                                   el.TryGetProperty("share", out var sh) ? sh.TryGetDecimal(out var shv) ? shv : 0 : 0,
+                                    Included = true,
                                 });
                             }
                         }
@@ -1200,12 +1333,115 @@ namespace RosraApp.Controllers
             return View(model);
         }
 
+        // Maps a prioritization streamId (e.g. "property-tax", "business-license",
+        // "generic-stream-0") to a human-readable name. Falls back to the report's
+        // parsed Streams collection for generic streams whose ID indexes into that list.
+        private static string FriendlyStreamName(string streamId, List<StreamDetailItem> streams)
+        {
+            if (string.IsNullOrEmpty(streamId)) return "";
+
+            // Canonical IDs used by the prioritization tab
+            switch (streamId.ToLowerInvariant())
+            {
+                case "property-tax": return "Property Tax";
+                case "business-license": return "Business License";
+                case "short-term": return "Short-Term User Charges";
+                case "long-term": return "Long-Term User Charges";
+                case "mixed": return "Mixed User Charges";
+            }
+
+            // Generic streams: try to match by index into the report's Streams list,
+            // restricting to entries that look like generic streams (not the canonical types).
+            if (streamId.StartsWith("generic-stream-", StringComparison.OrdinalIgnoreCase)
+                && int.TryParse(streamId.AsSpan("generic-stream-".Length), out var idx))
+            {
+                var generics = streams
+                    .Where(s => s.StreamType != "Property Tax"
+                             && s.StreamType != "Business License"
+                             && s.StreamType != "Short-Term"
+                             && s.StreamType != "Long-Term"
+                             && s.StreamType != "Mixed")
+                    .ToList();
+                if (idx >= 0 && idx < generics.Count) return generics[idx].StreamName;
+            }
+
+            // Fallback: prettify the slug
+            return string.Join(" ", streamId.Split('-').Select(s => s.Length > 0 ? char.ToUpper(s[0]) + s.Substring(1) : s));
+        }
+
+        private static string FriendlyStreamType(string streamId, List<StreamDetailItem> streams)
+        {
+            if (string.IsNullOrEmpty(streamId)) return "";
+            switch (streamId.ToLowerInvariant())
+            {
+                case "property-tax": return "Property Tax";
+                case "business-license": return "Business License";
+                case "short-term": return "Short-Term";
+                case "long-term": return "Long-Term";
+                case "mixed": return "Mixed";
+            }
+            return "Non-Property";
+        }
+
+        // Combines a non-property subgroup letter (A/B/C) and the free-text
+        // subtype into a single display string. Returns "" when both are empty.
+        // Examples:
+        //   ("A", "Business licence fee") → "A — Business licence fee"
+        //   ("B", null)                   → "B"
+        //   (null, "Permit fee")          → "Permit fee"
+        //   (null, null)                  → ""
+        private static string ComposeSubType(string? subgroup, string? subtype)
+        {
+            var sg = string.IsNullOrWhiteSpace(subgroup) ? null : subgroup.Trim();
+            var st = string.IsNullOrWhiteSpace(subtype)  ? null : subtype.Trim();
+            if (sg != null && st != null) return $"{sg} — {st}";
+            return sg ?? st ?? "";
+        }
+
+        // Given a free-text stream name (e.g. from seeded data), guess its canonical type
+        // so the admin row can show a category label next to the name.
+        private static string InferStreamType(string streamName)
+        {
+            if (string.IsNullOrEmpty(streamName)) return "";
+            var s = streamName.ToLowerInvariant();
+            if (s.Contains("property")) return "Property Tax";
+            if (s.Contains("license") || s.Contains("licence") || s.Contains("permit")) return "Business License";
+            return "Other";
+        }
+
         [HttpGet]
         public async Task<IActionResult> ExportDataExcel(
             string? search = null, string? country = null, string? status = null,
             string? completionLevel = null, string? author = null,
-            string? financialYear = null, string? dateFrom = null, string? dateTo = null)
+            string? financialYear = null, string? dateFrom = null, string? dateTo = null,
+            // Column-picker selections forwarded from the Data Management UI.
+            // `cols` is a comma-separated list of column IDs (col-title, col-country, …)
+            // that mirror the Show/Hide column-picker check-boxes.
+            // `sheets` is a comma-separated list of sheet IDs (main, streams,
+            // prioritization, recommendations). Either omitted ⇒ include everything,
+            // matching the prior behaviour for any caller that doesn't pass them.
+            string? cols = null,
+            string? sheets = null)
         {
+            // `null` selectedCols/selectedSheets ⇒ include everything. An EMPTY
+            // set (e.g. when the UI sends the `__none__` sentinel because the
+            // user un-checked everything) ⇒ include nothing.
+            HashSet<string>? selectedCols, selectedSheets;
+            if (string.IsNullOrWhiteSpace(cols)) selectedCols = null;
+            else if (cols == "__none__") selectedCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            else selectedCols = new HashSet<string>(
+                cols.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()),
+                StringComparer.OrdinalIgnoreCase);
+
+            if (string.IsNullOrWhiteSpace(sheets)) selectedSheets = null;
+            else if (sheets == "__none__") selectedSheets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            else selectedSheets = new HashSet<string>(
+                sheets.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()),
+                StringComparer.OrdinalIgnoreCase);
+
+            bool IncludeCol(string id)   => selectedCols   == null || selectedCols.Contains(id);
+            bool IncludeSheet(string id) => selectedSheets == null || selectedSheets.Contains(id);
+
             IQueryable<RosraReport> query = _context.RosraReports
                 .IgnoreQueryFilters()
                 .Where(r => !r.IsDeleted)
@@ -1239,211 +1475,583 @@ namespace RosraApp.Controllers
             var reports = await query.OrderByDescending(r => r.UpdatedAt ?? r.CreatedAt).ToListAsync();
 
             using var workbook = new XLWorkbook();
-            var ws = workbook.Worksheets.Add("ROSRA Data");
-
             var jsonOpts = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-            // Headers
-            var headers = new[] {
-                "ID", "Title", "Country", "Region", "City", "Financial Year",
-                "Currency", "Actual OSR", "Budgeted OSR", "Population", "GDP per Capita", "Other Revenue",
-                "Status", "Completion", "Version", "Author", "Email",
-                "Created", "Submitted", "Validated",
-                // Property Tax
-                "PT Revenue", "PT Billed", "PT Outstanding", "PT Registered", "PT Compliant",
-                // Business License
-                "BL Revenue", "BL Billed", "BL Outstanding", "BL Registered",
-                // Generic Streams
-                "Generic Count", "Generic Names", "Generic Total Revenue",
-                // Stream flags
-                "Has Property Tax", "Has License", "Has Short-Term", "Has Long-Term", "Has Mixed", "Has Generic", "Has Peer SNG"
-            };
-
-            // Header colors by group
-            var headerColors = new Dictionary<string, string> {
-                {"PT", "#F59E0B"}, {"BL", "#8B5CF6"}, {"Generic", "#06B6D4"}, {"Has", "#6A6A6A"}
-            };
-
-            for (int i = 0; i < headers.Length; i++)
+            // ── Sheet 1: Main report list (ROSRA Data) ──
+            // Each column is described as (colId, header, group). colId maps to the
+            // data-col attribute used by the Columns picker in DataManagement.cshtml
+            // so the on-page check-box selection drives the export 1-to-1. "id"
+            // (the synthetic ID) and "currency" always export — they aren't
+            // toggleable in the picker.
+            int row = 1; // used after the main sheet so it stays referenced for autofilter range
+            int headerCount = 0;
+            if (IncludeSheet("main"))
             {
-                var cell = ws.Cell(1, i + 1);
-                cell.Value = headers[i];
-                cell.Style.Font.Bold = true;
-                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                var ws = workbook.Worksheets.Add("ROSRA Data");
 
-                // Color-code header groups
-                var h = headers[i];
-                if (h.StartsWith("PT")) { cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#FEF3C7"); cell.Style.Font.FontColor = XLColor.FromHtml("#92400E"); }
-                else if (h.StartsWith("BL")) { cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#EDE9FE"); cell.Style.Font.FontColor = XLColor.FromHtml("#5B21B6"); }
-                else if (h.StartsWith("Generic")) { cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#CFFAFE"); cell.Style.Font.FontColor = XLColor.FromHtml("#155E75"); }
-                else if (h.StartsWith("Has")) { cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#F3F4F6"); cell.Style.Font.FontColor = XLColor.FromHtml("#374151"); }
-                else { cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#00689D"); cell.Style.Font.FontColor = XLColor.White; }
+                // Group is used to colour-code the header cell.
+                var columnSpecs = new List<(string ColId, string Header, string Group)>
+                {
+                    ("__always",        "ID",                 "core"),
+                    ("col-title",       "Title",              "core"),
+                    ("col-country",     "Country",            "core"),
+                    ("col-location",    "Region",             "core"),
+                    ("col-location",    "City",               "core"),
+                    ("col-year",        "Financial Year",     "core"),
+                    ("__always",        "Currency",           "core"),
+                    ("col-osr",         "Actual OSR",         "core"),
+                    ("col-budgeted",    "Budgeted OSR",       "core"),
+                    ("col-pop",         "Population",         "core"),
+                    ("col-gdp",         "GDP per Capita",     "core"),
+                    ("col-other",       "Other Revenue",      "core"),
+                    ("col-status",      "Status",             "core"),
+                    ("col-comp",        "Completion",         "core"),
+                    ("col-version",     "Version",            "core"),
+                    ("col-author",      "Author",             "core"),
+                    ("col-author",      "Email",              "core"),
+                    ("col-created",     "Created",            "core"),
+                    ("col-submitted",   "Submitted",          "core"),
+                    ("col-validated",   "Validated",          "core"),
+                    ("col-pt-rev",      "PT Revenue",         "PT"),
+                    ("col-pt-billed",   "PT Billed",          "PT"),
+                    ("col-pt-outstanding","PT Outstanding",   "PT"),
+                    ("col-pt-registered","PT Registered",     "PT"),
+                    ("col-pt-compliant","PT Compliant",       "PT"),
+                    ("col-bl-rev",      "BL Revenue",         "BL"),
+                    ("col-bl-billed",   "BL Billed",          "BL"),
+                    ("col-bl-outstanding","BL Outstanding",   "BL"),
+                    ("col-bl-registered","BL Registered",     "BL"),
+                    ("col-gen-count",   "Non-Property Count",      "Generic"),
+                    ("col-gen-names",   "Non-Property Names",      "Generic"),
+                    ("col-gen-rev",     "Non-Property Total Revenue","Generic"),
+                    ("col-streams",     "Has Property Tax",   "Has"),
+                    ("col-streams",     "Has License",        "Has"),
+                    ("col-streams",     "Has Short-Term",     "Has"),
+                    ("col-streams",     "Has Long-Term",      "Has"),
+                    ("col-streams",     "Has Mixed",          "Has"),
+                    ("col-streams",     "Has Non-Property",   "Has"),
+                    ("col-streams",     "Has Peer SNG",       "Has"),
+                };
+
+                // The "__always" entries are forced in (ID and Currency aren't toggleable).
+                var includedColumns = columnSpecs
+                    .Select((spec, idx) => (spec, idx))
+                    .Where(x => x.spec.ColId == "__always" || IncludeCol(x.spec.ColId))
+                    .ToList();
+
+                // Render headers
+                for (int i = 0; i < includedColumns.Count; i++)
+                {
+                    var (spec, _) = includedColumns[i];
+                    var cell = ws.Cell(1, i + 1);
+                    cell.Value = spec.Header;
+                    cell.Style.Font.Bold = true;
+                    cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    switch (spec.Group)
+                    {
+                        case "PT":      cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#FEF3C7"); cell.Style.Font.FontColor = XLColor.FromHtml("#92400E"); break;
+                        case "BL":      cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#EDE9FE"); cell.Style.Font.FontColor = XLColor.FromHtml("#5B21B6"); break;
+                        case "Generic": cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#CFFAFE"); cell.Style.Font.FontColor = XLColor.FromHtml("#155E75"); break;
+                        case "Has":     cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#F3F4F6"); cell.Style.Font.FontColor = XLColor.FromHtml("#374151"); break;
+                        default:        cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#00689D"); cell.Style.Font.FontColor = XLColor.White; break;
+                    }
+                }
+                headerCount = includedColumns.Count;
+
+                row = 2;
+                foreach (var r in reports)
+                {
+                    var statusName = ((ReportStatus)r.Status).ToString();
+                    var compName = ((Models.Enums.CompletionLevel)r.CompletionLevel).ToString();
+                    var authorName = r.User != null ? $"{r.User.FirstName} {r.User.LastName}" : "Unknown";
+                    var authorEmail = r.User?.Email ?? "";
+
+                    // Parse Property Tax once for this row
+                    decimal ptRev = 0, ptBill = 0, ptOut = 0; int ptReg = 0, ptComp = 0;
+                    if (!string.IsNullOrEmpty(r.PropertyTaxData))
+                    {
+                        try { var pt = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisPropertyTaxViewModel>(r.PropertyTaxData, jsonOpts);
+                            if (pt != null) { ptRev = pt.RevenueToDate ?? 0; ptBill = pt.BilledAmount ?? 0; ptOut = pt.OutstandingAmount ?? 0; ptReg = pt.RegisteredProperties ?? 0; ptComp = pt.CompliantProperties ?? 0; }
+                        } catch { }
+                    }
+                    decimal blRev = 0, blBill = 0, blOut = 0; int blReg = 0;
+                    if (!string.IsNullOrEmpty(r.LicenseData))
+                    {
+                        try { var bl = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisLicenseViewModel>(r.LicenseData, jsonOpts);
+                            if (bl != null) { blRev = bl.RevenueToDate ?? 0; blBill = bl.BilledAmount ?? 0; blOut = bl.OutstandingAmount ?? 0; blReg = bl.RegisteredBusinesses ?? 0; }
+                        } catch { }
+                    }
+                    int genCount = 0; string genNames = ""; decimal genRev = 0;
+                    if (!string.IsNullOrEmpty(r.GenericStreamsData))
+                    {
+                        try { var streamsParsed = System.Text.Json.JsonSerializer.Deserialize<List<GenericStreamViewModel>>(r.GenericStreamsData, jsonOpts);
+                            if (streamsParsed != null) { genCount = streamsParsed.Count; genNames = string.Join(", ", streamsParsed.Select(s => s.StreamName)); genRev = streamsParsed.Sum(s => s.RevenueToDate ?? 0); }
+                        } catch { }
+                    }
+
+                    // Values aligned by index to columnSpecs above.
+                    var allValues = new (Action<IXLCell> Set, bool IsNumber)[]
+                    {
+                        (c => c.Value = r.Id, false),
+                        (c => c.Value = r.Title ?? "", false),
+                        (c => c.Value = r.Country ?? "", false),
+                        (c => c.Value = r.Region ?? "", false),
+                        (c => c.Value = r.City ?? "", false),
+                        (c => c.Value = r.FinancialYear ?? "", false),
+                        (c => c.Value = r.Currency ?? "", false),
+                        (c => c.Value = r.ActualOsr ?? 0,   true),
+                        (c => c.Value = r.BudgetedOsr ?? 0, true),
+                        (c => c.Value = r.Population ?? 0,  true),
+                        (c => c.Value = r.GdpPerCapita ?? 0,true),
+                        (c => c.Value = r.OtherRevenue ?? 0,true),
+                        (c => c.Value = statusName, false),
+                        (c => c.Value = compName, false),
+                        (c => c.Value = r.SubmissionVersion, false),
+                        (c => c.Value = authorName, false),
+                        (c => c.Value = authorEmail, false),
+                        (c => c.Value = r.CreatedAt.ToString("yyyy-MM-dd HH:mm"), false),
+                        (c => c.Value = r.SubmittedAt?.ToString("yyyy-MM-dd HH:mm") ?? "", false),
+                        (c => c.Value = r.ValidatedAt?.ToString("yyyy-MM-dd HH:mm") ?? "", false),
+                        (c => c.Value = ptRev,  true),
+                        (c => c.Value = ptBill, true),
+                        (c => c.Value = ptOut,  true),
+                        (c => c.Value = ptReg,  false),
+                        (c => c.Value = ptComp, false),
+                        (c => c.Value = blRev,  true),
+                        (c => c.Value = blBill, true),
+                        (c => c.Value = blOut,  true),
+                        (c => c.Value = blReg,  false),
+                        (c => c.Value = genCount, false),
+                        (c => c.Value = genNames, false),
+                        (c => c.Value = genRev, true),
+                        (c => c.Value = !string.IsNullOrEmpty(r.PropertyTaxData) ? "Yes" : "No", false),
+                        (c => c.Value = !string.IsNullOrEmpty(r.LicenseData) ? "Yes" : "No", false),
+                        (c => c.Value = !string.IsNullOrEmpty(r.ShortTermUserChargeData) ? "Yes" : "No", false),
+                        (c => c.Value = !string.IsNullOrEmpty(r.LongTermUserChargeData) ? "Yes" : "No", false),
+                        (c => c.Value = !string.IsNullOrEmpty(r.MixedUserChargeData) ? "Yes" : "No", false),
+                        (c => c.Value = !string.IsNullOrEmpty(r.GenericStreamsData) ? "Yes" : "No", false),
+                        (c => c.Value = !string.IsNullOrEmpty(r.PeerSNGData) ? "Yes" : "No", false),
+                    };
+
+                    for (int i = 0; i < includedColumns.Count; i++)
+                    {
+                        var (_, idx) = includedColumns[i];
+                        var cell = ws.Cell(row, i + 1);
+                        allValues[idx].Set(cell);
+                        if (allValues[idx].IsNumber) cell.Style.NumberFormat.Format = "#,##0";
+                    }
+                    row++;
+                }
+
+                ws.Columns().AdjustToContents();
+                if (reports.Count > 0 && headerCount > 0)
+                    ws.Range(1, 1, row - 1, headerCount).SetAutoFilter();
             }
-
-            // Data rows
-            int row = 2;
-            foreach (var r in reports)
-            {
-                var statusName = ((ReportStatus)r.Status).ToString();
-                var compName = ((Models.Enums.CompletionLevel)r.CompletionLevel).ToString();
-                var authorName = r.User != null ? $"{r.User.FirstName} {r.User.LastName}" : "Unknown";
-                var authorEmail = r.User?.Email ?? "";
-
-                int col = 1;
-                ws.Cell(row, col++).Value = r.Id;
-                ws.Cell(row, col++).Value = r.Title ?? "";
-                ws.Cell(row, col++).Value = r.Country ?? "";
-                ws.Cell(row, col++).Value = r.Region ?? "";
-                ws.Cell(row, col++).Value = r.City ?? "";
-                ws.Cell(row, col++).Value = r.FinancialYear ?? "";
-                ws.Cell(row, col++).Value = r.Currency ?? "";
-                ws.Cell(row, col).Value = r.ActualOsr ?? 0; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
-                ws.Cell(row, col).Value = r.BudgetedOsr ?? 0; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
-                ws.Cell(row, col).Value = r.Population ?? 0; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
-                ws.Cell(row, col).Value = r.GdpPerCapita ?? 0; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
-                ws.Cell(row, col).Value = r.OtherRevenue ?? 0; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
-                ws.Cell(row, col++).Value = statusName;
-                ws.Cell(row, col++).Value = compName;
-                ws.Cell(row, col++).Value = r.SubmissionVersion;
-                ws.Cell(row, col++).Value = authorName;
-                ws.Cell(row, col++).Value = authorEmail;
-                ws.Cell(row, col++).Value = r.CreatedAt.ToString("yyyy-MM-dd HH:mm");
-                ws.Cell(row, col++).Value = r.SubmittedAt?.ToString("yyyy-MM-dd HH:mm") ?? "";
-                ws.Cell(row, col++).Value = r.ValidatedAt?.ToString("yyyy-MM-dd HH:mm") ?? "";
-
-                // Parse Property Tax
-                decimal ptRev = 0, ptBill = 0, ptOut = 0; int ptReg = 0, ptComp = 0;
-                if (!string.IsNullOrEmpty(r.PropertyTaxData))
-                {
-                    try { var pt = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisPropertyTaxViewModel>(r.PropertyTaxData, jsonOpts);
-                        if (pt != null) { ptRev = pt.RevenueToDate ?? 0; ptBill = pt.BilledAmount ?? 0; ptOut = pt.OutstandingAmount ?? 0; ptReg = pt.RegisteredProperties ?? 0; ptComp = pt.CompliantProperties ?? 0; }
-                    } catch { }
-                }
-                ws.Cell(row, col).Value = ptRev; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
-                ws.Cell(row, col).Value = ptBill; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
-                ws.Cell(row, col).Value = ptOut; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
-                ws.Cell(row, col++).Value = ptReg;
-                ws.Cell(row, col++).Value = ptComp;
-
-                // Parse Business License
-                decimal blRev = 0, blBill = 0, blOut = 0; int blReg = 0;
-                if (!string.IsNullOrEmpty(r.LicenseData))
-                {
-                    try { var bl = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisLicenseViewModel>(r.LicenseData, jsonOpts);
-                        if (bl != null) { blRev = bl.RevenueToDate ?? 0; blBill = bl.BilledAmount ?? 0; blOut = bl.OutstandingAmount ?? 0; blReg = bl.RegisteredBusinesses ?? 0; }
-                    } catch { }
-                }
-                ws.Cell(row, col).Value = blRev; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
-                ws.Cell(row, col).Value = blBill; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
-                ws.Cell(row, col).Value = blOut; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
-                ws.Cell(row, col++).Value = blReg;
-
-                // Parse Generic Streams
-                int genCount = 0; string genNames = ""; decimal genRev = 0;
-                if (!string.IsNullOrEmpty(r.GenericStreamsData))
-                {
-                    try { var streams = System.Text.Json.JsonSerializer.Deserialize<List<GenericStreamViewModel>>(r.GenericStreamsData, jsonOpts);
-                        if (streams != null) { genCount = streams.Count; genNames = string.Join(", ", streams.Select(s => s.StreamName)); genRev = streams.Sum(s => s.RevenueToDate ?? 0); }
-                    } catch { }
-                }
-                ws.Cell(row, col++).Value = genCount;
-                ws.Cell(row, col++).Value = genNames;
-                ws.Cell(row, col).Value = genRev; ws.Cell(row, col++).Style.NumberFormat.Format = "#,##0";
-
-                // Stream flags
-                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.PropertyTaxData) ? "Yes" : "No";
-                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.LicenseData) ? "Yes" : "No";
-                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.ShortTermUserChargeData) ? "Yes" : "No";
-                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.LongTermUserChargeData) ? "Yes" : "No";
-                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.MixedUserChargeData) ? "Yes" : "No";
-                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.GenericStreamsData) ? "Yes" : "No";
-                ws.Cell(row, col++).Value = !string.IsNullOrEmpty(r.PeerSNGData) ? "Yes" : "No";
-
-                row++;
-            }
-
-            // Auto-fit columns
-            ws.Columns().AdjustToContents();
-
-            // Add autofilter
-            if (reports.Count > 0)
-                ws.Range(1, 1, row - 1, headers.Length).SetAutoFilter();
 
             // ── Sheet 2: Stream Details (one row per stream per report) ──
-            var sd = workbook.Worksheets.Add("Stream Details");
-            var sdHeaders = new[] { "Report ID", "Title", "Country", "City", "Financial Year",
-                "Stream Type", "Stream Name", "Revenue", "Billed", "Outstanding",
-                "Registered Units", "Compliant Units",
-                "Compliance Gap", "Coverage Gap", "Liability Gap", "Total Potential Revenue" };
-
-            for (int i = 0; i < sdHeaders.Length; i++)
+            // Now uses the same GapCalculator as the admin view so the
+            // exported numbers match what the on-page detail rows show.
+            if (IncludeSheet("streams"))
             {
-                var cell = sd.Cell(1, i + 1);
-                cell.Value = sdHeaders[i];
-                cell.Style.Font.Bold = true;
-                cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#06B6D4");
-                cell.Style.Font.FontColor = XLColor.White;
-                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                var sd = workbook.Worksheets.Add("Stream Details");
+                var sdHeaders = new[] { "Report ID", "Title", "Country", "City", "Financial Year",
+                    "Stream Name", "Stream Type", "Sub Type", "Revenue", "Billed", "Outstanding",
+                    "Registered Units", "Compliant Units",
+                    "Compliance Gap", "Coverage Gap", "Valuation Gap", "Liability Gap",
+                    "Mixed Gap", "Total Functional Gap", "Total Potential Revenue" };
+
+                for (int i = 0; i < sdHeaders.Length; i++)
+                {
+                    var cell = sd.Cell(1, i + 1);
+                    cell.Value = sdHeaders[i];
+                    cell.Style.Font.Bold = true;
+                    cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#06B6D4");
+                    cell.Style.Font.FontColor = XLColor.White;
+                    cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+
+                int sdRow = 2;
+                foreach (var r in reports)
+                {
+                    // (name, type, subType, rev, bill, out, reg, comp, complianceGap, coverageGap, valuationGap, liabilityGap, mixedGap, funcGap, potential)
+                    var streamItems = new List<(string Name, string Type, string SubType,
+                                                decimal Rev, decimal Bill, decimal Out,
+                                                int Reg, int Comp, decimal CG, decimal CovG, decimal VG, decimal LG,
+                                                decimal MG, decimal FG, decimal TPR)>();
+
+                    if (!string.IsNullOrEmpty(r.PropertyTaxData))
+                    {
+                        try { var pt = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisPropertyTaxViewModel>(r.PropertyTaxData, jsonOpts);
+                            if (pt != null)
+                            {
+                                var g = Services.GapCalculator.ComputePropertyTaxGaps(pt);
+                                streamItems.Add(("Property Tax", "Property Tax", "",
+                                    g.RevenueToDate, pt.BilledAmount ?? 0, pt.OutstandingAmount ?? 0,
+                                    pt.RegisteredProperties ?? 0, (int)Math.Round(g.CompliantProperties),
+                                    g.ComplianceGap, g.CoverageGap, g.ValuationGap, 0m,
+                                    g.MixedGapRegistered + g.MixedGapUnregistered,
+                                    g.TotalFunctionalGap, g.TotalPotentialRevenue));
+                            }
+                        } catch { }
+                    }
+                    if (!string.IsNullOrEmpty(r.LicenseData))
+                    {
+                        try { var bl = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisLicenseViewModel>(r.LicenseData, jsonOpts);
+                            if (bl != null)
+                            {
+                                var g = Services.GapCalculator.ComputeBusinessLicenseGaps(bl);
+                                streamItems.Add(("Business License", "Business License", ComposeSubType(bl.Subgroup, bl.Subtype),
+                                    g.RevenueToDate, bl.BilledAmount ?? 0, bl.OutstandingAmount ?? 0,
+                                    bl.RegisteredBusinesses ?? 0, (int)Math.Round(g.CompliantBusinesses),
+                                    g.ComplianceGap, g.CoverageGap, 0m, g.LiabilityGap,
+                                    g.MixedGapCompliance + g.MixedGapCoverage,
+                                    g.TotalFunctionalGap, g.TotalPotentialRevenue));
+                            }
+                        } catch { }
+                    }
+                    if (!string.IsNullOrEmpty(r.GenericStreamsData))
+                    {
+                        try { var streamsParsed = System.Text.Json.JsonSerializer.Deserialize<List<GenericStreamViewModel>>(r.GenericStreamsData, jsonOpts);
+                            if (streamsParsed != null) foreach (var s in streamsParsed)
+                            {
+                                decimal mixed = (s.MixedGapCompliance ?? 0) + (s.MixedGapCoverage ?? 0);
+                                decimal funcGap = s.TotalFunctionalGap ?? ((s.ComplianceGap ?? 0) + (s.CoverageGap ?? 0) + (s.LiabilityGap ?? 0) + mixed);
+                                streamItems.Add((s.StreamName ?? "Unnamed", "Non-Property", ComposeSubType(s.Subgroup, s.Subtype),
+                                    s.RevenueToDate ?? 0, s.BilledAmount ?? 0, s.OutstandingAmount ?? 0,
+                                    s.RegisteredUnits ?? 0, (int)(s.CompliantUnits ?? 0),
+                                    s.ComplianceGap ?? 0, s.CoverageGap ?? 0, 0m, s.LiabilityGap ?? 0,
+                                    mixed, funcGap, s.TotalPotentialRevenue ?? 0));
+                            }
+                        } catch { }
+                    }
+
+                    foreach (var si in streamItems)
+                    {
+                        int c = 1;
+                        sd.Cell(sdRow, c++).Value = r.Id;
+                        sd.Cell(sdRow, c++).Value = r.Title ?? "";
+                        sd.Cell(sdRow, c++).Value = r.Country ?? "";
+                        sd.Cell(sdRow, c++).Value = r.City ?? "";
+                        sd.Cell(sdRow, c++).Value = r.FinancialYear ?? "";
+                        sd.Cell(sdRow, c++).Value = si.Name;
+                        sd.Cell(sdRow, c++).Value = si.Type;
+                        sd.Cell(sdRow, c++).Value = si.SubType;
+                        sd.Cell(sdRow, c).Value = si.Rev;  sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                        sd.Cell(sdRow, c).Value = si.Bill; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                        sd.Cell(sdRow, c).Value = si.Out;  sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                        sd.Cell(sdRow, c++).Value = si.Reg;
+                        sd.Cell(sdRow, c++).Value = si.Comp;
+                        sd.Cell(sdRow, c).Value = si.CG;   sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                        sd.Cell(sdRow, c).Value = si.CovG; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                        sd.Cell(sdRow, c).Value = si.VG;   sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                        sd.Cell(sdRow, c).Value = si.LG;   sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                        sd.Cell(sdRow, c).Value = si.MG;   sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                        sd.Cell(sdRow, c).Value = si.FG;   sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                        sd.Cell(sdRow, c).Value = si.TPR;  sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
+                        sdRow++;
+                    }
+                }
+
+                sd.Columns().AdjustToContents();
+                if (sdRow > 2)
+                    sd.Range(1, 1, sdRow - 1, sdHeaders.Length).SetAutoFilter();
             }
 
-            int sdRow = 2;
-            foreach (var r in reports)
+            // ── Sheet 3: Prioritization ──
+            // One row per (report, stream-rank). Reads the three known shapes of
+            // PrioritizationData (current `streamCustomizations + gapPrioritization`
+            // object, legacy seeded `{streams:[…]}` object, and the original
+            // flat array). The gap sequence column is formatted as
+            // "1.Compliance → 2.Coverage → 3.Valuation" with strike-through-marker
+            // for removed steps and a trailing * for user-overridden ones.
+            if (IncludeSheet("prioritization"))
             {
-                // Parse all streams for this report
-                var streamItems = new List<(string Type, string Name, decimal Rev, decimal Bill, decimal Out, int Reg, int Comp, decimal CG, decimal CovG, decimal LG, decimal TPR)>();
+                var pri = workbook.Worksheets.Add("Prioritization");
+                var priHeaders = new[] { "Report ID", "Title", "Country", "City", "Financial Year",
+                    "Stream Rank", "Stream ID", "Stream Name", "Stream Type", "Included",
+                    "Gap Priority Sequence" };
 
-                if (!string.IsNullOrEmpty(r.PropertyTaxData))
+                for (int i = 0; i < priHeaders.Length; i++)
                 {
-                    try { var pt = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisPropertyTaxViewModel>(r.PropertyTaxData, jsonOpts);
-                        if (pt != null) streamItems.Add(("Property Tax", "Property Tax", pt.RevenueToDate??0, pt.BilledAmount??0, pt.OutstandingAmount??0, pt.RegisteredProperties??0, pt.CompliantProperties??0, 0, 0, 0, 0));
-                    } catch { }
-                }
-                if (!string.IsNullOrEmpty(r.LicenseData))
-                {
-                    try { var bl = System.Text.Json.JsonSerializer.Deserialize<GapAnalysisLicenseViewModel>(r.LicenseData, jsonOpts);
-                        if (bl != null) streamItems.Add(("Business License", "Business License", bl.RevenueToDate??0, bl.BilledAmount??0, bl.OutstandingAmount??0, bl.RegisteredBusinesses??0, 0, 0, 0, 0, 0));
-                    } catch { }
-                }
-                if (!string.IsNullOrEmpty(r.GenericStreamsData))
-                {
-                    try { var streams = System.Text.Json.JsonSerializer.Deserialize<List<GenericStreamViewModel>>(r.GenericStreamsData, jsonOpts);
-                        if (streams != null) foreach (var s in streams)
-                            streamItems.Add(("Generic", s.StreamName??"Unnamed", s.RevenueToDate??0, s.BilledAmount??0, s.OutstandingAmount??0, s.RegisteredUnits??0, (int)(s.CompliantUnits??0), s.ComplianceGap??0, s.CoverageGap??0, s.LiabilityGap??0, s.TotalPotentialRevenue??0));
-                    } catch { }
+                    var cell = pri.Cell(1, i + 1);
+                    cell.Value = priHeaders[i];
+                    cell.Style.Font.Bold = true;
+                    cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#F59E0B");
+                    cell.Style.Font.FontColor = XLColor.White;
+                    cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 }
 
-                foreach (var si in streamItems)
+                int priRow = 2;
+                foreach (var r in reports)
                 {
+                    var items = ParsePrioritizationItemsForExport(r.PrioritizationData);
+                    foreach (var it in items)
+                    {
+                        int c = 1;
+                        pri.Cell(priRow, c++).Value = r.Id;
+                        pri.Cell(priRow, c++).Value = r.Title ?? "";
+                        pri.Cell(priRow, c++).Value = r.Country ?? "";
+                        pri.Cell(priRow, c++).Value = r.City ?? "";
+                        pri.Cell(priRow, c++).Value = r.FinancialYear ?? "";
+                        pri.Cell(priRow, c++).Value = it.StreamRank == int.MaxValue ? "" : it.StreamRank.ToString();
+                        pri.Cell(priRow, c++).Value = it.StreamId ?? "";
+                        pri.Cell(priRow, c++).Value = it.StreamName ?? "";
+                        pri.Cell(priRow, c++).Value = it.StreamType ?? "";
+                        pri.Cell(priRow, c++).Value = it.Included ? "Yes" : "No";
+                        pri.Cell(priRow, c++).Value = FormatGapSequence(it.GapSequence);
+                        priRow++;
+                    }
+                }
+
+                pri.Columns().AdjustToContents();
+                if (priRow > 2)
+                    pri.Range(1, 1, priRow - 1, priHeaders.Length).SetAutoFilter();
+            }
+
+            // ── Sheet 4: Recommendations ──
+            // One row per report with the problem statement, root causes,
+            // recommendation summary, and selected-solutions list. Long text
+            // columns get wrap-text styling so the workbook reads cleanly.
+            if (IncludeSheet("recommendations"))
+            {
+                var rec = workbook.Worksheets.Add("Recommendations");
+                var recHeaders = new[] { "Report ID", "Title", "Country", "City", "Financial Year",
+                    "Status", "Problem Statement", "Root Causes",
+                    "Recommendation Summary", "Solutions Selected", "Solutions List" };
+
+                for (int i = 0; i < recHeaders.Length; i++)
+                {
+                    var cell = rec.Cell(1, i + 1);
+                    cell.Value = recHeaders[i];
+                    cell.Style.Font.Bold = true;
+                    cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#10B981");
+                    cell.Style.Font.FontColor = XLColor.White;
+                    cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                }
+
+                int recRow = 2;
+                foreach (var r in reports)
+                {
+                    var statusName = ((ReportStatus)r.Status).ToString();
+                    var (rootCausesJoined, solutionCount, solutionsList) = ParseRecommendationsExtras(r, jsonOpts);
+
                     int c = 1;
-                    sd.Cell(sdRow, c++).Value = r.Id;
-                    sd.Cell(sdRow, c++).Value = r.Title ?? "";
-                    sd.Cell(sdRow, c++).Value = r.Country ?? "";
-                    sd.Cell(sdRow, c++).Value = r.City ?? "";
-                    sd.Cell(sdRow, c++).Value = r.FinancialYear ?? "";
-                    sd.Cell(sdRow, c++).Value = si.Type;
-                    sd.Cell(sdRow, c++).Value = si.Name;
-                    sd.Cell(sdRow, c).Value = si.Rev; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
-                    sd.Cell(sdRow, c).Value = si.Bill; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
-                    sd.Cell(sdRow, c).Value = si.Out; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
-                    sd.Cell(sdRow, c++).Value = si.Reg;
-                    sd.Cell(sdRow, c++).Value = si.Comp;
-                    sd.Cell(sdRow, c).Value = si.CG; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
-                    sd.Cell(sdRow, c).Value = si.CovG; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
-                    sd.Cell(sdRow, c).Value = si.LG; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
-                    sd.Cell(sdRow, c).Value = si.TPR; sd.Cell(sdRow, c++).Style.NumberFormat.Format = "#,##0";
-                    sdRow++;
+                    rec.Cell(recRow, c++).Value = r.Id;
+                    rec.Cell(recRow, c++).Value = r.Title ?? "";
+                    rec.Cell(recRow, c++).Value = r.Country ?? "";
+                    rec.Cell(recRow, c++).Value = r.City ?? "";
+                    rec.Cell(recRow, c++).Value = r.FinancialYear ?? "";
+                    rec.Cell(recRow, c++).Value = statusName;
+                    rec.Cell(recRow, c++).Value = r.ProblemStatement ?? "";
+                    rec.Cell(recRow, c++).Value = rootCausesJoined;
+                    rec.Cell(recRow, c++).Value = r.RecommendationSummary ?? "";
+                    rec.Cell(recRow, c++).Value = solutionCount;
+                    rec.Cell(recRow, c++).Value = solutionsList;
+                    recRow++;
                 }
+
+                // Wrap the long-text columns
+                for (int wi = 7; wi <= 11; wi++)
+                {
+                    rec.Column(wi).Width = 50;
+                    rec.Column(wi).Style.Alignment.WrapText = true;
+                }
+                rec.Columns(1, 6).AdjustToContents();
+                if (recRow > 2)
+                    rec.Range(1, 1, recRow - 1, recHeaders.Length).SetAutoFilter();
             }
 
-            sd.Columns().AdjustToContents();
-            if (sdRow > 2)
-                sd.Range(1, 1, sdRow - 1, sdHeaders.Length).SetAutoFilter();
+            // If the caller managed to deselect every sheet, ensure we still
+            // ship a valid workbook with a placeholder so the download
+            // doesn't 500.
+            if (workbook.Worksheets.Count == 0)
+            {
+                var empty = workbook.Worksheets.Add("Empty");
+                empty.Cell(1, 1).Value = "No sheets were selected for export.";
+            }
 
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);
             var filename = $"ROSRA_Data_Export_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
             return File(stream.ToArray(),
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+        }
+
+        // ─── helpers used only by ExportDataExcel ───
+
+        // Parses PrioritizationData JSON in all three shapes the codebase has
+        // seen: (a) the live `_Prioritization.cshtml` shape with
+        // `streamCustomizations` + `gapPrioritization`, (b) the seeded sample
+        // `{streams:[…]}` shape, and (c) the original flat-array shape.
+        private List<PrioritizationItem> ParsePrioritizationItemsForExport(string? json)
+        {
+            var items = new List<PrioritizationItem>();
+            if (string.IsNullOrEmpty(json)) return items;
+
+            try
+            {
+                using var doc = System.Text.Json.JsonDocument.Parse(json);
+                var root = doc.RootElement;
+
+                // Seeded shape: {"streams":[{rank,name,gap,share}]}
+                if (root.ValueKind == System.Text.Json.JsonValueKind.Object
+                    && root.TryGetProperty("streams", out var seededStreams)
+                    && seededStreams.ValueKind == System.Text.Json.JsonValueKind.Array)
+                {
+                    foreach (var el in seededStreams.EnumerateArray())
+                    {
+                        int rank = el.TryGetProperty("rank", out var rk) && rk.TryGetInt32(out var rv) ? rv : int.MaxValue;
+                        var name = el.TryGetProperty("name", out var nm) ? nm.GetString() ?? "" :
+                                   el.TryGetProperty("streamName", out var sn) ? sn.GetString() ?? "" : "";
+                        items.Add(new PrioritizationItem
+                        {
+                            StreamRank = rank,
+                            StreamName = name,
+                            StreamType = InferStreamType(name),
+                            Included = true,
+                        });
+                    }
+                    return items.OrderBy(p => p.StreamRank).ToList();
+                }
+
+                // Current live shape
+                if (root.ValueKind == System.Text.Json.JsonValueKind.Object
+                    && root.TryGetProperty("streamCustomizations", out var customs)
+                    && customs.ValueKind == System.Text.Json.JsonValueKind.Array)
+                {
+                    var gapMap = new Dictionary<string, List<GapPriorityEntry>>(StringComparer.OrdinalIgnoreCase);
+                    if (root.TryGetProperty("gapPrioritization", out var gapArr) && gapArr.ValueKind == System.Text.Json.JsonValueKind.Array)
+                    {
+                        foreach (var g in gapArr.EnumerateArray())
+                        {
+                            var sid = g.TryGetProperty("streamId", out var sidEl) ? sidEl.GetString() ?? "" : "";
+                            if (string.IsNullOrEmpty(sid)) continue;
+                            var seq = new List<GapPriorityEntry>();
+                            if (g.TryGetProperty("currentSequence", out var cur) && cur.ValueKind == System.Text.Json.JsonValueKind.Array)
+                            {
+                                int rk = 1;
+                                foreach (var s in cur.EnumerateArray())
+                                {
+                                    seq.Add(new GapPriorityEntry
+                                    {
+                                        Rank = rk++,
+                                        Type = s.TryGetProperty("type", out var t) ? t.GetString() ?? "" : "",
+                                        Removed = s.TryGetProperty("removed", out var rEl) && rEl.ValueKind == System.Text.Json.JsonValueKind.True,
+                                        IsOverridden = s.TryGetProperty("isOverridden", out var oEl) && oEl.ValueKind == System.Text.Json.JsonValueKind.True,
+                                    });
+                                }
+                            }
+                            gapMap[sid] = seq;
+                        }
+                    }
+
+                    foreach (var el in customs.EnumerateArray())
+                    {
+                        var id = el.TryGetProperty("id", out var idEl) ? idEl.GetString() ?? "" : "";
+                        if (string.IsNullOrEmpty(id)) continue;
+                        int adj = el.TryGetProperty("adjustedRank", out var arEl) && arEl.TryGetInt32(out var arVal) ? arVal : int.MaxValue;
+                        bool inc = !el.TryGetProperty("included", out var incEl) || incEl.ValueKind != System.Text.Json.JsonValueKind.False;
+                        items.Add(new PrioritizationItem
+                        {
+                            StreamId = id,
+                            StreamRank = adj,
+                            Included = inc,
+                            StreamName = FriendlyStreamName(id, new List<StreamDetailItem>()),
+                            StreamType = FriendlyStreamType(id, new List<StreamDetailItem>()),
+                            GapSequence = gapMap.TryGetValue(id, out var seq) ? seq : new(),
+                        });
+                    }
+                    return items.OrderBy(p => p.Included ? 0 : 1).ThenBy(p => p.StreamRank).ToList();
+                }
+
+                // Legacy flat array
+                if (root.ValueKind == System.Text.Json.JsonValueKind.Array)
+                {
+                    int rk = 1;
+                    foreach (var el in root.EnumerateArray())
+                    {
+                        items.Add(new PrioritizationItem
+                        {
+                            StreamRank = rk++,
+                            StreamName = el.TryGetProperty("streamName", out var sn) ? sn.GetString() ?? "" :
+                                         el.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "",
+                            Included = true,
+                        });
+                    }
+                }
+            }
+            catch { /* swallow malformed JSON; the row just exports with empty priorities */ }
+
+            return items;
+        }
+
+        private static string FormatGapSequence(List<GapPriorityEntry> seq)
+        {
+            if (seq == null || seq.Count == 0) return "";
+            var parts = new List<string>();
+            foreach (var g in seq)
+            {
+                var label = string.IsNullOrEmpty(g.Type) ? "—" : g.Type;
+                if (g.Removed || string.Equals(g.Type, "Remove", StringComparison.OrdinalIgnoreCase))
+                    parts.Add($"{g.Rank}.~~{label}~~");
+                else
+                    parts.Add($"{g.Rank}.{label}{(g.IsOverridden ? "*" : "")}");
+            }
+            return string.Join(" → ", parts);
+        }
+
+        private static (string RootCauses, int SolutionCount, string SolutionsList) ParseRecommendationsExtras(
+            RosraReport r, System.Text.Json.JsonSerializerOptions jsonOpts)
+        {
+            string rootCauses = "";
+            if (!string.IsNullOrEmpty(r.RootCauses))
+            {
+                try
+                {
+                    var list = System.Text.Json.JsonSerializer.Deserialize<List<string>>(r.RootCauses, jsonOpts);
+                    if (list != null) rootCauses = string.Join("\n", list.Select((c, i) => $"{i + 1}. {c}"));
+                }
+                catch { rootCauses = r.RootCauses; }
+            }
+
+            int count = 0;
+            string list2 = "";
+            if (!string.IsNullOrEmpty(r.SelectedSolutionsData))
+            {
+                try
+                {
+                    using var doc = System.Text.Json.JsonDocument.Parse(r.SelectedSolutionsData);
+                    System.Text.Json.JsonElement arr = default;
+                    if (doc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Object
+                        && doc.RootElement.TryGetProperty("selectedSolutions", out var sel)
+                        && sel.ValueKind == System.Text.Json.JsonValueKind.Array)
+                    {
+                        arr = sel;
+                    }
+                    else if (doc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+                    {
+                        arr = doc.RootElement;
+                    }
+
+                    if (arr.ValueKind == System.Text.Json.JsonValueKind.Array)
+                    {
+                        var titles = new List<string>();
+                        foreach (var el in arr.EnumerateArray())
+                        {
+                            var title = el.TryGetProperty("title", out var t) ? t.GetString() ?? "" :
+                                        el.TryGetProperty("name",  out var nm) ? nm.GetString() ?? "" : "";
+                            var stream = el.TryGetProperty("stream", out var s) ? s.GetString() ?? "" : "";
+                            var gap = el.TryGetProperty("gapType", out var g) ? g.GetString() ?? "" : "";
+                            var line = string.IsNullOrEmpty(stream) ? title : $"[{stream}{(string.IsNullOrEmpty(gap) ? "" : "/" + gap)}] {title}";
+                            titles.Add(line);
+                        }
+                        count = titles.Count;
+                        list2 = string.Join("\n", titles.Select((t, i) => $"{i + 1}. {t}"));
+                    }
+                }
+                catch { /* leave blank on bad JSON */ }
+            }
+            return (rootCauses, count, list2);
         }
 
         // ══════════════════════════════════════════════════

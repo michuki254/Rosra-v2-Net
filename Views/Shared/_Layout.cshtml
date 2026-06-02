@@ -75,84 +75,12 @@
 
                 <!-- Navigation Content -->
                 <div class="collapse navbar-collapse" id="navbarMain">
-                    <ul class="navbar-nav main-nav-links ms-auto me-2">
+                    <ul class="navbar-nav main-nav-links ms-auto">
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")"
                                asp-area="" asp-controller="Home" asp-action="Index">
                                 @SharedLocalizer["Nav_Home"]
                             </a>
-                        </li>
-
-                        <!-- About ROSRA Dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                @SharedLocalizer["Nav_About"]
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-about" aria-labelledby="aboutDropdown">
-                                <li><a class="dropdown-item" href="/#what-is-rosra">
-                                    <i class="fas fa-info-circle me-2"></i> @SharedLocalizer["Nav_WhatIsRosra"]
-                                </a></li>
-                                <li><a class="dropdown-item" href="/#what-is-osr">
-                                    <i class="fas fa-coins me-2"></i> @SharedLocalizer["Nav_WhatIsOsr"]
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/#why-un-habitat">
-                                    <i class="fas fa-globe me-2"></i> @SharedLocalizer["Nav_WhyUnHabitat"]
-                                </a></li>
-                            </ul>
-                        </li>
-
-                        <!-- Why Optimize Dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="whyDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                @SharedLocalizer["Nav_WhyOptimize"]
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-why" aria-labelledby="whyDropdown">
-                                <li><a class="dropdown-item" href="/#why-optimize">
-                                    <i class="fas fa-coins me-2"></i> @SharedLocalizer["Nav_IncreasesResources"]
-                                </a></li>
-                                <li><a class="dropdown-item" href="/#why-optimize">
-                                    <i class="fas fa-balance-scale me-2"></i> @SharedLocalizer["Nav_IncreasesAutonomy"]
-                                </a></li>
-                                <li><a class="dropdown-item" href="/#why-optimize">
-                                    <i class="fas fa-handshake me-2"></i> @SharedLocalizer["Nav_StrengthensContract"]
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/#why-optimize">
-                                    <i class="fas fa-building me-2"></i> @SharedLocalizer["Nav_ImprovesCapacity"]
-                                </a></li>
-                                <li><a class="dropdown-item" href="/#why-optimize">
-                                    <i class="fas fa-chart-line me-2"></i> @SharedLocalizer["Nav_EnablesLeveraging"]
-                                </a></li>
-                                <li><a class="dropdown-item" href="/#why-optimize">
-                                    <i class="fas fa-star me-2"></i> @SharedLocalizer["Nav_IncreasesCreditworthiness"]
-                                </a></li>
-                            </ul>
-                        </li>
-
-                        <!-- How It Works Dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="howDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                @SharedLocalizer["Nav_HowItWorks"]
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-how" aria-labelledby="howDropdown">
-                                <li><a class="dropdown-item" href="/#who-is-rosra-for">
-                                    <i class="fas fa-users me-2"></i> @SharedLocalizer["Nav_WhoIsRosraFor"]
-                                </a></li>
-                                <li><a class="dropdown-item" href="/#how-it-works">
-                                    <i class="fas fa-cogs me-2"></i> @SharedLocalizer["Nav_AnalysisProcess"]
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/#data-requirements">
-                                    <i class="fas fa-database me-2"></i> @SharedLocalizer["Nav_DataRequirements"]
-                                </a></li>
-                                <li><a class="dropdown-item" asp-controller="Home" asp-action="Privacy">
-                                    <i class="fas fa-shield-alt me-2"></i> @SharedLocalizer["Nav_DataPrivacy"]
-                                </a></li>
-                            </ul>
                         </li>
 
                         <!-- Resources Dropdown -->
@@ -165,17 +93,14 @@
                                 <li><a class="dropdown-item" asp-controller="Home" asp-action="SampleReports">
                                     <i class="fas fa-file-alt me-2"></i> @SharedLocalizer["Nav_SampleReport"]
                                 </a></li>
-                                <li><a class="dropdown-item" href="/#testimonials">
-                                    <i class="fas fa-quote-left me-2"></i> @SharedLocalizer["Nav_Testimonials"]
-                                </a></li>
                                 <li><a class="dropdown-item" asp-controller="Home" asp-action="JobAid">
                                     <i class="fas fa-book-reader me-2"></i> User Guide
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="https://unhabitat.org" target="_blank">
+                                <li><a class="dropdown-item" href="https://unhabitat.org" target="_blank" rel="noopener">
                                     <i class="fas fa-external-link-alt me-2"></i> @SharedLocalizer["Nav_UnHabitatWebsite"]
                                 </a></li>
-                                <li><a class="dropdown-item" href="https://sdgs.un.org/goals/goal11" target="_blank">
+                                <li><a class="dropdown-item" href="https://sdgs.un.org/goals/goal11" target="_blank" rel="noopener">
                                     <i class="fas fa-city me-2"></i> @SharedLocalizer["Nav_Sdg11"]
                                 </a></li>
                             </ul>
@@ -184,7 +109,7 @@
                     </ul>
 
                     <!-- Right Side: Auth & CTA -->
-                    <div class="nav-right-section">
+                    <div class="nav-right-section ms-0">
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
                             var user = await UserManager.GetUserAsync(User);
@@ -367,6 +292,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/streamClassification.js" asp-append-version="true"></script>
+    <script src="~/js/rosraTabFlushers.js" asp-append-version="true"></script>
     <script src="~/js/rosraStateManager.js" asp-append-version="true"></script>
     <script src="~/js/rosraNumberFormat.js" asp-append-version="true"></script>
     <script src="~/js/chartExportHelper.js" asp-append-version="true"></script>

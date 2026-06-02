@@ -2,6 +2,7 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using RosraApp.Authorization;
@@ -71,7 +72,14 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-builder.Services.AddControllersWithViews()
+builder.Services.AddControllersWithViews(options =>
+    {
+        // Register the comma-tolerant numeric model binder at the front of the
+        // provider list. ROSRA form pages render numeric fields with JS
+        // thousand separators ("12,500"); without this binder every save path
+        // would silently drop those values. See Infrastructure/CommaTolerantNumberBinder.cs.
+        options.ModelBinderProviders.Insert(0, new RosraApp.Infrastructure.CommaTolerantNumberBinderProvider());
+    })
     .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
     .AddDataAnnotationsLocalization();
 
@@ -121,6 +129,7 @@ builder.Services.AddScoped<RosraApp.Services.ArtifactService>();
 // (saves ~30+ seconds per call on Azure App Service). See the class docstring.
 builder.Services.AddSingleton<RosraApp.Services.HtmlToPdfService>();
 builder.Services.AddScoped<RosraApp.Services.IEmailService, RosraApp.Services.EmailService>();
+builder.Services.AddTransient<IEmailSender, RosraApp.Services.IdentityEmailSender>();
 builder.Services.AddSingleton<RosraApp.Services.DataRetentionService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<RosraApp.Services.DataRetentionService>());
 builder.Services.AddScoped<RosraApp.Services.SubmissionService>();
@@ -155,6 +164,16 @@ builder.Services.AddRateLimiter(options =>
         opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
         opt.QueueLimit = 10;
     });
+    options.AddPolicy("login", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            }));
 });
 
 var app = builder.Build();
@@ -255,10 +274,13 @@ app.Use(async (context, next) =>
         : "connect-src 'self' https://api.worldbank.org wss:;";
     context.Response.Headers.Append("Content-Security-Policy",
         "default-src 'self'; " +
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+        "script-src 'self' 'unsafe-inline'; " +
         "style-src 'self' 'unsafe-inline'; " +
         "font-src 'self'; " +
         "img-src 'self' data: https:; " +
+        "object-src 'none'; " +
+        "base-uri 'self'; " +
+        "form-action 'self'; " +
         connectSrc);
     await next();
 });

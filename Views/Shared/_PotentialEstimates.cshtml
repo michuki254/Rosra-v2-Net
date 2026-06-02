@@ -4209,7 +4209,10 @@
                 // Validate data with server (no database write)
                 const response = await fetch('/Rosra/SavePeerSNGs', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
                     body: JSON.stringify({ CountryCode: countryCode, Peers: peers.map(p => ({ SNG: p.sng, OSR: p.osr, GCP: p.gcp, Population: p.population, Include: p.include })) })
                 });
                 const result = await response.json();
@@ -4484,7 +4487,10 @@
                     console.log('Using custom peer data for analysis:', customPeerData.customPeers.length, 'peers');
                     response = await fetch('/Rosra/GetPeerSNGAnalysisWithCustomPeers', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                        },
                         body: JSON.stringify({
                             Sng: sngName,
                             CountryCode: countryCode,

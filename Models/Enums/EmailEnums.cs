@@ -8,7 +8,9 @@ namespace RosraApp.Models.Enums
         ReportRejected = 3,
         ReportUnlocked = 4,
         WelcomeEmail = 5,
-        TestEmail = 6
+        TestEmail = 6,
+        PasswordReset = 7,
+        EmailConfirmation = 8
     }
 
     public enum EmailStatus
