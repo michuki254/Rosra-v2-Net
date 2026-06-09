@@ -256,6 +256,25 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+// Audit 11.6: accept only a defined set of HTTP request methods. ASP.NET Core MVC
+// actions without an explicit verb attribute otherwise respond to ANY method
+// (PUT/DELETE/TRACE included). Reject anything outside the allow-list with 405
+// before routing — this also removes TRACE (Cross-Site Tracing surface).
+var allowedHttpMethods = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+{
+    "GET", "HEAD", "POST", "OPTIONS"
+};
+app.Use(async (context, next) =>
+{
+    if (!allowedHttpMethods.Contains(context.Request.Method))
+    {
+        context.Response.StatusCode = StatusCodes.Status405MethodNotAllowed;
+        context.Response.Headers["Allow"] = "GET, HEAD, POST, OPTIONS";
+        return;
+    }
+    await next();
+});
+
 // Security headers
 var isDevelopment = app.Environment.IsDevelopment();
 app.Use(async (context, next) =>
