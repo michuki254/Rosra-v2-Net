@@ -1352,13 +1352,30 @@
             })();
 
             if (!isViewMode) {
+                // Single-flight guard shared between the manual Save click
+                // and the 60-s auto-save tick. Without it, the two can race
+                // while #reportId is still 0 and the server creates two
+                // separate reports for the same editing session.
+                var saveInFlight = false;
+
                 // Save Report button click handler
                 $("#saveReportBtn").click(function() {
                     // Function to perform the actual save
                     function performSave() {
+                        // Single-flight: if an auto-save is mid-request the
+                        // server hasn't yet returned the new Id, so a second
+                        // POST here would create a duplicate. Wait it out;
+                        // the user will see the saved badge from the
+                        // auto-save and can click again if needed.
+                        if (saveInFlight) {
+                            console.log('Save: another save in flight, ignoring click');
+                            return;
+                        }
+
                         var btn = $("#saveReportBtn");
                         var originalHtml = btn.html();
                         btn.prop('disabled', true).html('<i class="bi bi-hourglass-split me-1"></i><span>Saving...</span>');
+                        saveInFlight = true;
 
                         // Auto-generate title from Country and Region (no popup)
                         var country = $("#country option:selected").text().trim();
@@ -1414,7 +1431,8 @@
                             error: function() {
                                 alert("An error occurred while saving. Please try again.");
                                 btn.prop('disabled', false).html(originalHtml);
-                            }
+                            },
+                            complete: function() { saveInFlight = false; }
                         });
                     }
 
@@ -1434,6 +1452,7 @@
                 // ── Auto-Save Timer (60 seconds) ──
                 var autoSaveDirty = false;
                 var autoSaveTimer = null;
+                // (saveInFlight declared above — shared with manual Save click)
 
                 // Track form changes
                 $('#rosraForm').on('input change', 'input, select, textarea', function() {
@@ -1455,7 +1474,9 @@
                 if (isAuthenticated) {
                     autoSaveTimer = setInterval(function() {
                         if (!isAutoSaveDirty()) return;
+                        if (saveInFlight) return;            // ← skip; the in-flight save will pick up the dirty state on its next tick
                         clearAutoSaveDirty();
+                        saveInFlight = true;
 
                         if (typeof collectTabDataFromLocalStorage === 'function') collectTabDataFromLocalStorage();
 
@@ -1488,7 +1509,8 @@
                                     badge.style.opacity = '1';
                                     setTimeout(function() { badge.style.opacity = '0'; }, 3000);
                                 }
-                            }
+                            },
+                            complete: function() { saveInFlight = false; }
                         });
                     }, 60000); // 60 seconds
                 }
@@ -1501,6 +1523,16 @@
                 // browser delivers reliably even after unload). This is a
                 // safety net; the primary save paths are the Save button and
                 // the 60-s auto-save.
+                //
+                // IMPORTANT — never fire sendBeacon for a fresh (Id=0) report.
+                // A user landing on /Rosra, typing a couple of fields, then
+                // navigating away without clicking Save did NOT intend to
+                // persist anything. Without this guard we kept silently
+                // creating a half-empty report on unload (e.g. "Rosra
+                // Analysis Report" with no location), and the user's actual
+                // Save click later in the session produced a second row —
+                // hence the duplicates seen in Admin Data Management. Only
+                // beacon when we have an existing reportId to update.
                 if (isAuthenticated) {
                     window.addEventListener('beforeunload', function () {
                         try {
@@ -1508,6 +1540,7 @@
                                 window.RosraTabFlushers.flushAll();
                             }
                             if (!isAutoSaveDirty()) return;
+                            if (parseInt($('#reportId').val() || '0') <= 0) return;     // ← never create on unload
                             if (typeof navigator.sendBeacon !== 'function') return;
 
                             var data = new FormData(document.getElementById('rosraForm'));

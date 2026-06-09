@@ -1608,6 +1608,10 @@
         var currentSubgroup = document.getElementById('licenseSubgroup') ? document.getElementById('licenseSubgroup').value : '';
         var currentSubtype = document.getElementById('licenseSubtype') ? document.getElementById('licenseSubtype').value : '';
 
+        // Default the Business License stream to subgroup A (Business licences & permits)
+        // when nothing has been set yet — see RosraFormViewModel.GapAnalysisLicenseViewModel.
+        if (!currentSubgroup) { currentSubgroup = 'A'; }
+
         document.getElementById('editLicenseMetaName').value = currentName;
         document.getElementById('editLicenseMetaSubgroup').value = currentSubgroup;
 

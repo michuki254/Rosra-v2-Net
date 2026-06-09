@@ -154,7 +154,9 @@ namespace RosraApp.Models.ViewModels
     public class GapAnalysisLicenseViewModel : GapAnalysisBaseViewModel
     {
         // Stream classification (non-property subgroup/subtype)
-        public string? Subgroup { get; set; }        // "A", "B", or "C"
+        // Default to "A" — Business licences & recurrent operating permits — since this is the
+        // Business License tab. Loaded reports overwrite this with whatever is in the DB.
+        public string? Subgroup { get; set; } = "A";
         public string? Subtype { get; set; }         // Specific revenue type within subgroup
 
         // NEW: Business License User Input Fields (6 inputs per spec)
