@@ -272,15 +272,15 @@
             <div class="modal-body" style="padding:1.5rem;">
                 <div class="mb-3">
                     <label class="form-label-biz">@SharedLocalizer["Profile_CurrentPassword"]</label>
-                    <input type="password" id="currentPassword" class="form-control input-biz" />
+                    <input type="password" id="currentPassword" class="form-control input-biz" autocomplete="off" />
                 </div>
                 <div class="mb-3">
                     <label class="form-label-biz">@SharedLocalizer["Profile_NewPassword"]</label>
-                    <input type="password" id="newPassword" class="form-control input-biz" />
+                    <input type="password" id="newPassword" class="form-control input-biz" autocomplete="new-password" />
                 </div>
                 <div>
                     <label class="form-label-biz">@SharedLocalizer["Profile_ConfirmNewPassword"]</label>
-                    <input type="password" id="confirmNewPassword" class="form-control input-biz" />
+                    <input type="password" id="confirmNewPassword" class="form-control input-biz" autocomplete="new-password" />
                 </div>
                 <div id="pwError" class="mt-2" style="color:#EF4444; font-size:0.8125rem; display:none;"></div>
                 <div id="pwSuccess" class="mt-2" style="color:#10B981; font-size:0.8125rem; display:none;"></div>

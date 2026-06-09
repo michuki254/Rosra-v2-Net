@@ -282,6 +282,18 @@ app.Use(async (context, next) =>
         "base-uri 'self'; " +
         "form-action 'self'; " +
         connectSrc);
+
+    // Audit 9.3: forms containing sensitive information must not be cached
+    // client-side. Account (login/register/profile/password) and Admin pages
+    // carry credentials or personal data, so disable client + proxy caching.
+    var reqPath = context.Request.Path;
+    if (reqPath.StartsWithSegments("/Account") || reqPath.StartsWithSegments("/Admin"))
+    {
+        context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
+        context.Response.Headers["Pragma"] = "no-cache";
+        context.Response.Headers["Expires"] = "0";
+    }
+
     await next();
 });
 

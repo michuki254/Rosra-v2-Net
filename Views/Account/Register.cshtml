@@ -411,7 +411,7 @@
                     <p>@Localizer["Subheading"]</p>
                 </div>
 
-                <form asp-action="Register" method="post">
+                <form asp-action="Register" method="post" autocomplete="off">
                     @if (ViewData.ModelState.ErrorCount > 0)
                     {
                         <div asp-validation-summary="All" class="text-danger validation-summary-errors"></div>
@@ -432,7 +432,7 @@
 
                     <div class="form-group">
                         <label asp-for="Email" class="form-label">@Localizer["EmailLabel"]</label>
-                        <input asp-for="Email" class="form-control" type="email" placeholder="@Localizer["EmailPlaceholder"].Value" />
+                        <input asp-for="Email" class="form-control" type="email" placeholder="@Localizer["EmailPlaceholder"].Value" autocomplete="off" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
@@ -451,12 +451,12 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label asp-for="Password" class="form-label">@Localizer["PasswordLabel"]</label>
-                            <input asp-for="Password" class="form-control" type="password" placeholder="@Localizer["PasswordPlaceholder"].Value" />
+                            <input asp-for="Password" class="form-control" type="password" placeholder="@Localizer["PasswordPlaceholder"].Value" autocomplete="new-password" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="ConfirmPassword" class="form-label">@Localizer["ConfirmPasswordLabel"]</label>
-                            <input asp-for="ConfirmPassword" class="form-control" type="password" placeholder="@Localizer["ConfirmPasswordPlaceholder"].Value" />
+                            <input asp-for="ConfirmPassword" class="form-control" type="password" placeholder="@Localizer["ConfirmPasswordPlaceholder"].Value" autocomplete="new-password" />
                             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                         </div>
                     </div>
