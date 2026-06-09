@@ -1,15 +1,24 @@
-# Builds RosraApp on every push to main and deploys it to the
-# rosra-dev Azure App Service (RG: UNHAB-PRD-ROSRA, sub: UN-HABITAT-PROD).
+# CI/CD for ROSRA V2 on Azure App Service `rosra-dev`
+# (RG: UNHAB-PRD-ROSRA, sub: UN-HABITAT-PROD).
 #
-# Prerequisites (one-time, in Azure DevOps):
-#   1. Project Settings > Service connections > New > Azure Resource Manager.
-#      Use Workload identity federation (recommended) or Service principal,
-#      scope it to subscription UN-HABITAT-PROD and resource group
-#      UNHAB-PRD-ROSRA, and name the connection EXACTLY: Azure-RosraDev
-#      (or change `azureServiceConnection` below to match the name you pick).
-#   2. Pipelines > New pipeline > Azure Repos Git > ROSRA Tool > Existing
-#      Azure Pipelines YAML file > /azure-pipelines.yml.
-#   3. First run will prompt you to authorize the service connection.
+# Flow on every push to main:
+#   Build  ->  Deploy to the `staging` slot  ->  (manual approval)  ->  Swap staging into production
+#
+# The staging slot gives a review URL (https://rosra-dev-staging.azurewebsites.net)
+# that runs the new build against the staging DB. Promotion to production is a
+# zero-downtime slot swap, gated by an approval so nothing reaches prod unreviewed.
+#
+# ONE-TIME PREREQUISITES
+#  Azure (run once with your UN admin account — see the az commands shared separately):
+#   1. Create the `staging` slot on rosra-dev.
+#   2. Create the staging Azure SQL DB `unhab-rosra-db-staging`.
+#   3. On the `staging` slot, set DefaultConnection (-> staging DB) and
+#      ASPNETCORE_ENVIRONMENT as SLOT (sticky) settings so they do NOT swap.
+#  Azure DevOps:
+#   1. Service connection (ARM) scoped to sub UN-HABITAT-PROD / RG UNHAB-PRD-ROSRA,
+#      named exactly: Azure-RosraDev
+#   2. Environments > create `rosra-dev-staging` and `rosra-dev-production`.
+#      Add an Approval check on `rosra-dev-production` (the swap waits for it).
 
 trigger:
   branches:
@@ -28,6 +37,7 @@ variables:
   buildConfiguration: Release
   azureServiceConnection: Azure-RosraDev
   appName: rosra-dev
+  stagingSlot: staging
   resourceGroup: UNHAB-PRD-ROSRA
   dotnetSdkVersion: 8.0.x
   projectPath: RosraApp.csproj
@@ -81,16 +91,16 @@ stages:
         artifact: webapp
         publishLocation: pipeline
 
-- stage: Deploy
-  displayName: Deploy to rosra-dev
+- stage: DeployStaging
+  displayName: Deploy to staging slot
   dependsOn: Build
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   jobs:
-  - deployment: DeployRosraDev
-    displayName: Deploy to App Service rosra-dev
+  - deployment: DeployStaging
+    displayName: Deploy to rosra-dev / staging slot
     pool:
       vmImage: windows-latest
-    environment: rosra-dev
+    environment: rosra-dev-staging
     strategy:
       runOnce:
         deploy:
@@ -99,11 +109,39 @@ stages:
             artifact: webapp
 
           - task: AzureWebApp@1
-            displayName: Deploy to Azure App Service
+            displayName: Deploy to staging slot
             inputs:
               azureSubscription: $(azureServiceConnection)
               appType: webApp
               appName: $(appName)
               resourceGroupName: $(resourceGroup)
+              deployToSlotOrASE: true
+              slotName: $(stagingSlot)
               package: $(Pipeline.Workspace)/webapp/*.zip
               deploymentMethod: zipDeploy
+
+- stage: SwapToProduction
+  displayName: Swap staging into production
+  dependsOn: DeployStaging
+  condition: succeeded()
+  jobs:
+  - deployment: SwapProd
+    displayName: Swap staging -> production (zero-downtime)
+    pool:
+      vmImage: windows-latest
+    # Add an Approval check on this environment in Azure DevOps so the swap
+    # waits for sign-off after staging has been reviewed.
+    environment: rosra-dev-production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureAppServiceManage@0
+            displayName: Swap staging slot into production
+            inputs:
+              azureSubscription: $(azureServiceConnection)
+              action: 'Swap Slots'
+              webAppName: $(appName)
+              resourceGroupName: $(resourceGroup)
+              sourceSlot: $(stagingSlot)
+              # target slot defaults to production
