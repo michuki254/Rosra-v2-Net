@@ -20,7 +20,7 @@ trigger:
       - '**/*.md'
       - 'PROJECT-UPDATE-*.docx'
       - 'docs/**'
-      - 'Scripts/**'
+      - 'tools/**'
 
 pr: none
 

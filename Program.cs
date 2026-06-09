@@ -250,7 +250,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Only redirect to HTTPS in development; Railway handles SSL at the proxy level
+// Only redirect to HTTPS in development; Azure App Service terminates SSL at its front end in production
 if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
