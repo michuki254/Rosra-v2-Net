@@ -9,6 +9,7 @@ using RosraApp.Models.Enums;
 using RosraApp.Models.ViewModels;
 using RosraApp.Services;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace RosraApp.Controllers
@@ -19,18 +20,27 @@ namespace RosraApp.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
         private readonly IEmailService _emailService;
+        private readonly IConfiguration _configuration;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ApplicationDbContext context,
-            IEmailService emailService)
+            IEmailService emailService,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
             _emailService = emailService;
+            _configuration = configuration;
         }
+
+        // True when Microsoft Entra ID SSO is configured (see Program.cs). Drives the
+        // "Sign in with UN account" button on the login page.
+        private bool SsoEnabled =>
+            !string.IsNullOrWhiteSpace(_configuration["EntraId:ClientId"]) &&
+            !string.IsNullOrWhiteSpace(_configuration["EntraId:TenantId"]);
 
         [HttpGet]
         public IActionResult Register()
@@ -84,6 +94,7 @@ namespace RosraApp.Controllers
         public IActionResult Login(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            ViewData["SsoEnabled"] = SsoEnabled;
             return View();
         }
 
@@ -93,6 +104,7 @@ namespace RosraApp.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            ViewData["SsoEnabled"] = SsoEnabled;
 
             if (ModelState.IsValid)
             {
@@ -126,6 +138,110 @@ namespace RosraApp.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        // ── Microsoft Entra ID single sign-on (external login) ──────────────────────
+        // Reachable only when the EntraId OIDC scheme is configured (Program.cs). UN staff
+        // sign in with their UN account; the callback find-or-creates the local user and
+        // issues the normal Identity cookie, so roles/permissions work unchanged.
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ExternalLogin(string provider, string returnUrl = null)
+        {
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        {
+            returnUrl ??= Url.Content("~/");
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["SsoEnabled"] = SsoEnabled;
+
+            if (remoteError != null)
+            {
+                ModelState.AddModelError(string.Empty, $"Error from sign-in provider: {remoteError}");
+                return View(nameof(Login));
+            }
+
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                ModelState.AddModelError(string.Empty, "Could not load single sign-on information. Please try again.");
+                return View(nameof(Login));
+            }
+
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        ?? info.Principal.FindFirstValue("email")
+                        ?? info.Principal.FindFirstValue("preferred_username")
+                        ?? info.Principal.FindFirstValue(ClaimTypes.Upn)
+                        ?? info.Principal.FindFirstValue("upn");
+
+            // Already-linked SSO account → sign straight in.
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(
+                info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            if (signInResult.Succeeded)
+            {
+                await EnsureAdminRoleAsync(email);
+                return LocalRedirectOrHome(returnUrl);
+            }
+
+            if (string.IsNullOrEmpty(email))
+            {
+                ModelState.AddModelError(string.Empty, "Your account did not return an email address; cannot sign you in.");
+                return View(nameof(Login));
+            }
+
+            // First SSO sign-in: find-or-create the local user, then link the external login.
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                user = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email,
+                    FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "",
+                    LastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? "",
+                    EmailConfirmed = true,
+                    CreatedAt = System.DateTime.UtcNow
+                };
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    foreach (var e in createResult.Errors) ModelState.AddModelError(string.Empty, e.Description);
+                    return View(nameof(Login));
+                }
+                await _userManager.AddToRoleAsync(user, "User");
+            }
+
+            await _userManager.AddLoginAsync(user, info);
+            await EnsureAdminRoleAsync(email);
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return LocalRedirectOrHome(returnUrl);
+        }
+
+        // Maps configured UN admin UPNs (EntraId:AdminEmails, comma-separated) to the Admin role.
+        private async Task EnsureAdminRoleAsync(string email)
+        {
+            if (string.IsNullOrEmpty(email)) return;
+            var adminEmails = (_configuration["EntraId:AdminEmails"] ?? string.Empty)
+                .Split(',', System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries);
+            if (!adminEmails.Any(a => string.Equals(a, email, System.StringComparison.OrdinalIgnoreCase))) return;
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null && !await _userManager.IsInRoleAsync(user, "Admin"))
+            {
+                await _userManager.AddToRoleAsync(user, "Admin");
+            }
+        }
+
+        private IActionResult LocalRedirectOrHome(string returnUrl)
+        {
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)) return Redirect(returnUrl);
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         // Audit M-7: antiforgery on logout. Low real-world impact (an attacker forcing a

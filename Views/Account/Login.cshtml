@@ -457,6 +457,16 @@
                     <p>@Localizer["Subheading"]</p>
                 </div>
 
+                @if (ViewData["SsoEnabled"] as bool? == true)
+                {
+                    <form asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="mb-3">
+                        <button type="submit" name="provider" value="EntraId" class="btn btn-primary w-100">
+                            <i class="bi bi-microsoft me-1"></i> Sign in with UN account
+                        </button>
+                    </form>
+                    <div class="text-center text-muted small mb-3">or sign in with email</div>
+                }
+
                 <form asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" autocomplete="off">
                     @if (ViewData.ModelState.ErrorCount > 0)
                     {

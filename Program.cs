@@ -71,6 +71,38 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
 });
 
+// Microsoft Entra ID (Azure AD) single sign-on, added ALONGSIDE local Identity login
+// (hybrid): UN staff sign in with their UN account; external subnational-government
+// users keep email + password. The OIDC scheme is only wired up when EntraId config is
+// present, so the app runs with local-only login (unchanged) until the Entra app
+// registration is configured in App Service settings — safe to deploy beforehand.
+var entraTenantId = builder.Configuration["EntraId:TenantId"];
+var entraClientId = builder.Configuration["EntraId:ClientId"];
+if (!string.IsNullOrWhiteSpace(entraTenantId) && !string.IsNullOrWhiteSpace(entraClientId))
+{
+    builder.Services.AddAuthentication()
+        .AddOpenIdConnect("EntraId", "UN Account", options =>
+        {
+            options.Authority = $"https://login.microsoftonline.com/{entraTenantId}/v2.0";
+            options.ClientId = entraClientId;
+            options.ClientSecret = builder.Configuration["EntraId:ClientSecret"];
+            options.ResponseType = "code";
+            options.UsePkce = true;
+            options.CallbackPath = "/signin-oidc";
+            options.SignedOutCallbackPath = "/signout-callback-oidc";
+            // Land the external identity in Identity's external sign-in scheme so
+            // AccountController.ExternalLoginCallback can find-or-create the local
+            // ApplicationUser and issue the normal Identity cookie (roles/permissions
+            // then work unchanged for SSO users).
+            options.SignInScheme = IdentityConstants.ExternalScheme;
+            options.Scope.Add("email");
+            options.Scope.Add("profile");
+            options.GetClaimsFromUserInfoEndpoint = true;
+            options.SaveTokens = true;
+            options.TokenValidationParameters.NameClaimType = "preferred_username";
+        });
+}
+
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddControllersWithViews(options =>
     {
