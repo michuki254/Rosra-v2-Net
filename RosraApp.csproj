@@ -18,9 +18,12 @@
          travel with the assembly and are guaranteed to be present on Azure
          App Service / Railway / any host, without filesystem path concerns. -->
     <EmbeddedResource Include="Data\Wofi\wofi_country_proxy.json" />
-    <EmbeddedResource Include="Data\Wofi\wofi_frontier_stats.json" />
     <EmbeddedResource Include="Data\Wofi\wofi_premium_rules.json" />
     <EmbeddedResource Include="Data\Wofi\wofi_national_data.json" />
+    <!-- v13 staged-GNI peer selection (2026-06 update): Atlas GNI per capita for
+         peer filtering + the workbook Assumptions constants. -->
+    <EmbeddedResource Include="Data\Wofi\wofi_gni_atlas.json" />
+    <EmbeddedResource Include="Data\Wofi\wofi_assumptions.json" />
   </ItemGroup>
 
   <ItemGroup>

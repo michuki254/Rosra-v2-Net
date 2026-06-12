@@ -699,8 +699,16 @@ namespace RosraApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Band")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("CountryCode")
                         .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<string>("Currency")
                         .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)");
 
@@ -720,6 +728,9 @@ namespace RosraApp.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("Watchlist")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

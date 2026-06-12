@@ -1599,6 +1599,10 @@
                         customPeers: null,
                         selectedSNG: null,
                         analysisResults: {},
+                        // Top-down tier hierarchy (2026-06): 'preloaded' | 'custom' | 'global'
+                        tier: window.__RosraTopDownTier || null,
+                        // Currency of the peer dataset used ('USD' for preloaded 2024 data)
+                        currency: window.__RosraPeerCurrency || null,
                         timestamp: new Date().toISOString()
                     };
 

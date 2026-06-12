@@ -19,18 +19,31 @@ namespace RosraApp.Models.Wofi
         [JsonPropertyName("source_note")] public string? SourceNote { get; set; }
     }
 
-    public class WofiFrontierStat
+    public class WofiGniAtlas
     {
-        [JsonPropertyName("income_group")] public string IncomeGroup { get; set; } = "";
-        [JsonPropertyName("peer_count")] public int PeerCount { get; set; }
-        [JsonPropertyName("top20_count")] public int Top20Count { get; set; }
-        [JsonPropertyName("base_top20_frontier_pct_gdp")] public decimal BaseTop20FrontierPctGdp { get; set; }
-        [JsonPropertyName("local_admin_pooled_sng_factor")] public decimal LocalAdminPooledSngFactor { get; set; }
-        [JsonPropertyName("option2_shrinkage")] public decimal Option2Shrinkage { get; set; }
-        [JsonPropertyName("option2_half_factor")] public decimal Option2HalfFactor { get; set; }
-        [JsonPropertyName("total_osr_proxy_uplift")] public decimal TotalOsrProxyUplift { get; set; }
-        [JsonPropertyName("final_benchmark_factor")] public decimal FinalBenchmarkFactor { get; set; }
-        [JsonPropertyName("final_headline_frontier_pct_gdp")] public decimal FinalHeadlineFrontierPctGdp { get; set; }
+        [JsonPropertyName("iso3")] public string Iso3 { get; set; } = "";
+        [JsonPropertyName("country")] public string Country { get; set; } = "";
+        [JsonPropertyName("gni_per_capita_atlas_usd")] public decimal? GniPerCapitaAtlasUsd { get; set; }
+        [JsonPropertyName("data_year")] public int? DataYear { get; set; }
+        [JsonPropertyName("source")] public string? Source { get; set; }
+    }
+
+    /// <summary>
+    /// Staged peer-selection and frontier constants from the v13 workbook's
+    /// Assumptions sheet ("ROSRA updated quick osr assessment_global.xlsx").
+    /// </summary>
+    public class WofiAssumptions
+    {
+        [JsonPropertyName("min_peer_count")] public int MinPeerCount { get; set; } = 12;
+        [JsonPropertyName("stage_a_gni_lower")] public decimal StageAGniLower { get; set; } = 0.67m;
+        [JsonPropertyName("stage_a_gni_upper")] public decimal StageAGniUpper { get; set; } = 1.5m;
+        [JsonPropertyName("stage_b_gni_lower")] public decimal StageBGniLower { get; set; } = 0.5m;
+        [JsonPropertyName("stage_b_gni_upper")] public decimal StageBGniUpper { get; set; } = 2m;
+        [JsonPropertyName("stage_d_nearest_n")] public int StageDNearestN { get; set; } = 15;
+        [JsonPropertyName("base_frontier_top_share")] public decimal BaseFrontierTopShare { get; set; } = 0.2m;
+        [JsonPropertyName("internal_dispersion_factor")] public decimal InternalDispersionFactor { get; set; } = 1.25m;
+        [JsonPropertyName("total_osr_uplift")] public decimal TotalOsrUplift { get; set; } = 0.1m;
+        [JsonPropertyName("source")] public string? Source { get; set; }
     }
 
     public class WofiPremiumRule

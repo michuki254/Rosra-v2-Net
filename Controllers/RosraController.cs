@@ -94,7 +94,7 @@ namespace RosraApp.Controllers
                 return NotFound(new { error = $"Country '{country}' is not in the WoFi reference table." });
 
             var national = _wofiEstimator.FindNationalData(proxy.Iso3);
-            var frontier = _wofiEstimator.FindFrontier(proxy.IncomeGroup);
+            var benchmark = _wofiEstimator.ComputeBenchmark(proxy);
 
             return Json(new
             {
@@ -105,7 +105,10 @@ namespace RosraApp.Controllers
                 nationalPopulation = national?.NationalPopulation,
                 dataYear = national?.DataYear,
                 source = national?.Source,
-                finalHeadlineFrontierPctGdp = frontier?.FinalHeadlineFrontierPctGdp,
+                finalHeadlineFrontierPctGdp = benchmark?.FinalHeadlineFrontierPctGdp,
+                peerStage = benchmark?.PeerStage,
+                peerCount = benchmark?.PeerCount,
+                gniPerCapitaAtlasUsd = benchmark?.TargetGniPerCapitaAtlasUsd,
             });
         }
 
@@ -2563,12 +2566,19 @@ namespace RosraApp.Controllers
 
                     var peers = await query
                         .OrderBy(p => p.SNG)
-                        .Select(p => new { name = p.SNG, countryCode = p.CountryCode })
+                        .Select(p => new
+                        {
+                            name = p.SNG,
+                            countryCode = p.CountryCode,
+                            band = p.Band,
+                            watchlist = p.Watchlist,
+                            currency = p.Currency,
+                        })
                         .ToListAsync();
 
                     return Json(peers);
                 }
-                catch (Microsoft.Data.SqlClient.SqlException sqlEx) when (sqlEx.Message.Contains("Invalid column name 'CountryCode'"))
+                catch (Microsoft.Data.SqlClient.SqlException sqlEx) when (sqlEx.Message.Contains("Invalid column name"))
                 {
                     // Fallback for databases that don't have CountryCode column yet
                     // Return all peer SNGs (assumed to be Kenya data) for Kenya requests
@@ -2919,32 +2929,55 @@ namespace RosraApp.Controllers
                     return Json(new { success = false, message = "Subnational Government not found" });
                 }
 
+                // Compare within the same government band when the preloaded
+                // dataset distinguishes bands (e.g. Philippines has both
+                // municipal and provincial rows — mixing them would distort
+                // the frontier). Legacy/custom rows have Band = null.
+                if (!string.IsNullOrEmpty(selectedPeer.Band))
+                {
+                    allPeers = allPeers
+                        .Where(p => string.IsNullOrEmpty(p.Band) || p.Band == selectedPeer.Band)
+                        .ToList();
+                }
+
                 // Get OSR and GDP for the selected SNG
                 decimal actualOSR = selectedPeer.OSR;
                 decimal subnationalGDP = selectedPeer.GCP;
 
-                // Calculate multipliers for all included peers
+                // Method selection (methodological note §12): prefer the
+                // deterministic OSR/GDP frontier; when GDP/GCP is not provided
+                // fall back to an OSR-per-capita benchmark (requires population),
+                // clearly labelled in the response via `method`.
+                bool gdpMethodPossible = selectedPeer.GCP > 0 && allPeers.Any(p => p.GCP > 0 && p.OSR > 0);
+                bool perCapitaPossible = selectedPeer.Population > 0 && allPeers.Any(p => p.Population > 0 && p.OSR > 0);
+                bool usePerCapita = !gdpMethodPossible && perCapitaPossible;
+                string method = usePerCapita ? "osr_per_capita" : "osr_gdp";
+                Func<PeerSNG, decimal> denomOf = p => usePerCapita ? (decimal)p.Population : p.GCP;
+                decimal subjectDenominator = denomOf(selectedPeer);
+
+                // Calculate multipliers (OSR / GDP, or OSR / population in the
+                // per-capita fallback) for all included peers.
                 // First try with Include flag, if no results, use all peers with valid data
                 var validMultipliers = allPeers
-                    .Where(p => p.Include && p.GCP > 0 && p.OSR > 0)
-                    .Select(p => p.OSR / p.GCP)
+                    .Where(p => p.Include && denomOf(p) > 0 && p.OSR > 0)
+                    .Select(p => p.OSR / denomOf(p))
                     .OrderByDescending(m => m)
                     .ToList();
 
-                // Fallback: if no peers with Include=true, use all peers with valid GCP and OSR
+                // Fallback: if no peers with Include=true, use all peers with valid data
                 if (!validMultipliers.Any())
                 {
                     _logger.LogWarning("No peers with Include=true found, using all peers with valid data");
                     validMultipliers = allPeers
-                        .Where(p => p.GCP > 0 && p.OSR > 0)
-                        .Select(p => p.OSR / p.GCP)
+                        .Where(p => denomOf(p) > 0 && p.OSR > 0)
+                        .Select(p => p.OSR / denomOf(p))
                         .OrderByDescending(m => m)
                         .ToList();
                 }
 
                 if (!validMultipliers.Any())
                 {
-                    return Json(new { success = false, message = $"No valid peer data for frontier calculation. Total peers: {allPeers.Count}, With GCP>0: {allPeers.Count(p => p.GCP > 0)}, With OSR>0: {allPeers.Count(p => p.OSR > 0)}" });
+                    return Json(new { success = false, message = $"No valid peer data for frontier calculation. Provide subnational GDP/GCP (preferred) or population for the peers. Total peers: {allPeers.Count}, With GCP>0: {allPeers.Count(p => p.GCP > 0)}, With population>0: {allPeers.Count(p => p.Population > 0)}, With OSR>0: {allPeers.Count(p => p.OSR > 0)}" });
                 }
 
                 // Calculate 90th percentile threshold (matches Excel PERCENTILE.INC formula)
@@ -2983,11 +3016,11 @@ namespace RosraApp.Controllers
                         percentile80Threshold = sortedAsc[lower] + (sortedAsc[upper] - sortedAsc[lower]) * ((decimal)index - lower);
                 }
 
-                // Subject multiplier (OSR/GDP for selected SNG)
-                decimal subjectMultiplier = subnationalGDP > 0 ? actualOSR / subnationalGDP : 0;
+                // Subject multiplier (OSR/GDP — or OSR/population in per-capita mode)
+                decimal subjectMultiplier = subjectDenominator > 0 ? actualOSR / subjectDenominator : 0;
 
-                // OSR potential (frontier multiplier × GDP)
-                decimal osrPotential = peerFrontierMultiplier * subnationalGDP;
+                // OSR potential (frontier multiplier × GDP, or × population)
+                decimal osrPotential = peerFrontierMultiplier * subjectDenominator;
 
                 // Performance Index (actual OSR / OSR potential)
                 decimal performanceIndex = osrPotential > 0 ? actualOSR / osrPotential : 0;
@@ -3002,16 +3035,17 @@ namespace RosraApp.Controllers
                 decimal perCapitaGap = Math.Max(0, potentialOSRPerCapita - osrPerCapita);
 
                 // Prepare peer data for scatter chart (use same logic - fallback if no Include=true)
-                var includedPeers = allPeers.Where(p => p.Include && p.GCP > 0).ToList();
+                var includedPeers = allPeers.Where(p => p.Include && denomOf(p) > 0).ToList();
                 if (!includedPeers.Any())
                 {
-                    includedPeers = allPeers.Where(p => p.GCP > 0).ToList();
+                    includedPeers = allPeers.Where(p => denomOf(p) > 0).ToList();
                 }
 
-                // Calculate helper values for the modal
-                var validPeersWithGCP = allPeers.Where(p => (p.Include || !allPeers.Any(x => x.Include)) && p.GCP > 0 && p.OSR > 0).ToList();
-                decimal minGDP = validPeersWithGCP.Any() ? validPeersWithGCP.Min(p => p.GCP) : 0;
-                decimal maxGDP = validPeersWithGCP.Any() ? validPeersWithGCP.Max(p => p.GCP) : 0;
+                // Calculate helper values for the modal (denominator = GDP/GCP,
+                // or population in per-capita mode — JSON field names unchanged)
+                var validPeersWithGCP = allPeers.Where(p => (p.Include || !allPeers.Any(x => x.Include)) && denomOf(p) > 0 && p.OSR > 0).ToList();
+                decimal minGDP = validPeersWithGCP.Any() ? validPeersWithGCP.Min(denomOf) : 0;
+                decimal maxGDP = validPeersWithGCP.Any() ? validPeersWithGCP.Max(denomOf) : 0;
                 decimal frontierYAtMinGDP = peerFrontierMultiplier * minGDP;
                 decimal frontierYAtMaxGDP = peerFrontierMultiplier * maxGDP;
                 int topPerformersUsed = top10Count; // Number of peers >= 90th percentile
@@ -3033,6 +3067,10 @@ namespace RosraApp.Controllers
                 {
                     success = true,
                     sng = selectedPeer.SNG,
+                    band = selectedPeer.Band,
+                    watchlist = selectedPeer.Watchlist || allPeers.Any(p => p.Watchlist),
+                    currency = selectedPeer.Currency,
+                    method = method, // "osr_gdp" | "osr_per_capita" (note §12)
                     metrics = new
                     {
                         actualOSR = Math.Round(actualOSR, 2),
@@ -3111,57 +3149,10 @@ namespace RosraApp.Controllers
                 _context.Peers_SNG.RemoveRange(existingPeers);
                 await _context.SaveChangesAsync();
 
-                // Insert correct data — full KES values with KNBS 2025 population
-                var correctPeers = new List<PeerSNG>
-                {
-                    new PeerSNG { CountryCode = "KEN", SNG = "Baringo", OSR = 313351637m, GCP = 75459000000m, Population = 759000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Bomet", OSR = 242395023m, GCP = 151153000000m, Population = 973000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Bungoma", OSR = 379716358m, GCP = 205542000000m, Population = 2073000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Busia", OSR = 201772364m, GCP = 88731000000m, Population = 1003000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Elgeyo/Marakwet", OSR = 217350490m, GCP = 117229000000m, Population = 509000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Embu", OSR = 383178337m, GCP = 149912000000m, Population = 671000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Garissa", OSR = 81361298m, GCP = 58634000000m, Population = 960000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Homa Bay", OSR = 491496550m, GCP = 120751000000m, Population = 1275000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Isiolo", OSR = 151805623m, GCP = 26555000000m, Population = 330000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Kajiado", OSR = 875281130m, GCP = 150709000000m, Population = 1313000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Kakamega", OSR = 1309679900m, GCP = 214365000000m, Population = 2073000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Kericho", OSR = 501354545m, GCP = 163543000000m, Population = 988000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Kiambu", OSR = 2424634382m, GCP = 554515000000m, Population = 2754000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Kilifi", OSR = 661686660m, GCP = 199953000000m, Population = 1737000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Kirinyaga", OSR = 399321046m, GCP = 123709000000m, Population = 676000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Kisii", OSR = 413988597m, GCP = 198192000000m, Population = 1370000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Kisumu", OSR = 731449033m, GCP = 247324000000m, Population = 1292000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Kitui", OSR = 464354467m, GCP = 154345000000m, Population = 1273000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Kwale", OSR = 392952872m, GCP = 119001000000m, Population = 978000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Laikipia", OSR = 504274788m, GCP = 94639000000m, Population = 583000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Lamu", OSR = 156907612m, GCP = 32747000000m, Population = 176000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Machakos", OSR = 1429791260m, GCP = 309164000000m, Population = 1518000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Makueni", OSR = 418752940m, GCP = 110207000000m, Population = 1079000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Mandera", OSR = 122528934m, GCP = 56964000000m, Population = 993000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Marsabit", OSR = 58565723m, GCP = 60486000000m, Population = 539000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Meru", OSR = 418801954m, GCP = 329977000000m, Population = 1666000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Migori", OSR = 406364909m, GCP = 120639000000m, Population = 1277000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Mombasa", OSR = 3998628848m, GCP = 468749000000m, Population = 1368000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Murang'a", OSR = 534416925m, GCP = 200539000000m, Population = 1151000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Nairobi", OSR = 10237263780m, GCP = 2682701000000m, Population = 4906000, Include = false },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Nakuru", OSR = 1611062682m, GCP = 483938000000m, Population = 2445000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Nandi", OSR = 200737628m, GCP = 149117000000m, Population = 985000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Narok", OSR = 3061007640m, GCP = 165462000000m, Population = 1355000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Nyamira", OSR = 113484901m, GCP = 116992000000m, Population = 681000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Nyandarua", OSR = 505913306m, GCP = 149707000000m, Population = 720000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Nyeri", OSR = 610656883m, GCP = 209626000000m, Population = 865000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Samburu", OSR = 226516961m, GCP = 29090000000m, Population = 367000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Siaya", OSR = 402229607m, GCP = 103899000000m, Population = 1097000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Taita/Taveta", OSR = 265254255m, GCP = 63592000000m, Population = 373000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Tana River", OSR = 59173171m, GCP = 29460000000m, Population = 370000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Tharaka-Nithi", OSR = 164200787m, GCP = 61461000000m, Population = 425000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Trans Nzoia", OSR = 267760051m, GCP = 165700000000m, Population = 1106000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Turkana", OSR = 177717811m, GCP = 107450000000m, Population = 1059000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Uasin Gishu", OSR = 936606563m, GCP = 227871000000m, Population = 1301000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Vihiga", OSR = 108347382m, GCP = 83773000000m, Population = 636000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "Wajir", OSR = 46746101m, GCP = 49159000000m, Population = 901000, Include = true },
-                    new PeerSNG { CountryCode = "KEN", SNG = "West Pokot", OSR = 128195210m, GCP = 79417000000m, Population = 706000, Include = true }
-                };
+                // Re-insert the preloaded multi-country USD dataset from the
+                // embedded peersng.json (single source of truth shared with
+                // DbInitializer.SeedPeersSNG).
+                var correctPeers = Data.DbInitializer.LoadPreloadedPeerSngs();
 
                 await _context.Peers_SNG.AddRangeAsync(correctPeers);
                 await _context.SaveChangesAsync();

@@ -40,6 +40,24 @@ namespace RosraApp.Data
                         logger.LogWarning("Migration skipped: tables already exist (created by EnsureCreated). Seeders will still run.");
                     }
 
+                    // 2026-06: Peers_SNG gained Band/Watchlist/Currency for the multi-country
+                    // preloaded dataset. On databases born via EnsureCreated() the migration
+                    // above is skipped, so ensure the columns exist (COL_LENGTH = idempotent).
+                    try
+                    {
+                        await context.Database.ExecuteSqlRawAsync(@"
+                            IF COL_LENGTH('Peers_SNG', 'Band') IS NULL
+                                ALTER TABLE Peers_SNG ADD Band nvarchar(50) NULL;
+                            IF COL_LENGTH('Peers_SNG', 'Watchlist') IS NULL
+                                ALTER TABLE Peers_SNG ADD Watchlist bit NOT NULL CONSTRAINT DF_Peers_SNG_Watchlist DEFAULT 0;
+                            IF COL_LENGTH('Peers_SNG', 'Currency') IS NULL
+                                ALTER TABLE Peers_SNG ADD Currency nvarchar(3) NULL;");
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "Could not ensure Peers_SNG 2026-06 columns exist — preloaded peer reseed may be skipped");
+                    }
+
                     // Seed default permissions
                     logger.LogInformation("Seeding default permissions");
                     await SeedPermissions(context, logger);
@@ -374,71 +392,93 @@ namespace RosraApp.Data
             }
         }
 
+        /// <summary>
+        /// Loads the preloaded domestic peer SNG dataset (11 countries, USD,
+        /// 2024 — from "osr and subnational gdp for some countries.xlsx") from
+        /// the embedded Data/SeedData/peersng.json.
+        /// </summary>
+        public static List<PeerSNG> LoadPreloadedPeerSngs()
+        {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var resourceName = assembly.GetManifestResourceNames()
+                .FirstOrDefault(n => n.EndsWith("peersng.json"))
+                ?? throw new InvalidOperationException(
+                    "peersng.json embedded resource not found — check RosraApp.csproj.");
+
+            using var stream = assembly.GetManifestResourceStream(resourceName)!;
+            var items = System.Text.Json.JsonSerializer.Deserialize<List<PeerSngSeedItem>>(stream)
+                ?? new List<PeerSngSeedItem>();
+
+            return items.Select(i => new PeerSNG
+            {
+                CountryCode = i.CountryCode ?? "KEN",
+                SNG = i.SNG ?? "",
+                Band = i.Band,
+                OSR = i.OSR,
+                GCP = i.GCP,
+                Population = i.Population,
+                Include = i.Include,
+                Watchlist = i.Watchlist,
+                Currency = i.Currency,
+            }).ToList();
+        }
+
         private static async Task SeedPeersSNG(ApplicationDbContext context, ILogger logger)
         {
+            var seed = LoadPreloadedPeerSngs();
+
             if (await context.Peers_SNG.AnyAsync())
             {
-                logger.LogInformation("PeersSNG data already exists, skipping seed");
-                return;
+                // 2026-06 dataset switch: replace the legacy KES-denominated
+                // Kenya seed with the multi-country USD dataset. The marker
+                // for "new data already present" is any row with Currency set.
+                bool hasUsdData;
+                try
+                {
+                    hasUsdData = await context.Peers_SNG.AnyAsync(p => p.Currency == "USD");
+                }
+                catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Message.Contains("Invalid column name"))
+                {
+                    logger.LogWarning("Peers_SNG is missing the 2026-06 columns (Band/Watchlist/Currency) — " +
+                        "skipping preloaded reseed until the schema is updated.");
+                    return;
+                }
+
+                if (hasUsdData)
+                {
+                    logger.LogInformation("Preloaded peer SNG dataset already present, skipping seed");
+                    return;
+                }
+
+                // Remove only rows for the preloaded countries so any
+                // admin-uploaded data for other countries survives.
+                var preloadedCodes = seed.Select(p => p.CountryCode).Distinct().ToList();
+                var stale = await context.Peers_SNG
+                    .Where(p => preloadedCodes.Contains(p.CountryCode))
+                    .ToListAsync();
+                context.Peers_SNG.RemoveRange(stale);
+                logger.LogInformation($"Replacing {stale.Count} legacy peer SNG rows with the 2024 USD dataset");
             }
 
-            // OSR and GCP stored as full KES values (not millions)
-            // Population: KNBS 2025 projections (direct where available, estimated* from 2023 base × 3.5% national growth)
-            var peersSNG = new List<PeerSNG>
-            {
-                new PeerSNG { SNG = "Baringo", OSR = 313351637m, GCP = 75459000000m, Population = 759000, Include = true },
-                new PeerSNG { SNG = "Bomet", OSR = 242395023m, GCP = 151153000000m, Population = 973000, Include = true },
-                new PeerSNG { SNG = "Bungoma", OSR = 379716358m, GCP = 205542000000m, Population = 2073000, Include = true },
-                new PeerSNG { SNG = "Busia", OSR = 201772364m, GCP = 88731000000m, Population = 1003000, Include = true },
-                new PeerSNG { SNG = "Elgeyo/Marakwet", OSR = 217350490m, GCP = 117229000000m, Population = 509000, Include = true },
-                new PeerSNG { SNG = "Embu", OSR = 383178337m, GCP = 149912000000m, Population = 671000, Include = true },
-                new PeerSNG { SNG = "Garissa", OSR = 81361298m, GCP = 58634000000m, Population = 960000, Include = true },
-                new PeerSNG { SNG = "Homa Bay", OSR = 491496550m, GCP = 120751000000m, Population = 1275000, Include = true },
-                new PeerSNG { SNG = "Isiolo", OSR = 151805623m, GCP = 26555000000m, Population = 330000, Include = true },
-                new PeerSNG { SNG = "Kajiado", OSR = 875281130m, GCP = 150709000000m, Population = 1313000, Include = true },
-                new PeerSNG { SNG = "Kakamega", OSR = 1309679900m, GCP = 214365000000m, Population = 2073000, Include = true },
-                new PeerSNG { SNG = "Kericho", OSR = 501354545m, GCP = 163543000000m, Population = 988000, Include = true },
-                new PeerSNG { SNG = "Kiambu", OSR = 2424634382m, GCP = 554515000000m, Population = 2754000, Include = true },
-                new PeerSNG { SNG = "Kilifi", OSR = 661686660m, GCP = 199953000000m, Population = 1737000, Include = true },
-                new PeerSNG { SNG = "Kirinyaga", OSR = 399321046m, GCP = 123709000000m, Population = 676000, Include = true },
-                new PeerSNG { SNG = "Kisii", OSR = 413988597m, GCP = 198192000000m, Population = 1370000, Include = true },
-                new PeerSNG { SNG = "Kisumu", OSR = 731449033m, GCP = 247324000000m, Population = 1292000, Include = true },
-                new PeerSNG { SNG = "Kitui", OSR = 464354467m, GCP = 154345000000m, Population = 1273000, Include = true },
-                new PeerSNG { SNG = "Kwale", OSR = 392952872m, GCP = 119001000000m, Population = 978000, Include = true },
-                new PeerSNG { SNG = "Laikipia", OSR = 504274788m, GCP = 94639000000m, Population = 583000, Include = true },
-                new PeerSNG { SNG = "Lamu", OSR = 156907612m, GCP = 32747000000m, Population = 176000, Include = true },
-                new PeerSNG { SNG = "Machakos", OSR = 1429791260m, GCP = 309164000000m, Population = 1518000, Include = true },
-                new PeerSNG { SNG = "Makueni", OSR = 418752940m, GCP = 110207000000m, Population = 1079000, Include = true },
-                new PeerSNG { SNG = "Mandera", OSR = 122528934m, GCP = 56964000000m, Population = 993000, Include = true },
-                new PeerSNG { SNG = "Marsabit", OSR = 58565723m, GCP = 60486000000m, Population = 539000, Include = true },
-                new PeerSNG { SNG = "Meru", OSR = 418801954m, GCP = 329977000000m, Population = 1666000, Include = true },
-                new PeerSNG { SNG = "Migori", OSR = 406364909m, GCP = 120639000000m, Population = 1277000, Include = true },
-                new PeerSNG { SNG = "Mombasa", OSR = 3998628848m, GCP = 468749000000m, Population = 1368000, Include = true },
-                new PeerSNG { SNG = "Murang'a", OSR = 534416925m, GCP = 200539000000m, Population = 1151000, Include = true },
-                new PeerSNG { SNG = "Nairobi", OSR = 10237263780m, GCP = 2682701000000m, Population = 4906000, Include = false },
-                new PeerSNG { SNG = "Nakuru", OSR = 1611062682m, GCP = 483938000000m, Population = 2445000, Include = true },
-                new PeerSNG { SNG = "Nandi", OSR = 200737628m, GCP = 149117000000m, Population = 985000, Include = true },
-                new PeerSNG { SNG = "Narok", OSR = 3061007640m, GCP = 165462000000m, Population = 1355000, Include = true },
-                new PeerSNG { SNG = "Nyamira", OSR = 113484901m, GCP = 116992000000m, Population = 681000, Include = true },
-                new PeerSNG { SNG = "Nyandarua", OSR = 505913306m, GCP = 149707000000m, Population = 720000, Include = true },
-                new PeerSNG { SNG = "Nyeri", OSR = 610656883m, GCP = 209626000000m, Population = 865000, Include = true },
-                new PeerSNG { SNG = "Samburu", OSR = 226516961m, GCP = 29090000000m, Population = 367000, Include = true },
-                new PeerSNG { SNG = "Siaya", OSR = 402229607m, GCP = 103899000000m, Population = 1097000, Include = true },
-                new PeerSNG { SNG = "Taita/Taveta", OSR = 265254255m, GCP = 63592000000m, Population = 373000, Include = true },
-                new PeerSNG { SNG = "Tana River", OSR = 59173171m, GCP = 29460000000m, Population = 370000, Include = true },
-                new PeerSNG { SNG = "Tharaka-Nithi", OSR = 164200787m, GCP = 61461000000m, Population = 425000, Include = true },
-                new PeerSNG { SNG = "Trans Nzoia", OSR = 267760051m, GCP = 165700000000m, Population = 1106000, Include = true },
-                new PeerSNG { SNG = "Turkana", OSR = 177717811m, GCP = 107450000000m, Population = 1059000, Include = true },
-                new PeerSNG { SNG = "Uasin Gishu", OSR = 936606563m, GCP = 227871000000m, Population = 1301000, Include = true },
-                new PeerSNG { SNG = "Vihiga", OSR = 108347382m, GCP = 83773000000m, Population = 636000, Include = true },
-                new PeerSNG { SNG = "Wajir", OSR = 46746101m, GCP = 49159000000m, Population = 901000, Include = true },
-                new PeerSNG { SNG = "West Pokot", OSR = 128195210m, GCP = 79417000000m, Population = 706000, Include = true }
-            };
-
-            await context.Peers_SNG.AddRangeAsync(peersSNG);
+            await context.Peers_SNG.AddRangeAsync(seed);
             await context.SaveChangesAsync();
 
-            logger.LogInformation($"Seeded {peersSNG.Count} Kenya counties into PeersSNG table");
+            logger.LogInformation($"Seeded {seed.Count} peer SNG rows ({seed.Select(p => p.CountryCode).Distinct().Count()} countries) from embedded peersng.json");
+        }
+
+        private class PeerSngSeedItem
+        {
+            public string? CountryCode { get; set; }
+            public string? Country { get; set; }
+            public string? SNG { get; set; }
+            public string? Band { get; set; }
+            public decimal OSR { get; set; }
+            public decimal GCP { get; set; }
+            public long Population { get; set; }
+            public bool Include { get; set; }
+            public bool Watchlist { get; set; }
+            public string? Currency { get; set; }
+            public int? DataYear { get; set; }
         }
 
         private static async Task SeedCountryDataFromJson(ApplicationDbContext context, ILogger logger)

@@ -256,6 +256,15 @@ namespace RosraApp.Services
                             .FontSize(9).FontColor("rgba(255,255,255,0.85)");
                     });
 
+                    // Preloaded peer datasets are USD-denominated (2024) — flag it
+                    // so readers don't mistake the amounts for report currency.
+                    if (peerData.TryGetProperty("currency", out var cur) && cur.GetString() == "USD")
+                    {
+                        column.Item().Background("#FFF8E1").PaddingVertical(4).PaddingHorizontal(8)
+                            .Text("Peer benchmark dataset values are in USD (2024).")
+                            .FontSize(8).Italic().FontColor("#8a6d3b");
+                    }
+
                     if (peerData.TryGetProperty("analysisResults", out var results))
                     {
                         // Metrics table — matches the exact metric rows on the page
@@ -895,6 +904,14 @@ namespace RosraApp.Services
                                 .FontSize(8).FontColor("rgba(255,255,255,0.85)");
                         });
                     });
+
+                    // Preloaded peer datasets are USD-denominated (2024)
+                    if (peerData.TryGetProperty("currency", out var cur) && cur.GetString() == "USD")
+                    {
+                        section.Item().Background("#FFF8E1").PaddingVertical(4).PaddingHorizontal(10)
+                            .Text("Peer benchmark dataset values are in USD (2024).")
+                            .FontSize(8).Italic().FontColor("#8a6d3b");
+                    }
 
                     // Metrics cards
                     if (peerData.TryGetProperty("analysisResults", out var results))

@@ -45,6 +45,28 @@ public class PeerSNG
     public bool Include { get; set; }
 
     /// <summary>
+    /// Government band from the preloaded dataset: "Local-admin / municipal"
+    /// or "Regional / state / province". Peers are compared within the same
+    /// band (matters for countries with both, e.g. the Philippines).
+    /// Null for legacy/user-uploaded rows.
+    /// </summary>
+    [StringLength(50)]
+    public string? Band { get; set; }
+
+    /// <summary>
+    /// True when the source dataset flags the row for cautious interpretation
+    /// (e.g. Indian states, whose OSR includes state-level revenue powers).
+    /// </summary>
+    public bool Watchlist { get; set; }
+
+    /// <summary>
+    /// ISO currency code of OSR/GCP values ("USD" for the 2024 preloaded
+    /// dataset). Null means legacy local-currency data.
+    /// </summary>
+    [StringLength(3)]
+    public string? Currency { get; set; }
+
+    /// <summary>
     /// Calculated: OSR / GCP (fiscal effort ratio)
     /// </summary>
     [NotMapped]

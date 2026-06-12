@@ -1,0 +1,870 @@
+[
+  {
+    "iso3": "ALB",
+    "country": "Albania",
+    "gni_per_capita_atlas_usd": 8690,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "AGO",
+    "country": "Angola",
+    "gni_per_capita_atlas_usd": 2220,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "ARG",
+    "country": "Argentina",
+    "gni_per_capita_atlas_usd": 13530,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "ARM",
+    "country": "Armenia",
+    "gni_per_capita_atlas_usd": 7780,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "AUS",
+    "country": "Australia",
+    "gni_per_capita_atlas_usd": 62680,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "AUT",
+    "country": "Austria",
+    "gni_per_capita_atlas_usd": 54760,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "AZE",
+    "country": "Azerbaijan",
+    "gni_per_capita_atlas_usd": 7310,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "BGD",
+    "country": "Bangladesh",
+    "gni_per_capita_atlas_usd": 2820,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "BEL",
+    "country": "Belgium",
+    "gni_per_capita_atlas_usd": 55290,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "BEN",
+    "country": "Benin",
+    "gni_per_capita_atlas_usd": 1430,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "BOL",
+    "country": "Bolivia",
+    "gni_per_capita_atlas_usd": 3690,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "BIH",
+    "country": "Bosnia and Herzegovina",
+    "gni_per_capita_atlas_usd": 8630,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "BWA",
+    "country": "Botswana",
+    "gni_per_capita_atlas_usd": 7750,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "BRA",
+    "country": "Brazil",
+    "gni_per_capita_atlas_usd": 9950,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "BGR",
+    "country": "Bulgaria",
+    "gni_per_capita_atlas_usd": 15370,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "BFA",
+    "country": "Burkina Faso",
+    "gni_per_capita_atlas_usd": 880,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "BDI",
+    "country": "Burundi",
+    "gni_per_capita_atlas_usd": 190,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "CPV",
+    "country": "Cabo Verde",
+    "gni_per_capita_atlas_usd": 5000,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "KHM",
+    "country": "Cambodia",
+    "gni_per_capita_atlas_usd": 2520,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "CAN",
+    "country": "Canada",
+    "gni_per_capita_atlas_usd": 53400,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "TCD",
+    "country": "Chad",
+    "gni_per_capita_atlas_usd": 970,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "CHL",
+    "country": "Chile",
+    "gni_per_capita_atlas_usd": 15750,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "CHN",
+    "country": "China (People’s Republic of)",
+    "gni_per_capita_atlas_usd": 13660,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "COL",
+    "country": "Colombia",
+    "gni_per_capita_atlas_usd": 7040,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "CRI",
+    "country": "Costa Rica",
+    "gni_per_capita_atlas_usd": 15620,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "HRV",
+    "country": "Croatia",
+    "gni_per_capita_atlas_usd": 22250,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "CYP",
+    "country": "Cyprus",
+    "gni_per_capita_atlas_usd": 32870,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "CZE",
+    "country": "Czechia",
+    "gni_per_capita_atlas_usd": 29560,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "CIV",
+    "country": "Côte d’Ivoire",
+    "gni_per_capita_atlas_usd": 2510,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "DNK",
+    "country": "Denmark",
+    "gni_per_capita_atlas_usd": 72540,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "DJI",
+    "country": "Djibouti",
+    "gni_per_capita_atlas_usd": 3540,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "DOM",
+    "country": "Dominican Republic",
+    "gni_per_capita_atlas_usd": 10280,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "ECU",
+    "country": "Ecuador",
+    "gni_per_capita_atlas_usd": 6430,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "EGY",
+    "country": "Egypt",
+    "gni_per_capita_atlas_usd": 3510,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "SLV",
+    "country": "El Salvador",
+    "gni_per_capita_atlas_usd": 5120,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "EST",
+    "country": "Estonia",
+    "gni_per_capita_atlas_usd": 28800,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "SWZ",
+    "country": "Eswatini",
+    "gni_per_capita_atlas_usd": 3580,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "ETH",
+    "country": "Ethiopia",
+    "gni_per_capita_atlas_usd": null,
+    "data_year": null,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "FIN",
+    "country": "Finland",
+    "gni_per_capita_atlas_usd": 51650,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "FRA",
+    "country": "France",
+    "gni_per_capita_atlas_usd": 45160,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "GMB",
+    "country": "Gambia",
+    "gni_per_capita_atlas_usd": 890,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "GEO",
+    "country": "Georgia",
+    "gni_per_capita_atlas_usd": 8200,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "DEU",
+    "country": "Germany",
+    "gni_per_capita_atlas_usd": 55090,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "GHA",
+    "country": "Ghana",
+    "gni_per_capita_atlas_usd": 2320,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "GRC",
+    "country": "Greece",
+    "gni_per_capita_atlas_usd": 22730,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "GTM",
+    "country": "Guatemala",
+    "gni_per_capita_atlas_usd": 5780,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "GIN",
+    "country": "Guinea",
+    "gni_per_capita_atlas_usd": 1470,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "HND",
+    "country": "Honduras",
+    "gni_per_capita_atlas_usd": 3020,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "HUN",
+    "country": "Hungary",
+    "gni_per_capita_atlas_usd": 20770,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "ISL",
+    "country": "Iceland",
+    "gni_per_capita_atlas_usd": 82200,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "IND",
+    "country": "India",
+    "gni_per_capita_atlas_usd": 2650,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "IDN",
+    "country": "Indonesia",
+    "gni_per_capita_atlas_usd": 4910,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "IRL",
+    "country": "Ireland",
+    "gni_per_capita_atlas_usd": 80650,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "ISR",
+    "country": "Israel",
+    "gni_per_capita_atlas_usd": 52910,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "ITA",
+    "country": "Italy",
+    "gni_per_capita_atlas_usd": 38590,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "JAM",
+    "country": "Jamaica",
+    "gni_per_capita_atlas_usd": 6490,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "JPN",
+    "country": "Japan",
+    "gni_per_capita_atlas_usd": 36030,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "JOR",
+    "country": "Jordan",
+    "gni_per_capita_atlas_usd": 4430,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "KAZ",
+    "country": "Kazakhstan",
+    "gni_per_capita_atlas_usd": 12090,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "KEN",
+    "country": "Kenya",
+    "gni_per_capita_atlas_usd": 2150,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "KOR",
+    "country": "Korea",
+    "gni_per_capita_atlas_usd": 36750,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "XKV",
+    "country": "Kosovo",
+    "gni_per_capita_atlas_usd": 7180,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "KGZ",
+    "country": "Kyrgyzstan",
+    "gni_per_capita_atlas_usd": 2150,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "LVA",
+    "country": "Latvia",
+    "gni_per_capita_atlas_usd": 21630,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "LTU",
+    "country": "Lithuania",
+    "gni_per_capita_atlas_usd": 27150,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "LUX",
+    "country": "Luxembourg",
+    "gni_per_capita_atlas_usd": 91470,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MDG",
+    "country": "Madagascar",
+    "gni_per_capita_atlas_usd": 510,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MWI",
+    "country": "Malawi",
+    "gni_per_capita_atlas_usd": 540,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MYS",
+    "country": "Malaysia",
+    "gni_per_capita_atlas_usd": 11650,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MLI",
+    "country": "Mali",
+    "gni_per_capita_atlas_usd": 1020,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MLT",
+    "country": "Malta",
+    "gni_per_capita_atlas_usd": 36730,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MUS",
+    "country": "Mauritius",
+    "gni_per_capita_atlas_usd": 12970,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MEX",
+    "country": "Mexico",
+    "gni_per_capita_atlas_usd": 12850,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MDA",
+    "country": "Moldova",
+    "gni_per_capita_atlas_usd": 6940,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MNG",
+    "country": "Mongolia",
+    "gni_per_capita_atlas_usd": 5350,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MNE",
+    "country": "Montenegro",
+    "gni_per_capita_atlas_usd": 12210,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MAR",
+    "country": "Morocco",
+    "gni_per_capita_atlas_usd": 3760,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MOZ",
+    "country": "Mozambique",
+    "gni_per_capita_atlas_usd": 550,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MMR",
+    "country": "Myanmar",
+    "gni_per_capita_atlas_usd": 1220,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "NAM",
+    "country": "Namibia",
+    "gni_per_capita_atlas_usd": 4240,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "NPL",
+    "country": "Nepal",
+    "gni_per_capita_atlas_usd": 1470,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "NLD",
+    "country": "Netherlands",
+    "gni_per_capita_atlas_usd": 62520,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "NZL",
+    "country": "New Zealand",
+    "gni_per_capita_atlas_usd": 47580,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "NIC",
+    "country": "Nicaragua",
+    "gni_per_capita_atlas_usd": 2510,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "NER",
+    "country": "Niger",
+    "gni_per_capita_atlas_usd": 660,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "NGA",
+    "country": "Nigeria",
+    "gni_per_capita_atlas_usd": 1250,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "MKD",
+    "country": "North Macedonia",
+    "gni_per_capita_atlas_usd": 8360,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "NOR",
+    "country": "Norway",
+    "gni_per_capita_atlas_usd": 98170,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "PAK",
+    "country": "Pakistan",
+    "gni_per_capita_atlas_usd": 1430,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "PSE",
+    "country": "Palestinian Authority or West Bank and Gaza Strip",
+    "gni_per_capita_atlas_usd": 3080,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "PAN",
+    "country": "Panama",
+    "gni_per_capita_atlas_usd": 18010,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "PRY",
+    "country": "Paraguay",
+    "gni_per_capita_atlas_usd": 6290,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "PER",
+    "country": "Peru",
+    "gni_per_capita_atlas_usd": 7490,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "PHL",
+    "country": "Philippines",
+    "gni_per_capita_atlas_usd": 4470,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "POL",
+    "country": "Poland",
+    "gni_per_capita_atlas_usd": 21590,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "PRT",
+    "country": "Portugal",
+    "gni_per_capita_atlas_usd": 26910,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "ROU",
+    "country": "Romania",
+    "gni_per_capita_atlas_usd": 17600,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "RWA",
+    "country": "Rwanda",
+    "gni_per_capita_atlas_usd": 1040,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "SEN",
+    "country": "Senegal",
+    "gni_per_capita_atlas_usd": 1680,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "SRB",
+    "country": "Serbia",
+    "gni_per_capita_atlas_usd": 11610,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "SLE",
+    "country": "Sierra Leone",
+    "gni_per_capita_atlas_usd": 840,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "SVK",
+    "country": "Slovak Republic",
+    "gni_per_capita_atlas_usd": 23560,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "SVN",
+    "country": "Slovenia",
+    "gni_per_capita_atlas_usd": 31790,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "SOM",
+    "country": "Somalia",
+    "gni_per_capita_atlas_usd": 600,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "ZAF",
+    "country": "South Africa",
+    "gni_per_capita_atlas_usd": 6100,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "ESP",
+    "country": "Spain",
+    "gni_per_capita_atlas_usd": 33550,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "LKA",
+    "country": "Sri Lanka",
+    "gni_per_capita_atlas_usd": 3860,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "SWE",
+    "country": "Sweden",
+    "gni_per_capita_atlas_usd": 58190,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "CHE",
+    "country": "Switzerland",
+    "gni_per_capita_atlas_usd": 95220,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "TJK",
+    "country": "Tajikistan",
+    "gni_per_capita_atlas_usd": 1650,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "TZA",
+    "country": "Tanzania",
+    "gni_per_capita_atlas_usd": 1200,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "THA",
+    "country": "Thailand",
+    "gni_per_capita_atlas_usd": 7120,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "TGO",
+    "country": "Togo",
+    "gni_per_capita_atlas_usd": 1010,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "TUN",
+    "country": "Tunisia",
+    "gni_per_capita_atlas_usd": 3900,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "TUR",
+    "country": "Türkiye",
+    "gni_per_capita_atlas_usd": 13460,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "UGA",
+    "country": "Uganda",
+    "gni_per_capita_atlas_usd": 1020,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "UKR",
+    "country": "Ukraine",
+    "gni_per_capita_atlas_usd": 5220,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "GBR",
+    "country": "United Kingdom",
+    "gni_per_capita_atlas_usd": 49470,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "USA",
+    "country": "United States",
+    "gni_per_capita_atlas_usd": 83490,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "URY",
+    "country": "Uruguay",
+    "gni_per_capita_atlas_usd": 21650,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "UZB",
+    "country": "Uzbekistan",
+    "gni_per_capita_atlas_usd": 2940,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "VEN",
+    "country": "Venezuela",
+    "gni_per_capita_atlas_usd": null,
+    "data_year": null,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "VNM",
+    "country": "Viet Nam",
+    "gni_per_capita_atlas_usd": 4490,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  },
+  {
+    "iso3": "ZMB",
+    "country": "Zambia",
+    "gni_per_capita_atlas_usd": 1260,
+    "data_year": 2024,
+    "source": "World Bank GNI per capita Atlas method, current US$; values loaded from World Bank/Wikipedia 2024 list"
+  }
+]

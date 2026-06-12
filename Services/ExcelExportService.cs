@@ -137,6 +137,14 @@ namespace RosraApp.Services
                 var data = JsonSerializer.Deserialize<JsonElement>(model.PeerSNGData);
 
                 int row = 3;
+                // Preloaded peer datasets are USD-denominated (2024)
+                if (data.TryGetProperty("currency", out var cur) && cur.GetString() == "USD")
+                {
+                    ws.Cell(row, 1).Value = "Note: peer benchmark dataset values are in USD (2024).";
+                    ws.Cell(row, 1).Style.Font.Italic = true;
+                    ws.Range(row, 1, row, 2).Merge();
+                    row += 2;
+                }
                 ws.Cell(row, 1).Value = "Metric"; ws.Cell(row, 2).Value = "Value";
                 StyleHeader(ws, row, 2);
                 row++;

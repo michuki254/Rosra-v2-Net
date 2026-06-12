@@ -1,0 +1,12 @@
+{
+  "min_peer_count": 12,
+  "stage_a_gni_lower": 0.67,
+  "stage_a_gni_upper": 1.5,
+  "stage_b_gni_lower": 0.5,
+  "stage_b_gni_upper": 2,
+  "stage_d_nearest_n": 15,
+  "base_frontier_top_share": 0.2,
+  "internal_dispersion_factor": 1.25,
+  "total_osr_uplift": 0.1,
+  "source": "ROSRA updated quick osr assessment_global.xlsx (v13), Assumptions sheet"
+}
