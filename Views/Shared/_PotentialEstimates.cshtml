@@ -146,6 +146,70 @@
     }
     .cfg-label-ccy:empty { display: none; }
 
+    /* ---- Top-down tier chooser (peer-data? yes/no) ---- */
+    .tier-choice-body { padding: 1.25rem 1.5rem 1.5rem; }
+    .tier-choice-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    @@media (max-width: 720px) {
+        .tier-choice-grid { grid-template-columns: 1fr; }
+    }
+    .tier-choice-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.55rem;
+        text-align: left;
+        padding: 1.15rem 1.15rem 1rem;
+        background: #fff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        cursor: pointer;
+        transition: border-color .15s ease, box-shadow .15s ease, transform .1s ease;
+    }
+    .tier-choice-card:hover {
+        border-color: #00b2e3;
+        box-shadow: 0 6px 18px rgba(0, 178, 227, 0.14);
+        transform: translateY(-2px);
+    }
+    .tier-choice-card:focus-visible {
+        outline: none;
+        border-color: #00b2e3;
+        box-shadow: 0 0 0 3px rgba(0, 178, 227, 0.30);
+    }
+    .tier-choice-card--primary { border-color: #bfe9f8; background: #f5fcff; }
+    .tier-choice-card--primary:hover { border-color: #00b2e3; }
+    .tier-choice-icon {
+        width: 42px; height: 42px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 10px;
+        background: #eef2f6; color: #475569;
+        font-size: 1.25rem;
+    }
+    .tier-choice-card--primary .tier-choice-icon { background: #00b2e3; color: #fff; }
+    .tier-choice-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.45rem; }
+    .tier-choice-yesno {
+        font-size: 0.7rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+        color: #fff; background: #94a3b8; border-radius: 6px; padding: 0.1rem 0.45rem;
+    }
+    .tier-choice-card--primary .tier-choice-yesno { background: #00b2e3; }
+    .tier-choice-title { font-size: 0.98rem; font-weight: 700; color: #0f172a; }
+    .tier-choice-desc { font-size: 0.82rem; color: #475569; line-height: 1.4; }
+    .tier-choice-foot {
+        margin-top: 0.15rem;
+        font-size: 0.76rem; font-weight: 600; color: #00689d;
+        display: inline-flex; align-items: center; gap: 0.35rem;
+    }
+    .tier-choice-card:not(.tier-choice-card--primary) .tier-choice-foot { color: #64748b; }
+    .tier-choice-badge {
+        position: absolute; top: 0.7rem; right: 0.7rem;
+        font-size: 0.64rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase;
+        color: #047857; background: #d1fae5; border-radius: 999px; padding: 0.12rem 0.5rem;
+    }
+
     .cfg-check {
         width: 16px;
         height: 16px;
@@ -865,29 +929,40 @@
             <div class="analysis-panel">
 
                 <!-- Tier chooser — shown when no preloaded peer dataset exists for the country -->
-                <div class="frontier-card" id="tierChooserStrip" style="display:none;">
+                <div class="frontier-card tier-chooser" id="tierChooserStrip" style="display:none;">
                     <div class="frontier-header">
                         <div class="frontier-header-icon">
                             <i class="bi bi-signpost-split"></i>
                         </div>
                         <div class="frontier-header-content">
-                            <h4 class="frontier-title">@Localizer["FrontierTitle"]</h4>
-                            <p class="frontier-subtitle">No peer local-government dataset is preloaded for this country. Choose how to estimate the revenue potential.</p>
+                            <h4 class="frontier-title">How would you like to estimate the revenue potential?</h4>
+                            <p class="frontier-subtitle">No peer local-government dataset is preloaded for <span id="tierChooserCountry">this country</span>. Do you have revenue data for similar local governments?</p>
                         </div>
                     </div>
-                    <div style="padding: 1.25rem 1.5rem 1.5rem;">
-                        <div class="d-flex flex-wrap gap-2">
-                            <button type="button" id="btnHavePeerData" class="btn btn-primary">
-                                <i class="bi bi-table me-1"></i> I have data on peer local governments
+                    <div class="tier-choice-body">
+                        <div class="tier-choice-grid">
+                            <!-- YES — user has peer data -->
+                            <button type="button" id="btnHavePeerData" class="tier-choice-card tier-choice-card--primary">
+                                <span class="tier-choice-badge">Recommended</span>
+                                <span class="tier-choice-icon"><i class="bi bi-clipboard-data"></i></span>
+                                <span class="tier-choice-head">
+                                    <span class="tier-choice-yesno">Yes</span>
+                                    <span class="tier-choice-title">I have peer local-government data</span>
+                                </span>
+                                <span class="tier-choice-desc">Enter OSR and subnational GDP/GCP for a few similar local governments in your country.</span>
+                                <span class="tier-choice-foot"><i class="bi bi-bar-chart-line"></i> Within-country frontier analysis</span>
                             </button>
-                            <button type="button" id="btnUseGlobal" class="btn btn-outline-secondary">
-                                <i class="bi bi-globe2 me-1"></i> Continue with the global benchmark
+                            <!-- NO — fall back to the global benchmark -->
+                            <button type="button" id="btnUseGlobal" class="tier-choice-card">
+                                <span class="tier-choice-icon"><i class="bi bi-globe2"></i></span>
+                                <span class="tier-choice-head">
+                                    <span class="tier-choice-yesno">No</span>
+                                    <span class="tier-choice-title">Use the global benchmark</span>
+                                </span>
+                                <span class="tier-choice-desc">We'll estimate from peer countries at a similar income level — a quick, indicative benchmark.</span>
+                                <span class="tier-choice-foot"><i class="bi bi-lightning-charge"></i> Global peer-country benchmark</span>
                             </button>
                         </div>
-                        <small class="text-muted d-block mt-2">
-                            With peer data (name, OSR and subnational GDP for similar local governments in your country) the tool runs the
-                            within-country frontier analysis. Otherwise it falls back to the global peer-country benchmark.
-                        </small>
                     </div>
                 </div>
 
@@ -4350,6 +4425,12 @@
                 showTopDownCard('wofi');
                 if (typeof window.RosraWofiRunEstimator === 'function') window.RosraWofiRunEstimator();
                 return;
+            }
+            // Name the country in the chooser question for a friendlier prompt.
+            var ccCountry = document.getElementById('tierChooserCountry');
+            if (ccCountry) {
+                var countryName = (document.getElementById('country') || {}).value;
+                ccCountry.textContent = countryName ? countryName : 'this country';
             }
             showTopDownCard('chooser');
         }
