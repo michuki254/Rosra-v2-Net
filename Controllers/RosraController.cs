@@ -2741,10 +2741,14 @@ namespace RosraApp.Controllers
         /// <summary>
         /// Validate peer SNG data for client-side storage (no database write).
         /// Data will be saved with the report in RosraReport.PeerSNGData.
-        /// Requires authentication and a sane peer-array size (audit F-20).
+        /// Validates the entered peers and (when signed in) saves them to the
+        /// user's reusable peer library. Anonymous-capable so the first-screen
+        /// top-down analysis works without login — consistent with the preloaded
+        /// and WoFi tiers; the library write is skipped for anonymous users.
+        /// CSRF-protected, with a sane peer-array size cap (audit F-20).
         /// </summary>
         [HttpPost]
-        [Authorize]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SavePeerSNGs([FromBody] SavePeerSNGsRequest request)
         {
@@ -2940,10 +2944,12 @@ namespace RosraApp.Controllers
 
         /// <summary>
         /// Get Peer SNG Frontier Analysis with custom peers (POST version).
-        /// Requires authentication and caps custom-peer arrays (audit F-20).
+        /// Compute-only (no DB writes); anonymous-capable so the custom-peer tier
+        /// works without login like the preloaded/WoFi tiers. CSRF-protected and
+        /// caps custom-peer arrays (audit F-20).
         /// </summary>
         [HttpPost]
-        [Authorize]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> GetPeerSNGAnalysisWithCustomPeers([FromBody] PeerAnalysisRequest request)
         {

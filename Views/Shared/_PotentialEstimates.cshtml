@@ -5005,6 +5005,12 @@
                         Peers: peers.map(p => ({ SNG: p.sng, OSR: p.osr, GCP: p.gcp, Population: p.population, Include: p.include }))
                     })
                 });
+                // If an auth filter bounced us to the login page, the body is HTML,
+                // not JSON — surface a clear message instead of a parse error.
+                if (response.redirected && /\/Account\/Login/i.test(response.url)) {
+                    alert('Your session has ended. Please sign in again, then re-enter your peer data.');
+                    return;
+                }
                 const result = await response.json();
 
                 if (result.success) {
