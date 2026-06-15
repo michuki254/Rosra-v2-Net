@@ -1928,6 +1928,19 @@
             saveSelected(autoSelectFromPrioritization());
         }
 
+        // Map<includedStreamName, Set<gapType>> of the gap types present in each
+        // included stream, derived from Prioritization. Used to smart-default the
+        // focus chips. (Previously referenced but never defined — its absence threw
+        // a ReferenceError in smartDefaultFocus that aborted init() before the chip
+        // change-listeners were bound, so the filter bar did nothing.)
+        function gapTypesPerIncludedStream() {
+            var out = new Map();
+            includedStreamMeta().byName.forEach(function (rec, name) {
+                out.set(name, rec.gaps || new Set());
+            });
+            return out;
+        }
+
         // Smart-default the focus chips based on which gap types are actually present
         // in the user's prioritization. Other chip groups keep HTML defaults.
         function smartDefaultFocus() {
