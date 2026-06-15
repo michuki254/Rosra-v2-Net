@@ -1101,9 +1101,15 @@
                             <!-- SNG Selection -->
                             <div class="module2-selection">
                                 <label class="compact-label">@Localizer["SubnationalGov"]</label>
-                                <select class="form-select form-select-sm" id="peerSngSelectTop">
-                                    <option value="">@Localizer["SelectSng"]</option>
-                                </select>
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <select class="form-select form-select-sm" id="peerSngSelectTop" style="flex:1 1 240px; min-width:200px;">
+                                        <option value="">@Localizer["SelectSng"]</option>
+                                    </select>
+                                    <!-- Reopen the entry modal to add/edit your own peers (Tier-2 custom data) -->
+                                    <button type="button" id="editPeerDataBtn" class="btn btn-sm btn-outline-primary" style="display:none; white-space:nowrap;" onclick="openPeerDataModalForEdit()">
+                                        <i class="bi bi-pencil-square me-1"></i><span id="editPeerDataBtnLabel">Add / edit peers</span>
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Module Placeholder -->
@@ -4486,7 +4492,28 @@
         function setDomesticSourceBadge(tier) {
             const badge = document.getElementById('domesticSourceBadge');
             if (badge) badge.textContent = tier === 'custom' ? 'Your peer data' : 'Preloaded peer dataset';
+            // Reveal the "add / edit peers" button on the domestic card so the
+            // user can return to the entry modal. Custom data → edit it; a
+            // preloaded set → still let them supply their own instead.
+            const editBtn = document.getElementById('editPeerDataBtn');
+            const editLbl = document.getElementById('editPeerDataBtnLabel');
+            if (editBtn) {
+                editBtn.style.display = '';
+                if (editLbl) editLbl.textContent = (tier === 'custom') ? 'Add / edit peers' : 'Use my own peers';
+            }
         }
+
+        // Reopen the peer-data entry modal from the domestic card. preparePeerModal
+        // pre-fills the table with the current custom peers (if any) so the user
+        // adds to / edits the existing set rather than starting from scratch.
+        function openPeerDataModalForEdit() {
+            const modalEl = document.getElementById('peerDataModal');
+            if (modalEl && window.bootstrap && bootstrap.Modal) {
+                preparePeerModal();
+                bootstrap.Modal.getOrCreateInstance(modalEl).show();
+            }
+        }
+        window.openPeerDataModalForEdit = openPeerDataModalForEdit;
 
         async function decideTopDownTier() {
             const cc = getCurrentCountryCode();
@@ -4582,6 +4609,28 @@
             var gcpCcy = document.getElementById('peerGcpCcy');
             if (osrCcy) osrCcy.textContent = paren;
             if (gcpCcy) gcpCcy.textContent = paren;
+
+            // If the user already has custom peers (editing an existing set),
+            // pre-fill the table so they add to / edit it rather than re-typing.
+            var existing = (customPeerData && Array.isArray(customPeerData.customPeers)) ? customPeerData.customPeers : [];
+            var tbody = document.getElementById('peerManualEntryBody');
+            if (tbody && existing.length) {
+                tbody.innerHTML = '';
+                existing.forEach(function () { addPeerRow(); });
+                var rows = tbody.querySelectorAll('tr');
+                existing.forEach(function (p, i) {
+                    var row = rows[i];
+                    if (!row) return;
+                    var set = function (f, v) { var el = row.querySelector('[data-field="' + f + '"]'); if (el) el.value = v; };
+                    set('sng', p.sng || '');
+                    set('osr', (p.osr != null && p.osr !== '') ? Number(p.osr).toLocaleString('en-US') : '');
+                    set('gcp', (p.gcp != null && p.gcp !== '' && Number(p.gcp) > 0) ? Number(p.gcp).toLocaleString('en-US') : '');
+                    set('population', (p.population != null && Number(p.population) > 0) ? Number(p.population).toLocaleString('en-US') : '');
+                    var inc = row.querySelector('[data-field="include"]');
+                    if (inc) inc.checked = p.include !== false;
+                });
+            }
+
             updatePeerRowCount();
             togglePeerFooter('peerManualPane');
             refreshSavedPeersButton();
