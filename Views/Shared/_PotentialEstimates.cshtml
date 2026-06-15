@@ -138,6 +138,14 @@
         user-select: none;
     }
 
+    /* Local-currency code shown in brackets on the OSR / GDP-per-capita labels */
+    .cfg-label-ccy {
+        font-weight: 600;
+        color: #6b7280;
+        font-size: 0.78rem;
+    }
+    .cfg-label-ccy:empty { display: none; }
+
     .cfg-check {
         width: 16px;
         height: 16px;
@@ -774,7 +782,7 @@
                                 <span id="currency-symbol" class="d-none">@(string.IsNullOrEmpty(Model.CurrencySymbol) ? "-" : Model.CurrencySymbol)</span>
                             </div>
                             <div class="cfg-field">
-                                <label class="cfg-label">@Localizer["LgProfile_OsrLabel"] <span class="cfg-req">*</span></label>
+                                <label class="cfg-label">@Localizer["LgProfile_OsrLabel"] <span class="cfg-label-ccy" id="osrLabelCcy"></span> <span class="cfg-req">*</span></label>
                                 <input type="text" class="form-control cfg-input number-format @(isViewMode ? "readonly" : "")"
                                        id="actualOsr" name="ActualOsr" value="@(Model.ActualOsr?.ToString("#,##0.##"))"
                                        placeholder="@Localizer["LgProfile_OsrPlaceholder"]" @(isViewMode ? "readonly" : "")>
@@ -787,7 +795,7 @@
                             </div>
                             <div class="cfg-field cfg-field-readonly">
                                 <label class="cfg-label">
-                                    @Localizer["LgProfile_GrpLabel"]
+                                    @Localizer["LgProfile_GrpLabel"] <span class="cfg-label-ccy" id="gdpLabelCcy"></span>
                                     <span class="cfg-auto-badge" title="@Localizer["LgProfile_Grp_AutoTooltip"]">@Localizer["LgProfile_Grp_AutoBadge"]</span>
                                 </label>
                                 <input type="text" class="form-control cfg-input cfg-readonly number-format"
@@ -3903,6 +3911,25 @@
             applyActiveCurrency(symbol);
         }
 
+        // Put the currency code in brackets on the OSR and National GDP per
+        // capita labels — e.g. "Own-Source Revenue (OSR) (KES)". The local
+        // currency code lives in the (hidden) #currency field; when the user
+        // overrides the OSR currency, the OSR label reflects that override
+        // while National GDP per capita stays in the local currency.
+        function updateCurrencyLabels() {
+            var localCode = (document.getElementById('currency')?.value || localCurrencyName || '').trim();
+            var activeCode = localCode;
+            var overrideToggle = document.getElementById('useDifferentCurrency');
+            var overrideDropdown = document.getElementById('overrideCurrency');
+            if (overrideToggle && overrideToggle.checked && overrideDropdown && overrideDropdown.value) {
+                activeCode = overrideDropdown.value.trim();
+            }
+            var osrEl = document.getElementById('osrLabelCcy');
+            if (osrEl) osrEl.textContent = activeCode ? '(' + activeCode + ')' : '';
+            var gdpEl = document.getElementById('gdpLabelCcy');
+            if (gdpEl) gdpEl.textContent = localCode ? '(' + localCode + ')' : '';
+        }
+
         // Apply a currency symbol across all displays and AppContext
         function applyActiveCurrency(symbol) {
             const displaySymbol = symbol || '-';
@@ -3917,6 +3944,13 @@
             document.getElementById('currency-symbol').textContent = displaySymbol;
             document.getElementById('actual-osr-currency').textContent = valueSymbol;
             document.getElementById('budgeted-osr-currency').textContent = valueSymbol;
+
+            // Show the currency in brackets on the OSR + National GDP per capita
+            // labels, so the user knows both must be entered in local currency
+            // (methodological note §2 currency rule). National GDP per capita is
+            // always the local currency; OSR follows the active currency, which
+            // differs only when the user overrides it.
+            updateCurrencyLabels();
 
             // Update the hidden override field
             const overrideHidden = document.getElementById('overrideCurrencySymbol');
