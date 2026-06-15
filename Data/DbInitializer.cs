@@ -58,6 +58,33 @@ namespace RosraApp.Data
                         logger.LogWarning(ex, "Could not ensure Peers_SNG 2026-06 columns exist — preloaded peer reseed may be skipped");
                     }
 
+                    // 2026-06: per-user peer library table. On EnsureCreated()-born databases
+                    // the migration above is skipped, so create the table if it's missing.
+                    try
+                    {
+                        await context.Database.ExecuteSqlRawAsync(@"
+                            IF OBJECT_ID('UserPeerSngs', 'U') IS NULL
+                            CREATE TABLE UserPeerSngs (
+                                Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_UserPeerSngs PRIMARY KEY,
+                                UserId nvarchar(450) NOT NULL,
+                                ReportId int NULL,
+                                CountryCode nvarchar(3) NOT NULL,
+                                Sng nvarchar(150) NOT NULL,
+                                Osr decimal(28,2) NOT NULL,
+                                Gcp decimal(28,2) NOT NULL,
+                                Population bigint NOT NULL,
+                                Include bit NOT NULL,
+                                Band nvarchar(50) NULL,
+                                Currency nvarchar(3) NULL,
+                                CreatedAt datetime2 NOT NULL,
+                                UpdatedAt datetime2 NOT NULL
+                            );");
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "Could not ensure UserPeerSngs table exists — user peer library will be unavailable");
+                    }
+
                     // Seed default permissions
                     logger.LogInformation("Seeding default permissions");
                     await SeedPermissions(context, logger);

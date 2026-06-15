@@ -2746,7 +2746,7 @@ namespace RosraApp.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public IActionResult SavePeerSNGs([FromBody] SavePeerSNGsRequest request)
+        public async Task<IActionResult> SavePeerSNGs([FromBody] SavePeerSNGsRequest request)
         {
             const int MaxPeers = 200;
 
@@ -2769,7 +2769,7 @@ namespace RosraApp.Controllers
 
                 var countryCode = request.CountryCode.ToUpper();
 
-                // Validate and transform peers (no database write - data stored per-report)
+                // Validate and transform peers
                 var validatedPeers = request.Peers
                     .Where(p => !string.IsNullOrWhiteSpace(p.SNG))
                     .Select(p => new
@@ -2788,19 +2788,107 @@ namespace RosraApp.Controllers
                     return Json(new { success = false, message = "No valid peer data found after validation" });
                 }
 
-                // Return validated data for client-side storage
+                // Persist to the user's personal peer library (NOT the admin Peers_SNG
+                // reference table) so the set is reusable across the user's reports.
+                // One current set per (user, country): replace the prior set on save.
+                bool savedToLibrary = false;
+                try
+                {
+                    var userId = _userManager.GetUserId(User);
+                    if (!string.IsNullOrEmpty(userId))
+                    {
+                        var existing = await _context.UserPeerSngs
+                            .Where(x => x.UserId == userId && x.CountryCode == countryCode)
+                            .ToListAsync();
+                        _context.UserPeerSngs.RemoveRange(existing);
+                        var now = DateTime.UtcNow;
+                        foreach (var p in validatedPeers)
+                        {
+                            _context.UserPeerSngs.Add(new UserPeerSng
+                            {
+                                UserId = userId,
+                                ReportId = request.ReportId,
+                                CountryCode = countryCode,
+                                Sng = p.sng,
+                                Osr = p.osr,
+                                Gcp = p.gcp,
+                                Population = p.population,
+                                Include = p.include,
+                                Currency = string.IsNullOrWhiteSpace(request.Currency) ? null : request.Currency.ToUpper(),
+                                CreatedAt = now,
+                                UpdatedAt = now,
+                            });
+                        }
+                        await _context.SaveChangesAsync();
+                        savedToLibrary = true;
+                    }
+                }
+                catch (Exception libEx)
+                {
+                    // Library persistence is best-effort; the per-report PeerSNGData
+                    // JSON remains the source the report relies on.
+                    _logger.LogWarning(libEx, "Could not persist peer set to user library");
+                }
+
                 return Json(new {
                     success = true,
-                    message = $"Data validated ({validatedPeers.Count} peers). Will be saved with report.",
+                    message = $"Saved {validatedPeers.Count} peers. Will be saved with your report.",
                     peers = validatedPeers,
                     countryCode = countryCode,
-                    count = validatedPeers.Count
+                    count = validatedPeers.Count,
+                    savedToLibrary
                 });
             }
             catch (Exception ex)
             {
                 var refId = NewErrorRef(ex, "ValidatePeerSNGs");
-                return Json(new { success = false, message = $"Validation failed. Reference: {refId}" });
+                return Json(new { success = false, message = $"Save failed. Reference: {refId}" });
+            }
+        }
+
+        /// <summary>
+        /// Returns the current user's saved peer set for a country (their personal
+        /// peer library) so the entry modal can offer "Load from a previous analysis".
+        /// </summary>
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> MyPeerSets(string countryCode)
+        {
+            try
+            {
+                var userId = _userManager.GetUserId(User);
+                if (string.IsNullOrEmpty(userId)) return Json(new { success = false, peers = new object[0] });
+
+                var query = _context.UserPeerSngs.Where(x => x.UserId == userId);
+                if (!string.IsNullOrWhiteSpace(countryCode))
+                    query = query.Where(x => x.CountryCode == countryCode.ToUpper());
+
+                var peers = await query
+                    .OrderByDescending(x => x.UpdatedAt)
+                    .Select(x => new
+                    {
+                        sng = x.Sng,
+                        osr = x.Osr,
+                        gcp = x.Gcp,
+                        population = x.Population,
+                        include = x.Include,
+                        countryCode = x.CountryCode,
+                        currency = x.Currency,
+                        updatedAt = x.UpdatedAt,
+                    })
+                    .ToListAsync();
+
+                return Json(new { success = true, count = peers.Count, peers });
+            }
+            catch (Microsoft.Data.SqlClient.SqlException sqlEx) when (sqlEx.Message.Contains("Invalid object name") || sqlEx.Message.Contains("Invalid column name"))
+            {
+                // Table not yet created on this DB — treat as empty library.
+                return Json(new { success = true, count = 0, peers = new object[0] });
+            }
+            catch (Exception ex)
+            {
+                var refId = NewErrorRef(ex, "MyPeerSets");
+                return Json(new { success = false, message = $"Could not load saved peers. Reference: {refId}", peers = new object[0] });
             }
         }
 
@@ -2808,6 +2896,8 @@ namespace RosraApp.Controllers
         {
             public string CountryCode { get; set; }
             public List<PeerSNGInput> Peers { get; set; }
+            public int? ReportId { get; set; }
+            public string Currency { get; set; }
         }
 
         public class PeerSNGInput

@@ -13,6 +13,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<RosraReport> RosraReports { get; set; } = null!;
     public DbSet<PeerSNG> Peers_SNG { get; set; } = null!;
+    public DbSet<UserPeerSng> UserPeerSngs { get; set; } = null!;
     public DbSet<CountryData> DB_Countries { get; set; } = null!;
     public DbSet<Country> Countries { get; set; } = null!;
     public DbSet<Frontier> DB_Frontiers { get; set; } = null!;

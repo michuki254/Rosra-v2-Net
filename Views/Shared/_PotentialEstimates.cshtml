@@ -1384,9 +1384,14 @@
                     <div class="tab-content peer-input-tab-content">
                         <!-- Manual Entry pane (default) -->
                         <div class="tab-pane fade show active" id="peerManualPane" role="tabpanel" aria-labelledby="peer-manual-tab">
-                            <div class="peer-hint">
-                                <i class="bi bi-lightbulb"></i>
-                                <span><strong>Name</strong> and <strong>OSR</strong> are required, plus <strong>subnational GDP/GCP</strong> (preferred) or <strong>Population</strong>. With population only, we use an OSR-per-capita benchmark.</span>
+                            <div class="d-flex align-items-start gap-2 mb-2 flex-wrap">
+                                <div class="peer-hint flex-grow-1 mb-0">
+                                    <i class="bi bi-lightbulb"></i>
+                                    <span><strong>Name</strong> and <strong>OSR</strong> are required, plus <strong>subnational GDP/GCP</strong> (preferred) or <strong>Population</strong>. With population only, we use an OSR-per-capita benchmark.</span>
+                                </div>
+                                <button type="button" class="peer-link-btn" id="peerLoadSavedBtn" style="display:none; white-space:nowrap; margin-top:.35rem;" onclick="loadMySavedPeers()">
+                                    <i class="bi bi-clock-history"></i> Load my saved peers (<span id="peerLoadSavedCount">0</span>)
+                                </button>
                             </div>
 
                             <div class="peer-table-card">
@@ -4579,6 +4584,52 @@
             if (gcpCcy) gcpCcy.textContent = paren;
             updatePeerRowCount();
             togglePeerFooter('peerManualPane');
+            refreshSavedPeersButton();
+        }
+
+        // Show the "Load my saved peers" button when the user has a saved set for
+        // the current country (their personal peer library, from a prior analysis).
+        var __peerSavedCache = [];
+        function refreshSavedPeersButton() {
+            var btn = document.getElementById('peerLoadSavedBtn');
+            if (!btn) return;
+            btn.style.display = 'none';
+            __peerSavedCache = [];
+            var cc = (document.getElementById('currency') ? '' : '');
+            var countryCode = getCurrentCountryCode();
+            if (!countryCode) return;
+            fetch('/Rosra/MyPeerSets?countryCode=' + encodeURIComponent(countryCode), { credentials: 'same-origin' })
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(function (data) {
+                    if (!data || !data.success || !data.peers || !data.peers.length) return;
+                    __peerSavedCache = data.peers;
+                    var countEl = document.getElementById('peerLoadSavedCount');
+                    if (countEl) countEl.textContent = data.peers.length;
+                    btn.style.display = '';
+                })
+                .catch(function () { /* no-op: library is optional */ });
+        }
+
+        // Populate the manual table from the user's saved peer set.
+        function loadMySavedPeers() {
+            if (!__peerSavedCache || !__peerSavedCache.length) return;
+            var tbody = document.getElementById('peerManualEntryBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            __peerSavedCache.forEach(function () { addPeerRow(); });
+            var rows = tbody.querySelectorAll('tr');
+            __peerSavedCache.forEach(function (p, i) {
+                var row = rows[i];
+                if (!row) return;
+                var set = function (field, val) { var el = row.querySelector('[data-field="' + field + '"]'); if (el) el.value = val; };
+                set('sng', p.sng || '');
+                set('osr', p.osr ? Number(p.osr).toLocaleString('en-US') : '');
+                set('gcp', p.gcp ? Number(p.gcp).toLocaleString('en-US') : '');
+                set('population', p.population ? Number(p.population).toLocaleString('en-US') : '');
+                var inc = row.querySelector('[data-field="include"]');
+                if (inc) inc.checked = p.include !== false;
+            });
+            updatePeerRowCount();
         }
 
         // The footer's "Save & analyse" reads the manual table, so only show it
@@ -4895,7 +4946,12 @@
                         'Content-Type': 'application/json',
                         'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
                     },
-                    body: JSON.stringify({ CountryCode: countryCode, Peers: peers.map(p => ({ SNG: p.sng, OSR: p.osr, GCP: p.gcp, Population: p.population, Include: p.include })) })
+                    body: JSON.stringify({
+                        CountryCode: countryCode,
+                        ReportId: (function () { var el = document.getElementById('reportId'); var v = el && parseInt(el.value, 10); return v && !isNaN(v) ? v : null; })(),
+                        Currency: (document.getElementById('currency')?.value || '').trim() || null,
+                        Peers: peers.map(p => ({ SNG: p.sng, OSR: p.osr, GCP: p.gcp, Population: p.population, Include: p.include }))
+                    })
                 });
                 const result = await response.json();
 
@@ -6000,6 +6056,7 @@
         window.downloadPeerTemplate = downloadPeerTemplate;
         window.formatNumberInput = formatNumberInput;
         window.parseFormattedNumber = parseFormattedNumber;
+        window.loadMySavedPeers = loadMySavedPeers;
 
     });
 </script>
