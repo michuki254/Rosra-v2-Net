@@ -3790,25 +3790,11 @@
             financialYearSelect.appendChild(option);
         }
 
-        // Set default values for form fields if empty
-        const actualOsrInput = document.getElementById('actualOsr');
-        const budgetedOsrInput = document.getElementById('budgetedOsr');
-        const populationInput = document.getElementById('population');
-
-        // Default Actual OSR: 10,000,000
-        if (!actualOsrInput.value) {
-            actualOsrInput.value = '10,000,000';
-        }
-
-        // Default Budgeted OSR: 15,000,000
-        if (!budgetedOsrInput.value) {
-            budgetedOsrInput.value = '15,000,000';
-        }
-
-        // Default Population: 1,000,000
-        if (!populationInput.value) {
-            populationInput.value = '1,000,000';
-        }
+        // OSR / Budgeted OSR / Population are intentionally left blank when the
+        // user hasn't entered a value. The visible inputs already carry "e.g. …"
+        // placeholder hints, so we no longer auto-fill dummy figures (10M / 15M /
+        // 1M) — that risked the top-down analysis running on placeholder data the
+        // user never actually supplied.
 
         // Update year displays based on selected financial year
         function updateYearDisplays() {
