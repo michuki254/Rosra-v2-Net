@@ -11,6 +11,18 @@
 <style>
     body { background: #f8f9fa; }
     .page-header { background: #fff; border-radius: 12px; padding: 1.5rem 2rem; box-shadow: 0 2px 20px -4px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+    /* Reference datasets panel */
+    .ref-datasets { background:#fff; border-radius:12px; box-shadow:0 2px 20px -4px rgba(0,0,0,0.1); padding:1rem 1.25rem; margin-bottom:1.5rem; }
+    .ref-datasets-head { display:flex; align-items:center; justify-content:space-between; font-weight:700; color:#222; font-size:0.9rem; margin-bottom:0.75rem; }
+    .ref-upload-link { font-size:0.78rem; font-weight:600; color:#3B82F6; text-decoration:none; }
+    .ref-upload-link:hover { text-decoration:underline; }
+    .ref-datasets-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:0.75rem; }
+    .ref-card { border:1px solid #eef0f3; border-radius:10px; padding:0.75rem 0.9rem; background:#fafbfc; }
+    .ref-card-title { font-size:0.82rem; font-weight:700; color:#0f172a; display:flex; align-items:center; gap:0.4rem; }
+    .ref-ver { font-size:0.62rem; font-weight:700; color:#3B82F6; background:#DBEAFE; border-radius:999px; padding:0.05rem 0.45rem; }
+    .ref-card-stat { font-size:1.35rem; font-weight:800; color:#0284C7; margin:0.2rem 0 0.1rem; }
+    .ref-card-stat span { font-size:0.7rem; font-weight:600; color:#94a3b8; }
+    .ref-card-meta { font-size:0.7rem; color:#64748b; }
     .page-header h1 { color: #222; font-weight: 700; font-size: 1.6rem; margin-bottom: 0.25rem; }
     .page-header p { color: #6A6A6A; font-size: 0.875rem; margin-bottom: 0; }
     .header-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
@@ -120,6 +132,35 @@
         <div class="kpi-card @(Model.Status=="3"?"active":"")" style="border-color:#EF4444;" onclick="filterByStatus('3')"><div class="kpi-value" style="color:#EF4444;">@Model.NeedsRevisionCount</div><div class="kpi-label">Revision</div></div>
         <div class="kpi-card @(Model.Status=="4"?"active":"")" style="border-color:#10B981;" onclick="filterByStatus('4')"><div class="kpi-value" style="color:#10B981;">@Model.ValidatedCount</div><div class="kpi-label">Validated</div></div>
     </div>
+
+    <!-- Reference datasets (admin-managed) -->
+    @if (Model.DatasetSummaries.Any())
+    {
+        <div class="ref-datasets">
+            <div class="ref-datasets-head">
+                <span><i class="bi bi-hdd-stack me-2"></i>Reference datasets</span>
+                <a asp-controller="Admin" asp-action="DataUpload" class="ref-upload-link"><i class="bi bi-upload me-1"></i>Upload</a>
+            </div>
+            <div class="ref-datasets-grid">
+                @foreach (var d in Model.DatasetSummaries)
+                {
+                    <div class="ref-card">
+                        <div class="ref-card-title">@d.DisplayName <span class="ref-ver">v@d.LatestVersion</span></div>
+                        <div class="ref-card-stat">@d.TotalRows.ToString("#,##0") <span>rows</span></div>
+                        <div class="ref-card-meta">
+                            @if (d.CountriesCovered > 0) { <span>@d.CountriesCovered countries · </span> }
+                            @if (d.LastUploadedAt.HasValue)
+                            {
+                                <span>updated @d.LastUploadedAt.Value.ToString("yyyy-MM-dd")</span>
+                                @if (!string.IsNullOrEmpty(d.LastUploadedBy)) { <span> · @d.LastUploadedBy</span> }
+                            }
+                            else { <span>seeded</span> }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
 
     <!-- Filter Panel -->
     <form id="filterForm" method="get" asp-action="DataManagement">

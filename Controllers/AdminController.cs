@@ -1418,6 +1418,45 @@ namespace RosraApp.Controllers
                 ValidatedCount = statusCounts.FirstOrDefault(s => s.Status == 4)?.Count ?? 0,
             };
 
+            // Admin reference-dataset summaries (latest version per type + current live counts).
+            try
+            {
+                var history = await _context.DataUploadHistory
+                    .GroupBy(h => h.DatasetType)
+                    .Select(g => new
+                    {
+                        DatasetType = g.Key,
+                        LatestVersion = g.Max(h => h.Version),
+                        Last = g.OrderByDescending(h => h.UploadedAt).FirstOrDefault(),
+                    })
+                    .ToListAsync();
+
+                int peerRows = 0, peerCountries = 0, countryRows = 0;
+                try { peerRows = await _context.Peers_SNG.CountAsync(); } catch { }
+                try { peerCountries = await _context.Peers_SNG.Select(p => p.CountryCode).Distinct().CountAsync(); } catch { }
+                try { countryRows = await _context.DB_Countries.CountAsync(); } catch { }
+
+                string DisplayName(string t) => t switch
+                {
+                    "PeerSNG" => "Peer SNG reference data",
+                    "CountryData" => "Country data",
+                    _ => t
+                };
+
+                model.DatasetSummaries = history.Select(h => new DatasetSummary
+                {
+                    DatasetType = h.DatasetType,
+                    DisplayName = DisplayName(h.DatasetType),
+                    LatestVersion = h.LatestVersion,
+                    RecordCount = h.Last?.RecordCount ?? 0,
+                    TotalRows = h.DatasetType == "PeerSNG" ? peerRows : (h.DatasetType == "CountryData" ? countryRows : 0),
+                    CountriesCovered = h.DatasetType == "PeerSNG" ? peerCountries : 0,
+                    LastUploadedAt = h.Last?.UploadedAt,
+                    LastUploadedBy = h.Last?.UploadedByEmail,
+                }).OrderBy(d => d.DisplayName).ToList();
+            }
+            catch { /* upload history table optional — panel just renders empty */ }
+
             return View(model);
         }
 

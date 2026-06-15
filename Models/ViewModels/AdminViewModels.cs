@@ -123,6 +123,22 @@ namespace RosraApp.Models.ViewModels
         public int UnderReviewCount { get; set; }
         public int NeedsRevisionCount { get; set; }
         public int ValidatedCount { get; set; }
+
+        // Admin reference datasets (latest version per type, from DataUploadHistory)
+        public List<DatasetSummary> DatasetSummaries { get; set; } = new();
+    }
+
+    /// <summary>Latest-upload summary for an admin-managed reference dataset.</summary>
+    public class DatasetSummary
+    {
+        public string DatasetType { get; set; } = "";
+        public string DisplayName { get; set; } = "";
+        public int LatestVersion { get; set; }
+        public int RecordCount { get; set; }       // rows live in the dataset's table now
+        public int TotalRows { get; set; }          // current live row count
+        public DateTime? LastUploadedAt { get; set; }
+        public string? LastUploadedBy { get; set; }
+        public int CountriesCovered { get; set; }   // for PeerSNG: distinct country codes
     }
 
     public class DataManagementReportItem
