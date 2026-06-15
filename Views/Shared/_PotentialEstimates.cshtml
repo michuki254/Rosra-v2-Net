@@ -4900,6 +4900,9 @@
                 // Populate dropdown from custom data
                 populatePeerDropdownFromCustomData(peers);
 
+                // Auto-select a subject and run so the gap/potential render immediately.
+                selectPeerSubjectAndRun();
+
                 // Hide input section and show success message
                 togglePeerDataInputSection(false);
                 showPeerDataSuccessMessage(`${peers.length} peers loaded from CSV. Data will be saved with your report.`);
@@ -5018,6 +5021,11 @@
                     // Populate dropdown from custom data
                     populatePeerDropdownFromCustomData(peers);
 
+                    // Auto-select a subject and run the analysis so the gap/potential
+                    // show immediately (otherwise the card stays empty until the user
+                    // manually picks an SNG from the dropdown).
+                    selectPeerSubjectAndRun();
+
                     // Hide input section and show success message
                     togglePeerDataInputSection(false);
                     showPeerDataSuccessMessage(`${peers.length} peers ready. Data will be saved with your report.`);
@@ -5028,6 +5036,26 @@
                 console.error('Error validating peer data:', e);
                 alert('Error validating data. Please try again.');
             }
+        }
+
+        // Pick a subject SNG and run the within-country analysis so the gap /
+        // potential render straight away. Prefers the local government matching
+        // the report's Region/City (i.e. the user's own), else the first peer.
+        function selectPeerSubjectAndRun() {
+            var dd = document.getElementById('peerSngSelectTop');
+            if (!dd) return;
+            var opts = Array.from(dd.options).filter(function (o) { return o.value; });
+            if (!opts.length) return;
+            var regionVal = ((document.getElementById('region') || {}).value || '').toLowerCase();
+            var cityVal = ((document.getElementById('city') || {}).value || '').toLowerCase();
+            var pick = opts.find(function (o) { return o.value.toLowerCase() === regionVal; })
+                    || opts.find(function (o) { return o.value.toLowerCase() === cityVal; })
+                    || opts[0];
+            dd.value = pick.value;
+            if (typeof $ !== 'undefined' && $.fn.select2 && $(dd).data('select2')) {
+                $(dd).trigger('change.select2');
+            }
+            fetchPeerSNGAnalysis(pick.value);
         }
 
         // Populate peer dropdown from custom data
