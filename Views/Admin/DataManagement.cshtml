@@ -298,6 +298,10 @@
                                 {
                                     <button type="button" class="expand-btn" data-target="detail-@r.Id" title="Expand stream details" style="background:none;border:none;color:#3B82F6;cursor:pointer;font-size:0.75rem;padding:0 0 0 4px;"><i class="bi bi-chevron-down"></i></button>
                                 }
+                                @if (r.HasPeerSNG)
+                                {
+                                    <button type="button" class="expand-btn" data-target="peers-@r.Id" title="Expand peer SNG data" style="background:none;border:none;color:#0EA5E9;cursor:pointer;font-size:0.75rem;padding:0 0 0 2px;"><i class="bi bi-chevron-down"></i></button>
+                                }
                             </td>
                             <td class="col-recommendations" style="white-space:nowrap;">
                                 <span class="stream-dot @(r.HasRecommendations?"active":"inactive")"></span>
@@ -497,6 +501,58 @@
                                             }
                                         </tbody>
                                     </table>
+                                </td>
+                            </tr>
+                        }
+
+                        @* ── Peer SNG (top-down) detail row ── *@
+                        @if (r.HasPeerSNG)
+                        {
+                            <tr id="peers-@r.Id" style="display:none;">
+                                <td colspan="30" style="padding:0.5rem 1rem 0.75rem 2.5rem; background:#F0F9FF; border-bottom:2px solid #BAE6FD;">
+                                    <div style="font-size:0.6875rem; font-weight:700; color:#0284C7; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;">
+                                        <i class="bi bi-people me-1"></i>Peer SNG analysis
+                                        @{
+                                            var srcLabel = r.PeerDataSource?.ToLower() switch
+                                            {
+                                                "custom" => "Your peer data",
+                                                "preloaded" or "reference" => "Preloaded dataset",
+                                                "global" => "Global benchmark",
+                                                _ => r.PeerDataSource
+                                            };
+                                        }
+                                        @if (!string.IsNullOrEmpty(srcLabel)) { <span style="font-weight:600; color:#0369A1; text-transform:none; letter-spacing:0;">— @srcLabel</span> }
+                                        @if (!string.IsNullOrEmpty(r.PeerSelectedSNG)) { <span style="font-weight:500; color:#64748B; text-transform:none; letter-spacing:0;"> · selected: @r.PeerSelectedSNG</span> }
+                                    </div>
+                                    @if (r.PeerSNGItems.Any())
+                                    {
+                                        var ccy = string.IsNullOrEmpty(r.PeerCurrency) ? "" : r.PeerCurrency + " ";
+                                        <table style="width:100%; max-width:700px; font-size:0.75rem; border-collapse:collapse;">
+                                            <thead><tr style="background:#E0F2FE;">
+                                                <th style="padding:0.3rem 0.5rem; text-align:left; font-weight:600; color:#075985; font-size:0.625rem;">Peer local government</th>
+                                                <th style="padding:0.3rem 0.5rem; text-align:right; font-weight:600; color:#075985; font-size:0.625rem;">OSR</th>
+                                                <th style="padding:0.3rem 0.5rem; text-align:right; font-weight:600; color:#075985; font-size:0.625rem;">GDP / GCP</th>
+                                                <th style="padding:0.3rem 0.5rem; text-align:right; font-weight:600; color:#075985; font-size:0.625rem;">Population</th>
+                                                <th style="padding:0.3rem 0.5rem; text-align:center; font-weight:600; color:#075985; font-size:0.625rem;">Include</th>
+                                            </tr></thead>
+                                            <tbody>
+                                                @foreach (var p in r.PeerSNGItems)
+                                                {
+                                                    <tr style="border-bottom:1px solid #e0f2fe;">
+                                                        <td style="padding:0.25rem 0.5rem; font-weight:500;">@p.Sng</td>
+                                                        <td style="padding:0.25rem 0.5rem; text-align:right;">@ccy@p.Osr.ToString("#,##0")</td>
+                                                        <td style="padding:0.25rem 0.5rem; text-align:right;">@(p.Gcp > 0 ? ccy + p.Gcp.ToString("#,##0") : "—")</td>
+                                                        <td style="padding:0.25rem 0.5rem; text-align:right;">@(p.Population > 0 ? p.Population.ToString("#,##0") : "—")</td>
+                                                        <td style="padding:0.25rem 0.5rem; text-align:center;">@(p.Include ? "✓" : "—")</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    }
+                                    else
+                                    {
+                                        <div style="font-size:0.75rem; color:#64748B; font-style:italic;">Benchmark from the @(srcLabel?.ToLower() ?? "preloaded") dataset — no user-entered peer rows for this report.</div>
+                                    }
                                 </td>
                             </tr>
                         }

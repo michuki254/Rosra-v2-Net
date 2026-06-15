@@ -634,69 +634,117 @@ namespace RosraApp.Controllers
             return View();
         }
 
-        // Upload PeerSNG Data
+        // Upload PeerSNG reference Data (admin-managed within-country peer dataset).
+        // Header-driven so the CSV can carry the full schema in any column order:
+        //   SNG, OSR, GCP, Population, Include, Band, Watchlist, Currency
+        // Legacy positional files (SNG,OSR,GCP,[Population],Include) still import.
+        // Replaces all existing rows for the given country (no duplicates/stale rows).
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RequestSizeLimit(5_000_000)]
-        public async Task<IActionResult> UploadPeerSNGData(IFormFile file)
+        public async Task<IActionResult> UploadPeerSNGData(IFormFile file, string countryCode)
         {
             if (file == null || file.Length == 0)
             {
                 return Json(new { success = false, message = "Please select a file" });
             }
 
+            countryCode = (countryCode ?? "").Trim().ToUpperInvariant();
+            if (!System.Text.RegularExpressions.Regex.IsMatch(countryCode, "^[A-Z]{3}$"))
+            {
+                return Json(new { success = false, message = "A valid 3-letter ISO country code is required (e.g. KEN)." });
+            }
+
             try
             {
                 using var reader = new StreamReader(file.OpenReadStream());
-                var importedCount = 0;
-                bool headerSkipped = false;
+                var peers = new List<PeerSNG>();
+                // Column-name → index, populated from the header row when present.
+                Dictionary<string, int>? cols = null;
+
+                static bool TruthyFlag(string v)
+                {
+                    v = (v ?? "").Trim().ToLowerInvariant();
+                    return v == "1" || v == "true" || v == "yes" || v == "y";
+                }
 
                 while (!reader.EndOfStream)
                 {
                     var line = await reader.ReadLineAsync();
                     if (string.IsNullOrWhiteSpace(line)) continue;
-                    // Skip template comment lines
-                    if (line.TrimStart().StartsWith("#")) continue;
+                    if (line.TrimStart().StartsWith("#")) continue; // template comments
 
                     var values = line.Split(',');
-                    if (values.Length < 4) continue;
+                    if (values.Length < 3) continue;
 
-                    // Skip the first header row we encounter (after any leading comments)
-                    if (!headerSkipped)
+                    var first = values[0].Trim().ToUpperInvariant();
+
+                    // First non-comment row: if it looks like a header, map columns by name.
+                    if (cols == null)
                     {
-                        headerSkipped = true;
-                        var first = values[0].Trim().ToUpperInvariant();
-                        if (first == "SNG" || first == "NAME") continue;
+                        if (first == "SNG" || first == "NAME")
+                        {
+                            cols = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                            for (int i = 0; i < values.Length; i++)
+                            {
+                                var key = values[i].Trim().ToLowerInvariant();
+                                if (key == "name") key = "sng";
+                                if (key == "gdp") key = "gcp";
+                                if (key == "pop") key = "population";
+                                if (key == "included") key = "include";
+                                if (!cols.ContainsKey(key)) cols[key] = i;
+                            }
+                            continue; // header consumed
+                        }
+                        // No header → positional legacy layout.
+                        cols = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+                        {
+                            ["sng"] = 0, ["osr"] = 1, ["gcp"] = 2,
+                            ["population"] = values.Length >= 5 ? 3 : -1,
+                            ["include"] = values.Length >= 5 ? 4 : 3,
+                        };
                     }
 
-                    // Support both formats:
-                    // 5 cols: SNG,OSR,GCP,Population,Include
-                    // 4 cols: SNG,OSR,GCP,Include (legacy, no population)
+                    string Cell(string name)
+                    {
+                        return (cols!.TryGetValue(name, out var idx) && idx >= 0 && idx < values.Length)
+                            ? values[idx].Trim() : "";
+                    }
+
+                    var name = Cell("sng");
+                    if (string.IsNullOrWhiteSpace(name)) continue;
+                    if (!decimal.TryParse(Cell("osr"), out var osr)) continue;
+                    decimal.TryParse(Cell("gcp"), out var gcp);
+
+                    var includeCell = Cell("include");
                     var peer = new PeerSNG
                     {
-                        SNG = values[0].Trim(),
-                        OSR = decimal.Parse(values[1].Trim()),
-                        GCP = decimal.Parse(values[2].Trim())
+                        CountryCode = countryCode,
+                        SNG = name,
+                        OSR = osr,
+                        GCP = gcp,
+                        Population = long.TryParse(Cell("population"), out var pop) ? pop : 0,
+                        // Default include to true when the column is absent/blank.
+                        Include = string.IsNullOrEmpty(includeCell) ? true : TruthyFlag(includeCell),
+                        Band = string.IsNullOrWhiteSpace(Cell("band")) ? null : Cell("band"),
+                        Watchlist = TruthyFlag(Cell("watchlist")),
+                        Currency = string.IsNullOrWhiteSpace(Cell("currency")) ? null : Cell("currency").ToUpperInvariant(),
                     };
-
-                    if (values.Length >= 5)
-                    {
-                        peer.Population = long.TryParse(values[3].Trim(), out var pop) ? pop : 0;
-                        peer.Include = values[4].Trim() == "1" || values[4].Trim().ToLower() == "true";
-                    }
-                    else
-                    {
-                        peer.Population = 0;
-                        peer.Include = values[3].Trim() == "1" || values[3].Trim().ToLower() == "true";
-                    }
-
-                    _context.Peers_SNG.Add(peer);
-                    importedCount++;
+                    peers.Add(peer);
                 }
 
+                if (peers.Count == 0)
+                {
+                    return Json(new { success = false, message = "No valid rows found. Each row needs at least a name and OSR." });
+                }
+
+                // Replace-per-country: drop existing rows for this country, then insert.
+                var existing = await _context.Peers_SNG.Where(p => p.CountryCode == countryCode).ToListAsync();
+                _context.Peers_SNG.RemoveRange(existing);
+                await _context.Peers_SNG.AddRangeAsync(peers);
                 await _context.SaveChangesAsync();
 
-                // Log upload history
+                // Log upload history (versioned per dataset type).
                 var lastVersion = await _context.DataUploadHistory
                     .Where(h => h.DatasetType == "PeerSNG")
                     .OrderByDescending(h => h.Version).Select(h => h.Version).FirstOrDefaultAsync();
@@ -704,15 +752,17 @@ namespace RosraApp.Controllers
                 _context.DataUploadHistory.Add(new DataUploadHistory
                 {
                     DatasetType = "PeerSNG",
-                    RecordCount = importedCount,
+                    CountryCode = countryCode,
+                    RecordCount = peers.Count,
                     Version = lastVersion + 1,
                     FileName = file.FileName,
                     UploadedByUserId = uploadUser?.Id,
-                    UploadedByEmail = uploadUser?.Email
+                    UploadedByEmail = uploadUser?.Email,
+                    Notes = $"Replaced {existing.Count} existing {countryCode} rows"
                 });
                 await _context.SaveChangesAsync();
 
-                return Json(new { success = true, message = $"Successfully imported {importedCount} PeerSNG records (v{lastVersion + 1})" });
+                return Json(new { success = true, message = $"Imported {peers.Count} {countryCode} peer records (replaced {existing.Count}) — v{lastVersion + 1}" });
             }
             catch (Exception ex)
             {
@@ -1295,6 +1345,44 @@ namespace RosraApp.Controllers
                                     GapType = el.TryGetProperty("gapType", out var g) ? g.GetString() ?? "" : "",
                                     Timeline = el.TryGetProperty("timeline", out var tl) ? tl.GetString() ?? "" : "",
                                 });
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
+                // Parse per-report peer SNG data (top-down within-country analysis).
+                // Shape: { dataSource|tier, currency, selectedSNG, customPeers:[{sng,osr,gcp,population,include}] }
+                if (!string.IsNullOrEmpty(r.PeerSNGData))
+                {
+                    try
+                    {
+                        var peerDoc = System.Text.Json.JsonDocument.Parse(r.PeerSNGData);
+                        var root = peerDoc.RootElement;
+                        if (root.ValueKind == System.Text.Json.JsonValueKind.Object)
+                        {
+                            item.PeerDataSource = root.TryGetProperty("tier", out var tierEl) && tierEl.ValueKind == System.Text.Json.JsonValueKind.String
+                                ? tierEl.GetString() ?? ""
+                                : (root.TryGetProperty("dataSource", out var dsEl) ? dsEl.GetString() ?? "" : "");
+                            if (root.TryGetProperty("currency", out var curEl) && curEl.ValueKind == System.Text.Json.JsonValueKind.String)
+                                item.PeerCurrency = curEl.GetString() ?? "";
+                            if (root.TryGetProperty("selectedSNG", out var selEl) && selEl.ValueKind == System.Text.Json.JsonValueKind.String)
+                                item.PeerSelectedSNG = selEl.GetString() ?? "";
+
+                            if (root.TryGetProperty("customPeers", out var peersEl) && peersEl.ValueKind == System.Text.Json.JsonValueKind.Array)
+                            {
+                                foreach (var p in peersEl.EnumerateArray())
+                                {
+                                    decimal GetDec(string n) => p.TryGetProperty(n, out var v) && v.TryGetDecimal(out var d) ? d : 0m;
+                                    item.PeerSNGItems.Add(new PeerSngItem
+                                    {
+                                        Sng = p.TryGetProperty("sng", out var sv) ? sv.GetString() ?? "" : "",
+                                        Osr = GetDec("osr"),
+                                        Gcp = GetDec("gcp"),
+                                        Population = p.TryGetProperty("population", out var pv) && pv.TryGetInt64(out var pl) ? pl : 0L,
+                                        Include = !p.TryGetProperty("include", out var iv) || iv.ValueKind != System.Text.Json.JsonValueKind.False,
+                                    });
+                                }
                             }
                         }
                     }

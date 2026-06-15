@@ -174,6 +174,13 @@ namespace RosraApp.Models.ViewModels
         public List<PrioritizationItem> PrioritizationItems { get; set; } = new();
         public List<SolutionItem> SolutionItems { get; set; } = new();
 
+        // Top-down peer analysis (per-report). Source/tier of the benchmark plus the
+        // user-entered peer rows (only present when the user supplied their own data).
+        public string PeerDataSource { get; set; } = "";   // preloaded | custom | global
+        public string PeerSelectedSNG { get; set; } = "";
+        public string PeerCurrency { get; set; } = "";
+        public List<PeerSngItem> PeerSNGItems { get; set; } = new();
+
         // Gap Analysis: Property Tax
         public decimal PtRevenue { get; set; }
         public decimal PtBilled { get; set; }
@@ -244,5 +251,15 @@ namespace RosraApp.Models.ViewModels
         public string Stream { get; set; } = "";
         public string GapType { get; set; } = "";
         public string Timeline { get; set; } = "";
+    }
+
+    /// <summary>One user-entered (or selected) peer local government for a report's top-down analysis.</summary>
+    public class PeerSngItem
+    {
+        public string Sng { get; set; } = "";
+        public decimal Osr { get; set; }
+        public decimal Gcp { get; set; }
+        public long Population { get; set; }
+        public bool Include { get; set; } = true;
     }
 }
