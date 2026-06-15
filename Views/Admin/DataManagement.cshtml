@@ -145,7 +145,7 @@
                 @foreach (var d in Model.DatasetSummaries)
                 {
                     <div class="ref-card">
-                        <div class="ref-card-title">@d.DisplayName <span class="ref-ver">v@d.LatestVersion</span></div>
+                        <div class="ref-card-title">@d.DisplayName <span class="ref-ver">v@(d.LatestVersion)</span></div>
                         <div class="ref-card-stat">@d.TotalRows.ToString("#,##0") <span>rows</span></div>
                         <div class="ref-card-meta">
                             @if (d.CountriesCovered > 0) { <span>@d.CountriesCovered countries · </span> }
