@@ -452,12 +452,10 @@
            #country, #financialYear, etc. continues to work. */
         .report-content .config-card { display: none !important; }
 
-        /* Force the WoFi Quick OSR Estimate panel + its chart visible in
-           the report (in the editor it's hidden until "Get Analysis" is
-           clicked). The chart is rendered into #actualVsPotentialChart;
-           keeping wofiContent shown lets Chart.js draw on first compute. */
+        /* Keep the Quick Analysis wrapper available in print mode. The tier
+           router decides whether the visible result is preloaded peers,
+           user-provided peers, or the WoFi global benchmark. */
         .report-content #analysisPanelWrap { display: block !important; }
-        .report-content #wofiContent { display: block !important; }
         .report-content #wofiPlaceholder { display: none !important; }
         .report-content .next-step-cta-wrap { display: none !important; }
 
@@ -1067,6 +1065,17 @@
                 if (profileEl) profileEl.dispatchEvent(new Event('change', { bubbles: true }));
                 var getBtn = document.getElementById('getAnalysisBtn');
                 if (getBtn) getBtn.click();
+
+                // In print/PDF mode there is no user to answer the Tier 2 vs
+                // Tier 3 chooser. If no domestic/custom result arrived, use the
+                // global WoFi path so Quick Analysis is never blank.
+                setTimeout(function () {
+                    var result = window.__RosraTopDownResult || window.__RosraWofiResult;
+                    if (!result && window.__RosraTopDownTier === 'global' &&
+                        typeof window.RosraWofiRunEstimator === 'function') {
+                        window.RosraWofiRunEstimator();
+                    }
+                }, 1200);
 
                 // After WoFi compute finishes, the Chart.js bar chart needs a resize tick
                 // when the container was force-visible via print CSS — otherwise Chart.js

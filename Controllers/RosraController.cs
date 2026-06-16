@@ -561,6 +561,8 @@ namespace RosraApp.Controllers
                     formData.MixedUserCharge = existing.MixedUserCharge;
                 if (formData.TotalEstimate?.TotalCurrentRevenue == null && existing.TotalEstimate != null)
                     formData.TotalEstimate = existing.TotalEstimate;
+
+                MergeMissingQuickAnalysisFields(formData, existing);
             }
 
             // Parse formatted number values from the form
@@ -972,6 +974,10 @@ namespace RosraApp.Controllers
                 if (decimal.TryParse(val, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var parsed))
                     formData.GdpPerCapita = parsed;
             }
+
+            var existingSession = GetFormDataFromSession();
+            if (existingSession != null)
+                MergeMissingQuickAnalysisFields(formData, existingSession);
 
             SaveFormDataToSession(formData);
 
@@ -1868,6 +1874,45 @@ namespace RosraApp.Controllers
         {
             var formDataJson = JsonSerializer.Serialize(formData, _sessionJsonOptions);
             HttpContext.Session.SetString(RosraFormDataKey, formDataJson);
+        }
+
+        private static void MergeMissingQuickAnalysisFields(RosraFormViewModel target, RosraFormViewModel source)
+        {
+            // Quick Analysis / Local Government Profile can be absent from some
+            // tab POSTs. Preserve the last known values instead of replacing
+            // session or saved report data with blanks.
+            if (string.IsNullOrWhiteSpace(target.Country) && !string.IsNullOrWhiteSpace(source.Country))
+                target.Country = source.Country;
+            if (string.IsNullOrWhiteSpace(target.Region) && !string.IsNullOrWhiteSpace(source.Region))
+                target.Region = source.Region;
+            if (string.IsNullOrWhiteSpace(target.City) && !string.IsNullOrWhiteSpace(source.City))
+                target.City = source.City;
+            if (string.IsNullOrWhiteSpace(target.GovUnitLevel3) && !string.IsNullOrWhiteSpace(source.GovUnitLevel3))
+                target.GovUnitLevel3 = source.GovUnitLevel3;
+            if (target.FinalUnitLevel == null && source.FinalUnitLevel != null)
+                target.FinalUnitLevel = source.FinalUnitLevel;
+            if (string.IsNullOrWhiteSpace(target.FinancialYear) && !string.IsNullOrWhiteSpace(source.FinancialYear))
+                target.FinancialYear = source.FinancialYear;
+            if (string.IsNullOrWhiteSpace(target.Currency) && !string.IsNullOrWhiteSpace(source.Currency))
+                target.Currency = source.Currency;
+            if (string.IsNullOrWhiteSpace(target.CurrencySymbol) && !string.IsNullOrWhiteSpace(source.CurrencySymbol))
+                target.CurrencySymbol = source.CurrencySymbol;
+            if (target.ActualOsr == null && source.ActualOsr != null)
+                target.ActualOsr = source.ActualOsr;
+            if (target.BudgetedOsr == null && source.BudgetedOsr != null)
+                target.BudgetedOsr = source.BudgetedOsr;
+            if (target.Population == null && source.Population != null)
+                target.Population = source.Population;
+            if (target.GdpPerCapita == null && source.GdpPerCapita != null)
+                target.GdpPerCapita = source.GdpPerCapita;
+            if (string.IsNullOrWhiteSpace(target.EconomicProfile) && !string.IsNullOrWhiteSpace(source.EconomicProfile))
+                target.EconomicProfile = source.EconomicProfile;
+            if (string.IsNullOrWhiteSpace(target.GovernmentType) && !string.IsNullOrWhiteSpace(source.GovernmentType))
+                target.GovernmentType = source.GovernmentType;
+            if (string.IsNullOrWhiteSpace(target.IncomeLevel) && !string.IsNullOrWhiteSpace(source.IncomeLevel))
+                target.IncomeLevel = source.IncomeLevel;
+            if (string.IsNullOrWhiteSpace(target.PeerSNGData) && !string.IsNullOrWhiteSpace(source.PeerSNGData))
+                target.PeerSNGData = source.PeerSNGData;
         }
 
         /// <summary>

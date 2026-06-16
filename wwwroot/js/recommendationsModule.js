@@ -1582,16 +1582,28 @@
             // its hidden canvas can't be captured via toBase64Image, so the report
             // builder's SVG fallback depends on the raw numbers in __RosraWofiResult.
             // This helper ensures those numbers are available before HTML is built.
-            function ensureWofiResult(timeoutMs) {
+            function ensureTopDownResult(timeoutMs) {
                 return new Promise(function (resolve) {
                     var deadline = Date.now() + (timeoutMs || 5000);
                     var have = function () {
-                        var r = window.__RosraWofiResult;
+                        var r = window.__RosraTopDownResult || window.__RosraWofiResult;
                         return r && typeof r.potentialOsr === 'number' && r.potentialOsr > 0;
                     };
                     if (have()) return resolve();
                     // Kick off the estimator if it hasn't been run/finished yet.
-                    if (typeof window.RosraWofiRunEstimator === 'function') {
+                    if (typeof window.RosraDecideTopDownTier === 'function') {
+                        try {
+                            var routed = window.RosraDecideTopDownTier();
+                            if (routed && typeof routed.then === 'function') {
+                                routed.then(function () {
+                                    if (!have() && window.__RosraTopDownTier === 'global' &&
+                                        typeof window.RosraWofiRunEstimator === 'function') {
+                                        try { window.RosraWofiRunEstimator(); } catch (_) {}
+                                    }
+                                });
+                            }
+                        } catch (_) {}
+                    } else if (typeof window.RosraWofiRunEstimator === 'function') {
                         try { window.RosraWofiRunEstimator(); } catch (_) {}
                     }
                     (function poll() {
@@ -1638,8 +1650,8 @@
                     // "Current revenue + estimated gap = potential" chart is
                     // rendered into the export instead of being silently skipped.
                     if (options.includeExecSummary) {
-                        await ensureWofiResult(5000);
-                        console.log('[Report] WoFi result ready=', !!window.__RosraWofiResult);
+                        await ensureTopDownResult(8000);
+                        console.log('[Report] Quick Analysis result ready=', !!(window.__RosraTopDownResult || window.__RosraWofiResult));
                     }
 
                     const html = buildReportHtml(options);
@@ -2107,8 +2119,10 @@
                        conventional report scale of 14 px. Every rem in the report
                        inherits this base, so the entire hierarchy scales down
                        proportionally without per-rule tweaks. */
-                    html { font-size: 14px; }
-                    body { font-family: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif; color: #243746; margin: 0; padding: 40px; max-width: 1040px; margin-left: auto; margin-right: auto; line-height: 1.55; font-feature-settings: 'tnum' 1, 'kern' 1, 'liga' 1; -webkit-font-smoothing: antialiased; }
+                    html { font-size: 14px; box-sizing: border-box; }
+                    *, *::before, *::after { box-sizing: inherit; }
+                    body { font-family: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif; color: #243746; margin: 0 auto; padding: 0; width: 100%; max-width: 182mm; line-height: 1.55; font-feature-settings: 'tnum' 1, 'kern' 1, 'liga' 1; -webkit-font-smoothing: antialiased; overflow-wrap: break-word; }
+                    img, svg, table { max-width: 100%; }
                     h1, h2, h3, .qa-section-title, .qa-block-title, .cover-title, .cover-country .name { font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; }
                     h1 { color: #00689D; margin: 0 0 4px 0; font-size: 2.1rem; font-weight: 700; letter-spacing: -0.01em; }
                     h2 { color: #00689D; border-bottom: 2px solid #00689D; padding-bottom: 6px; margin-top: 34px; font-weight: 700; letter-spacing: -0.005em; }
@@ -2126,8 +2140,8 @@
                        set the cover taller than the page. */
                     .cover-page {
                         position: relative;
-                        margin: -40px -40px 40px;
-                        padding: 48px 60px 36px;
+                        margin: 0 0 40px;
+                        padding: 40px 44px 34px;
                         background: #00B2E3;
                         color: #ffffff;
                         overflow: hidden;
@@ -2245,8 +2259,8 @@
                        page 3+. */
                     .qa-page {
                         position: relative;
-                        margin: 0 -40px 36px;
-                        padding: 28px 60px 36px;
+                        margin: 0 0 36px;
+                        padding: 28px 0 36px;
                         background: #ffffff;
                         page-break-after: always;
                         break-after: page;
@@ -2332,9 +2346,9 @@
                     .r-status-in-progress { background: #fff4e0; color: #c26500; }
                     .r-status-completed { background: #e2fbe8; color: #1f8a3a; }
                     .r-status-blocked { background: #ffe5e5; color: #b52626; }
-                    .report-table { width: 100%; border-collapse: collapse; margin: 12px 0 4px 0; font-size: 0.88rem; }
+                    .report-table { width: 100%; border-collapse: collapse; margin: 12px 0 4px 0; font-size: 0.84rem; table-layout: fixed; }
                     .report-table th { background: #f0f7fc; color: #00689D; border-bottom: 2px solid #00689D; padding: 8px 10px; font-weight: 600; }
-                    .report-table td { border-bottom: 1px solid #eaf1f7; padding: 7px 10px; vertical-align: top; }
+                    .report-table td { border-bottom: 1px solid #eaf1f7; padding: 7px 10px; vertical-align: top; overflow-wrap: anywhere; word-break: normal; }
                     .report-table tr:nth-child(even) td { background: #fafcfe; }
                     .report-table tr.tr-totals td { background: #e0f2fe; border-top: 2px solid #00689D; border-bottom: none; color: #00689D; }
                     .report-skipped-list { margin: 10px 0 4px 0; padding-left: 22px; }
@@ -2489,7 +2503,7 @@
                     .prio-pb-1 { background: #10B981; }
                     .prio-pb-2 { background: #94A3B8; }
                     .prio-pb-3 { background: #EF4444; }
-                    .prio-pcell { display: flex; align-items: center; }
+                    .prio-pcell { display: flex; align-items: center; min-width: 0; }
                     .prio-pcell-body { display: flex; flex-direction: column; line-height: 1.3; }
                     .prio-pcell-type { font-weight: 600; color: #1f2937; font-size: 0.85rem; }
                     .prio-pcell-amount { font-size: 0.78rem; color: #00689D; font-weight: 600; }
@@ -2506,7 +2520,7 @@
                     .seq-group-title { flex: 1; font-weight: 700; color: #1a3a52; font-size: 1rem; }
                     .seq-group-total { font-size: 0.82rem; color: #55697a; }
                     .seq-group-total strong { color: #00689D; }
-                    .seq-item { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: 0.85rem; }
+                    .seq-item { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: 0.85rem; min-width: 0; }
                     .seq-item + .seq-item { border-top: 1px dashed #eaf1f7; }
                     .seq-item-index { flex: 0 0 30px; color: #7a8a99; font-size: 0.78rem; }
                     .seq-item-priority { flex: 0 0 30px; font-weight: 700; color: #00689D; font-size: 0.8rem; }
@@ -2558,7 +2572,12 @@
 
                     @@page { size: A4; margin: 18mm 14mm; }
                     @@media print {
-                        body { padding: 0; }
+                        html { font-size: 13px; }
+                        body { width: 100%; max-width: none; padding: 0; margin: 0; }
+                        .cover-page { width: 100%; max-width: 100%; overflow: hidden; }
+                        .qa-page { width: 100%; max-width: 100%; overflow: visible; }
+                        .qa-chart-card, .prio-explainer, .rec-platform-cta { max-width: 100%; overflow: hidden; }
+                        .report-table th, .report-table td { padding-left: 7px; padding-right: 7px; }
                     }
                 `;
 
@@ -2734,6 +2753,80 @@
     </div>
 </div>`;
 
+                    const readText = id => {
+                        const el = document.getElementById(id);
+                        return el ? (el.textContent || '').trim() : '';
+                    };
+                    const parseReportAmount = s => {
+                        if (!s || s === '-') return null;
+                        const cleaned = String(s).replace(/[^\d.KMB-]/gi, '');
+                        const m = cleaned.match(/(-?[\d.]+)\s*([KMB]?)/i);
+                        if (!m) return null;
+                        const n = parseFloat(m[1]);
+                        if (isNaN(n)) return null;
+                        const suf = (m[2] || '').toUpperCase();
+                        return suf === 'B' ? n * 1e9 : suf === 'M' ? n * 1e6 : suf === 'K' ? n * 1e3 : n;
+                    };
+                    const activeTier = window.__RosraTopDownTier || '';
+                    const domesticCard = document.getElementById('domesticFrontierCard');
+                    const domesticIsActive = (activeTier === 'preloaded' || activeTier === 'custom') &&
+                        (!domesticCard || domesticCard.style.display !== 'none');
+                    const domesticDomResult = (() => {
+                        if (!domesticIsActive) return null;
+                        const actual = parseReportAmount(readText('m2ActualOSRTop'));
+                        const potential = parseReportAmount(readText('m2OSRPotentialTop'));
+                        const gap = parseReportAmount(readText('m2OSRGapTop'));
+                        if (actual == null || potential == null || potential <= 0) return null;
+                        const perfRaw = parseFloat(String(readText('m2PerformanceIndexTop')).replace(/[^\d.-]/g, ''));
+                        return {
+                            actualOsr: actual,
+                            potentialOsr: potential,
+                            osrGap: gap != null ? gap : Math.max(0, potential - actual),
+                            frontierIndex: !isNaN(perfRaw) ? perfRaw : (potential > 0 ? actual / potential : 0),
+                            tier: activeTier,
+                            sourceLabel: activeTier === 'custom' ? 'User-provided peer data' : 'Preloaded domestic peer dataset',
+                            method: window.__RosraPeerMethod || 'osr_gdp',
+                            currency: window.__RosraPeerCurrency || null,
+                            subjectName: readText('peerSngSelectTop') || null,
+                            benchmarkLabel: window.__RosraPeerMethod === 'osr_per_capita' ? 'OSR per capita frontier' : 'OSR/GDP frontier',
+                            warning: ''
+                        };
+                    })();
+                    const cachedTopDownResult = window.__RosraTopDownResult || null;
+                    const topDownResult = domesticDomResult || (
+                        cachedTopDownResult && (!domesticIsActive || cachedTopDownResult.tier !== 'global')
+                            ? cachedTopDownResult
+                            : (domesticIsActive ? null : (window.__RosraWofiResult || cachedTopDownResult))
+                    );
+                    const topDownTier = topDownResult && topDownResult.tier
+                        ? topDownResult.tier
+                        : activeTier;
+                    const topDownSourceLabel = topDownResult && topDownResult.sourceLabel
+                        ? topDownResult.sourceLabel
+                        : (topDownTier === 'custom'
+                            ? 'User-provided peer data'
+                            : (topDownTier === 'preloaded' ? 'Preloaded domestic peer dataset' : 'WoFi global peer-country benchmark'));
+                    const topDownMethodLabel = (() => {
+                        const method = topDownResult && topDownResult.method ? topDownResult.method : '';
+                        if (method === 'osr_per_capita') return 'OSR-per-capita frontier';
+                        if (method === 'osr_gdp') return 'OSR/GDP frontier';
+                        if (method === 'wofi_global') return 'Global peer-country GDP benchmark';
+                        return topDownResult && topDownResult.benchmarkLabel ? topDownResult.benchmarkLabel : 'Estimated OSR potential';
+                    })();
+                    const topDownCurrencyUnit = (() => {
+                        if (topDownResult && topDownResult.currency) return String(topDownResult.currency).trim();
+                        if (window.__RosraPeerCurrency) return String(window.__RosraPeerCurrency).trim();
+                        const sym = document.getElementById('currencySymbol')?.value || '';
+                        const code = document.getElementById('currency')?.value || '';
+                        return (sym || code || 'LCU').trim();
+                    })();
+                    const topDownCurrencyPrefix = topDownCurrencyUnit ? topDownCurrencyUnit + ' ' : '';
+                    const topDownUnitsLabel = 'AMOUNTS IN ' + (topDownCurrencyUnit || 'LCU').toUpperCase() + ' (B)';
+                    const topDownWarning = topDownResult && topDownResult.warning ? String(topDownResult.warning).trim() : '';
+                    const topDownSourceNote = `<div class="qa-source-note" style="font-size:0.78rem;color:#475569;margin:10px 0 0;line-height:1.45;background:#f8fafc;border-left:3px solid #00B2E3;padding:8px 12px;border-radius:0 6px 6px 0;">
+        <strong>Quick Analysis basis:</strong> ${esc(topDownSourceLabel)}${topDownMethodLabel ? ` &middot; ${esc(topDownMethodLabel)}` : ''}${topDownResult && topDownResult.benchmarkLabel ? ` &middot; ${esc(topDownResult.benchmarkLabel)}` : ''}${topDownWarning ? `<br><span style="color:#92400e;">${esc(topDownWarning)}</span>` : ''}
+    </div>`;
+
                     // Capture the "Current OSR vs estimated OSR potential" chart.
                     // Two strategies (in order):
                     //   1. Chart.js registered instance via window.RosraChartRegistry —
@@ -2744,9 +2837,24 @@
                     //      same JS that renders the Chart.js chart, so they're available
                     //      whenever the chart would have been.
                     let chartImg = '';
+                    const chartCanvasId = domesticIsActive ? 'actualVsPotentialChartDomestic' : 'actualVsPotentialChart';
+                    const chartCanvas = document.getElementById(chartCanvasId);
+                    if (chartCanvas && typeof chartCanvas.toDataURL === 'function' && chartCanvas.width > 0 && chartCanvas.height > 0) {
+                        try {
+                            const dataUrl = chartCanvas.toDataURL('image/png');
+                            if (dataUrl && dataUrl.length > 2500) {
+                                chartImg = `<div class="qa-chart-card">
+    <div class="units-strip">
+        <div class="title">Current OSR and estimated OSR potential</div>
+    </div>
+    <img src="${dataUrl}" alt="Current OSR and estimated OSR potential" style="max-width:100%;height:auto;display:block;">
+</div>`;
+                            }
+                        } catch (_) { /* skip */ }
+                    }
                     const reg = window.RosraChartRegistry || {};
-                    const chartInstance = reg['actualVsPotentialChart'];
-                    if (chartInstance && typeof chartInstance.toBase64Image === 'function') {
+                    const chartInstance = !chartImg ? reg['actualVsPotentialChart'] : null;
+                    if (!chartImg && chartInstance && typeof chartInstance.toBase64Image === 'function') {
                         try {
                             const dataUrl = chartInstance.toBase64Image('image/png', 1.0);
                             if (dataUrl && dataUrl.length > 2500) {
@@ -2794,22 +2902,20 @@
                         let actualText, potentialText, gapText, perfText;
                         let actualN = null, potentialN = null;
 
-                        const wofiCache = window.__RosraWofiResult;
+                        const wofiCache = topDownResult || window.__RosraWofiResult;
                         if (wofiCache && typeof wofiCache.potentialOsr === 'number' && wofiCache.potentialOsr > 0) {
                             actualN    = Number(wofiCache.actualOsr) || 0;
                             potentialN = Number(wofiCache.potentialOsr) || 0;
                             const gapN = Number(wofiCache.osrGap) || Math.max(0, potentialN - actualN);
-                            const curSym = (typeof getCurrencySymbol === 'function') ? getCurrencySymbol() : '';
                             const fmt = n => {
                                 if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
                                 if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
                                 if (n >= 1e3) return (n / 1e3).toFixed(0) + 'K';
                                 return Math.round(n).toLocaleString();
                             };
-                            const sp = curSym ? curSym + ' ' : '';
-                            actualText    = sp + fmt(actualN);
-                            potentialText = sp + fmt(potentialN);
-                            gapText       = sp + fmt(gapN);
+                            actualText    = topDownCurrencyPrefix + fmt(actualN);
+                            potentialText = topDownCurrencyPrefix + fmt(potentialN);
+                            gapText       = topDownCurrencyPrefix + fmt(gapN);
                             const idx = typeof wofiCache.frontierIndex === 'number' ? Math.round(wofiCache.frontierIndex * 100) : null;
                             perfText      = idx != null ? idx + '%' : '';
                         } else {
@@ -2864,9 +2970,8 @@
                                 return Math.round(n).toLocaleString();
                             };
                             // Currency symbol from the form (fall back to LCU)
-                            const curSym = document.getElementById('currencySymbol')?.value || '';
-                            const curPrefix = curSym ? curSym + ' ' : '';
-                            const unitsLabel = 'AMOUNTS IN ' + (curSym ? curSym.toUpperCase() : 'LCU') + ' (B)';
+                            const curPrefix = topDownCurrencyPrefix;
+                            const unitsLabel = topDownUnitsLabel;
                             // Current OSR as a percentage of estimated potential —
                             // shown beneath the gap bracket as the "how close to potential"
                             // signal — replaces the older comparative framing.
@@ -2891,6 +2996,12 @@
                             const yActualTop = yFor(actualN);
                             const yPotentialTop = yFor(potentialN);
                             const yPotentialGapBottom = yFor(actualN);
+                            const baselineY = padT + chartH;
+                            const actualBarH = Math.max(0, baselineY - yActualTop);
+                            const potentialBaseH = Math.max(0, baselineY - yPotentialGapBottom);
+                            const potentialGapH = Math.max(0, yPotentialGapBottom - yPotentialTop);
+                            const LABEL_MIN_PX = 24;
+                            const inBarLabel = (x, y, value) => `<text x="${x}" y="${y}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">${value}</text>`;
 
                             // Gap bracket on the right of the Potential bar
                             const bracketX = xPotential + barW + 18;
@@ -2917,15 +3028,15 @@
             ${gridSvg}
             ${connector}
             <!-- Actual bar (cyan, full height) -->
-            <rect x="${xActual}" y="${yActualTop}" width="${barW}" height="${chartH - (yActualTop - padT)}" fill="#00b2e3"/>
+            <rect x="${xActual}" y="${yActualTop}" width="${barW}" height="${actualBarH}" fill="#00b2e3"/>
             <text x="${xActual + barW / 2}" y="${yActualTop - 8}" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2937">${curPrefix}${fmtShort(actualN)}</text>
-            <text x="${xActual + barW / 2}" y="${(yActualTop + (padT + chartH)) / 2 + 5}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">${fmtShort(actualN)}</text>
+            ${actualBarH >= LABEL_MIN_PX ? inBarLabel(xActual + barW / 2, (yActualTop + baselineY) / 2 + 5, fmtShort(actualN)) : ''}
             <!-- Potential bar: cyan base + orange gap on top -->
-            <rect x="${xPotential}" y="${yPotentialGapBottom}" width="${barW}" height="${chartH - (yPotentialGapBottom - padT)}" fill="#00b2e3"/>
-            <rect x="${xPotential}" y="${yPotentialTop}" width="${barW}" height="${yPotentialGapBottom - yPotentialTop}" fill="#FD9D24"/>
+            <rect x="${xPotential}" y="${yPotentialGapBottom}" width="${barW}" height="${potentialBaseH}" fill="#00b2e3"/>
+            <rect x="${xPotential}" y="${yPotentialTop}" width="${barW}" height="${potentialGapH}" fill="#FD9D24"/>
             <text x="${xPotential + barW / 2}" y="${yPotentialTop - 8}" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2937">${curPrefix}${fmtShort(potentialN)}</text>
-            <text x="${xPotential + barW / 2}" y="${(yPotentialTop + yPotentialGapBottom) / 2 + 5}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">${fmtShort(gapN)}</text>
-            <text x="${xPotential + barW / 2}" y="${(yPotentialGapBottom + (padT + chartH)) / 2 + 5}" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">${fmtShort(actualN)}</text>
+            ${potentialGapH >= LABEL_MIN_PX ? inBarLabel(xPotential + barW / 2, (yPotentialTop + yPotentialGapBottom) / 2 + 5, fmtShort(gapN)) : ''}
+            ${potentialBaseH >= LABEL_MIN_PX ? inBarLabel(xPotential + barW / 2, (yPotentialGapBottom + baselineY) / 2 + 5, fmtShort(actualN)) : ''}
             <!-- Gap bracket -->
             <path d="M ${bracketX - 6} ${bracketTop} L ${bracketX} ${bracketTop} L ${bracketX} ${bracketBot} L ${bracketX - 6} ${bracketBot}" stroke="#FD9D24" stroke-width="1.5" fill="none"/>
             <text x="${bracketX + 8}" y="${bracketMid - 18}" font-size="10" font-weight="700" fill="#FD9D24">Estimated</text>
@@ -2934,10 +3045,10 @@
             ${pctTextLine1 ? `<text x="${bracketX + 8}" y="${bracketMid + 32}" font-size="11" font-weight="500" fill="#94a3b8">${pctTextLine1}</text>` : ''}
             ${pctTextLine2 ? `<text x="${bracketX + 8}" y="${bracketMid + 44}" font-size="11" font-weight="500" fill="#94a3b8">${pctTextLine2}</text>` : ''}
             <!-- X-axis baseline -->
-            <line x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}" stroke="#1f2937" stroke-width="1"/>
+            <line x1="${padL}" y1="${baselineY}" x2="${W - padR}" y2="${baselineY}" stroke="#1f2937" stroke-width="1"/>
             <!-- X-axis labels -->
-            <text x="${xActual + barW / 2}" y="${padT + chartH + 22}" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Current OSR</text>
-            <text x="${xPotential + barW / 2}" y="${padT + chartH + 22}" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Estimated OSR potential</text>
+            <text x="${xActual + barW / 2}" y="${baselineY + 22}" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Current OSR</text>
+            <text x="${xPotential + barW / 2}" y="${baselineY + 22}" text-anchor="middle" font-size="13" font-weight="700" fill="#1f2937">Estimated OSR potential</text>
         </svg>
     </div>
 </div>`;
@@ -2950,6 +3061,7 @@
     <p class="qa-section-sub">A snapshot of the local government, key fiscal inputs, and estimated OSR potential generated through ROSRA.</p>
     ${lgpCard}
     ${chartImg}
+    ${chartImg ? topDownSourceNote : ''}
     ${chartImg ? `<p class="qa-chart-note" style="font-size:0.78rem;color:#64748b;margin-top:10px;font-style:italic;line-height:1.4;">This estimate shows possible room for improvement under the assumptions used in the analysis. Actual results depend on data quality, legal conditions, administrative capacity, and implementation choices.</p>` : ''}
 </section>`;
                 }
@@ -3229,9 +3341,9 @@
                             const c2 = Math.max(1, col2Sum);
                             // Minimum pixel sizes — every cell stays readable even
                             // when its row/column is data-tiny.
-                            const COL_MIN_PX = 110;  // fits "Mixed val. / unreg." + value on 1-2 lines
-                            const ROW_MIN_PX = 80;   // fits label + value comfortably
-                            const matrixHeight = 380; // px — total matrix height for full-width block layout
+                            const COL_MIN_PX = 100;  // fits "Mixed val. / unreg." + value on 1-2 lines
+                            const ROW_MIN_PX = 64;   // fits label + value comfortably
+                            const matrixHeight = 320; // px - compact enough to fit cleanly on A4
 
                             // For axis labels (column %), show the proportional split.
                             const pct = (part, whole) => whole > 0 ? Math.round(part / whole * 100) : 0;
@@ -3239,19 +3351,19 @@
                             const c2Pct = pct(col2Sum, matrixTotal);
 
                             const cell = (bg, label, val) => `
-        <div style="background:${bg};color:#fff;padding:8px 6px;display:flex;flex-direction:column;justify-content:center;align-items:center;border-radius:2px;overflow:hidden;">
-            <div style="font-size:0.82rem;line-height:1.15;text-align:center;opacity:0.95;font-weight:500;">${esc(label)}</div>
-            <div style="font-size:0.92rem;font-weight:700;line-height:1.2;margin-top:3px;">${esc(fmtMatrix(val))}</div>
+        <div style="background:${bg};color:#fff;padding:6px 5px;display:flex;flex-direction:column;justify-content:center;align-items:center;border-radius:2px;overflow:hidden;">
+            <div style="font-size:0.76rem;line-height:1.12;text-align:center;opacity:0.95;font-weight:500;">${esc(label)}</div>
+            <div style="font-size:0.84rem;font-weight:700;line-height:1.15;margin-top:3px;">${esc(fmtMatrix(val))}</div>
         </div>`;
                             const rowLabel = (text) => `
-        <div style="display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:0.72rem;color:#475569;font-weight:600;text-align:right;line-height:1.2;">${text}</div>`;
+        <div style="display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:0.68rem;color:#475569;font-weight:600;text-align:right;line-height:1.15;">${text}</div>`;
 
                             // Returns ONLY the matrix grid + axis-label row — the
                             // stream-block wrapper now owns the surrounding card
                             // and the stream-name header (so the chart + matrix
                             // share one header).
                             return `<div style="break-inside:avoid;page-break-inside:avoid;">
-    <div style="display:grid;grid-template-columns:110px minmax(${COL_MIN_PX}px,${c1.toFixed(0)}fr) minmax(${COL_MIN_PX}px,${c2.toFixed(0)}fr);grid-template-rows:minmax(${ROW_MIN_PX}px,${r1.toFixed(0)}fr) minmax(${ROW_MIN_PX}px,${r2.toFixed(0)}fr) minmax(${ROW_MIN_PX}px,${r3.toFixed(0)}fr);gap:3px;min-height:${matrixHeight}px;">
+    <div style="display:grid;grid-template-columns:96px minmax(${COL_MIN_PX}px,${c1.toFixed(0)}fr) minmax(${COL_MIN_PX}px,${c2.toFixed(0)}fr);grid-template-rows:minmax(${ROW_MIN_PX}px,${r1.toFixed(0)}fr) minmax(${ROW_MIN_PX}px,${r2.toFixed(0)}fr) minmax(${ROW_MIN_PX}px,${r3.toFixed(0)}fr);gap:3px;height:${matrixHeight}px;">
         ${rowLabel('Unregistered<br/>cohort')}
         ${cell('#F28E2B', 'Coverage gap',      cellCoverage)}
         ${cell('#B07AA1', mixedTopLabel,       cellMixedTop)}
@@ -3262,7 +3374,7 @@
         ${cell('#00B2E3', 'Current revenue',   cellRevenue)}
         ${cell('#4E79A7', valLiabLabel,        cellValLiab)}
     </div>
-    <div style="display:grid;grid-template-columns:110px minmax(${COL_MIN_PX}px,${c1.toFixed(0)}fr) minmax(${COL_MIN_PX}px,${c2.toFixed(0)}fr);gap:3px;margin-top:6px;font-size:0.72rem;color:#64748b;font-weight:600;">
+    <div style="display:grid;grid-template-columns:96px minmax(${COL_MIN_PX}px,${c1.toFixed(0)}fr) minmax(${COL_MIN_PX}px,${c2.toFixed(0)}fr);gap:3px;margin-top:6px;font-size:0.68rem;color:#64748b;font-weight:600;">
         <div></div>
         <div style="text-align:center;">At avg billed rate &middot; ${c1Pct}%</div>
         <div style="text-align:center;">Market / liability uplift &middot; ${c2Pct}%</div>
@@ -3381,7 +3493,7 @@
                             const tfg = s.totalFunctionalGap || 0;
                             const cur = s.currentRevenue   || 0;
                             const pot = cur + tfg;
-                            return `<div style="break-inside:avoid;page-break-inside:avoid;background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin:14px 0;">
+                            return `<div style="break-inside:auto;page-break-inside:auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin:14px 0;">
     <!-- Stream header -->
     <div style="border-bottom:1px solid #f1f5f9;padding-bottom:8px;margin-bottom:12px;">
         <h4 style="margin:0 0 4px;font-size:1.05rem;font-weight:700;color:#0f2742;font-family:'Playfair Display',Georgia,serif;letter-spacing:-0.005em;">${esc(s.name || '')}</h4>
@@ -3401,6 +3513,7 @@
     <p style="font-size:0.72rem;color:#475569;margin:8px 0 14px;border-left:3px solid #cbd5e1;padding:6px 10px;background:#f8fafc;border-radius:0 4px 4px 0;line-height:1.4;">
         <strong>How to read the two bars:</strong> Bar 1 is the revenue collected to date. Bar 2 is the estimated potential — the gap between them is the actionable improvement opportunity for this stream.
     </p>
+    <div style="break-inside:avoid;page-break-inside:avoid;">
     <!-- Matrix title -->
     <div style="text-align:center;font-size:0.92rem;font-weight:700;color:#0f2742;font-family:'Playfair Display',Georgia,serif;margin:4px 0 8px;border-top:1px solid #f1f5f9;padding-top:10px;">
         ${esc(s.name || '')} Gap Analysis
@@ -3410,6 +3523,7 @@
     <p style="font-size:0.72rem;color:#475569;margin:10px 0 0;line-height:1.4;text-align:center;">
         <strong>Description:</strong> This matrix shows the gap analysis across two dimensions — the cohort (vertical axis from compliant to estimated total) and the billing rate (horizontal axis from average billed to achievable rate). Each colored cell is a different revenue or gap component; together they sum to the stream's estimated potential.
     </p>
+    </div>
 </div>`;
                         };
                         html += `<h3 class="qa-block-title" style="font-size:0.95rem;margin-top:14px;">Per-stream breakdown</h3>`;

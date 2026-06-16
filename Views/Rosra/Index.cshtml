@@ -1592,6 +1592,18 @@
 
                 // ---- Peer SNG flusher ----------------------------------------------
                 function flushPeerSNGToForm() {
+                    var activeTopDownTier = window.__RosraTopDownTier || null;
+                    var analysisPanel = document.getElementById('analysisPanelWrap');
+                    var wofiCard = document.getElementById('wofiEstimatorCard');
+                    var domesticCard = document.getElementById('domesticFrontierCard');
+                    if (!activeTopDownTier && analysisPanel && analysisPanel.style.display !== 'none') {
+                        if (wofiCard && wofiCard.style.display !== 'none') {
+                            activeTopDownTier = 'global';
+                        } else if (domesticCard && domesticCard.style.display !== 'none') {
+                            activeTopDownTier = window.getCustomPeerData && window.getCustomPeerData() ? 'custom' : 'preloaded';
+                        }
+                    }
+
                     // Uses new data isolation schema: custom data stored per-report, not globally
                     var peerSNGData = {
                         dataSource: 'reference', // Default to reference data
@@ -1600,7 +1612,7 @@
                         selectedSNG: null,
                         analysisResults: {},
                         // Top-down tier hierarchy (2026-06): 'preloaded' | 'custom' | 'global'
-                        tier: window.__RosraTopDownTier || null,
+                        tier: activeTopDownTier,
                         // Currency of the peer dataset used ('USD' for preloaded 2024 data)
                         currency: window.__RosraPeerCurrency || null,
                         timestamp: new Date().toISOString()
@@ -1982,6 +1994,7 @@
                     }
 
                     // Submit form to switch tabs
+                    if (window.RosraTabFlushers) window.RosraTabFlushers.flushAll();
                     document.getElementById('rosraForm').action = '@Url.Action("SwitchTab", "Rosra")';
                     document.getElementById('rosraForm').submit();
                 });

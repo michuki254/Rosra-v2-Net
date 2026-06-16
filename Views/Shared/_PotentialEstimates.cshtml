@@ -4710,6 +4710,7 @@
         if (btnUseGlobal) {
             btnUseGlobal.addEventListener('click', function () {
                 window.__RosraTopDownTier = 'global';
+                window.__rosraAutoSaveDirty = true;
                 showTopDownCard('wofi');
                 if (typeof window.RosraWofiRunEstimator === 'function') window.RosraWofiRunEstimator();
             });
@@ -5244,10 +5245,21 @@
 
             try {
                 const data = JSON.parse(peerSNGDataJson);
+                const analysisPanel = document.getElementById('analysisPanelWrap');
+                if (analysisPanel) analysisPanel.style.display = '';
 
                 // Remember which top-down tier the report was saved with so the
                 // router can skip the chooser on restore (e.g. straight to WoFi).
                 if (data.tier) window.__RosraRestoredTier = data.tier;
+
+                if (data.tier === 'global') {
+                    window.__RosraTopDownTier = 'global';
+                    showTopDownCard('wofi');
+                    if (typeof window.RosraWofiRunEstimator === 'function') {
+                        setTimeout(function () { window.RosraWofiRunEstimator(); }, 100);
+                    }
+                    return;
+                }
 
                 if (data.dataSource === 'custom' && data.customPeers && data.customPeers.length > 0) {
                     console.log('Loading custom peer data from report:', data.customPeers.length, 'peers');
@@ -5258,6 +5270,7 @@
                         timestamp: data.timestamp
                     };
                     populatePeerDropdownFromCustomData(data.customPeers);
+                    showTopDownCard('domestic');
 
                     // Select saved SNG if available
                     if (data.selectedSNG) {
@@ -5278,6 +5291,11 @@
                     // Reference data or no custom peers
                     console.log('Report uses reference data');
                     customPeerData = null;
+                    window.__RosraTopDownTier = data.tier === 'preloaded' ? 'preloaded' : window.__RosraTopDownTier;
+                    if (data.tier === 'preloaded') {
+                        setDomesticSourceBadge('preloaded');
+                        showTopDownCard('domestic');
+                    }
                     loadPeerSNGs();
 
                     // Select saved SNG if available
@@ -5415,7 +5433,16 @@
                         potentialOsr:  metrics.osrPotential,
                         osrGap:        metrics.osrGap,
                         frontierIndex: (metrics.performanceIndex || 0) / 100,
+                        tier:          data.dataSource === 'custom' ? 'custom' : 'preloaded',
+                        sourceLabel:   data.dataSource === 'custom' ? 'User-provided peer data' : 'Preloaded domestic peer dataset',
+                        method:        data.method || 'osr_gdp',
+                        currency:      data.currency || null,
+                        subjectName:   data.sng || sngName,
+                        benchmarkLabel: data.method === 'osr_per_capita' ? 'OSR per capita frontier' : 'OSR/GDP frontier',
+                        warning:       data.watchlist ? 'Reference data includes watchlist caveats.' : ''
                     };
+                    window.__RosraTopDownResult = window.__RosraWofiResult;
+                    window.__rosraAutoSaveDirty = true;
 
                     // Update metric values (format like Excel - multipliers as decimals, performance as decimal)
                     document.getElementById('m2ActualOSRTop').textContent = formatCurrency(metrics.actualOSR);
@@ -6369,12 +6396,26 @@
                 // "Current revenue + estimated gap = potential" chart, even when
                 // the live Chart.js canvas isn't capturable (e.g. hidden tab,
                 // 0-sized layout) or the formatted tile text fails to parse.
-                window.__RosraWofiResult = {
+                var wofiExportResult = {
                     actualOsr:    result.actualOsr,
                     potentialOsr: result.potentialOsr,
                     osrGap:       result.osrGap,
                     frontierIndex: result.frontierIndex,
+                    tier:         'global',
+                    sourceLabel:  'WoFi global peer-country benchmark',
+                    method:       'wofi_global',
+                    currency:     currencyUnit(),
+                    subjectName:  result.localGovernmentName || (cityEl ? cityEl.value : null),
+                    benchmarkLabel: result.finalHeadlineFrontierPctGdp != null
+                        ? formatNumber(result.finalHeadlineFrontierPctGdp, 2) + '% of GDP'
+                        : '',
+                    warning:      result.warningMessage || result.peerSetWarning || ''
                 };
+                window.__RosraWofiResult = wofiExportResult;
+                if (window.__RosraTopDownTier === 'global' || !window.__RosraTopDownResult) {
+                    window.__RosraTopDownResult = wofiExportResult;
+                }
+                window.__rosraAutoSaveDirty = true;
 
                 // Bar — Chart.js two-bar stacked column with gap bracket
                 var unitsEl = document.getElementById('wofiBarUnits');
@@ -6665,7 +6706,15 @@
                             // Chooser strip is showing; precompute nothing — the
                             // estimator runs when the user picks the global path.
                             // If the chooser is absent (markup missing), run directly.
-                            if (!document.getElementById('tierChooserStrip')) runEstimator();
+                            var chooser = document.getElementById('tierChooserStrip');
+                            var chooserVisible = !!(chooser && chooser.style.display !== 'none');
+                            var restoredGlobal = window.__RosraRestoredTier === 'global'
+                                || (window.__RosraTopDownResult && window.__RosraTopDownResult.tier === 'global')
+                                || (window.__RosraWofiResult && window.__RosraWofiResult.tier === 'global');
+                            if (restoredGlobal || !chooserVisible) {
+                                showTopDownCard('wofi');
+                                runEstimator();
+                            }
                         }
                     });
                 } else {

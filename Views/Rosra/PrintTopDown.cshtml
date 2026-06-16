@@ -593,12 +593,41 @@
                 var l3Row = document.getElementById('govUnitLevel3Row');
                 if (l3Row) l3Row.style.display = '';
             }
+
+            (function kickQuickAnalysis() {
+                var countryEl = document.getElementById('country');
+                if (countryEl) countryEl.dispatchEvent(new Event('change', { bubbles: true }));
+                var profileEl = document.getElementById('economicProfile');
+                if (profileEl) profileEl.dispatchEvent(new Event('change', { bubbles: true }));
+                var getBtn = document.getElementById('getAnalysisBtn');
+                if (getBtn) getBtn.click();
+
+                // If the router found no domestic/custom peers it leaves the
+                // chooser visible. For a PDF render, default to the global WoFi
+                // benchmark so Quick Analysis still appears.
+                setTimeout(function () {
+                    var result = window.__RosraTopDownResult || window.__RosraWofiResult;
+                    if (!result && window.__RosraTopDownTier === 'global' &&
+                        typeof window.RosraWofiRunEstimator === 'function') {
+                        window.RosraWofiRunEstimator();
+                    }
+                }, 1200);
+
+                setTimeout(function () {
+                    if (typeof Chart !== 'undefined' && Chart.instances) {
+                        Object.values(Chart.instances).forEach(function (c) {
+                            try { c.resize(); c.update('none'); } catch (e) { /* ignore */ }
+                        });
+                    }
+                }, 4000);
+            })();
+
             // Auto-print if requested (opens Save as PDF dialog, then closes tab)
             if (window.location.search.indexOf('autoPrint=true') >= 0) {
                 setTimeout(function() {
                     window.print();
                     window.onafterprint = function() { window.close(); };
-                }, 2000);
+                }, 5500);
             }
         });
     </script>

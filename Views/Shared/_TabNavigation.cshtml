@@ -737,6 +737,7 @@
             }
             umbrellaInput.value = 'top-down';
             if (tabInput) tabInput.value = 'potential-estimates';
+            if (window.RosraTabFlushers) window.RosraTabFlushers.flushAll();
             form.action = '@Url.Action("SwitchTab", "Rosra")';
             form.submit();
         }
@@ -759,6 +760,7 @@
             }
             umbrellaInput.value = 'bottom-up';
             tabInput.value = tabId;
+            if (window.RosraTabFlushers) window.RosraTabFlushers.flushAll();
             form.action = '@Url.Action("SwitchTab", "Rosra")';
             form.submit();
         }
@@ -800,6 +802,7 @@
                 }
 
                 // Submit form to switch tabs
+                if (window.RosraTabFlushers) window.RosraTabFlushers.flushAll();
                 document.getElementById('rosraForm').action = '@Url.Action("SwitchTab", "Rosra")';
                 document.getElementById('rosraForm').submit();
             });
@@ -818,6 +821,7 @@
                 document.getElementById('tabIdInput').value = tabId;
 
                 // Submit form to switch tabs
+                if (window.RosraTabFlushers) window.RosraTabFlushers.flushAll();
                 document.getElementById('rosraForm').action = '@Url.Action("SwitchTab", "Rosra")';
                 document.getElementById('rosraForm').submit();
             });
