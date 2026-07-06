@@ -59,7 +59,7 @@
   <data name="SubnationalGov" xml:space="preserve"><value>Gobierno local</value></data>
   <data name="SelectSng" xml:space="preserve"><value>Seleccione un gobierno local...</value></data>
   <data name="SelectSngForAnalysis" xml:space="preserve"><value>Seleccione un gobierno local para ver la comparación</value></data>
-  <data name="HierarchyNote" xml:space="preserve"><value>Los ejemplos son solo ilustrativos y pueden variar según el país. Complete el formulario hasta la unidad gubernamental para la cual se realiza el análisis ROSRA.</value></data>
+  <data name="HierarchyNote" xml:space="preserve"><value>Los ejemplos son solo orientativos y pueden variar según el país. Complete el formulario hasta la unidad gubernamental para la cual se realiza el análisis ROSRA.</value></data>
   <data name="Metric_OSR" xml:space="preserve"><value>Ingresos recaudados localmente (IPP)</value></data>
   <data name="Metric_GDP" xml:space="preserve"><value>Tamaño de la economía local</value></data>
   <data name="Metric_FrontierMultiplier" xml:space="preserve"><value>Tasa de recaudación de los mejores pares</value></data>

@@ -112,7 +112,7 @@ When logged in, the **My Dashboard** dropdown in the top-right provides quick ac
 The left sidebar is always visible while editing and contains essential report information:
 
 **Report Title**
-- Enter a descriptive title for your report (e.g., "Illustrative County Revenue Analysis 2025").
+- Enter a descriptive title for your report (e.g., "Demo County Revenue Analysis 2025").
 
 **Location Selection**
 - **Country** -- Select your country from the dropdown. This auto-populates economic indicators.

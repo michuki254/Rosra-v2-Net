@@ -121,7 +121,7 @@
 
   <!-- Methodology deep-dive walkthrough (renamed steps) -->
   <data name="Methodology_Title" xml:space="preserve"><value>A closer look at the diagnostic</value></data>
-  <data name="Methodology_Subtitle" xml:space="preserve"><value>A closer look at the four core diagnostic views. Each screenshot below uses an illustrative demo report.</value></data>
+  <data name="Methodology_Subtitle" xml:space="preserve"><value>A closer look at the four core diagnostic views. Each screenshot below uses a demo report.</value></data>
 
   <!-- Process flow diagram (top of methodology section) -->
   <data name="Diagram_AriaLabel" xml:space="preserve"><value>ROSRA process flow diagram: quick potential estimate, stream-specific gap analysis, prioritization, reform guidance, report output.</value></data>
@@ -150,7 +150,7 @@
   <data name="Methodology_QuickAnalysis_Body" xml:space="preserve"><value>Before diving into stream-by-stream detail, ROSRA produces a &lt;strong&gt;top-down snapshot&lt;/strong&gt;. The city fills in a one-screen Local Government Profile — country, financial year, currency, current OSR, regional GDP and population — and the WoFi estimator benchmarks the city against peer subnational governments globally. In seconds you see today's revenue, the &lt;strong&gt;estimated revenue potential&lt;/strong&gt;, the gap between them, and a frontier index that places the city on the global revenue-effort scale. It's the orientation step: it tells the reform team how much headroom they're working with before they pick which streams to dig into.</value></data>
   <data name="Methodology_Step1_Eyebrow" xml:space="preserve"><value>Step 2</value></data>
   <data name="Methodology_Step1_Title" xml:space="preserve"><value>Stream Gap Analysis</value></data>
-  <data name="Methodology_Step1_Alt" xml:space="preserve"><value>Gap Analysis dashboard showing an illustrative daily market fee matrix and revenue vs potential breakdown</value></data>
+  <data name="Methodology_Step1_Alt" xml:space="preserve"><value>Gap Analysis dashboard showing a demo daily market fee matrix and revenue vs potential breakdown</value></data>
   <data name="Methodology_Step1_Body" xml:space="preserve"><value>For each revenue stream, the city enters only the inputs in the gray-shaded cells — registered units, billed amount, outstanding amount, statutory benchmark — and ROSRA decomposes the gap between current collection and full potential into specific drivers: &lt;strong&gt;Compliance&lt;/strong&gt;, &lt;strong&gt;Coverage&lt;/strong&gt;, &lt;strong&gt;Valuation&lt;/strong&gt; or &lt;strong&gt;Liability&lt;/strong&gt;, and the mixed gaps that combine them. The matrix dashboard on the right makes it instantly visible where each shilling is slipping through. Streams that don't apply to your context can be excluded.</value></data>
   <data name="Methodology_Step2_Eyebrow" xml:space="preserve"><value>Step 3</value></data>
   <data name="Methodology_Step2_Title" xml:space="preserve"><value>Prioritization</value></data>

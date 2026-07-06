@@ -215,15 +215,15 @@ namespace RosraApp.Services
 
         public static Dictionary<string, string> GetAllTemplatePreviews(string culture = "en")
         {
-            const string illustrativeReportTitle = "ROSRA Demo Report - Illustrative County A";
+            const string demoReportTitle = "ROSRA Demo Report - Demo County A";
 
             return new Dictionary<string, string>
             {
-                [T("submitted_title", culture)] = ReportSubmitted("Reviewer", "John Doe", illustrativeReportTitle, "Kenya", "#", culture),
-                [T("claimed_title", culture)] = ReportClaimed("John Doe", illustrativeReportTitle, "Jane Smith", culture),
-                [T("validated_title", culture)] = ReportValidated("John Doe", illustrativeReportTitle, "#", culture),
-                [T("rejected_title", culture)] = ReportRejected("John Doe", illustrativeReportTitle, "The property tax data needs to be updated with 2024 figures.", "#", culture),
-                [T("unlocked_title", culture)] = ReportUnlocked("John Doe", illustrativeReportTitle, "New fiscal year data available.", culture),
+                [T("submitted_title", culture)] = ReportSubmitted("Reviewer", "John Doe", demoReportTitle, "Kenya", "#", culture),
+                [T("claimed_title", culture)] = ReportClaimed("John Doe", demoReportTitle, "Jane Smith", culture),
+                [T("validated_title", culture)] = ReportValidated("John Doe", demoReportTitle, "#", culture),
+                [T("rejected_title", culture)] = ReportRejected("John Doe", demoReportTitle, "The property tax data needs to be updated with 2024 figures.", "#", culture),
+                [T("unlocked_title", culture)] = ReportUnlocked("John Doe", demoReportTitle, "New fiscal year data available.", culture),
                 [T("welcome_title", culture)] = WelcomeEmail("John Doe", "#", culture),
                 [T("test_title", culture)] = TestEmail("Admin", culture),
             };

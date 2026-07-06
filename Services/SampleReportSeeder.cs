@@ -7,13 +7,13 @@ namespace RosraApp.Services
     public static class SampleReportSeeder
     {
         // Fixed GUIDs so demo report URLs are stable across deployments.
-        private static readonly Guid IllustrativeCountyId = Guid.Parse("a0000001-0001-0001-0001-000000000001");
-        private static readonly Guid IllustrativeCapitalId = Guid.Parse("a0000001-0001-0001-0001-000000000002");
-        private static readonly Guid IllustrativePortCityId = Guid.Parse("a0000001-0001-0001-0001-000000000003");
-        private static readonly Guid IllustrativeMetroAssemblyId = Guid.Parse("a0000001-0001-0001-0001-000000000004");
-        private static readonly Guid IllustrativeCityAdministrationId = Guid.Parse("a0000001-0001-0001-0001-000000000005");
+        private static readonly Guid DemoCountyId = Guid.Parse("a0000001-0001-0001-0001-000000000001");
+        private static readonly Guid DemoCapitalId = Guid.Parse("a0000001-0001-0001-0001-000000000002");
+        private static readonly Guid DemoPortCityId = Guid.Parse("a0000001-0001-0001-0001-000000000003");
+        private static readonly Guid DemoMetroAssemblyId = Guid.Parse("a0000001-0001-0001-0001-000000000004");
+        private static readonly Guid DemoCityAdministrationId = Guid.Parse("a0000001-0001-0001-0001-000000000005");
 
-        public static Guid[] PublicIds => new[] { IllustrativeCountyId, IllustrativeCapitalId, IllustrativePortCityId, IllustrativeMetroAssemblyId, IllustrativeCityAdministrationId };
+        public static Guid[] PublicIds => new[] { DemoCountyId, DemoCapitalId, DemoPortCityId, DemoMetroAssemblyId, DemoCityAdministrationId };
 
         public static bool IsSeededSampleReportId(Guid publicId)
             => PublicIds.Contains(publicId);
@@ -26,11 +26,11 @@ namespace RosraApp.Services
             // dev/prod DBs without a manual reset.
             var desired = new List<RosraReport>
             {
-                CreateIllustrativeCountyReport(),
-                CreateIllustrativeCapitalReport(),
-                CreateIllustrativePortCityReport(),
-                CreateIllustrativeMetroAssemblyReport(),
-                CreateIllustrativeCityAdministrationReport()
+                CreateDemoCountyReport(),
+                CreateDemoCapitalReport(),
+                CreateDemoPortCityReport(),
+                CreateDemoMetroAssemblyReport(),
+                CreateDemoCityAdministrationReport()
             };
 
             int inserted = 0, updated = 0;
@@ -95,15 +95,15 @@ namespace RosraApp.Services
             logger.LogInformation("Demo reports seed pass: {Inserted} inserted, {Updated} refreshed.", inserted, updated);
         }
 
-        private static RosraReport CreateIllustrativeCountyReport()
+        private static RosraReport CreateDemoCountyReport()
         {
             return new RosraReport
             {
-                PublicId = IllustrativeCountyId,
-                Title = "Illustrative County A — ROSRA Demo Report",
+                PublicId = DemoCountyId,
+                Title = "Demo County A — ROSRA Demo Report",
                 Country = "Kenya",
                 Region = "Anonymized Urban Region",
-                City = "Illustrative County A",
+                City = "Demo County A",
                 Currency = "KES",
                 CurrencySymbol = "KES",
                 // FY dropdown only has plain calendar years (2010-2045), so the
@@ -133,15 +133,15 @@ namespace RosraApp.Services
             };
         }
 
-        private static RosraReport CreateIllustrativeCapitalReport()
+        private static RosraReport CreateDemoCapitalReport()
         {
             return new RosraReport
             {
-                PublicId = IllustrativeCapitalId,
-                Title = "Illustrative Capital Authority — ROSRA Demo Report",
+                PublicId = DemoCapitalId,
+                Title = "Demo Capital Authority — ROSRA Demo Report",
                 Country = "Uganda",
                 Region = "Anonymized Central Region",
-                City = "Illustrative Capital Authority",
+                City = "Demo Capital Authority",
                 Currency = "UGX",
                 CurrencySymbol = "UGX",
                 FinancialYear = "2025",
@@ -166,15 +166,15 @@ namespace RosraApp.Services
             };
         }
 
-        private static RosraReport CreateIllustrativePortCityReport()
+        private static RosraReport CreateDemoPortCityReport()
         {
             return new RosraReport
             {
-                PublicId = IllustrativePortCityId,
-                Title = "Illustrative Port City — ROSRA Demo Report",
+                PublicId = DemoPortCityId,
+                Title = "Demo Port City — ROSRA Demo Report",
                 Country = "Tanzania",
                 Region = "Anonymized Coastal Region",
-                City = "Illustrative Port City",
+                City = "Demo Port City",
                 Currency = "TZS",
                 CurrencySymbol = "TZS",
                 FinancialYear = "2024",
@@ -200,15 +200,15 @@ namespace RosraApp.Services
             };
         }
 
-        private static RosraReport CreateIllustrativeMetroAssemblyReport()
+        private static RosraReport CreateDemoMetroAssemblyReport()
         {
             return new RosraReport
             {
-                PublicId = IllustrativeMetroAssemblyId,
-                Title = "Illustrative Metropolitan Assembly — ROSRA Demo Report",
+                PublicId = DemoMetroAssemblyId,
+                Title = "Demo Metropolitan Assembly — ROSRA Demo Report",
                 Country = "Ghana",
                 Region = "Anonymized Metropolitan Region",
-                City = "Illustrative Metropolitan Assembly",
+                City = "Demo Metropolitan Assembly",
                 Currency = "GHS",
                 CurrencySymbol = "GHS",
                 FinancialYear = "2024",
@@ -232,15 +232,15 @@ namespace RosraApp.Services
             };
         }
 
-        private static RosraReport CreateIllustrativeCityAdministrationReport()
+        private static RosraReport CreateDemoCityAdministrationReport()
         {
             return new RosraReport
             {
-                PublicId = IllustrativeCityAdministrationId,
-                Title = "Illustrative City Administration — ROSRA Demo Report",
+                PublicId = DemoCityAdministrationId,
+                Title = "Demo City Administration — ROSRA Demo Report",
                 Country = "Ethiopia",
                 Region = "Anonymized Highland Region",
-                City = "Illustrative City Administration",
+                City = "Demo City Administration",
                 Currency = "ETB",
                 CurrencySymbol = "ETB",
                 FinancialYear = "2025",

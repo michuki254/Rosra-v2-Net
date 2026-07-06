@@ -120,7 +120,7 @@
 
   <!-- How ROSRA Works — methodology walkthrough -->
   <data name="Methodology_Title" xml:space="preserve"><value>Cómo funciona ROSRA</value></data>
-  <data name="Methodology_Subtitle" xml:space="preserve"><value>Una mirada más detallada a las cuatro vistas principales del diagnóstico. Cada captura de pantalla a continuación usa un informe demo ilustrativo.</value></data>
+  <data name="Methodology_Subtitle" xml:space="preserve"><value>Una mirada más detallada a las cuatro vistas principales del diagnóstico. Cada captura de pantalla a continuación usa un informe demo.</value></data>
 
   <!-- Process flow diagram (top of methodology section) -->
   <data name="Diagram_AriaLabel" xml:space="preserve"><value>Diagrama del proceso ROSRA: estimación rápida del potencial, análisis de brechas por fuente, priorización, orientación para la reforma, salida del informe.</value></data>

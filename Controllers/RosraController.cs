@@ -387,10 +387,10 @@ namespace RosraApp.Controllers
             // local government identity and narrative are anonymized.
             var sampleData = new RosraFormViewModel
             {
-                Title = "Illustrative County A — ROSRA Demo Report",
+                Title = "Demo County A — ROSRA Demo Report",
                 Country = "Kenya",
                 Region = "Anonymized Urban Region",
-                City = "Illustrative County A",
+                City = "Demo County A",
                 Currency = "KES",
                 CurrencySymbol = "KSh",
                 FinancialYear = "2022",
@@ -400,7 +400,7 @@ namespace RosraApp.Controllers
                 BudgetedOsr = 2_400_000_000,
                 Population = 2_162_202,
                 GdpPerCapita = 1_850,
-                ProjectName = "Illustrative County OSR Demonstration",
+                ProjectName = "Demo County OSR Demonstration",
                 ProjectDescription = "A demo programme using fictional local-government data to show how ROSRA can improve own-source revenue mobilization across property tax, business licensing, and user charges.",
                 KeyObjectives = "1. Expand the property tax base through improved registration\n2. Improve business license compliance rates\n3. Modernize revenue collection systems\n4. Reduce revenue leakage in user charges",
                 PropertyTax = new GapAnalysisPropertyTaxViewModel
@@ -424,7 +424,7 @@ namespace RosraApp.Controllers
                     RealisticImprovementPercent = 20,
                     RevenueToDate = 364_000_000
                 },
-                ProblemStatement = "This illustrative local government faces demo revenue gaps driven by low property registration coverage, inadequate business license compliance, and outdated valuation rolls. The current OSR collection represents only 77% of the budgeted target, with property tax and business licenses showing the largest gaps.",
+                ProblemStatement = "This demo local government faces revenue gaps driven by low property registration coverage, inadequate business license compliance, and outdated valuation rolls. The current OSR collection represents only 77% of the budgeted target, with property tax and business licenses showing the largest gaps.",
                 RootCauses = new List<string>
                 {
                     "Outdated property valuation roll (last updated 2015)",

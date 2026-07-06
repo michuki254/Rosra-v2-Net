@@ -1,11 +1,11 @@
 @{
-    ViewData["Title"] = "Illustrative Demo Reports";
+    ViewData["Title"] = "Demo Reports";
     // Fixed PublicIds matching SampleReportSeeder
-    var illustrativeCountyId = "a0000001-0001-0001-0001-000000000001";
-    var illustrativeCapitalId = "a0000001-0001-0001-0001-000000000002";
-    var illustrativePortCityId = "a0000001-0001-0001-0001-000000000003";
-    var illustrativeMetroAssemblyId = "a0000001-0001-0001-0001-000000000004";
-    var illustrativeCityAdministrationId = "a0000001-0001-0001-0001-000000000005";
+    var demoCountyId = "a0000001-0001-0001-0001-000000000001";
+    var demoCapitalId = "a0000001-0001-0001-0001-000000000002";
+    var demoPortCityId = "a0000001-0001-0001-0001-000000000003";
+    var demoMetroAssemblyId = "a0000001-0001-0001-0001-000000000004";
+    var demoCityAdministrationId = "a0000001-0001-0001-0001-000000000005";
 }
 
 <style>
@@ -318,10 +318,10 @@
 
         <!-- Header -->
         <div class="sample-reports-header">
-            <h1>Illustrative Demo @SharedLocalizer["Diagnostic_ReportTitle"]s</h1>
+            <h1>Demo @SharedLocalizer["Diagnostic_ReportTitle"]s</h1>
             <p class="subtitle">Explore anonymized demo reports that walk through the full ROSRA flow — Quick OSR Estimate, Stream Gap Analysis, Prioritization, and Reform Guidance — without presenting demo data as official local-government assessments.</p>
             <div class="sample-disclaimer">
-                These reports use fictional or anonymized local-government names and illustrative figures only. They are not validated official reports and should not be cited as real city diagnostics.
+                These reports use fictional or anonymized local-government names and demo figures only. They are not validated official reports and should not be cited as real city diagnostics.
             </div>
             <div class="badge-row">
                 <span class="info-badge"><i class="bi bi-gauge-high me-1"></i>@SharedLocalizer["Process_QuickEstimate"]</span>
@@ -333,14 +333,14 @@
 
         <div class="reports-grid">
 
-        <!-- Report 1: Illustrative County A -->
+        <!-- Report 1: Demo County A -->
         <div class="report-card">
             <div class="card-body-custom">
                 <div class="city-row">
                     <div class="city-info">
                         <div class="country-flag demo-flag" aria-hidden="true">A</div>
                         <div>
-                            <div class="city-name">Illustrative County A</div>
+                            <div class="city-name">Demo County A</div>
                             <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Kenya context, anonymized local government</div>
                         </div>
                     </div>
@@ -396,19 +396,19 @@
                 </div>
             </div>
             <div class="card-footer-custom">
-                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Illustrative diagnostic + reform guidance</span>
-                <a href="@Url.Action("View", "Rosra", new { id = illustrativeCountyId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Demo Report</a>
+                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Demo diagnostic + reform guidance</span>
+                <a href="@Url.Action("View", "Rosra", new { id = demoCountyId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Demo Report</a>
             </div>
         </div>
 
-        <!-- Report 2: Illustrative Capital Authority -->
+        <!-- Report 2: Demo Capital Authority -->
         <div class="report-card">
             <div class="card-body-custom">
                 <div class="city-row">
                     <div class="city-info">
                         <div class="country-flag demo-flag" aria-hidden="true">B</div>
                         <div>
-                            <div class="city-name">Illustrative Capital Authority</div>
+                            <div class="city-name">Demo Capital Authority</div>
                             <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Uganda context, anonymized local government</div>
                         </div>
                     </div>
@@ -463,19 +463,19 @@
                 </div>
             </div>
             <div class="card-footer-custom">
-                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Illustrative diagnostic + reform guidance</span>
-                <a href="@Url.Action("View", "Rosra", new { id = illustrativeCapitalId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Demo Report</a>
+                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Demo diagnostic + reform guidance</span>
+                <a href="@Url.Action("View", "Rosra", new { id = demoCapitalId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Demo Report</a>
             </div>
         </div>
 
-        <!-- Report 3: Illustrative Port City -->
+        <!-- Report 3: Demo Port City -->
         <div class="report-card">
             <div class="card-body-custom">
                 <div class="city-row">
                     <div class="city-info">
                         <div class="country-flag demo-flag" aria-hidden="true">C</div>
                         <div>
-                            <div class="city-name">Illustrative Port City</div>
+                            <div class="city-name">Demo Port City</div>
                             <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Tanzania context, anonymized local government</div>
                         </div>
                     </div>
@@ -532,19 +532,19 @@
                 </div>
             </div>
             <div class="card-footer-custom">
-                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Illustrative diagnostic + reform guidance</span>
-                <a href="@Url.Action("View", "Rosra", new { id = illustrativePortCityId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Demo Report</a>
+                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Demo diagnostic + reform guidance</span>
+                <a href="@Url.Action("View", "Rosra", new { id = demoPortCityId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Demo Report</a>
             </div>
         </div>
 
-        <!-- Report 4: Illustrative Metropolitan Assembly -->
+        <!-- Report 4: Demo Metropolitan Assembly -->
         <div class="report-card">
             <div class="card-body-custom">
                 <div class="city-row">
                     <div class="city-info">
                         <div class="country-flag demo-flag" aria-hidden="true">D</div>
                         <div>
-                            <div class="city-name">Illustrative Metropolitan Assembly</div>
+                            <div class="city-name">Demo Metropolitan Assembly</div>
                             <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Ghana context, anonymized local government</div>
                         </div>
                     </div>
@@ -600,19 +600,19 @@
                 </div>
             </div>
             <div class="card-footer-custom">
-                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Illustrative diagnostic + reform guidance</span>
-                <a href="@Url.Action("View", "Rosra", new { id = illustrativeMetroAssemblyId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Demo Report</a>
+                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Demo diagnostic + reform guidance</span>
+                <a href="@Url.Action("View", "Rosra", new { id = demoMetroAssemblyId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Demo Report</a>
             </div>
         </div>
 
-        <!-- Report 5: Illustrative City Administration -->
+        <!-- Report 5: Demo City Administration -->
         <div class="report-card">
             <div class="card-body-custom">
                 <div class="city-row">
                     <div class="city-info">
                         <div class="country-flag demo-flag" aria-hidden="true">E</div>
                         <div>
-                            <div class="city-name">Illustrative City Administration</div>
+                            <div class="city-name">Demo City Administration</div>
                             <div class="country-name"><i class="bi bi-geo-alt me-1"></i>Ethiopia context, anonymized local government</div>
                         </div>
                     </div>
@@ -669,8 +669,8 @@
                 </div>
             </div>
             <div class="card-footer-custom">
-                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Illustrative diagnostic + reform guidance</span>
-                <a href="@Url.Action("View", "Rosra", new { id = illustrativeCityAdministrationId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Demo Report</a>
+                <span class="meta-info"><i class="bi bi-file-earmark-bar-graph me-1"></i>Demo diagnostic + reform guidance</span>
+                <a href="@Url.Action("View", "Rosra", new { id = demoCityAdministrationId })" class="btn-view-report"><i class="bi bi-eye me-1"></i>View Demo Report</a>
             </div>
         </div>
 
