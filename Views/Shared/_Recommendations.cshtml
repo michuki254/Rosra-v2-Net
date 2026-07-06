@@ -1894,7 +1894,11 @@
             try {
                 if (typeof FormStateManager !== 'undefined') FormStateManager.setData(SELECTED_KEY, list);
                 else localStorage.setItem(SELECTED_KEY, JSON.stringify(list));
-            } catch (e) { console.error('saveSelected failed', e); }
+                return true;
+            } catch (e) {
+                console.error('saveSelected failed', e);
+                return false;
+            }
         }
 
         // Run auto-select if no selection exists yet, OR if the existing selection
@@ -1918,16 +1922,16 @@
 
             if (Array.isArray(existing) && existing.length > 0) {
                 var meta = includedStreamMeta();
-                if (meta.byName.size === 0) return; // no prioritization yet — keep what we have
+                if (meta.byName.size === 0) return false; // no prioritization yet — keep what we have
                 var covered = new Set();
                 existing.forEach(function (e) { if (e && e.streamName) covered.add(e.streamName); });
                 var allCovered = true;
                 meta.byName.forEach(function (_rec, name) {
                     if (!covered.has(name)) allCovered = false;
                 });
-                if (allCovered) return;
+                if (allCovered) return false;
             }
-            saveSelected(autoSelectFromPrioritization());
+            return saveSelected(autoSelectFromPrioritization());
         }
 
         // Map<includedStreamName, Set<gapType>> of the gap types present in each
@@ -2149,9 +2153,14 @@
         }
 
         function init() {
-            ensureAutoSelected();
+            var didAutoSelect = ensureAutoSelected();
             populateStreamChips();
             restoreOrDefault();
+            if (didAutoSelect
+                && typeof RecommendationsModule !== 'undefined'
+                && typeof RecommendationsModule.refreshFromSelection === 'function') {
+                RecommendationsModule.refreshFromSelection();
+            }
 
             document.querySelectorAll('.rec-personalise-bar input[type="checkbox"]').forEach(function (input) {
                 input.addEventListener('change', handleChipChange);

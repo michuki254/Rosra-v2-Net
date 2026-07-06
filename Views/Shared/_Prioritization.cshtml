@@ -2108,6 +2108,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function notifyPrioritizationChanged(streamId) {
+        const detail = { streamId: streamId || null };
+        try {
+            window.dispatchEvent(new CustomEvent('rosra:prioritizationChanged', { detail }));
+        } catch (e) {
+            const evt = document.createEvent('CustomEvent');
+            evt.initCustomEvent('rosra:prioritizationChanged', false, false, detail);
+            window.dispatchEvent(evt);
+        }
+    }
+
     // ------------------------------------------------------------------------
     // Flusher: pushes the in-memory prioritization state into the
     // <input id="prioritizationData"> on the form so it's POSTed.
@@ -2624,8 +2635,10 @@ document.addEventListener('DOMContentLoaded', function() {
         renderFinalTable();
         updateCharts();
 
-        // Save state
+        // Save state before syncing; the downstream subscribers read it back.
         savePrioritizationState();
+        syncGapPrioritiesToStateManager(streamData);
+        notifyPrioritizationChanged(streamId);
     };
 
     // ===== Intra-row reorder of gap priorities =====
@@ -2680,6 +2693,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // recommendationsModule's PDF export (which builds the priority
         // matrix from getMasterPriorityList) reflects the user's choice.
         syncGapPrioritiesToStateManager(stream);
+        notifyPrioritizationChanged(streamId);
 
         // Re-render every view that depends on the priority order.
         // If the RosraStateManager subscriber is active, initializeGapPrioritization

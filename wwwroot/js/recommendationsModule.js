@@ -116,6 +116,7 @@
             let selectedSolutions = [];
             let progressData = {};
             let timelineFilter = 'all'; // 'all' | '<1 year' | '1-3 years' | '3+ years'
+            let priorityRefreshListenerBound = false;
 
             // Return the currently visible solutions based on the active timeline filter
             function getFilteredSolutions() {
@@ -164,6 +165,16 @@
                 if (!options.skipChipSync) syncTimelineChipFilter();
             }
 
+            function refreshFromSelection() {
+                loadSelectedSolutions();
+                renderActiveView();
+                updateSummaryStats();
+                const filters = window.RosraRecommendationChipFilters;
+                if (filters && typeof filters.apply === 'function') {
+                    filters.apply();
+                }
+            }
+
             // Initialize module
             function init() {
                 // Get initial currency from AppContext
@@ -187,10 +198,13 @@
                 // Re-filter and re-render when stream inclusion changes in Prioritization
                 if (typeof RosraStateManager !== 'undefined' && RosraStateManager.subscribe) {
                     RosraStateManager.subscribe('streams', function() {
-                        loadSelectedSolutions();
-                        renderSolutionCards();
-                        updateSummaryStats();
+                        refreshFromSelection();
                     });
+                }
+
+                if (!priorityRefreshListenerBound) {
+                    priorityRefreshListenerBound = true;
+                    window.addEventListener('rosra:prioritizationChanged', refreshFromSelection);
                 }
             }
 
@@ -4333,6 +4347,7 @@
                 exportProgress,
                 goToOverviewSelection,
                 openReportModal,
+                refreshFromSelection,
                 generateReport,
                 copyToClipboard,
                 printSolution
