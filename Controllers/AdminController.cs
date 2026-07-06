@@ -58,15 +58,21 @@ namespace RosraApp.Controllers
             }
         }
 
+        private static IQueryable<RosraReport> RealReportQuery(IQueryable<RosraReport> query)
+        {
+            var demoIds = SampleReportSeeder.PublicIds;
+            return query.Where(r => r.UserId != null && !demoIds.Contains(r.PublicId));
+        }
+
         public async Task<IActionResult> Index(int page = 1, int pageSize = 25, string? search = null)
         {
             // Get statistics
             var totalUsers = await _userManager.Users.CountAsync();
             var activeUsers = await _userManager.Users.Where(u => !u.LockoutEnabled || u.LockoutEnd == null || u.LockoutEnd < DateTimeOffset.Now).CountAsync();
-            var totalReports = await _context.RosraReports.CountAsync();
+            var totalReports = await RealReportQuery(_context.RosraReports).CountAsync();
 
             // Build query with optional search
-            IQueryable<RosraReport> query = _context.RosraReports.Include(r => r.User);
+            IQueryable<RosraReport> query = RealReportQuery(_context.RosraReports).Include(r => r.User);
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -125,7 +131,7 @@ namespace RosraApp.Controllers
         {
             var isArchiveTab = tab == "archived";
 
-            IQueryable<RosraReport> query = _context.RosraReports;
+            IQueryable<RosraReport> query = RealReportQuery(_context.RosraReports);
 
             // Filter by archive status
             if (isArchiveTab)
@@ -178,8 +184,7 @@ namespace RosraApp.Controllers
         // Admin view of deleted reports (trash)
         public async Task<IActionResult> DeletedReports(int page = 1, int pageSize = 25)
         {
-            var query = _context.RosraReports
-                .IgnoreQueryFilters()
+            var query = RealReportQuery(_context.RosraReports.IgnoreQueryFilters())
                 .Where(r => r.IsDeleted)
                 .Include(r => r.User);
 
@@ -983,13 +988,13 @@ namespace RosraApp.Controllers
             string? dateFrom = null, string? dateTo = null)
         {
             // Base query (include soft-deleted for full picture)
-            IQueryable<RosraReport> query = _context.RosraReports
-                .IgnoreQueryFilters()
+            IQueryable<RosraReport> query = RealReportQuery(_context.RosraReports.IgnoreQueryFilters())
                 .Where(r => !r.IsDeleted)
                 .Include(r => r.User);
 
             // Gather filter options from all data
-            var allReports = _context.RosraReports.IgnoreQueryFilters().Where(r => !r.IsDeleted);
+            var allReports = RealReportQuery(_context.RosraReports.IgnoreQueryFilters())
+                .Where(r => !r.IsDeleted);
             var countries = await allReports.Where(r => r.Country != null).Select(r => r.Country!).Distinct().OrderBy(c => c).ToListAsync();
             var years = await allReports.Where(r => r.FinancialYear != null).Select(r => r.FinancialYear!).Distinct().OrderByDescending(y => y).ToListAsync();
             var authorList = await allReports.Include(r => r.User)
@@ -1569,8 +1574,7 @@ namespace RosraApp.Controllers
             bool IncludeCol(string id)   => selectedCols   == null || selectedCols.Contains(id);
             bool IncludeSheet(string id) => selectedSheets == null || selectedSheets.Contains(id);
 
-            IQueryable<RosraReport> query = _context.RosraReports
-                .IgnoreQueryFilters()
+            IQueryable<RosraReport> query = RealReportQuery(_context.RosraReports.IgnoreQueryFilters())
                 .Where(r => !r.IsDeleted)
                 .Include(r => r.User);
 
@@ -2298,7 +2302,9 @@ namespace RosraApp.Controllers
         {
             try
             {
-                var reports = await _context.RosraReports.IgnoreQueryFilters().Include(r => r.User).ToListAsync();
+                var reports = await RealReportQuery(_context.RosraReports.IgnoreQueryFilters())
+                    .Include(r => r.User)
+                    .ToListAsync();
                 var auditLogs = await _context.AuditLogs.OrderByDescending(a => a.Timestamp).Take(1000).ToListAsync();
 
                 using var workbook = new XLWorkbook();
@@ -2845,7 +2851,9 @@ namespace RosraApp.Controllers
         public async Task<IActionResult> Analytics()
         {
             // Report stats
-            var allReports = await _context.RosraReports.IgnoreQueryFilters().Where(r => !r.IsDeleted).ToListAsync();
+            var allReports = await RealReportQuery(_context.RosraReports.IgnoreQueryFilters())
+                .Where(r => !r.IsDeleted)
+                .ToListAsync();
             ViewBag.TotalReports = allReports.Count;
             ViewBag.ReportsByStatus = allReports.GroupBy(r => r.Status)
                 .Select(g => new { Status = g.Key.ToString(), Count = g.Count() }).ToList();

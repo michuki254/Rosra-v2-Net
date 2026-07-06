@@ -6,14 +6,17 @@ namespace RosraApp.Services
 {
     public static class SampleReportSeeder
     {
-        // Fixed GUIDs so sample report URLs are stable
-        private static readonly Guid NairobiId = Guid.Parse("a0000001-0001-0001-0001-000000000001");
-        private static readonly Guid KampalaId = Guid.Parse("a0000001-0001-0001-0001-000000000002");
-        private static readonly Guid DarId = Guid.Parse("a0000001-0001-0001-0001-000000000003");
-        private static readonly Guid AccraId = Guid.Parse("a0000001-0001-0001-0001-000000000004");
-        private static readonly Guid AddisId = Guid.Parse("a0000001-0001-0001-0001-000000000005");
+        // Fixed GUIDs so demo report URLs are stable across deployments.
+        private static readonly Guid IllustrativeCountyId = Guid.Parse("a0000001-0001-0001-0001-000000000001");
+        private static readonly Guid IllustrativeCapitalId = Guid.Parse("a0000001-0001-0001-0001-000000000002");
+        private static readonly Guid IllustrativePortCityId = Guid.Parse("a0000001-0001-0001-0001-000000000003");
+        private static readonly Guid IllustrativeMetroAssemblyId = Guid.Parse("a0000001-0001-0001-0001-000000000004");
+        private static readonly Guid IllustrativeCityAdministrationId = Guid.Parse("a0000001-0001-0001-0001-000000000005");
 
-        public static Guid[] PublicIds => new[] { NairobiId, KampalaId, DarId, AccraId, AddisId };
+        public static Guid[] PublicIds => new[] { IllustrativeCountyId, IllustrativeCapitalId, IllustrativePortCityId, IllustrativeMetroAssemblyId, IllustrativeCityAdministrationId };
+
+        public static bool IsSeededSampleReportId(Guid publicId)
+            => PublicIds.Contains(publicId);
 
         public static async Task SeedSampleReports(ApplicationDbContext context, ILogger logger)
         {
@@ -23,11 +26,11 @@ namespace RosraApp.Services
             // dev/prod DBs without a manual reset.
             var desired = new List<RosraReport>
             {
-                CreateNairobiReport(),
-                CreateKampalaReport(),
-                CreateDarReport(),
-                CreateAccraReport(),
-                CreateAddisReport()
+                CreateIllustrativeCountyReport(),
+                CreateIllustrativeCapitalReport(),
+                CreateIllustrativePortCityReport(),
+                CreateIllustrativeMetroAssemblyReport(),
+                CreateIllustrativeCityAdministrationReport()
             };
 
             int inserted = 0, updated = 0;
@@ -61,8 +64,21 @@ namespace RosraApp.Services
                     existing.BudgetedOsr = d.BudgetedOsr;
                     existing.Population = d.Population;
                     existing.GdpPerCapita = d.GdpPerCapita;
+                    existing.UserId = null;
                     existing.Status = d.Status;
                     existing.CompletionLevel = d.CompletionLevel;
+                    existing.SubmissionVersion = 0;
+                    existing.SubmittedAt = null;
+                    existing.ValidatedAt = null;
+                    existing.ValidatedByUserId = null;
+                    existing.ReviewerUserId = null;
+                    existing.ReviewStartedAt = null;
+                    existing.RevisionReason = null;
+                    existing.IsDeleted = false;
+                    existing.DeletedAt = null;
+                    existing.DeletedByUserId = null;
+                    existing.IsArchived = false;
+                    existing.ArchivedAt = null;
                     existing.PropertyTaxData = d.PropertyTaxData;
                     existing.LicenseData = d.LicenseData;
                     existing.GenericStreamsData = d.GenericStreamsData;
@@ -76,18 +92,18 @@ namespace RosraApp.Services
             {
                 await context.SaveChangesAsync();
             }
-            logger.LogInformation("Sample reports seed pass: {Inserted} inserted, {Updated} refreshed.", inserted, updated);
+            logger.LogInformation("Demo reports seed pass: {Inserted} inserted, {Updated} refreshed.", inserted, updated);
         }
 
-        private static RosraReport CreateNairobiReport()
+        private static RosraReport CreateIllustrativeCountyReport()
         {
             return new RosraReport
             {
-                PublicId = NairobiId,
-                Title = "Nairobi City County — ROSRA Sample Analysis",
+                PublicId = IllustrativeCountyId,
+                Title = "Illustrative County A — ROSRA Demo Report",
                 Country = "Kenya",
-                Region = "Nairobi",
-                City = "Nairobi City",
+                Region = "Anonymized Urban Region",
+                City = "Illustrative County A",
                 Currency = "KES",
                 CurrencySymbol = "KES",
                 // FY dropdown only has plain calendar years (2010-2045), so the
@@ -105,7 +121,8 @@ namespace RosraApp.Services
                 // The field is auto-populated from country on a fresh analysis, so the seeded
                 // sample must match the auto-loaded value or it looks like stale data.
                 GdpPerCapita = 287500m,
-                Status = 4, // Validated
+                // Demo rows are populated but not real validated assessments.
+                Status = 0,
                 CompletionLevel = 2, // Full
                 PropertyTaxData = @"{""RegisteredProperties"":285000,""NonRegisteredProperties"":95000,""EstimatedProperties"":380000,""CompliantProperties"":198000,""TotalFiscalBase"":450000000000,""TotalMarketValue"":1200000000000,""BilledAmount"":8500000000,""OutstandingAmount"":3200000000,""RevenueToDate"":5300000000}",
                 LicenseData = @"{""RegisteredBusinesses"":145000,""EstimatedUnregisteredPercent"":25,""BilledAmount"":4200000000,""OutstandingAmount"":1800000000,""StatutoryAverageBilled"":38000,""RealisticImprovementPercent"":40,""TotalEstimatedBusinesses"":181250,""RevenueToDate"":2400000000,""CompliantUnits"":82857,""NonCompliantUnits"":62143,""UnregisteredUnits"":36250,""AvgBilledAmount"":28966,""AchievableAvgBill"":32580,""DeltaA"":3614,""ComplianceGap"":1800000000,""CoverageGap"":1049017500,""LiabilityGap"":299478198,""MixedGapCompliance"":224613718,""MixedGapCoverage"":131007500,""TotalPotentialRevenue"":5904116916,""TotalFunctionalGap"":3504116916,""ComplianceRatio"":57.14,""CoverageRatio"":80.0}",
@@ -116,15 +133,15 @@ namespace RosraApp.Services
             };
         }
 
-        private static RosraReport CreateKampalaReport()
+        private static RosraReport CreateIllustrativeCapitalReport()
         {
             return new RosraReport
             {
-                PublicId = KampalaId,
-                Title = "Kampala Capital City — ROSRA Sample Analysis",
+                PublicId = IllustrativeCapitalId,
+                Title = "Illustrative Capital Authority — ROSRA Demo Report",
                 Country = "Uganda",
-                Region = "Central",
-                City = "Kampala",
+                Region = "Anonymized Central Region",
+                City = "Illustrative Capital Authority",
                 Currency = "UGX",
                 CurrencySymbol = "UGX",
                 FinancialYear = "2025",
@@ -138,7 +155,7 @@ namespace RosraApp.Services
                 Population = 1700000,
                 // WB WDI 2024 GDP/capita LCU — Uganda: 4,072,926 UGX.
                 GdpPerCapita = 4072926m,
-                Status = 4,
+                Status = 0,
                 CompletionLevel = 2,
                 PropertyTaxData = @"{""RegisteredProperties"":120000,""NonRegisteredProperties"":80000,""EstimatedProperties"":200000,""CompliantProperties"":72000,""TotalFiscalBase"":180000000000,""TotalMarketValue"":600000000000,""BilledAmount"":95000000000,""OutstandingAmount"":42000000000,""RevenueToDate"":53000000000}",
                 LicenseData = @"{""RegisteredBusinesses"":85000,""EstimatedUnregisteredPercent"":35,""BilledAmount"":62000000000,""OutstandingAmount"":28000000000,""StatutoryAverageBilled"":900000,""RealisticImprovementPercent"":30,""TotalEstimatedBusinesses"":115000,""RevenueToDate"":34000000000,""CompliantUnits"":46613,""NonCompliantUnits"":38387,""UnregisteredUnits"":30000,""AvgBilledAmount"":729412,""AchievableAvgBill"":780589,""DeltaA"":51177,""ComplianceGap"":28000000000,""CoverageGap"":21882352941,""LiabilityGap"":2384900001,""TotalPotentialRevenue"":90267252942,""TotalFunctionalGap"":56267252942,""ComplianceRatio"":54.84,""CoverageRatio"":73.91}",
@@ -149,15 +166,15 @@ namespace RosraApp.Services
             };
         }
 
-        private static RosraReport CreateDarReport()
+        private static RosraReport CreateIllustrativePortCityReport()
         {
             return new RosraReport
             {
-                PublicId = DarId,
-                Title = "Dar es Salaam — ROSRA Sample Analysis",
+                PublicId = IllustrativePortCityId,
+                Title = "Illustrative Port City — ROSRA Demo Report",
                 Country = "Tanzania",
-                Region = "Dar es Salaam",
-                City = "Dar es Salaam",
+                Region = "Anonymized Coastal Region",
+                City = "Illustrative Port City",
                 Currency = "TZS",
                 CurrencySymbol = "TZS",
                 FinancialYear = "2024",
@@ -172,26 +189,26 @@ namespace RosraApp.Services
                 Population = 5400000,
                 // WB WDI 2024 GDP/capita LCU — Tanzania: 3,082,973 TZS.
                 GdpPerCapita = 3082973m,
-                Status = 4,
+                Status = 0,
                 CompletionLevel = 2,
                 PropertyTaxData = @"{""RegisteredProperties"":180000,""NonRegisteredProperties"":220000,""EstimatedProperties"":400000,""CompliantProperties"":90000,""TotalFiscalBase"":300000000000,""TotalMarketValue"":1500000000000,""BilledAmount"":45000000000,""OutstandingAmount"":22000000000,""RevenueToDate"":23000000000}",
                 LicenseData = @"{""RegisteredBusinesses"":95000,""EstimatedUnregisteredPercent"":40,""BilledAmount"":32000000000,""OutstandingAmount"":14000000000,""StatutoryAverageBilled"":450000,""RealisticImprovementPercent"":35,""TotalEstimatedBusinesses"":133000,""RevenueToDate"":18000000000,""CompliantUnits"":53438,""NonCompliantUnits"":41562,""UnregisteredUnits"":38000,""AvgBilledAmount"":336842,""AchievableAvgBill"":376448,""DeltaA"":39606,""ComplianceGap"":14000000000,""CoverageGap"":12800000000,""LiabilityGap"":2116836828,""TotalPotentialRevenue"":49916836828,""TotalFunctionalGap"":31916836828,""ComplianceRatio"":56.25,""CoverageRatio"":71.43}",
-                GenericStreamsData = @"[{""StreamIndex"":0,""StreamId"":""stream0"",""StreamName"":""Water Charge"",""Subgroup"":""B"",""Subtype"":""Water charge"",""LocalStreamName"":""Water Service Charge"",""RegisteredUnits"":420000,""EstimatedUnregisteredPercent"":25,""BilledAmount"":38000000000,""OutstandingAmount"":16000000000,""StatutoryAverageBilled"":120000,""RealisticImprovementPercent"":30,""TotalEstimatedUnits"":525000,""RevenueToDate"":22000000000,""CompliantUnits"":243158,""ComplianceGap"":16000000000,""CoverageGap"":9500000000,""LiabilityGap"":2400000000,""TotalPotentialRevenue"":52900000000,""TotalFunctionalGap"":30900000000,""ComplianceRatio"":57.89,""CoverageRatio"":80.0},{""StreamIndex"":1,""StreamId"":""stream1"",""StreamName"":""Bus Stand Fee"",""Subgroup"":""C"",""Subtype"":""Bus, taxi, or transport stand fee"",""LocalStreamName"":""Daladala Stand Fee"",""RegisteredUnits"":8500,""EstimatedUnregisteredPercent"":35,""BilledAmount"":5200000000,""OutstandingAmount"":2100000000,""StatutoryAverageBilled"":750000,""RealisticImprovementPercent"":25,""TotalEstimatedUnits"":11475,""RevenueToDate"":3100000000,""CompliantUnits"":5065,""ComplianceGap"":2100000000,""CoverageGap"":1820000000,""LiabilityGap"":350000000,""TotalPotentialRevenue"":7720000000,""TotalFunctionalGap"":4620000000,""ComplianceRatio"":59.62,""CoverageRatio"":74.07},{""StreamIndex"":2,""StreamId"":""stream2"",""StreamName"":""Solid Waste Fee"",""Subgroup"":""B"",""Subtype"":""Solid waste fee"",""LocalStreamName"":""Waste Collection Charge"",""RegisteredUnits"":280000,""EstimatedUnregisteredPercent"":30,""BilledAmount"":15000000000,""OutstandingAmount"":6500000000,""StatutoryAverageBilled"":65000,""RealisticImprovementPercent"":25,""TotalEstimatedUnits"":364000,""RevenueToDate"":8500000000,""CompliantUnits"":158667,""ComplianceGap"":6500000000,""CoverageGap"":4500000000,""LiabilityGap"":1200000000,""TotalPotentialRevenue"":21900000000,""TotalFunctionalGap"":13400000000,""ComplianceRatio"":56.67,""CoverageRatio"":76.92}]",
-                PrioritizationData = @"{""streams"":[{""rank"":1,""name"":""Property Tax"",""gap"":66000000000,""share"":30.0},{""rank"":2,""name"":""Business License"",""gap"":31916836828,""share"":14.5},{""rank"":3,""name"":""Water Charge"",""gap"":30900000000,""share"":14.0},{""rank"":4,""name"":""Solid Waste Fee"",""gap"":13400000000,""share"":6.1},{""rank"":5,""name"":""Bus Stand Fee"",""gap"":4620000000,""share"":2.1}]}",
-                SelectedSolutionsData = @"{""selectedSolutions"":[{""solutionId"":""PT-COM-01"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Compliance"",""gapPriority"":1,""timeline"":""1-3 years"",""title"":""Send bills people can understand""},{""solutionId"":""PT-COM-03"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Compliance"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Use reminder messages before and after due dates""},{""solutionId"":""PT-COV-01"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Coverage"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Run a quick property self-registration drive""},{""solutionId"":""PT-COV-02"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Coverage"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Cross-match with permits, utilities, and land records""},{""solutionId"":""PT-COV-04"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Coverage"",""gapPriority"":2,""timeline"":""1-3 years"",""title"":""Use imagery to spot new buildings and extensions""},{""solutionId"":""A1"",""streamName"":""Business License"",""streamRank"":2,""gapType"":""Coverage"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Easy First-Time Business Registration and Licensing"",""subgroup"":""A""},{""solutionId"":""A2"",""streamName"":""Business License"",""streamRank"":2,""gapType"":""Coverage"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Business Listing Through Data-Sharing and Street Verification"",""subgroup"":""A""},{""solutionId"":""B7"",""streamName"":""Water Charge"",""streamRank"":3,""gapType"":""Compliance"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Regular, Understandable Billing"",""subgroup"":""B""},{""solutionId"":""B9"",""streamName"":""Water Charge"",""streamRank"":3,""gapType"":""Compliance"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Reminder Calendar and Structured Arrears Follow-Up"",""subgroup"":""B""},{""solutionId"":""B1"",""streamName"":""Water Charge"",""streamRank"":3,""gapType"":""Coverage"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Customer Census and Account Clean-Up"",""subgroup"":""B""},{""solutionId"":""B10"",""streamName"":""Solid Waste Fee"",""streamRank"":4,""gapType"":""Compliance"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Receipts, Reconciliation, and Cash Controls"",""subgroup"":""B""},{""solutionId"":""C1"",""streamName"":""Bus Stand Fee"",""streamRank"":5,""gapType"":""Coverage"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Register Stalls, Bays, Tables, Routes, and Operating Points"",""subgroup"":""C""},{""solutionId"":""C6"",""streamName"":""Bus Stand Fee"",""streamRank"":5,""gapType"":""Compliance"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Numbered Receipts and Tight Collector Controls"",""subgroup"":""C""},{""solutionId"":""C8"",""streamName"":""Bus Stand Fee"",""streamRank"":5,""gapType"":""Compliance"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Shift-, Route-, and Site-Level Dashboards"",""subgroup"":""C""},{""solutionId"":""C9"",""streamName"":""Bus Stand Fee"",""streamRank"":5,""gapType"":""Compliance"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Supervisor Spot Checks, Rotation, and Exception Review"",""subgroup"":""C""}]}",
+                GenericStreamsData = @"[{""StreamIndex"":0,""StreamId"":""stream0"",""StreamName"":""Water Charge"",""Subgroup"":""B"",""Subtype"":""Water charge"",""LocalStreamName"":""Water Service Charge"",""RegisteredUnits"":420000,""EstimatedUnregisteredPercent"":25,""BilledAmount"":38000000000,""OutstandingAmount"":16000000000,""StatutoryAverageBilled"":120000,""RealisticImprovementPercent"":30,""TotalEstimatedUnits"":525000,""RevenueToDate"":22000000000,""CompliantUnits"":243158,""ComplianceGap"":16000000000,""CoverageGap"":9500000000,""LiabilityGap"":2400000000,""TotalPotentialRevenue"":52900000000,""TotalFunctionalGap"":30900000000,""ComplianceRatio"":57.89,""CoverageRatio"":80.0},{""StreamIndex"":1,""StreamId"":""stream1"",""StreamName"":""Transit Stand Fee"",""Subgroup"":""C"",""Subtype"":""Bus, taxi, or transport stand fee"",""LocalStreamName"":""Transit Stand Fee"",""RegisteredUnits"":8500,""EstimatedUnregisteredPercent"":35,""BilledAmount"":5200000000,""OutstandingAmount"":2100000000,""StatutoryAverageBilled"":750000,""RealisticImprovementPercent"":25,""TotalEstimatedUnits"":11475,""RevenueToDate"":3100000000,""CompliantUnits"":5065,""ComplianceGap"":2100000000,""CoverageGap"":1820000000,""LiabilityGap"":350000000,""TotalPotentialRevenue"":7720000000,""TotalFunctionalGap"":4620000000,""ComplianceRatio"":59.62,""CoverageRatio"":74.07},{""StreamIndex"":2,""StreamId"":""stream2"",""StreamName"":""Solid Waste Fee"",""Subgroup"":""B"",""Subtype"":""Solid waste fee"",""LocalStreamName"":""Waste Collection Charge"",""RegisteredUnits"":280000,""EstimatedUnregisteredPercent"":30,""BilledAmount"":15000000000,""OutstandingAmount"":6500000000,""StatutoryAverageBilled"":65000,""RealisticImprovementPercent"":25,""TotalEstimatedUnits"":364000,""RevenueToDate"":8500000000,""CompliantUnits"":158667,""ComplianceGap"":6500000000,""CoverageGap"":4500000000,""LiabilityGap"":1200000000,""TotalPotentialRevenue"":21900000000,""TotalFunctionalGap"":13400000000,""ComplianceRatio"":56.67,""CoverageRatio"":76.92}]",
+                PrioritizationData = @"{""streams"":[{""rank"":1,""name"":""Property Tax"",""gap"":66000000000,""share"":30.0},{""rank"":2,""name"":""Business License"",""gap"":31916836828,""share"":14.5},{""rank"":3,""name"":""Water Charge"",""gap"":30900000000,""share"":14.0},{""rank"":4,""name"":""Solid Waste Fee"",""gap"":13400000000,""share"":6.1},{""rank"":5,""name"":""Transit Stand Fee"",""gap"":4620000000,""share"":2.1}]}",
+                SelectedSolutionsData = @"{""selectedSolutions"":[{""solutionId"":""PT-COM-01"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Compliance"",""gapPriority"":1,""timeline"":""1-3 years"",""title"":""Send bills people can understand""},{""solutionId"":""PT-COM-03"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Compliance"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Use reminder messages before and after due dates""},{""solutionId"":""PT-COV-01"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Coverage"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Run a quick property self-registration drive""},{""solutionId"":""PT-COV-02"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Coverage"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Cross-match with permits, utilities, and land records""},{""solutionId"":""PT-COV-04"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Coverage"",""gapPriority"":2,""timeline"":""1-3 years"",""title"":""Use imagery to spot new buildings and extensions""},{""solutionId"":""A1"",""streamName"":""Business License"",""streamRank"":2,""gapType"":""Coverage"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Easy First-Time Business Registration and Licensing"",""subgroup"":""A""},{""solutionId"":""A2"",""streamName"":""Business License"",""streamRank"":2,""gapType"":""Coverage"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Business Listing Through Data-Sharing and Street Verification"",""subgroup"":""A""},{""solutionId"":""B7"",""streamName"":""Water Charge"",""streamRank"":3,""gapType"":""Compliance"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Regular, Understandable Billing"",""subgroup"":""B""},{""solutionId"":""B9"",""streamName"":""Water Charge"",""streamRank"":3,""gapType"":""Compliance"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Reminder Calendar and Structured Arrears Follow-Up"",""subgroup"":""B""},{""solutionId"":""B1"",""streamName"":""Water Charge"",""streamRank"":3,""gapType"":""Coverage"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Customer Census and Account Clean-Up"",""subgroup"":""B""},{""solutionId"":""B10"",""streamName"":""Solid Waste Fee"",""streamRank"":4,""gapType"":""Compliance"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Receipts, Reconciliation, and Cash Controls"",""subgroup"":""B""},{""solutionId"":""C1"",""streamName"":""Transit Stand Fee"",""streamRank"":5,""gapType"":""Coverage"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Register Stalls, Bays, Tables, Routes, and Operating Points"",""subgroup"":""C""},{""solutionId"":""C6"",""streamName"":""Transit Stand Fee"",""streamRank"":5,""gapType"":""Compliance"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Numbered Receipts and Tight Collector Controls"",""subgroup"":""C""},{""solutionId"":""C8"",""streamName"":""Transit Stand Fee"",""streamRank"":5,""gapType"":""Compliance"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Shift-, Route-, and Site-Level Dashboards"",""subgroup"":""C""},{""solutionId"":""C9"",""streamName"":""Transit Stand Fee"",""streamRank"":5,""gapType"":""Compliance"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Supervisor Spot Checks, Rotation, and Exception Review"",""subgroup"":""C""}]}",
                 CreatedAt = DateTime.UtcNow.AddDays(-20)
             };
         }
 
-        private static RosraReport CreateAccraReport()
+        private static RosraReport CreateIllustrativeMetroAssemblyReport()
         {
             return new RosraReport
             {
-                PublicId = AccraId,
-                Title = "Accra Metropolitan Assembly — ROSRA Sample Analysis",
+                PublicId = IllustrativeMetroAssemblyId,
+                Title = "Illustrative Metropolitan Assembly — ROSRA Demo Report",
                 Country = "Ghana",
-                Region = "Greater Accra",
-                City = "Accra",
+                Region = "Anonymized Metropolitan Region",
+                City = "Illustrative Metropolitan Assembly",
                 Currency = "GHS",
                 CurrencySymbol = "GHS",
                 FinancialYear = "2024",
@@ -204,7 +221,7 @@ namespace RosraApp.Services
                 Population = 2500000,
                 // WB WDI 2024 GDP/capita LCU — Ghana: 33,952 GHS.
                 GdpPerCapita = 33952m,
-                Status = 4,
+                Status = 0,
                 CompletionLevel = 2,
                 PropertyTaxData = @"{""RegisteredProperties"":95000,""NonRegisteredProperties"":105000,""EstimatedProperties"":200000,""CompliantProperties"":42000,""TotalFiscalBase"":12000000000,""TotalMarketValue"":50000000000,""BilledAmount"":38000000,""OutstandingAmount"":16000000,""RevenueToDate"":22000000}",
                 LicenseData = @"{""RegisteredBusinesses"":48000,""EstimatedUnregisteredPercent"":45,""BilledAmount"":24000000,""OutstandingAmount"":9600000,""StatutoryAverageBilled"":650,""RealisticImprovementPercent"":35,""TotalEstimatedBusinesses"":69600,""RevenueToDate"":14400000,""CompliantUnits"":28800,""NonCompliantUnits"":19200,""UnregisteredUnits"":21600,""AvgBilledAmount"":500,""AchievableAvgBill"":553,""DeltaA"":53,""ComplianceGap"":9600000,""CoverageGap"":10800000,""LiabilityGap"":1518000,""TotalPotentialRevenue"":37918000,""TotalFunctionalGap"":23518000,""ComplianceRatio"":60.0,""CoverageRatio"":68.97}",
@@ -215,15 +232,15 @@ namespace RosraApp.Services
             };
         }
 
-        private static RosraReport CreateAddisReport()
+        private static RosraReport CreateIllustrativeCityAdministrationReport()
         {
             return new RosraReport
             {
-                PublicId = AddisId,
-                Title = "Addis Ababa City Administration — ROSRA Sample Analysis",
+                PublicId = IllustrativeCityAdministrationId,
+                Title = "Illustrative City Administration — ROSRA Demo Report",
                 Country = "Ethiopia",
-                Region = "Addis Ababa",
-                City = "Addis Ababa",
+                Region = "Anonymized Highland Region",
+                City = "Illustrative City Administration",
                 Currency = "ETB",
                 CurrencySymbol = "ETB",
                 FinancialYear = "2025",
@@ -237,11 +254,11 @@ namespace RosraApp.Services
                 Population = 5500000,
                 // WB WDI 2024 GDP/capita LCU — Ethiopia: 89,237 ETB.
                 GdpPerCapita = 89237m,
-                Status = 4,
+                Status = 0,
                 CompletionLevel = 2,
                 PropertyTaxData = @"{""RegisteredProperties"":150000,""NonRegisteredProperties"":250000,""EstimatedProperties"":400000,""CompliantProperties"":75000,""TotalFiscalBase"":200000000000,""TotalMarketValue"":800000000000,""BilledAmount"":4500000000,""OutstandingAmount"":1800000000,""RevenueToDate"":2700000000}",
                 LicenseData = @"{""RegisteredBusinesses"":110000,""EstimatedUnregisteredPercent"":35,""BilledAmount"":3200000000,""OutstandingAmount"":1280000000,""StatutoryAverageBilled"":38000,""RealisticImprovementPercent"":30,""TotalEstimatedBusinesses"":148500,""RevenueToDate"":1920000000,""CompliantUnits"":66000,""NonCompliantUnits"":44000,""UnregisteredUnits"":38500,""AvgBilledAmount"":29091,""AchievableAvgBill"":31764,""DeltaA"":2673,""ComplianceGap"":1280000000,""CoverageGap"":1120000000,""LiabilityGap"":176418000,""TotalPotentialRevenue"":4736418000,""TotalFunctionalGap"":2816418000,""ComplianceRatio"":60.0,""CoverageRatio"":74.07}",
-                GenericStreamsData = @"[{""StreamIndex"":0,""StreamId"":""stream0"",""StreamName"":""Municipal Rent"",""Subgroup"":""B"",""Subtype"":""Municipal rent or lease charge"",""LocalStreamName"":""Government House Rent"",""RegisteredUnits"":18000,""EstimatedUnregisteredPercent"":20,""BilledAmount"":1800000000,""OutstandingAmount"":720000000,""StatutoryAverageBilled"":120000,""RealisticImprovementPercent"":25,""TotalEstimatedUnits"":21600,""RevenueToDate"":1080000000,""CompliantUnits"":10800,""ComplianceGap"":720000000,""CoverageGap"":360000000,""LiabilityGap"":270000000,""TotalPotentialRevenue"":2610000000,""TotalFunctionalGap"":1530000000,""ComplianceRatio"":60.0,""CoverageRatio"":83.33},{""StreamIndex"":1,""StreamId"":""stream1"",""StreamName"":""Market Fee"",""Subgroup"":""C"",""Subtype"":""Daily market fee"",""LocalStreamName"":""Gulit Market Fee"",""RegisteredUnits"":42000,""EstimatedUnregisteredPercent"":30,""BilledAmount"":2100000000,""OutstandingAmount"":840000000,""StatutoryAverageBilled"":60000,""RealisticImprovementPercent"":20,""TotalEstimatedUnits"":54600,""RevenueToDate"":1260000000,""CompliantUnits"":25200,""ComplianceGap"":840000000,""CoverageGap"":630000000,""LiabilityGap"":252000000,""TotalPotentialRevenue"":3222000000,""TotalFunctionalGap"":1962000000,""ComplianceRatio"":60.0,""CoverageRatio"":76.92},{""StreamIndex"":2,""StreamId"":""stream2"",""StreamName"":""Signage Permit"",""Subgroup"":""A"",""Subtype"":""Signage or advertising permit"",""LocalStreamName"":""Billboard Permit"",""RegisteredUnits"":3200,""EstimatedUnregisteredPercent"":40,""BilledAmount"":480000000,""OutstandingAmount"":192000000,""StatutoryAverageBilled"":180000,""RealisticImprovementPercent"":35,""TotalEstimatedUnits"":4480,""RevenueToDate"":288000000,""CompliantUnits"":1920,""ComplianceGap"":192000000,""CoverageGap"":192000000,""LiabilityGap"":57600000,""TotalPotentialRevenue"":777600000,""TotalFunctionalGap"":489600000,""ComplianceRatio"":60.0,""CoverageRatio"":71.43}]",
+                GenericStreamsData = @"[{""StreamIndex"":0,""StreamId"":""stream0"",""StreamName"":""Municipal Rent"",""Subgroup"":""B"",""Subtype"":""Municipal rent or lease charge"",""LocalStreamName"":""Municipal Rent"",""RegisteredUnits"":18000,""EstimatedUnregisteredPercent"":20,""BilledAmount"":1800000000,""OutstandingAmount"":720000000,""StatutoryAverageBilled"":120000,""RealisticImprovementPercent"":25,""TotalEstimatedUnits"":21600,""RevenueToDate"":1080000000,""CompliantUnits"":10800,""ComplianceGap"":720000000,""CoverageGap"":360000000,""LiabilityGap"":270000000,""TotalPotentialRevenue"":2610000000,""TotalFunctionalGap"":1530000000,""ComplianceRatio"":60.0,""CoverageRatio"":83.33},{""StreamIndex"":1,""StreamId"":""stream1"",""StreamName"":""Market Fee"",""Subgroup"":""C"",""Subtype"":""Daily market fee"",""LocalStreamName"":""Market Fee"",""RegisteredUnits"":42000,""EstimatedUnregisteredPercent"":30,""BilledAmount"":2100000000,""OutstandingAmount"":840000000,""StatutoryAverageBilled"":60000,""RealisticImprovementPercent"":20,""TotalEstimatedUnits"":54600,""RevenueToDate"":1260000000,""CompliantUnits"":25200,""ComplianceGap"":840000000,""CoverageGap"":630000000,""LiabilityGap"":252000000,""TotalPotentialRevenue"":3222000000,""TotalFunctionalGap"":1962000000,""ComplianceRatio"":60.0,""CoverageRatio"":76.92},{""StreamIndex"":2,""StreamId"":""stream2"",""StreamName"":""Signage Permit"",""Subgroup"":""A"",""Subtype"":""Signage or advertising permit"",""LocalStreamName"":""Signage Permit"",""RegisteredUnits"":3200,""EstimatedUnregisteredPercent"":40,""BilledAmount"":480000000,""OutstandingAmount"":192000000,""StatutoryAverageBilled"":180000,""RealisticImprovementPercent"":35,""TotalEstimatedUnits"":4480,""RevenueToDate"":288000000,""CompliantUnits"":1920,""ComplianceGap"":192000000,""CoverageGap"":192000000,""LiabilityGap"":57600000,""TotalPotentialRevenue"":777600000,""TotalFunctionalGap"":489600000,""ComplianceRatio"":60.0,""CoverageRatio"":71.43}]",
                 PrioritizationData = @"{""streams"":[{""rank"":1,""name"":""Property Tax"",""gap"":7800000000,""share"":50.3},{""rank"":2,""name"":""Business License"",""gap"":2816418000,""share"":18.2},{""rank"":3,""name"":""Market Fee"",""gap"":1962000000,""share"":12.7},{""rank"":4,""name"":""Municipal Rent"",""gap"":1530000000,""share"":9.9},{""rank"":5,""name"":""Signage Permit"",""gap"":489600000,""share"":3.2}]}",
                 SelectedSolutionsData = @"{""selectedSolutions"":[{""solutionId"":""PT-COV-01"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Coverage"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Run a quick property self-registration drive""},{""solutionId"":""PT-COV-02"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Coverage"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Cross-match with permits, utilities, and land records""},{""solutionId"":""PT-COV-04"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Coverage"",""gapPriority"":1,""timeline"":""1-3 years"",""title"":""Use imagery to spot new buildings and extensions""},{""solutionId"":""PT-COM-01"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Compliance"",""gapPriority"":2,""timeline"":""1-3 years"",""title"":""Send bills people can understand""},{""solutionId"":""PT-COM-02"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Compliance"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Make sure bills actually reach taxpayers""},{""solutionId"":""PT-COM-03"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Compliance"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Use reminder messages before and after due dates""},{""solutionId"":""PT-VAL-01"",""streamName"":""Property Tax"",""streamRank"":1,""gapType"":""Valuation"",""gapPriority"":3,""timeline"":""1-3 years"",""title"":""Start with an assessment method the city can actually keep current""},{""solutionId"":""A1"",""streamName"":""Business License"",""streamRank"":2,""gapType"":""Coverage"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Easy First-Time Business Registration and Licensing"",""subgroup"":""A""},{""solutionId"":""A2"",""streamName"":""Business License"",""streamRank"":2,""gapType"":""Coverage"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Business Listing Through Data-Sharing and Street Verification"",""subgroup"":""A""},{""solutionId"":""A8"",""streamName"":""Business License"",""streamRank"":2,""gapType"":""Compliance"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Renewal Calendar with Automatic Notices and Bills"",""subgroup"":""A""},{""solutionId"":""C1"",""streamName"":""Market Fee"",""streamRank"":3,""gapType"":""Coverage"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Register Stalls, Bays, Tables, Routes, and Operating Points"",""subgroup"":""C""},{""solutionId"":""C6"",""streamName"":""Market Fee"",""streamRank"":3,""gapType"":""Compliance"",""gapPriority"":2,""timeline"":""<1 year"",""title"":""Numbered Receipts and Tight Collector Controls"",""subgroup"":""C""},{""solutionId"":""B4"",""streamName"":""Municipal Rent"",""streamRank"":4,""gapType"":""Liability"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Tariff Application Clean-Up and Decision Rules"",""subgroup"":""B""},{""solutionId"":""A4"",""streamName"":""Signage Permit"",""streamRank"":5,""gapType"":""Liability"",""gapPriority"":1,""timeline"":""<1 year"",""title"":""Clear Activity Classification and Decision Rules"",""subgroup"":""A""}]}",
                 CreatedAt = DateTime.UtcNow.AddDays(-10)

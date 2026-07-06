@@ -80,7 +80,7 @@ The top navigation bar contains the following menus:
 | **ROSRA Logo** | Click to return to the home page |
 | **Why ROSRA** | Learn about ROSRA benefits, advantages, and how it works |
 | **How It Works** | Step-by-step overview of the ROSRA methodology |
-| **Resources** | Access sample reports, testimonials, and external resources |
+| **Resources** | Access demo reports, testimonials, and external resources |
 | **My Dashboard** | Your personal dropdown menu (visible when logged in) |
 | **Create New Report** | Quick-access button to start a new analysis (hidden on Dashboard page) |
 | **Language Switcher** | Switch between English, French, and Spanish |
@@ -112,7 +112,7 @@ When logged in, the **My Dashboard** dropdown in the top-right provides quick ac
 The left sidebar is always visible while editing and contains essential report information:
 
 **Report Title**
-- Enter a descriptive title for your report (e.g., "Nakuru County Revenue Analysis 2025").
+- Enter a descriptive title for your report (e.g., "Illustrative County Revenue Analysis 2025").
 
 **Location Selection**
 - **Country** -- Select your country from the dropdown. This auto-populates economic indicators.

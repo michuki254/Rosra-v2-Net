@@ -36,6 +36,12 @@ namespace RosraApp.Controllers
             _artifactService = artifactService;
         }
 
+        private static IQueryable<RosraReport> RealReportQuery(IQueryable<RosraReport> query)
+        {
+            var demoIds = SampleReportSeeder.PublicIds;
+            return query.Where(r => r.UserId != null && !demoIds.Contains(r.PublicId));
+        }
+
         // --- User Actions ---
 
         [HttpPost]
@@ -69,7 +75,7 @@ namespace RosraApp.Controllers
             if (user == null) return RedirectToAction("Login", "Account");
 
             // Base query: only non-draft reports
-            IQueryable<RosraReport> query = _context.RosraReports
+            IQueryable<RosraReport> query = RealReportQuery(_context.RosraReports)
                 .Where(r => r.Status != (int)ReportStatus.Draft);
 
             // Tab filtering
@@ -131,6 +137,9 @@ namespace RosraApp.Controllers
 
             if (report == null) return NotFound();
 
+            if (string.IsNullOrEmpty(report.UserId) || SampleReportSeeder.IsSeededSampleReportId(report.PublicId))
+                return Forbid();
+
             // Only show non-draft reports to reviewers
             if (report.Status == (int)ReportStatus.Draft)
                 return Forbid();
@@ -186,6 +195,9 @@ namespace RosraApp.Controllers
                 .FirstOrDefaultAsync(r => r.PublicId == id);
 
             if (report == null) return NotFound();
+
+            if (string.IsNullOrEmpty(report.UserId) || SampleReportSeeder.IsSeededSampleReportId(report.PublicId))
+                return Forbid();
 
             var formData = _snapshotService.BuildFormViewModelFromReport(report);
             return View("~/Views/Rosra/PrintFullReport.cshtml", formData);
@@ -362,7 +374,7 @@ namespace RosraApp.Controllers
         [Authorize(Roles = "Admin,Reviewer")]
         public async Task<IActionResult> Validated(int page = 1, int pageSize = 25, string? search = null)
         {
-            IQueryable<RosraReport> query = _context.RosraReports
+            IQueryable<RosraReport> query = RealReportQuery(_context.RosraReports)
                 .Where(r => r.Status == (int)ReportStatus.Validated);
 
             if (!string.IsNullOrWhiteSpace(search))

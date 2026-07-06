@@ -48,7 +48,7 @@
   <data name="Sidebar_EditReport" xml:space="preserve"><value>Edit Report</value></data>
   <data name="Sidebar_BackToDashboard" xml:space="preserve"><value>Back to Dashboard</value></data>
   <data name="Sidebar_EndOfAnalysis" xml:space="preserve"><value>End of Analysis</value></data>
-  <data name="Sidebar_LoadSampleData" xml:space="preserve"><value>Load Sample Data</value></data>
+  <data name="Sidebar_LoadSampleData" xml:space="preserve"><value>Load Demo Data</value></data>
   <data name="Sidebar_SaveAsDraft" xml:space="preserve"><value>Save as Draft</value></data>
   <data name="Sidebar_SubmitForReview" xml:space="preserve"><value>Submit for Review</value></data>
   <data name="Sidebar_Submitting" xml:space="preserve"><value>Submitting...</value></data>

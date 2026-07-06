@@ -731,10 +731,10 @@
                 }
                 else if (isSampleData)
                 {
-                    <!-- Sample Data Banner -->
+                    <!-- Demo Data Banner -->
                     <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.5rem; text-align: center;">
                         <i class="bi bi-info-circle" style="color: #d97706;"></i>
-                        <span style="font-size: 0.8rem; color: #92400e; font-weight: 500;">Sample Report — Explore the tool with demo data</span>
+                        <span style="font-size: 0.8rem; color: #92400e; font-weight: 500;">Demo report — illustrative, anonymized data only</span>
                     </div>
                     <a asp-controller="Rosra" asp-action="NewReport" class="sidebar-btn sidebar-btn-primary">
                         <i class="bi bi-plus-lg me-1"></i>
@@ -756,6 +756,10 @@
                 {
                     @if (isSampleReport)
                     {
+                        <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.5rem; text-align: center;">
+                            <i class="bi bi-info-circle" style="color: #d97706;"></i>
+                            <span style="font-size: 0.8rem; color: #92400e; font-weight: 500;">Demo report — illustrative, anonymized data only</span>
+                        </div>
                         <a asp-controller="Rosra" asp-action="NewReport" class="sidebar-btn sidebar-btn-primary">
                             <span>@RosraLocalizer["Sidebar_NewReport"]</span>
                         </a>
@@ -1376,7 +1380,7 @@
             }
 
             // Keep URL in sync with the loaded report.
-            // Skip in view mode — the View route is anonymous-accessible (needed for sample reports),
+            // Skip in view mode — the View route is anonymous-accessible (needed for demo reports),
             // whereas Edit enforces ownership and would AccessDeny on refresh.
             (function() {
                 if (isViewMode) return;

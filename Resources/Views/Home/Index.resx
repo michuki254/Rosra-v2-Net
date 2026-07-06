@@ -14,7 +14,7 @@
   <data name="Hero_Title" xml:space="preserve"><value>Rapid Own Source Revenue Analysis for Sustainable Cities</value></data>
   <data name="Hero_Subtitle" xml:space="preserve"><value>ROSRA helps local governments estimate OSR improvement potential, diagnose where revenue is being lost, prioritize reform areas and access practical reform guidance.</value></data>
   <data name="Hero_StartAnalysis" xml:space="preserve"><value>Start Analysis</value></data>
-  <data name="Hero_ViewSampleReport" xml:space="preserve"><value>View Sample Report</value></data>
+  <data name="Hero_ViewSampleReport" xml:space="preserve"><value>View Demo Reports</value></data>
   <data name="Hero_LearnMore" xml:space="preserve"><value>LEARN MORE</value></data>
 
   <!-- Diagnostic flow (high-level 4-step + final output, immediately after hero) -->
@@ -121,7 +121,7 @@
 
   <!-- Methodology deep-dive walkthrough (renamed steps) -->
   <data name="Methodology_Title" xml:space="preserve"><value>A closer look at the diagnostic</value></data>
-  <data name="Methodology_Subtitle" xml:space="preserve"><value>A closer look at the four core diagnostic views. Each screenshot below is from the Kampala (Uganda) sample report.</value></data>
+  <data name="Methodology_Subtitle" xml:space="preserve"><value>A closer look at the four core diagnostic views. Each screenshot below uses an illustrative demo report.</value></data>
 
   <!-- Process flow diagram (top of methodology section) -->
   <data name="Diagram_AriaLabel" xml:space="preserve"><value>ROSRA process flow diagram: quick potential estimate, stream-specific gap analysis, prioritization, reform guidance, report output.</value></data>
@@ -146,15 +146,15 @@
   <data name="Diagram_Phase4" xml:space="preserve"><value>Move toward action</value></data>
   <data name="Methodology_QuickAnalysis_Eyebrow" xml:space="preserve"><value>Step 1</value></data>
   <data name="Methodology_QuickAnalysis_Title" xml:space="preserve"><value>Quick Analysis — Local Government Profile</value></data>
-  <data name="Methodology_QuickAnalysis_Alt" xml:space="preserve"><value>Quick Analysis showing the Kampala Local Government Profile and a top-down WoFi estimate of own-source revenue potential vs current collection</value></data>
+  <data name="Methodology_QuickAnalysis_Alt" xml:space="preserve"><value>Quick Analysis showing an anonymized local government profile and a top-down WoFi estimate of own-source revenue potential vs current collection</value></data>
   <data name="Methodology_QuickAnalysis_Body" xml:space="preserve"><value>Before diving into stream-by-stream detail, ROSRA produces a &lt;strong&gt;top-down snapshot&lt;/strong&gt;. The city fills in a one-screen Local Government Profile — country, financial year, currency, current OSR, regional GDP and population — and the WoFi estimator benchmarks the city against peer subnational governments globally. In seconds you see today's revenue, the &lt;strong&gt;estimated revenue potential&lt;/strong&gt;, the gap between them, and a frontier index that places the city on the global revenue-effort scale. It's the orientation step: it tells the reform team how much headroom they're working with before they pick which streams to dig into.</value></data>
   <data name="Methodology_Step1_Eyebrow" xml:space="preserve"><value>Step 2</value></data>
   <data name="Methodology_Step1_Title" xml:space="preserve"><value>Stream Gap Analysis</value></data>
-  <data name="Methodology_Step1_Alt" xml:space="preserve"><value>Gap Analysis dashboard showing the Kampala Daily Market Fee matrix and revenue vs potential breakdown</value></data>
+  <data name="Methodology_Step1_Alt" xml:space="preserve"><value>Gap Analysis dashboard showing an illustrative daily market fee matrix and revenue vs potential breakdown</value></data>
   <data name="Methodology_Step1_Body" xml:space="preserve"><value>For each revenue stream, the city enters only the inputs in the gray-shaded cells — registered units, billed amount, outstanding amount, statutory benchmark — and ROSRA decomposes the gap between current collection and full potential into specific drivers: &lt;strong&gt;Compliance&lt;/strong&gt;, &lt;strong&gt;Coverage&lt;/strong&gt;, &lt;strong&gt;Valuation&lt;/strong&gt; or &lt;strong&gt;Liability&lt;/strong&gt;, and the mixed gaps that combine them. The matrix dashboard on the right makes it instantly visible where each shilling is slipping through. Streams that don't apply to your context can be excluded.</value></data>
   <data name="Methodology_Step2_Eyebrow" xml:space="preserve"><value>Step 3</value></data>
   <data name="Methodology_Step2_Title" xml:space="preserve"><value>Prioritization</value></data>
-  <data name="Methodology_Step2_Alt" xml:space="preserve"><value>Stream Prioritization table showing each Kampala revenue stream ranked by total functional gap</value></data>
+  <data name="Methodology_Step2_Alt" xml:space="preserve"><value>Stream Prioritization table showing anonymized revenue streams ranked by total functional gap</value></data>
   <data name="Methodology_Step2_Body" xml:space="preserve"><value>Streams are ranked by their Total Functional Gap and broken down per gap-type — Compliance, Coverage, Valuation/Liability, and the mixed gaps — in a single stacked bar so the city can see at a glance which reforms move the most revenue. Decision-makers can &lt;strong&gt;re-order, exclude, or remove specific gap-types&lt;/strong&gt; that aren't politically feasible. Excluded streams (like Solid Waste Fee here) are dropped from rank, share, the bar chart, and the downstream Reform Guidance — the plan respects local realities, not just the math.</value></data>
   <data name="Methodology_Step3_Eyebrow" xml:space="preserve"><value>Step 3</value></data>
   <data name="Methodology_Step3_Title" xml:space="preserve"><value>Reform Guidance</value></data>
@@ -164,5 +164,5 @@
   <data name="Methodology_Step4_Title" xml:space="preserve"><value>Recommendations</value></data>
   <data name="Methodology_Step4_Alt" xml:space="preserve"><value>Step 4 Recommendations — selected reform options organized by stream and priority</value></data>
   <data name="Methodology_Step4_Body" xml:space="preserve"><value>The selected reform options are organized by stream and priority, with each card timeline-tagged as a &lt;strong&gt;Quick Win&lt;/strong&gt; (&amp;lt;1 year), &lt;strong&gt;Medium Term&lt;/strong&gt; (1–3 years), or &lt;strong&gt;Long Term&lt;/strong&gt; (3+ years). Switch between Solution Cards, Timeline View, and Progress Tracker views — then export the results as a &lt;strong&gt;ROSRA Diagnostic Report&lt;/strong&gt; (PDF or HTML).</value></data>
-  <data name="Methodology_CTA" xml:space="preserve"><value>Explore the Sample Report</value></data>
+  <data name="Methodology_CTA" xml:space="preserve"><value>Explore Demo Reports</value></data>
 </root>

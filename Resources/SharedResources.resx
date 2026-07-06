@@ -52,7 +52,7 @@
   <data name="Nav_DataRequirements" xml:space="preserve"><value>Data Requirements</value></data>
   <data name="Nav_DataPrivacy" xml:space="preserve"><value>Data Privacy</value></data>
   <data name="Nav_Resources" xml:space="preserve"><value>Resources</value></data>
-  <data name="Nav_SampleReport" xml:space="preserve"><value>Sample Report</value></data>
+  <data name="Nav_SampleReport" xml:space="preserve"><value>Demo Reports</value></data>
   <data name="Nav_Testimonials" xml:space="preserve"><value>Testimonials</value></data>
   <data name="Nav_UnHabitatWebsite" xml:space="preserve"><value>UN-Habitat Website</value></data>
   <data name="Nav_Sdg11" xml:space="preserve"><value>SDG 11</value></data>

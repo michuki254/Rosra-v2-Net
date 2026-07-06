@@ -14,7 +14,7 @@
   <data name="Hero_Title" xml:space="preserve"><value>Analyse rapide des recettes propres pour des villes durables</value></data>
   <data name="Hero_Subtitle" xml:space="preserve"><value>ROSRA aide les gouvernements locaux à estimer le potentiel d'amélioration des RPP, à diagnostiquer les pertes de recettes, à prioriser les domaines de réforme et à accéder à une orientation pratique pour la réforme.</value></data>
   <data name="Hero_StartAnalysis" xml:space="preserve"><value>Lancer l'analyse</value></data>
-  <data name="Hero_ViewSampleReport" xml:space="preserve"><value>Voir l'exemple de rapport</value></data>
+  <data name="Hero_ViewSampleReport" xml:space="preserve"><value>Voir les rapports de démonstration</value></data>
   <data name="Hero_LearnMore" xml:space="preserve"><value>EN SAVOIR PLUS</value></data>
 
   <!-- Diagnostic flow -->
@@ -119,7 +119,7 @@
 
   <!-- How ROSRA Works — methodology walkthrough -->
   <data name="Methodology_Title" xml:space="preserve"><value>Comment fonctionne ROSRA</value></data>
-  <data name="Methodology_Subtitle" xml:space="preserve"><value>Un regard plus approfondi sur les quatre vues principales du diagnostic. Chaque capture d'écran ci-dessous provient de l'exemple de rapport de Kampala (Ouganda).</value></data>
+  <data name="Methodology_Subtitle" xml:space="preserve"><value>Un regard plus approfondi sur les quatre vues principales du diagnostic. Chaque capture d'écran ci-dessous utilise un rapport de démonstration illustratif.</value></data>
 
   <!-- Process flow diagram (top of methodology section) -->
   <data name="Diagram_AriaLabel" xml:space="preserve"><value>Diagramme du processus ROSRA : estimation rapide du potentiel, analyse des écarts par source, priorisation, orientation pour la réforme, sortie du rapport.</value></data>
@@ -144,7 +144,7 @@
   <data name="Diagram_Phase4" xml:space="preserve"><value>Passer à l'action</value></data>
   <data name="Methodology_QuickAnalysis_Eyebrow" xml:space="preserve"><value>Étape 1</value></data>
   <data name="Methodology_QuickAnalysis_Title" xml:space="preserve"><value>Analyse rapide — Profil du gouvernement local</value></data>
-  <data name="Methodology_QuickAnalysis_Alt" xml:space="preserve"><value>Analyse rapide montrant le profil du gouvernement local de Kampala et une estimation descendante WoFi du potentiel de recettes propres par rapport à la collecte actuelle</value></data>
+  <data name="Methodology_QuickAnalysis_Alt" xml:space="preserve"><value>Analyse rapide montrant un profil de gouvernement local anonymisé et une estimation descendante WoFi du potentiel de recettes propres par rapport à la collecte actuelle</value></data>
   <data name="Methodology_QuickAnalysis_Body" xml:space="preserve"><value>Avant de plonger dans le détail source par source, ROSRA produit un &lt;strong&gt;cliché descendant&lt;/strong&gt;. La ville remplit en un seul écran le profil du gouvernement local — pays, exercice budgétaire, devise, recettes propres actuelles, PIB régional et population — et l'estimateur WoFi compare la ville à ses pairs subnationaux dans le monde. En quelques secondes, vous voyez les recettes actuelles, le &lt;strong&gt;potentiel de recettes estimé&lt;/strong&gt;, l'écart entre les deux et un indice de frontière qui situe la ville sur l'échelle mondiale de l'effort de mobilisation. C'est l'étape d'orientation : elle indique à l'équipe de réforme la marge de manœuvre disponible avant de choisir les sources à approfondir.</value></data>
   <data name="Methodology_Step1_Eyebrow" xml:space="preserve"><value>Étape 2</value></data>
   <data name="Methodology_Step1_Title" xml:space="preserve"><value>Analyse des Écarts par Source</value></data>
@@ -162,5 +162,5 @@
   <data name="Methodology_Step4_Title" xml:space="preserve"><value>Recommandations</value></data>
   <data name="Methodology_Step4_Alt" xml:space="preserve"><value>Étape 4 — Recommandations : options de réforme sélectionnées organisées par source et priorité</value></data>
   <data name="Methodology_Step4_Body" xml:space="preserve"><value>Les options de réforme sélectionnées sont organisées par source et priorité, chaque fiche étant étiquetée selon son calendrier : &lt;strong&gt;Gain rapide&lt;/strong&gt; (&amp;lt;1 an), &lt;strong&gt;Moyen terme&lt;/strong&gt; (1–3 ans) ou &lt;strong&gt;Long terme&lt;/strong&gt; (3+ ans). Basculez entre les vues Fiches de solutions, Calendrier et Suivi des progrès — puis exportez les résultats sous forme de &lt;strong&gt;Rapport de diagnostic ROSRA&lt;/strong&gt; (PDF ou HTML).</value></data>
-  <data name="Methodology_CTA" xml:space="preserve"><value>Explorer l'exemple de rapport</value></data>
+  <data name="Methodology_CTA" xml:space="preserve"><value>Explorer les rapports de démonstration</value></data>
 </root>

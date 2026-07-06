@@ -382,13 +382,15 @@ namespace RosraApp.Controllers
             HttpContext.Session.Remove(VisitedTabsKey);
             HttpContext.Session.Remove(IsSampleReportKey);
 
-            // Build sample form data
+            // Build clearly-labelled demo form data. The country remains real so
+            // existing currency and benchmark lookups keep working, while the
+            // local government identity and narrative are anonymized.
             var sampleData = new RosraFormViewModel
             {
-                Title = "ROSRA Report - Kenya - Nakuru (Sample)",
+                Title = "Illustrative County A — ROSRA Demo Report",
                 Country = "Kenya",
-                Region = "Kiambu",
-                City = "Nakuru",
+                Region = "Anonymized Urban Region",
+                City = "Illustrative County A",
                 Currency = "KES",
                 CurrencySymbol = "KSh",
                 FinancialYear = "2022",
@@ -398,8 +400,8 @@ namespace RosraApp.Controllers
                 BudgetedOsr = 2_400_000_000,
                 Population = 2_162_202,
                 GdpPerCapita = 1_850,
-                ProjectName = "Nakuru County OSR Enhancement Programme",
-                ProjectDescription = "A comprehensive programme to improve own-source revenue mobilization across property tax, business licensing, and user charges in Nakuru County.",
+                ProjectName = "Illustrative County OSR Demonstration",
+                ProjectDescription = "A demo programme using fictional local-government data to show how ROSRA can improve own-source revenue mobilization across property tax, business licensing, and user charges.",
                 KeyObjectives = "1. Expand the property tax base through improved registration\n2. Improve business license compliance rates\n3. Modernize revenue collection systems\n4. Reduce revenue leakage in user charges",
                 PropertyTax = new GapAnalysisPropertyTaxViewModel
                 {
@@ -422,7 +424,7 @@ namespace RosraApp.Controllers
                     RealisticImprovementPercent = 20,
                     RevenueToDate = 364_000_000
                 },
-                ProblemStatement = "Nakuru County faces significant revenue gaps driven by low property registration coverage, inadequate business license compliance, and outdated valuation rolls. The current OSR collection represents only 77% of the budgeted target, with property tax and business licenses showing the largest gaps.",
+                ProblemStatement = "This illustrative local government faces demo revenue gaps driven by low property registration coverage, inadequate business license compliance, and outdated valuation rolls. The current OSR collection represents only 77% of the budgeted target, with property tax and business licenses showing the largest gaps.",
                 RootCauses = new List<string>
                 {
                     "Outdated property valuation roll (last updated 2015)",
@@ -431,7 +433,7 @@ namespace RosraApp.Controllers
                     "Limited taxpayer awareness and engagement",
                     "Insufficient staffing for revenue administration"
                 },
-                RecommendationSummary = "Prioritize property tax base expansion through a digital property registration drive, implement an integrated revenue management system, and strengthen enforcement mechanisms for business license compliance.",
+                RecommendationSummary = "For this demo report, prioritize property tax base expansion through a digital property registration drive, implement an integrated revenue management system, and strengthen enforcement mechanisms for business license compliance.",
                 ActionItems = new List<ActionItemViewModel>
                 {
                     new ActionItemViewModel { Description = "Launch digital property enumeration exercise in all 11 sub-counties", Priority = "high" },
@@ -442,14 +444,15 @@ namespace RosraApp.Controllers
                 }
             };
 
-            // Load sample data directly into session without saving to database
+            // Load demo data directly into session without saving to database
             // Id = 0 means it's not persisted - view mode prevents accidental saves
             SaveFormDataToSession(sampleData);
+            HttpContext.Session.SetString(IsSampleReportKey, "true");
             TempData["ClearLocalStorage"] = true;
             return RedirectToAction("Index", new { viewMode = true });
         }
 
-        // Saves the sample report the user is currently viewing as a new report
+        // Saves the demo report the user is currently viewing as a new report
         // owned by the signed-in user, then redirects them to edit their copy.
         // Triggered from the "Save as my report" CTA on the recommendations step
         // when viewMode=True and the report has no UserId (sample).
@@ -466,7 +469,7 @@ namespace RosraApp.Controllers
             var formData = GetFormDataFromSession();
             if (formData == null)
             {
-                TempData["ErrorMessage"] = "No sample data available to save. Please reopen the sample report and try again.";
+                TempData["ErrorMessage"] = "No demo data available to save. Please reopen the demo report and try again.";
                 return RedirectToAction("Index", "Dashboard");
             }
 
@@ -480,7 +483,9 @@ namespace RosraApp.Controllers
                 var source = await _context.RosraReports.AsNoTracking()
                     .FirstOrDefaultAsync(r => r.PublicId == formData.PublicId);
 
-                if (source != null && string.IsNullOrEmpty(source.UserId))
+                if (source != null
+                    && string.IsNullOrEmpty(source.UserId)
+                    && SampleReportSeeder.IsSeededSampleReportId(source.PublicId))
                 {
                     copy = CloneSampleReport(source, user.Id);
                 }
@@ -515,7 +520,7 @@ namespace RosraApp.Controllers
                 HttpContext.Session.Remove(VisitedTabsKey);
                 TempData["ClearLocalStorage"] = true;
 
-                TempData["SuccessMessage"] = "Sample report saved as your own. You can find it on your dashboard.";
+                TempData["SuccessMessage"] = "Demo report saved as your own. You can find it on your dashboard.";
                 return RedirectToAction("Index", "Dashboard");
             }
             catch (Exception ex)
@@ -1378,8 +1383,10 @@ namespace RosraApp.Controllers
                 return NotFound();
             }
 
-            // Sample reports (no UserId) are publicly viewable
-            var isSampleReport = string.IsNullOrEmpty(report.UserId);
+            // Only seeded demo reports are publicly viewable. Do not treat every
+            // ownerless row as a public sample.
+            var isSampleReport = string.IsNullOrEmpty(report.UserId)
+                && SampleReportSeeder.IsSeededSampleReportId(report.PublicId);
 
             if (!isSampleReport)
             {
