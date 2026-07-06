@@ -204,12 +204,6 @@
         display: inline-flex; align-items: center; gap: 0.35rem;
     }
     .tier-choice-card:not(.tier-choice-card--primary) .tier-choice-foot { color: #64748b; }
-    .tier-choice-badge {
-        position: absolute; top: 0.7rem; right: 0.7rem;
-        font-size: 0.64rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase;
-        color: #047857; background: #d1fae5; border-radius: 999px; padding: 0.12rem 0.5rem;
-    }
-
     /* ===== Peer local-government data modal ===== */
     .peer-modal { border: none; border-radius: 16px; overflow: hidden; box-shadow: 0 24px 60px rgba(15,23,42,.22); }
     .peer-modal-header {
@@ -1047,7 +1041,6 @@
                         <div class="tier-choice-grid">
                             <!-- YES — user has peer data -->
                             <button type="button" id="btnHavePeerData" class="tier-choice-card tier-choice-card--primary">
-                                <span class="tier-choice-badge">Recommended</span>
                                 <span class="tier-choice-icon"><i class="bi bi-clipboard-data"></i></span>
                                 <span class="tier-choice-head">
                                     <span class="tier-choice-yesno">Yes</span>
