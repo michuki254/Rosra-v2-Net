@@ -643,6 +643,17 @@
     .business-license-gap-analysis .input-group-sm .input-group-text {
         font-size: 0.8rem;
     }
+
+    .business-license-gap-analysis .matrix-cell.matrix-zero-area {
+        min-width: 0 !important;
+        border: 0 !important;
+        pointer-events: none;
+        box-shadow: none !important;
+    }
+
+    .business-license-gap-analysis .matrix-cell.matrix-zero-area > .text-center {
+        display: none;
+    }
     /* Marimekko matrix guard-rail rules (overflow/is-too-small/is-too-narrow)
        live in the parent _GapAnalysis.cshtml so they apply to all streams. */
 </style>
@@ -1411,16 +1422,24 @@
 
             // Column floor 5% — same Marimekko principle as rows.
             const minColWidth = 0.15;
-            const leftColFlex = colsEmpty ? 1 : Math.max(minColWidth, avgBilled / totalBilling);
-            const rightColFlex = colsEmpty ? 1 : Math.max(minColWidth, liabilityDiff / totalBilling);
+            const hasCurrentBillingColumn = colsEmpty || avgBilled > 0;
+            const hasLiabilityColumn = colsEmpty || liabilityDiff > 0;
+            const leftColFlex = colsEmpty ? 1 : (avgBilled > 0 ? Math.max(minColWidth, avgBilled / totalBilling) : 0);
+            const rightColFlex = colsEmpty ? 1 : (liabilityDiff > 0 ? Math.max(minColWidth, liabilityDiff / totalBilling) : 0);
+
+            function applyMatrixColumnSizing(cell, flexValue, isZeroArea) {
+                cell.style.flex = `${flexValue} 1 0%`;
+                cell.style.minWidth = isZeroArea ? '0px' : '90px';
+                cell.classList.toggle('matrix-zero-area', isZeroArea);
+            }
 
             // Apply to all row cells
             const allRows = document.querySelectorAll('#blMatrixGridArea .matrix-row');
             allRows.forEach(row => {
                 const cells = row.querySelectorAll('.matrix-cell');
                 if (cells.length >= 2) {
-                    cells[0].style.flex = leftColFlex.toString();
-                    cells[1].style.flex = rightColFlex.toString();
+                    applyMatrixColumnSizing(cells[0], leftColFlex, !hasCurrentBillingColumn);
+                    applyMatrixColumnSizing(cells[1], rightColFlex, !hasLiabilityColumn);
                 }
             });
 
@@ -1449,6 +1468,7 @@
             // === POSITION X-AXIS LABEL AT COLUMN BOUNDARY ===
             const xAxisContainer = document.getElementById('blMatrixXAxisContainer');
             const xLabelAvgBilled = document.getElementById('blXLabelAvgBilled');
+            const xLabelAchievable = document.getElementById('blXLabelAchievable');
 
             if (xAxisContainer && xLabelAvgBilled) {
                 const totalColFlex = leftColFlex + rightColFlex;
@@ -1472,6 +1492,10 @@
                     xLabelAvgBilled.style.transform = 'translateX(-50%)';
                     xLabelAvgBilled.style.textAlign = 'center';
                 }
+            }
+
+            if (xLabelAchievable) {
+                xLabelAchievable.style.visibility = hasLiabilityColumn ? 'visible' : 'hidden';
             }
 
             // === GUARD RAILS: hide cell text when the cell is too small =====
