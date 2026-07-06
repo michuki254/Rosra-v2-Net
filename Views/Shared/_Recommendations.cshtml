@@ -1530,7 +1530,7 @@
                 <div class="rec-q-chips" data-question="political">
                     <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="higher" checked><span>@Localizer["Personalise_HigherFeasibility"]</span></label>
                     <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="moderate" checked><span>@Localizer["Personalise_Moderate"]</span></label>
-                    <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="sensitive"><span>@Localizer["Personalise_LowerFeasibility"]</span></label>
+                    <label class="rec-q-chip"><input type="checkbox" name="qPolitical" value="sensitive" checked><span>@Localizer["Personalise_LowerFeasibility"]</span></label>
                 </div>
             </div>
         </div>
@@ -1784,6 +1784,7 @@
     (function () {
         'use strict';
         var STORAGE_KEY = 'rosraOverviewSelections';
+        var FILTER_STATE_VERSION = 2;
         var SELECTED_KEY = 'rosraSelectedSolutions';
 
         function timelineBucket(t) {
@@ -1967,7 +1968,11 @@
 
             // Remember which streams are currently checked so refresh keeps them on.
             var previouslyChecked = new Set();
-            host.querySelectorAll('input[name="qStream"]:checked').forEach(function (i) { previouslyChecked.add(i.value); });
+            var previousStreamNames = new Set();
+            host.querySelectorAll('input[name="qStream"]').forEach(function (i) {
+                previousStreamNames.add(i.value);
+                if (i.checked) previouslyChecked.add(i.value);
+            });
             var hadChips = host.children.length > 0;
 
             var streams = (typeof RosraStateManager.getIncludedStreams === 'function')
@@ -1987,8 +1992,8 @@
                 input.name = 'qStream';
                 input.value = name;
                 // Default: checked on first render; on refresh, preserve previous
-                // state (or default to checked if this stream is brand new).
-                input.checked = hadChips ? previouslyChecked.has(name) : true;
+                // state, but default to checked if this stream is brand new.
+                input.checked = !hadChips || !previousStreamNames.has(name) || previouslyChecked.has(name);
                 input.addEventListener('change', handleChipChange);
                 var span = document.createElement('span');
                 span.textContent = name;
@@ -1999,11 +2004,11 @@
             group.style.display = '';
         }
 
-        // Restore chip state from localStorage if present, otherwise apply smart defaults.
+        // Restore current-version chip state if present; older saved defaults are reset to all-on.
         function restoreOrDefault() {
             var saved = null;
             try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) {}
-            if (saved && Array.isArray(saved.time) && Array.isArray(saved.political) && Array.isArray(saved.focus)) {
+            if (saved && saved._recommendationFilterVersion === FILTER_STATE_VERSION && Array.isArray(saved.time) && Array.isArray(saved.political) && Array.isArray(saved.focus)) {
                 document.querySelectorAll('.rec-personalise-bar input[name="qTime"]').forEach(function (i) { i.checked = saved.time.indexOf(i.value) >= 0; });
                 document.querySelectorAll('.rec-personalise-bar input[name="qPolitical"]').forEach(function (i) { i.checked = saved.political.indexOf(i.value) >= 0; });
                 document.querySelectorAll('.rec-personalise-bar input[name="qFocus"]').forEach(function (i) { i.checked = saved.focus.indexOf(i.value) >= 0; });
@@ -2011,7 +2016,7 @@
                     document.querySelectorAll('.rec-personalise-bar input[name="qStream"]').forEach(function (i) { i.checked = saved.stream.indexOf(i.value) >= 0; });
                 }
             } else {
-                smartDefaultFocus();
+                document.querySelectorAll('.rec-personalise-bar input[type="checkbox"]').forEach(function (i) { i.checked = true; });
             }
         }
 
@@ -2059,9 +2064,13 @@
             var state = readChips();
             var cards = document.querySelectorAll('#solutionCardsContainer .solution-card');
             var visible = 0;
+            var visibleTimelineCounts = { quick: 0, medium: 0, long: 0 };
             // Stream filter only applies when chips actually exist for the group;
             // otherwise treat as "all streams" to avoid hiding everything during
             // early renders before populateStreamChips has run.
+            var hasTimeChips = document.querySelectorAll('.rec-personalise-bar input[name="qTime"]').length > 0;
+            var hasPoliticalChips = document.querySelectorAll('.rec-personalise-bar input[name="qPolitical"]').length > 0;
+            var hasFocusChips = document.querySelectorAll('.rec-personalise-bar input[name="qFocus"]').length > 0;
             var hasStreamChips = document.querySelectorAll('.rec-personalise-bar input[name="qStream"]').length > 0;
             cards.forEach(function (card) {
                 var t = timelineBucket(card.dataset.timeline);
@@ -2069,13 +2078,21 @@
                 var g = (card.dataset.gap || '').toLowerCase();
                 var st = card.dataset.stream || '';
                 var match = true;
-                if (state.time.length && state.time.indexOf(t) < 0 && t !== 'unknown') match = false;
-                if (state.political.length && state.political.indexOf(p) < 0 && p !== 'unknown') match = false;
-                if (state.focus.length && state.focus.indexOf(g) < 0) match = false;
+                if (hasTimeChips && state.time.length === 0) match = false;
+                if (hasTimeChips && state.time.length && state.time.indexOf(t) < 0 && t !== 'unknown') match = false;
+                if (hasPoliticalChips && state.political.length === 0) match = false;
+                if (hasPoliticalChips && state.political.length && state.political.indexOf(p) < 0 && p !== 'unknown') match = false;
+                if (hasFocusChips && state.focus.length === 0) match = false;
+                if (hasFocusChips && state.focus.length && state.focus.indexOf(g) < 0) match = false;
                 if (hasStreamChips && state.stream.length === 0) match = false; // user unchecked every stream → hide all
                 if (hasStreamChips && state.stream.length && st && state.stream.indexOf(st) < 0) match = false;
                 card.style.display = match ? '' : 'none';
-                if (match) visible++;
+                if (match) {
+                    visible++;
+                    if (Object.prototype.hasOwnProperty.call(visibleTimelineCounts, t)) {
+                        visibleTimelineCounts[t]++;
+                    }
+                }
             });
             // Hide empty gap-section / stream-section containers so the page doesn't show empty headers.
             // Order matters: collapse gap-sections first, then collapse stream-sections that contain
@@ -2090,6 +2107,15 @@
             var tEl = document.getElementById('recTotalCount');
             if (vEl) vEl.textContent = visible;
             if (tEl) tEl.textContent = cards.length;
+            var totalSelectedEl = document.getElementById('totalSelectedCount');
+            var quickWinsEl = document.getElementById('quickWinsCount');
+            var mediumTermEl = document.getElementById('mediumTermCount');
+            var longTermEl = document.getElementById('longTermCount');
+            if (totalSelectedEl) totalSelectedEl.textContent = visible;
+            if (quickWinsEl) quickWinsEl.textContent = visibleTimelineCounts.quick;
+            if (mediumTermEl) mediumTermEl.textContent = visibleTimelineCounts.medium;
+            if (longTermEl) longTermEl.textContent = visibleTimelineCounts.long;
+            state._recommendationFilterVersion = FILTER_STATE_VERSION;
             try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
         }
 
@@ -2115,12 +2141,9 @@
         function resetChips() {
             try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
             document.querySelectorAll('.rec-personalise-bar input[name="qTime"]').forEach(function (i) { i.checked = true; });
-            document.querySelectorAll('.rec-personalise-bar input[name="qPolitical"]').forEach(function (i) {
-                i.checked = (i.value === 'higher' || i.value === 'moderate');
-            });
+            document.querySelectorAll('.rec-personalise-bar input[name="qPolitical"]').forEach(function (i) { i.checked = true; });
             document.querySelectorAll('.rec-personalise-bar input[name="qFocus"]').forEach(function (i) { i.checked = true; });
             document.querySelectorAll('.rec-personalise-bar input[name="qStream"]').forEach(function (i) { i.checked = true; });
-            smartDefaultFocus();
             applyChipFilter();
         }
 
