@@ -55,7 +55,7 @@ tools/                  SQL scripts and data-processing helper scripts
 
 ### Configure Local Settings
 
-The application reads the database connection string from `CONNECTION_STRING` first, then from `ConnectionStrings:DefaultConnection` in `appsettings.json`.
+The application reads the database connection string from `CONNECTION_STRING` first, then `ConnectionStrings:DefaultConnection`. On Azure App Service it also accepts connection strings named `DefaultConnection` or `AZURE_SQL_CONNECTIONSTRING`.
 
 For local development, use user secrets or environment variables instead of committing secrets. The connection string is read through normal .NET configuration, while `ADMIN_SEED_PASSWORD` is read directly from the process environment:
 
@@ -86,6 +86,7 @@ Common configuration keys:
 | --- | --- |
 | `CONNECTION_STRING` | Preferred runtime database connection string override. |
 | `ConnectionStrings:DefaultConnection` | SQL Server connection string fallback. |
+| `AZURE_SQL_CONNECTIONSTRING` | Azure Service Connector/App Service connection string name also accepted by startup. |
 | `ADMIN_SEED_PASSWORD` | Enables initial `admin@rosra.com` seed user creation. |
 | `EmailSettings:*` | SMTP host, port, sender, credentials, and TLS settings. |
 | `EntraId:TenantId` | Microsoft Entra ID tenant for optional SSO. |

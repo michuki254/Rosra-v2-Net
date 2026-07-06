@@ -62,11 +62,14 @@ Preferred production setting:
 CONNECTION_STRING=<sql-server-connection-string>
 ```
 
-Fallback setting:
+Fallback settings:
 
 ```text
 ConnectionStrings:DefaultConnection=<sql-server-connection-string>
+AZURE_SQL_CONNECTIONSTRING=<sql-server-connection-string>
 ```
+
+On Azure App Service, a connection string entry named `DefaultConnection` or `AZURE_SQL_CONNECTIONSTRING` with type `SQLAzure`/`SQLServer` is also accepted. If using app settings instead of the Connection strings tab, use `CONNECTION_STRING` or `ConnectionStrings__DefaultConnection`.
 
 The application uses SQL Server with retry-on-failure enabled.
 
@@ -157,12 +160,12 @@ The code contains App Service-specific assumptions:
 
 - HTTPS redirection is only applied in development because App Service terminates TLS in front of the app.
 - `HOME` is used as the persistent root for Data Protection keys and Playwright browsers.
-- Production connection strings and secrets should be configured as App Service application settings.
+- Production connection strings and secrets should be configured as App Service environment variables or connection strings, not committed JSON files.
 
 Set at minimum:
 
 ```text
-CONNECTION_STRING
+CONNECTION_STRING or an App Service connection string named DefaultConnection/AZURE_SQL_CONNECTIONSTRING
 ADMIN_SEED_PASSWORD
 ASPNETCORE_ENVIRONMENT=Production
 ```

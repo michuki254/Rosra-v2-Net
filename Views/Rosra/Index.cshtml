@@ -1336,6 +1336,45 @@
             // Check if user is authenticated (for save functionality)
             var isAuthenticated = @Json.Serialize(User.Identity?.IsAuthenticated ?? false);
 
+            // Prevent implicit form submits from Enter in input-heavy analysis modules.
+            // The ROSRA page is one large form with hidden submit controls for legacy
+            // save/export actions. Browser-default Enter submits can hit those controls
+            // and redirect the user away from the current stream.
+            var rosraFormElement = document.getElementById('rosraForm');
+            var allowNextRosraNativeSubmit = false;
+
+            function allowNextRosraFormSubmit() {
+                allowNextRosraNativeSubmit = true;
+                setTimeout(function () { allowNextRosraNativeSubmit = false; }, 0);
+            }
+
+            if (rosraFormElement) {
+                rosraFormElement.addEventListener('keydown', function (event) {
+                    if (event.key !== 'Enter' || event.defaultPrevented) return;
+                    if (event.isComposing) return;
+
+                    var target = event.target;
+                    if (!(target instanceof HTMLElement)) return;
+                    if (!target.matches('input')) return;
+                    if (target.closest('[data-allow-enter-submit="true"]')) return;
+
+                    var inputType = (target.getAttribute('type') || 'text').toLowerCase();
+                    var nonTextEntryTypes = ['button', 'submit', 'reset', 'checkbox', 'radio', 'file', 'image', 'range', 'color', 'hidden'];
+                    if (nonTextEntryTypes.indexOf(inputType) !== -1) return;
+
+                    event.preventDefault();
+                });
+
+                rosraFormElement.addEventListener('submit', function (event) {
+                    if (allowNextRosraNativeSubmit) {
+                        allowNextRosraNativeSubmit = false;
+                        return;
+                    }
+
+                    event.preventDefault();
+                });
+            }
+
             // Keep URL in sync with the loaded report.
             // Skip in view mode — the View route is anonymous-accessible (needed for sample reports),
             // whereas Edit enforces ownership and would AccessDeny on refresh.
@@ -1715,6 +1754,7 @@
                         $('#chartImagesData').val(JSON.stringify(chartImages));
                     }
                     // Submit the form to export as PDF
+                    allowNextRosraFormSubmit();
                     $("#exportPdfSubmit").click();
                 });
 
@@ -1728,6 +1768,7 @@
                         $('#chartImagesData').val(JSON.stringify(chartImages));
                     }
                     // Submit the form to export as Excel
+                    allowNextRosraFormSubmit();
                     $("#exportExcelSubmit").click();
                 });
             } else {

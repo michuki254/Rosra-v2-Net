@@ -12,9 +12,30 @@ using RosraApp.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING")
-    ?? builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+// Production usually supplies this through App Service environment variables. Keep the
+// app-specific CONNECTION_STRING first, then accept the standard .NET/Azure connection
+// string names so Service Connector-created settings are picked up without code changes.
+var connectionString = new[]
+    {
+        Environment.GetEnvironmentVariable("CONNECTION_STRING"),
+        Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"),
+        Environment.GetEnvironmentVariable("ConnectionStrings:DefaultConnection"),
+        Environment.GetEnvironmentVariable("SQLAZURECONNSTR_DefaultConnection"),
+        Environment.GetEnvironmentVariable("SQLCONNSTR_DefaultConnection"),
+        Environment.GetEnvironmentVariable("CUSTOMCONNSTR_DefaultConnection"),
+        Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING"),
+        Environment.GetEnvironmentVariable("SQLAZURECONNSTR_AZURE_SQL_CONNECTIONSTRING"),
+        Environment.GetEnvironmentVariable("SQLCONNSTR_AZURE_SQL_CONNECTIONSTRING"),
+        Environment.GetEnvironmentVariable("CUSTOMCONNSTR_AZURE_SQL_CONNECTIONSTRING"),
+        builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING"),
+        builder.Configuration["AZURE_SQL_CONNECTIONSTRING"],
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    }
+    .FirstOrDefault(value => !string.IsNullOrWhiteSpace(value))
+    ?? throw new InvalidOperationException(
+        "Database connection string not found. Set CONNECTION_STRING, " +
+        "ConnectionStrings:DefaultConnection, or an Azure App Service connection " +
+        "string named DefaultConnection or AZURE_SQL_CONNECTIONSTRING.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions =>
         sqlOptions.EnableRetryOnFailure(
