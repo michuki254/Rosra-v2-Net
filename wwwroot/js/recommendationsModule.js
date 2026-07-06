@@ -126,20 +126,13 @@
             // Sync the active state on the summary filter cards
             function updateSummaryFilterUI() {
                 document.querySelectorAll('.recommendations-summary .summary-card').forEach(card => {
-                    card.classList.toggle('active', card.dataset.filter === timelineFilter);
+                    const isActive = card.dataset.filter === timelineFilter;
+                    card.classList.toggle('active', isActive);
+                    card.setAttribute('aria-pressed', isActive ? 'true' : 'false');
                 });
             }
 
-            // Click handler for the summary cards — toggles timeline filter
-            function filterByTimeline(timeline) {
-                if (!timeline || timeline === timelineFilter) {
-                    timelineFilter = 'all';
-                } else {
-                    timelineFilter = timeline;
-                }
-                updateSummaryFilterUI();
-
-                // Re-render whichever view is currently visible
+            function renderActiveView() {
                 const activeView = document.querySelector('.view-toggle-btn.active');
                 const viewName = activeView ? activeView.dataset.view : 'cards';
                 if (viewName === 'timeline') {
@@ -149,6 +142,26 @@
                 } else {
                     renderSolutionCards();
                 }
+            }
+
+            function syncTimelineChipFilter() {
+                const filters = window.RosraRecommendationChipFilters;
+                if (filters && typeof filters.setTimelineFilter === 'function') {
+                    filters.setTimelineFilter(timelineFilter);
+                }
+            }
+
+            // Click handler for the summary cards — toggles timeline filter
+            function filterByTimeline(timeline, options) {
+                options = options || {};
+                if (!timeline || timeline === timelineFilter) {
+                    timelineFilter = 'all';
+                } else {
+                    timelineFilter = timeline;
+                }
+                updateSummaryFilterUI();
+                renderActiveView();
+                if (!options.skipChipSync) syncTimelineChipFilter();
             }
 
             // Initialize module
