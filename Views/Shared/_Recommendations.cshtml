@@ -1799,9 +1799,10 @@
         function politicalBucket(p) {
             if (!p) return 'unknown';
             var s = String(p).toLowerCase();
-            if (s.indexOf('more sensitive') >= 0 || s.indexOf('sensitive') >= 0) return 'sensitive';
-            if (s.indexOf('moderate') >= 0) return 'moderate';
-            if (s.indexOf('usually higher') >= 0 || s.indexOf('higher') >= 0 || s.indexOf('low political') >= 0) return 'higher';
+            var n = s.replace(/[–—]/g, '-');
+            if (n === 'high' || n.indexOf('medium-high') >= 0 || n.indexOf('more sensitive') >= 0 || n.indexOf('sensitive') >= 0) return 'sensitive';
+            if (n === 'medium' || n.indexOf('low-medium') >= 0 || n.indexOf('moderate') >= 0) return 'moderate';
+            if (n === 'low' || n.indexOf('usually higher') >= 0 || n.indexOf('higher') >= 0 || n.indexOf('low political') >= 0) return 'higher';
             return 'unknown';
         }
 

@@ -1,1524 +1,1408 @@
 /**
  * ROSRA Solutions Data - Property Tax Coverage
- * 13 cards: PT-COV-01 through PT-COV-13
+ * Generated from approved solution-card DOCX files.
  */
 (function(window) {
     'use strict';
 
     window.SolutionsDataPTCoverage = [
-
-        // =====================================================================
-        // A. Find missing properties quickly
-        // =====================================================================
-
-        {
-            solutionId: 'PT-COV-01',
-            stream: 'Property Tax',
-            streamType: 'property-based',
-            subgroup: null,
-            gap: 'Coverage',
-            title: 'Run a quick property self-registration drive',
-            shortTitle: 'Self-registration drive',
-            timeline: '<1 year',
-            deliveryDifficulty: 'Low-Medium',
-            politicalSensitivity: 'Low',
-            category: 'Registration',
-            sortOrder: 1,
-            isActive: true,
-            overview: {
-                mainPurpose: 'Bring willing but currently unrecorded properties into the system quickly, while also refreshing stale contact information for properties that are already on the roll.',
-                bestStartingPoint: 'A city that knows the roll is incomplete but needs an affordable, visible first step before larger fieldwork or digital reforms.',
-                firstVisibleResult: 'A first wave of new records and corrected contact details within one billing cycle.',
-                leadershipDecision: 'Approve one short registration form, a clear message that the exercise is for tax administration rather than titling, and one team to own intake and verification.',
-                likelyLeadOwner: 'Revenue administration, supported by ward offices, front-office staff, and communications.',
-                whatThisOptionDoes: 'This is often the lightest way to open the coverage problem. It does not solve every data weakness, but it gives the city a practical way to collect the minimum facts needed to create or refresh records. It also helps signal that the city is trying to widen the register in an orderly and understandable way rather than only pursuing arrears from those already inside the system.',
-                mostUsefulWhen: [
-                    'The city already suspects that many properties are missing or that contact details are out of date.',
-                    'Ward offices, local counters, or a hotline can support taxpayers who need help completing a simple form.',
-                    'Leadership wants an early move that shows momentum without waiting for a large procurement or citywide survey.'
-                ],
-                usuallyNotBestFirstMove: [],
-                whatFullCardWouldPlan: 'A time-limited registration campaign with clear channels, a short form, a verification workflow, and a plan for folding the process into normal operations once the campaign ends.',
-                oftenWorksBestAlongside: [
-                    'PT-COV-11 on fixing simple record errors.',
-                    'PT-COV-02 on cross-matching external data.',
-                    'PT-COV-03 in areas where self-registration alone will miss too many properties.'
-                ],
-                politicalNote: 'The political risk is usually low to moderate, but the city still needs to show that new records will be handled fairly and that residents are not being drawn into a process they do not understand.'
-            },
-            fullDetails: {
-                whyThisMatters: 'This is often the lightest way to open the coverage problem. It does not solve every data weakness, but it gives the city a practical way to collect the minimum facts needed to create or refresh records. It also helps signal that the city is trying to widen the register in an orderly and understandable way rather than only pursuing arrears from those already inside the system.',
-                whenStrongFit: [
-                    'The city already suspects that many properties are missing or that contact details are out of date.',
-                    'Ward offices, local counters, or a hotline can support taxpayers who need help completing a simple form.',
-                    'Leadership wants an early move that shows momentum without waiting for a large procurement or citywide survey.'
-                ],
-                whatToLineUpFirst: [
-                    'Keep the first version of the form short. Ask only for the facts that the city is ready to store, verify, and use.',
-                    'Decide who checks forms for duplicates, who approves new records, and how incomplete submissions will be followed up.',
-                    'If trust is weak, pair the registration drive with basic outreach and visible help points rather than relying only on self-service channels.'
-                ],
-                designChoices: [
-                    'Choose the submission mix carefully: paper at ward counters, assisted digital entry, online forms, USSD or SMS, or some combination.',
-                    'Decide the minimum evidence required. For an early registration drive, the city often needs light verification rather than a document-heavy process.',
-                    'Choose whether to run the drive citywide or first in wards where growth, poor records, or delivery problems are most visible.'
-                ],
-                practicalPath: {
-                    first90Days: [
-                        'Draft and test the short form, instructions, and privacy notice.',
-                        'Choose the channels and train front-office or ward staff to explain the form consistently.',
-                        'Pilot in one or two areas first so the city can see what fields cause confusion and where duplicate records are most likely.'
-                    ],
-                    sixTo12Months: [
-                        'Run the campaign for a defined period and monitor submissions daily or weekly.',
-                        'Verify records quickly enough that residents see a real outcome rather than a backlog.',
-                        'Use the first results to identify where self-registration works well and where fieldwork or data matching is still needed.'
-                    ],
-                    twelveToTwentyFourMonths: [
-                        'Fold the form and its workflow into normal administration so the city can keep accepting new or corrected information.',
-                        'Simplify or adjust the form based on the first campaign rather than freezing a poor design.',
-                        'Use what the city learned to inform more targeted coverage work in harder areas.'
-                    ]
-                },
-                legalInstitutional: [
-                    'The city usually needs a clear legal basis to request property information for tax purposes and to explain how the information will be used.',
-                    'The messaging should clearly separate tax registration from land titling or proof of ownership so the process does not create legal confusion.'
-                ],
-                capacitySystemsPartnerships: [
-                    'A small verification team is critical; otherwise a registration drive simply creates a pile of unprocessed forms.',
-                    'Basic duplicate checking, even in a spreadsheet-based system, matters from the start.',
-                    'Communications and front-office staff need the same script so taxpayers hear one message.'
-                ],
-                risksAndSafeguards: [
-                    'If the form asks for too much, the city will discourage participation and create a backlog.',
-                    'If the city cannot process submissions quickly, public trust will fall and field staff will be blamed for a problem that is really administrative.',
-                    'If the campaign sounds like a land-rights exercise, the city may trigger unnecessary fear or unrealistic expectations.'
-                ],
-                whatToMonitor: [
-                    'Number of submissions received.',
-                    'Share of submissions verified and either added or used to update an existing record.',
-                    'Number of genuinely new properties added to the roll.',
-                    'Number of contact details corrected and ready for later billing or notices.'
-                ],
-                connectionsToOtherCards: [
-                    'This card usually works best alongside PT-COV-11 on fixing simple record errors.',
-                    'PT-COV-02 on cross-matching external data can identify properties that did not self-register.',
-                    'PT-COV-03 in areas where self-registration alone will miss too many properties.'
-                ],
-                questionsBeforeLaunch: [
-                    'Which channels will actually reach missing owners or occupiers in your city?',
-                    'What is the minimum information you truly need before opening a record?',
-                    'Who will verify submissions, and how quickly can that team act?',
-                    'How will the city explain that this is a tax-registration exercise rather than a titling exercise?'
-                ]
-            }
+    {
+        "solutionId": "PT-COV-01",
+        "stream": "Property Tax",
+        "streamType": "property-based",
+        "subgroup": null,
+        "gap": "Coverage",
+        "title": "Run a quick property self-registration drive",
+        "shortTitle": "Self-registration drive",
+        "timeline": "< 1 year",
+        "deliveryDifficulty": "Low–Medium",
+        "politicalSensitivity": "Low",
+        "category": "Registration",
+        "sortOrder": 1,
+        "isActive": true,
+        "overview": {
+            "whatThisOptionDoes": "Use a short, plain-language form and simple submission channels to capture the minimum facts needed to create or refresh property records. It is a practical first move when the city knows many properties are missing but cannot yet fund a full survey.",
+            "mostUsefulWhen": [
+                "The property list is clearly incomplete or contact details are outdated.",
+                "The city needs a visible, low-cost early move before heavier fieldwork or system reform.",
+                "Ward offices, counters, or a hotline can help residents submit and correct basic information."
+            ],
+            "whatUsuallyNeedsToBeInPlaceFirst": [
+                "Basic authority to request property information for tax purposes, with a simple privacy notice.",
+                "A workflow to check submissions, avoid duplicates, and create or update records quickly."
+            ],
+            "usuallyNotBestFirstMove": [
+                "Do not present this as land titling or proof of ownership.",
+                "It will underperform where trust is very low unless paired with outreach or in-person support."
+            ],
+            "politicalNote": "The political risk is usually low to moderate, but the city still needs to show that new records will be handled fairly and that residents are not being drawn into a process they do not understand.",
+            "whatFullCardWouldPlan": "The full card would help the city plan the registration form, the submission channels, the verification workflow, the communications approach, and the way new records would be checked before entering the roll.",
+            "oftenWorksBestAlongside": [
+                "Fix basic record errors quickly",
+                "Use a one-off registration amnesty carefully",
+                "Carry out a targeted street and neighbourhood sweep."
+            ]
         },
-
-        {
-            solutionId: 'PT-COV-02',
-            stream: 'Property Tax',
-            streamType: 'property-based',
-            subgroup: null,
-            gap: 'Coverage',
-            title: 'Cross-match with permits, utilities, and land records',
-            shortTitle: 'Cross-match external data',
-            timeline: '<1 year',
-            deliveryDifficulty: 'Medium',
-            politicalSensitivity: 'Low-Medium',
-            category: 'Data Matching',
-            sortOrder: 2,
-            isActive: true,
-            overview: {
-                mainPurpose: 'Use existing data that other agencies already hold to identify properties or contacts that the tax roll is missing.',
-                bestStartingPoint: 'A city where building permits, utility connections, land registry records, or business licences exist in usable form but have never been systematically compared with the property tax roll.',
-                firstVisibleResult: 'A list of candidate properties that appear in at least one external source but not on the tax roll, ready for verification and follow-up.',
-                leadershipDecision: 'Authorise data-sharing requests to the relevant agencies, assign one team to run the matching exercise, and agree on the workflow for converting confirmed matches into new tax records.',
-                likelyLeadOwner: 'Revenue administration or IT unit, with cooperation from planning, utilities, and land registry.',
-                whatThisOptionDoes: 'Cross-matching is one of the most cost-effective ways to find missing properties because it uses information that already exists. Rather than sending teams into the field or waiting for owners to come forward, the city compares its own roll against records that other agencies maintain for their own purposes. Every permit issued, every new water or electricity connection, and every land transfer is a signal that a taxable property may exist.',
-                mostUsefulWhen: [
-                    'Other agencies hold reasonably structured digital or paper records that can be extracted or reviewed.',
-                    'The city suspects that many properties with permits or utility connections are not on the tax roll.',
-                    'The city wants a desk-based first step before committing to fieldwork.'
+        "fullDetails": {
+            "whyThisMatters": "This is often the lightest way to open the coverage problem. It does not solve every data weakness, but it gives the city a practical way to collect the minimum facts needed to create or refresh records. It also helps signal that the city is trying to widen the register in an orderly and understandable way rather than only pursuing arrears from those already inside the system.",
+            "mainPurpose": "Bring willing but currently unrecorded properties into the system quickly, while also refreshing stale contact information for properties that are already on the roll.",
+            "bestStartingPoint": "A city that knows the roll is incomplete but needs an affordable, visible first step before larger fieldwork or digital reforms.",
+            "firstVisibleResult": "A first wave of new records and corrected contact details within one billing cycle.",
+            "leadershipDecision": "Approve one short registration form, a clear message that the exercise is for tax administration rather than titling, and one team to own intake and verification.",
+            "likelyLeadOwner": "Revenue administration, supported by ward offices, front-office staff, and communications.",
+            "whenStrongFit": [
+                "The city already suspects that many properties are missing or that contact details are out of date.",
+                "Ward offices, local counters, or a hotline can support taxpayers who need help completing a simple form.",
+                "Leadership wants an early move that shows momentum without waiting for a large procurement or citywide survey."
+            ],
+            "whatToLineUpFirst": [
+                "Keep the first version of the form short. Ask only for the facts that the city is ready to store, verify, and use.",
+                "Decide who checks forms for duplicates, who approves new records, and how incomplete submissions will be followed up.",
+                "If trust is weak, pair the registration drive with basic outreach and visible help points rather than relying only on self-service channels."
+            ],
+            "designChoices": [
+                "Choose the submission mix carefully: paper at ward counters, assisted digital entry, online forms, USSD or SMS, or some combination.",
+                "Decide the minimum evidence required. For an early registration drive, the city often needs light verification rather than a document-heavy process.",
+                "Choose whether to run the drive citywide or first in wards where growth, poor records, or delivery problems are most visible."
+            ],
+            "practicalPath": {
+                "first90Days": [
+                    "Draft and test the short form, instructions, and privacy notice.",
+                    "Choose the channels and train front-office or ward staff to explain the form consistently.",
+                    "Pilot in one or two areas first so the city can see what fields cause confusion and where duplicate records are most likely."
                 ],
-                usuallyNotBestFirstMove: [
-                    'The external data sources are known to be very poor quality or completely inaccessible.',
-                    'There is no staff capacity to follow up on matches and convert them into verified records.'
+                "sixTo12Months": [
+                    "Run the campaign for a defined period and monitor submissions daily or weekly.",
+                    "Verify records quickly enough that residents see a real outcome rather than a backlog.",
+                    "Use the first results to identify where self-registration works well and where fieldwork or data matching is still needed."
                 ],
-                whatFullCardWouldPlan: 'A structured matching exercise covering the most promising data sources, a verification workflow for candidate properties, and an agreement to repeat the exercise periodically.',
-                oftenWorksBestAlongside: [
-                    'PT-COV-01 on self-registration, which catches willing owners that data matching may miss.',
-                    'PT-COV-03 on targeted sweeps, which can verify matches and cover areas where external data is thin.',
-                    'PT-COV-08 on linking the roll to permits, sales, and new service connections for ongoing maintenance.'
-                ],
-                politicalNote: 'Cross-matching is generally low sensitivity because it uses information agencies already hold. However, the city should be transparent about how the data will be used and ensure that data-sharing arrangements respect privacy rules.'
-            },
-            fullDetails: {
-                whyThisMatters: 'Cross-matching is one of the most cost-effective ways to find missing properties because it uses information that already exists. Rather than sending teams into the field or waiting for owners to come forward, the city compares its own roll against records that other agencies maintain for their own purposes. Every permit issued, every new water or electricity connection, and every land transfer is a signal that a taxable property may exist. If those signals are never checked against the tax roll, the coverage gap quietly grows.',
-                whenStrongFit: [
-                    'Other agencies hold reasonably structured digital or paper records that can be extracted or reviewed.',
-                    'The city suspects that many properties with permits or utility connections are not on the tax roll.',
-                    'The city wants a desk-based first step before committing to fieldwork.',
-                    'Leadership is willing to request data from sister agencies or utilities.'
-                ],
-                whatToLineUpFirst: [
-                    'Identify the two or three most promising data sources based on coverage, quality, and accessibility.',
-                    'Negotiate data-sharing agreements or formal requests with the relevant agencies.',
-                    'Decide on the matching methodology: address-based, name-based, location-based, or a combination.',
-                    'Assign a small team with the skills to clean, align, and compare datasets.'
-                ],
-                designChoices: [
-                    'Start with the highest-quality, most accessible data source rather than trying to match everything at once.',
-                    'Decide on the matching threshold: how close does a match need to be before the city follows up?',
-                    'Choose whether to run a one-off exercise or set up a repeatable process from the start.',
-                    'Decide how to handle partial matches that need field verification.'
-                ],
-                practicalPath: {
-                    first90Days: [
-                        'Map available data sources and assess their quality, format, and accessibility.',
-                        'Negotiate access to the two or three most promising datasets.',
-                        'Clean and standardise the data enough to run an initial comparison.',
-                        'Run a pilot match in one area to test the methodology and estimate the yield.'
-                    ],
-                    sixTo12Months: [
-                        'Extend the matching exercise to the full jurisdiction.',
-                        'Verify candidate properties through desk checks or targeted field visits.',
-                        'Convert confirmed matches into new tax records with proper documentation.',
-                        'Document the process so it can be repeated without rebuilding from scratch.'
-                    ],
-                    twelveToTwentyFourMonths: [
-                        'Schedule regular repeat exercises, ideally quarterly or when new data extracts become available.',
-                        'Use the results to identify which data sources are most productive and which areas have the largest gaps.',
-                        'Feed insights into the design of more permanent data-sharing links under PT-COV-08.'
-                    ]
-                },
-                legalInstitutional: [
-                    'The city needs legal authority to request and use data from other agencies for tax purposes.',
-                    'Data-sharing agreements should specify what data is shared, how it is used, and how long it is retained.',
-                    'Privacy protections must be respected, especially when combining datasets from different sources.'
-                ],
-                capacitySystemsPartnerships: [
-                    'A small data team with basic spreadsheet or database skills can run an initial exercise.',
-                    'Relationships with counterparts in the data-holding agencies are essential for timely access.',
-                    'If the city plans to automate matching, it will need IT support for data pipelines and exception handling.'
-                ],
-                risksAndSafeguards: [
-                    'If the external data is poor quality, the matching exercise will produce many false positives and waste follow-up effort.',
-                    'If the city cannot follow up on matches quickly, the exercise will look like wasted effort.',
-                    'If data-sharing is informal rather than structured, it may break down when key contacts move on.'
-                ],
-                whatToMonitor: [
-                    'Number of candidate matches identified from each data source.',
-                    'Share of candidates verified and converted into new tax records.',
-                    'Time from match identification to record creation.',
-                    'Revenue generated from newly registered properties found through matching.'
-                ],
-                connectionsToOtherCards: [
-                    'PT-COV-01 on self-registration catches owners who come forward voluntarily.',
-                    'PT-COV-03 on targeted sweeps can verify matches and fill gaps in areas where external data is thin.',
-                    'PT-COV-08 on linking the roll to permits and connections builds on this exercise by making it continuous.',
-                    'PT-COV-11 on fixing record errors is often needed to clean existing data before matching can work well.'
-                ],
-                questionsBeforeLaunch: [
-                    'Which agencies hold the most useful data, and are they willing to share it?',
-                    'What format is the data in, and how much cleaning will it need before matching?',
-                    'Who will run the matching exercise, and do they have the skills to work with messy data?',
-                    'How will the city follow up on matches and convert them into verified records?'
+                "twelveToTwentyFourMonths": [
+                    "Fold the form and its workflow into normal administration so the city can keep accepting new or corrected information.",
+                    "Simplify or adjust the form based on the first campaign rather than freezing a poor design.",
+                    "Use what the city learned to inform more targeted coverage work in harder areas."
                 ]
-            }
-        },
-
-        {
-            solutionId: 'PT-COV-03',
-            stream: 'Property Tax',
-            streamType: 'property-based',
-            subgroup: null,
-            gap: 'Coverage',
-            title: 'Carry out a targeted street and neighbourhood sweep',
-            shortTitle: 'Targeted street sweep',
-            timeline: '1-2 years',
-            deliveryDifficulty: 'Medium',
-            politicalSensitivity: 'Medium',
-            category: 'Fieldwork',
-            sortOrder: 3,
-            isActive: true,
-            overview: {
-                mainPurpose: 'Send field teams into selected areas to identify properties that are missing from the tax roll and collect the minimum information needed to create new records.',
-                bestStartingPoint: 'A city that has already tried desk-based approaches such as self-registration or data matching and knows that certain neighbourhoods still have large gaps that only physical inspection can close.',
-                firstVisibleResult: 'A verified list of previously unregistered properties in the target area, with enough data to add them to the roll and issue initial bills.',
-                leadershipDecision: 'Select the target areas, approve the fieldwork budget and timeline, assign a team lead, and agree on the minimum data to collect per property.',
-                likelyLeadOwner: 'Revenue administration or valuation unit, supported by ward leaders and field supervisors.',
-                whatThisOptionDoes: 'A targeted sweep puts eyes on the ground in areas where desk-based methods are not enough. It is more expensive than data matching or self-registration, but it catches properties that no existing database records and that no owner has volunteered. The key is to target the sweep rather than trying to cover the whole city at once, focusing on areas where growth has been fastest, where records are weakest, or where revenue leakage is most visible.',
-                mostUsefulWhen: [
-                    'The city knows which areas have the largest coverage gaps based on earlier analysis or local knowledge.',
-                    'Desk-based methods have been tried and still leave significant gaps.',
-                    'Field teams can be mobilised and supervised effectively.',
-                    'The city wants to combine coverage work with basic data collection for valuation or addressing.'
-                ],
-                usuallyNotBestFirstMove: [
-                    'The city has not yet tried cheaper desk-based methods that might close part of the gap first.',
-                    'There is no capacity to supervise field teams or process the data they collect.'
-                ],
-                whatFullCardWouldPlan: 'A phased fieldwork programme covering priority areas first, with clear data collection protocols, supervision arrangements, and a workflow for converting field findings into verified tax records.',
-                oftenWorksBestAlongside: [
-                    'PT-COV-02 on cross-matching, which can narrow down target areas and reduce the fieldwork needed.',
-                    'PT-COV-04 on imagery, which can guide field teams to specific locations where new structures have appeared.',
-                    'PT-COV-01 on self-registration, which can mop up willing owners before the sweep reaches their area.'
-                ],
-                politicalNote: 'Street sweeps are visible and can cause concern if residents feel they are being surveilled or targeted unfairly. Clear communication about the purpose, scope, and fairness of the exercise is essential. Ward leaders or local representatives should be briefed and ideally involved.'
             },
-            fullDetails: {
-                whyThisMatters: 'A targeted sweep puts eyes on the ground in areas where desk-based methods are not enough. It is more expensive than data matching or self-registration, but it catches properties that no existing database records and that no owner has volunteered. The key is to target the sweep rather than trying to cover the whole city at once, focusing on areas where growth has been fastest, where records are weakest, or where revenue leakage is most visible.',
-                whenStrongFit: [
-                    'The city knows which areas have the largest coverage gaps based on earlier analysis or local knowledge.',
-                    'Desk-based methods have been tried and still leave significant gaps.',
-                    'Field teams can be mobilised and supervised effectively.',
-                    'The city wants to combine coverage work with basic data collection for valuation or addressing.'
-                ],
-                whatToLineUpFirst: [
-                    'Select target areas using available data: permit records, imagery, utility connections, or local intelligence.',
-                    'Design a short field form that collects only the information the city can process and use.',
-                    'Recruit, equip, and train field teams, including clear rules on identification, conduct, and data handling.',
-                    'Brief ward leaders and local representatives so the exercise is expected and understood.'
-                ],
-                designChoices: [
-                    'Decide whether to use paper forms, mobile devices, or a combination for field data collection.',
-                    'Choose whether to collect only coverage data or also gather basic valuation or addressing information while teams are in the field.',
-                    'Decide the team structure: pairs for safety and mutual verification, with roving supervisors.',
-                    'Set the scope for each phase: start with the areas where the yield is likely to be highest.'
-                ],
-                practicalPath: {
-                    first90Days: [
-                        'Analyse available data to select priority areas and estimate the number of properties to cover.',
-                        'Design the field form, data collection protocol, and supervision arrangements.',
-                        'Recruit, equip, and train field teams; pilot the process in one area to test the workflow.',
-                        'Brief ward leaders and communicate the purpose of the exercise to the public in target areas.'
-                    ],
-                    sixTo12Months: [
-                        'Roll out the sweep to the full set of priority areas in planned phases.',
-                        'Process field data daily or weekly: verify, de-duplicate, and convert confirmed findings into new records.',
-                        'Monitor team productivity, data quality, and the share of findings that convert into verified records.',
-                        'Adjust the approach based on what the first phases reveal about coverage patterns and data quality.'
-                    ],
-                    twelveToTwentyFourMonths: [
-                        'Complete the remaining target areas and assess whether additional areas need attention.',
-                        'Document lessons learned and establish a lighter-touch process for follow-up sweeps.',
-                        'Feed the results into planning for ongoing coverage maintenance under PT-COV-09.',
-                        'Use the data collected to support valuation, addressing, or service delivery improvements.'
-                    ]
-                },
-                legalInstitutional: [
-                    'Field teams need clear legal authority to visit properties and request basic information.',
-                    'Teams must carry official identification and be able to explain the legal basis for the exercise.',
-                    'The city should have a clear privacy policy for the data collected and share it with residents.'
-                ],
-                capacitySystemsPartnerships: [
-                    'Field teams need training not just on data collection but on how to interact with residents professionally.',
-                    'Supervisors are essential to maintain data quality and prevent fabrication or shortcuts.',
-                    'A back-office team must be ready to process incoming data quickly so the exercise does not create an unmanageable backlog.'
-                ],
-                risksAndSafeguards: [
-                    'If field teams are poorly supervised, data quality will be low and the exercise will need to be repeated.',
-                    'If the city cannot process field data quickly, the sweep will lose momentum and credibility.',
-                    'If the exercise is not well communicated, residents may resist or spread misinformation about its purpose.',
-                    'Security risks for field teams in some areas may require adjustments to timing, team composition, or accompaniment.'
-                ],
-                whatToMonitor: [
-                    'Number of properties visited and data forms completed per team per day.',
-                    'Share of field findings verified and converted into new tax records.',
-                    'Data quality indicators: completeness, consistency, and supervisor correction rates.',
-                    'Coverage rate improvement in target areas before and after the sweep.'
-                ],
-                connectionsToOtherCards: [
-                    'PT-COV-02 on cross-matching can narrow down target areas before fieldwork begins.',
-                    'PT-COV-04 on imagery can guide field teams to specific new structures.',
-                    'PT-COV-01 on self-registration can capture willing owners before the sweep reaches their area.',
-                    'PT-COV-09 on routine audits provides a lighter-touch maintenance process after the initial sweep.'
-                ],
-                questionsBeforeLaunch: [
-                    'Which areas have the largest coverage gaps, and how do you know?',
-                    'Can you recruit, train, and supervise field teams to a consistent standard?',
-                    'What is the minimum data you need from the field to create a usable record?',
-                    'How quickly can the back office process incoming data and convert it into verified records?'
-                ]
-            }
-        },
-
-        {
-            solutionId: 'PT-COV-04',
-            stream: 'Property Tax',
-            streamType: 'property-based',
-            subgroup: null,
-            gap: 'Coverage',
-            title: 'Use imagery to spot new buildings and extensions',
-            shortTitle: 'Imagery-based detection',
-            timeline: '1-3 years',
-            deliveryDifficulty: 'Medium-High',
-            politicalSensitivity: 'Medium',
-            category: 'Technology',
-            sortOrder: 4,
-            isActive: true,
-            overview: {
-                mainPurpose: 'Use satellite, aerial, or drone imagery to detect new buildings, extensions, or land-use changes that are not reflected in the property tax roll.',
-                bestStartingPoint: 'A city experiencing rapid growth or peri-urban expansion where field teams cannot keep up with the pace of new construction, and where imagery is available or affordable.',
-                firstVisibleResult: 'A map of candidate structures or changes that do not appear in the current tax roll, ready for field verification.',
-                leadershipDecision: 'Approve the imagery acquisition or access arrangement, assign a GIS-capable team or partner, and agree on how detected structures will be verified and added to the roll.',
-                likelyLeadOwner: 'Revenue administration or planning department, with GIS or IT support and a field verification team.',
-                whatThisOptionDoes: 'Imagery gives the city an eye in the sky that can scan large areas far more quickly than field teams. By comparing recent imagery against the existing roll or against earlier imagery, the city can spot new buildings, extensions, or land-use changes that may not have been reported or captured. This approach is especially powerful in fast-growing areas where construction outpaces the administrative system.',
-                mostUsefulWhen: [
-                    'The city is growing quickly and new construction is outpacing the roll update process.',
-                    'Affordable imagery is available through government programmes, international partners, or commercial providers.',
-                    'The city has or can access GIS skills for image analysis and change detection.',
-                    'Field verification capacity exists to follow up on detected structures.'
-                ],
-                usuallyNotBestFirstMove: [
-                    'The city has no GIS capacity and no realistic plan to acquire it.',
-                    'The main coverage problem is not new construction but missing records for long-standing properties.',
-                    'The cost of imagery acquisition exceeds the likely revenue gain in the short term.'
-                ],
-                whatFullCardWouldPlan: 'An imagery acquisition and analysis programme, a change detection workflow, a field verification process for candidate structures, and a plan for periodic repeat imagery to keep the roll current.',
-                oftenWorksBestAlongside: [
-                    'PT-COV-03 on targeted sweeps, which can verify structures detected by imagery.',
-                    'PT-COV-05 on building a citywide baseline inventory, which imagery can support.',
-                    'PT-COV-08 on linking the roll to permits, which catches new construction that has permits but not tax records.'
-                ],
-                politicalNote: 'Imagery-based detection is generally accepted when it targets new construction and growth areas. However, the city should communicate clearly that the purpose is fair taxation rather than surveillance, and should be prepared for questions about privacy and data use.'
-            },
-            fullDetails: {
-                whyThisMatters: 'Imagery gives the city an eye in the sky that can scan large areas far more quickly than field teams. By comparing recent imagery against the existing roll or against earlier imagery, the city can spot new buildings, extensions, or land-use changes that may not have been reported or captured. This approach is especially powerful in fast-growing areas where construction outpaces the administrative system. Without imagery, the city is relying entirely on self-reporting, permits, or infrequent field visits, all of which tend to lag behind reality.',
-                whenStrongFit: [
-                    'The city is growing quickly and new construction is outpacing the roll update process.',
-                    'Affordable imagery is available through government programmes, international partners, or commercial providers.',
-                    'The city has or can access GIS skills for image analysis and change detection.',
-                    'Field verification capacity exists to follow up on detected structures.'
-                ],
-                whatToLineUpFirst: [
-                    'Assess imagery options: satellite (e.g. Google Earth, Maxar, Planet), aerial photography, or drone surveys.',
-                    'Determine whether the city needs to buy imagery or can access existing sources at low cost.',
-                    'Identify or recruit GIS staff or a partner organisation with change detection skills.',
-                    'Plan the field verification workflow for candidate structures detected by imagery.'
-                ],
-                designChoices: [
-                    'Choose the imagery source based on cost, resolution, frequency, and coverage.',
-                    'Decide whether to use manual visual comparison or invest in automated change detection tools.',
-                    'Determine the analysis cycle: annual comparison, continuous monitoring, or triggered by known growth events.',
-                    'Decide whether to analyse the whole city or focus on known growth corridors and peri-urban areas first.'
-                ],
-                practicalPath: {
-                    first90Days: [
-                        'Assess available imagery sources and their cost, quality, and update frequency.',
-                        'Acquire or access baseline and recent imagery for a pilot area.',
-                        'Run a pilot change detection exercise to estimate the yield and refine the methodology.',
-                        'Plan the field verification process for candidate structures.'
-                    ],
-                    sixTo12Months: [
-                        'Extend the analysis to priority growth areas across the city.',
-                        'Verify candidate structures through targeted field visits and convert confirmed findings into new records.',
-                        'Document the methodology so it can be repeated without rebuilding from scratch.',
-                        'Assess the cost-effectiveness of the approach and adjust the imagery source or analysis method if needed.'
-                    ],
-                    twelveToTwentyFourMonths: [
-                        'Establish a regular imagery acquisition and analysis cycle, ideally annual or more frequent in high-growth areas.',
-                        'Integrate imagery-based detection with other coverage tools such as permit matching and field sweeps.',
-                        'Use accumulated imagery to build a time series that shows growth patterns and informs planning.',
-                        'Explore whether automated detection tools or AI-assisted analysis can reduce the manual workload.'
-                    ]
-                },
-                legalInstitutional: [
-                    'The city should confirm that the use of aerial or satellite imagery for tax purposes is legally permitted.',
-                    'Drone operations may require specific permits or approvals from aviation or security authorities.',
-                    'Data retention and privacy policies should cover imagery and derived datasets.'
-                ],
-                capacitySystemsPartnerships: [
-                    'GIS skills are essential; if the city lacks them, a partnership with a university, NGO, or commercial provider can fill the gap.',
-                    'Field verification teams must be available to follow up on detected structures promptly.',
-                    'IT infrastructure for storing and processing large imagery files may need investment.'
-                ],
-                risksAndSafeguards: [
-                    'If imagery resolution is too low, the city will miss small structures or misidentify features.',
-                    'If there is no field verification step, the city may create records for structures that are not taxable or do not exist.',
-                    'If the analysis is a one-off, the investment will not pay off; the value comes from periodic repetition.',
-                    'Cloud cover, shadow, and vegetation can reduce imagery quality in tropical or mountainous areas.'
-                ],
-                whatToMonitor: [
-                    'Number of candidate structures detected per analysis cycle.',
-                    'Share of candidates verified and converted into new tax records.',
-                    'Cost per new property identified through imagery versus other methods.',
-                    'Time from detection to record creation.'
-                ],
-                connectionsToOtherCards: [
-                    'PT-COV-03 on targeted sweeps can verify structures detected by imagery.',
-                    'PT-COV-05 on building a citywide baseline inventory can use imagery as a foundation.',
-                    'PT-COV-08 on linking the roll to permits catches permitted construction; imagery catches unpermitted construction.',
-                    'PT-COV-13 on addressing can benefit from the spatial data generated by imagery analysis.'
-                ],
-                questionsBeforeLaunch: [
-                    'What imagery is available, and what will it cost to acquire or access?',
-                    'Does the city have GIS skills, or can it partner with an organisation that does?',
-                    'How will detected structures be verified in the field?',
-                    'Is the main coverage problem new construction, or are long-standing properties also missing?'
-                ]
-            }
-        },
-
-        {
-            solutionId: 'PT-COV-12',
-            stream: 'Property Tax',
-            streamType: 'property-based',
-            subgroup: null,
-            gap: 'Coverage',
-            title: 'Use a one-off registration amnesty carefully',
-            shortTitle: 'Registration amnesty',
-            timeline: '<1 year',
-            deliveryDifficulty: 'Medium',
-            politicalSensitivity: 'Medium-High',
-            category: 'Amnesty',
-            sortOrder: 5,
-            isActive: true,
-            overview: {
-                mainPurpose: 'Offer a time-limited period in which unregistered property owners can come forward without facing penalties for past non-registration, as a one-time bridge to a stricter enforcement regime.',
-                bestStartingPoint: 'A city where a large share of properties has never been registered and where the threat of future enforcement is credible enough to motivate voluntary compliance during the amnesty window.',
-                firstVisibleResult: 'A measurable increase in voluntary registrations during the amnesty period, giving the city a larger base before enforcement begins.',
-                leadershipDecision: 'Approve the amnesty terms, set a firm end date, commit publicly to enforcement after the window closes, and assign a team to process registrations quickly.',
-                likelyLeadOwner: 'Revenue administration, with political leadership providing public credibility and communications support.',
-                whatThisOptionDoes: 'A registration amnesty lowers the barrier for owners who have been outside the system for years and may fear penalties, back-billing, or legal consequences. By offering a clean start for a limited period, the city can bring in a wave of voluntary registrations that would otherwise require expensive enforcement. However, amnesties carry real risks: they can reward non-compliance, undermine those who have been paying, and lose credibility if repeated.',
-                mostUsefulWhen: [
-                    'A large share of properties is unregistered and enforcement alone would be too slow or costly.',
-                    'The city is about to launch a stricter enforcement regime and wants to give owners one last chance.',
-                    'Political leadership is prepared to commit publicly to post-amnesty enforcement.',
-                    'The city has the capacity to process a surge of registrations during the amnesty window.'
-                ],
-                usuallyNotBestFirstMove: [
-                    'The city has recently run an amnesty and another would signal that non-compliance is tolerated.',
-                    'There is no credible enforcement plan for after the amnesty ends.',
-                    'The coverage problem is mainly about data quality rather than owners avoiding registration.'
-                ],
-                whatFullCardWouldPlan: 'A time-limited amnesty campaign with clear terms, a surge processing plan, a communications strategy that emphasises the one-off nature, and a concrete enforcement plan for the post-amnesty period.',
-                oftenWorksBestAlongside: [
-                    'PT-COV-01 on self-registration, which provides the registration channels the amnesty will use.',
-                    'PT-COV-03 on targeted sweeps, which can follow up in areas where voluntary registration remains low after the amnesty.',
-                    'PT-COV-11 on fixing record errors, which can clean up data submitted during the amnesty surge.'
-                ],
-                politicalNote: 'Amnesties are politically sensitive. They must be framed as a fair, one-time opportunity rather than a reward for avoidance. If the city cannot enforce after the amnesty, the exercise will backfire and make future compliance harder.'
-            },
-            fullDetails: {
-                whyThisMatters: 'A registration amnesty lowers the barrier for owners who have been outside the system for years and may fear penalties, back-billing, or legal consequences. By offering a clean start for a limited period, the city can bring in a wave of voluntary registrations that would otherwise require expensive enforcement. However, amnesties carry real risks: they can reward non-compliance, undermine those who have been paying, and lose credibility if repeated. The key is to use an amnesty as a one-time bridge to a stricter regime, not as a substitute for enforcement.',
-                whenStrongFit: [
-                    'A large share of properties is unregistered and enforcement alone would be too slow or costly.',
-                    'The city is about to launch a stricter enforcement regime and wants to give owners one last chance to come forward.',
-                    'Political leadership is prepared to commit publicly to post-amnesty enforcement.',
-                    'The city has the capacity to process a surge of registrations during the amnesty window.'
-                ],
-                whatToLineUpFirst: [
-                    'Define the amnesty terms clearly: what is forgiven, what is not, and when the window closes.',
-                    'Prepare registration channels to handle a surge in submissions.',
-                    'Draft the enforcement plan that will take effect after the amnesty, and be prepared to announce it.',
-                    'Coordinate communications so the message reaches all target areas and communities.'
-                ],
-                designChoices: [
-                    'Set a firm, non-extendable deadline. Extensions destroy credibility.',
-                    'Decide what the amnesty covers: only penalties, or also back taxes? The narrower the waiver, the less it costs and the less it offends compliant taxpayers.',
-                    'Choose whether to require a full registration or accept a simplified initial declaration that can be verified later.',
-                    'Decide whether to offer the amnesty citywide or target it at specific areas or property types.'
-                ],
-                practicalPath: {
-                    first90Days: [
-                        'Design the amnesty terms and get political and legal approval.',
-                        'Prepare registration channels, forms, and processing capacity for the expected surge.',
-                        'Launch a communications campaign that reaches all target areas and explains the terms clearly.',
-                        'Open the amnesty window and monitor registrations daily.'
-                    ],
-                    sixTo12Months: [
-                        'Process amnesty registrations quickly and issue acknowledgements or tax IDs to new registrants.',
-                        'Close the amnesty window on the announced date without extension.',
-                        'Begin the post-amnesty enforcement programme, starting with areas where registration rates remained low.',
-                        'Communicate enforcement actions publicly to reinforce the message that the amnesty was a one-time offer.'
-                    ],
-                    twelveToTwentyFourMonths: [
-                        'Evaluate the amnesty results: how many new registrations, what share of the gap was closed, and what revenue resulted.',
-                        'Use the results to target remaining coverage work through sweeps, data matching, or other tools.',
-                        'Resist pressure to repeat the amnesty. If coverage gaps persist, use other cards rather than another waiver.'
-                    ]
-                },
-                legalInstitutional: [
-                    'The amnesty needs a clear legal basis, whether through existing executive authority or a council resolution.',
-                    'The terms must be precise about what is waived and what obligations remain.',
-                    'The post-amnesty enforcement regime should be legally grounded and ready to activate.'
-                ],
-                capacitySystemsPartnerships: [
-                    'Registration processing capacity must be scaled up for the amnesty period to avoid backlogs that undermine trust.',
-                    'Communications need to reach informal settlements, peri-urban areas, and communities where trust in government is low.',
-                    'Ward leaders and community organisations can help spread the message and assist with registration.'
-                ],
-                risksAndSafeguards: [
-                    'If the amnesty is extended or repeated, it rewards non-compliance and punishes those who registered voluntarily.',
-                    'If post-amnesty enforcement does not materialise, the exercise will have cost credibility without lasting gain.',
-                    'If processing capacity is inadequate, the city will create a backlog that delays the benefits.',
-                    'If the terms are unclear, disputes will arise about who qualified and what was waived.'
-                ],
-                whatToMonitor: [
-                    'Number of new registrations during the amnesty period versus the pre-amnesty baseline.',
-                    'Processing time from submission to confirmed registration.',
-                    'Geographic and property-type distribution of amnesty registrations.',
-                    'Post-amnesty enforcement actions and their impact on remaining coverage gaps.'
-                ],
-                connectionsToOtherCards: [
-                    'PT-COV-01 on self-registration provides the channels and forms the amnesty will use.',
-                    'PT-COV-03 on targeted sweeps can follow up in areas where the amnesty did not close the gap.',
-                    'PT-COV-11 on fixing record errors can clean up data submitted during the amnesty surge.',
-                    'The enforcement plan after the amnesty may draw on several other coverage and compliance cards.'
-                ],
-                questionsBeforeLaunch: [
-                    'Is leadership genuinely prepared to enforce after the amnesty ends?',
-                    'Has the city run an amnesty recently, and if so, would another one undermine credibility?',
-                    'Can the city process a surge in registrations without creating a backlog?',
-                    'How will you communicate the amnesty to hard-to-reach owners and occupiers?'
-                ]
-            }
-        },
-
-        // =====================================================================
-        // B. Put the register on firmer footing
-        // =====================================================================
-
-        {
-            solutionId: 'PT-COV-05',
-            stream: 'Property Tax',
-            streamType: 'property-based',
-            subgroup: null,
-            gap: 'Coverage',
-            title: 'Build a citywide baseline property inventory',
-            shortTitle: 'Citywide baseline inventory',
-            timeline: '1-3 years',
-            deliveryDifficulty: 'High',
-            politicalSensitivity: 'Medium',
-            category: 'Inventory',
-            sortOrder: 6,
-            isActive: true,
-            overview: {
-                mainPurpose: 'Create a complete, geo-referenced inventory of every taxable property in the jurisdiction as a foundation for systematic tax administration.',
-                bestStartingPoint: 'A city that has tried incremental coverage tools and still faces large, poorly understood gaps, or one that is building its property tax system from scratch and needs a comprehensive starting point.',
-                firstVisibleResult: 'A geo-referenced database covering the full jurisdiction, showing every identified property with a unique identifier, location, basic characteristics, and an indication of whether it was previously on the roll.',
-                leadershipDecision: 'Commit the budget and timeline for a multi-year programme, appoint a dedicated project manager, and agree on the data standards and scope before fieldwork begins.',
-                likelyLeadOwner: 'Revenue administration or a dedicated project unit, with support from GIS, IT, planning, and field operations.',
-                whatThisOptionDoes: 'A citywide baseline inventory is the most comprehensive approach to the coverage problem. Rather than picking off missing properties one area at a time, it aims to build a complete picture of all taxable properties across the jurisdiction. This is a significant investment, but it provides the foundation on which all other property tax functions depend: billing, valuation, collection, and exemption management.',
-                mostUsefulWhen: [
-                    'The city has no reliable estimate of how many taxable properties exist.',
-                    'Incremental tools have been tried but the coverage gap remains large and poorly understood.',
-                    'The city is willing to invest in a multi-year programme that will pay off over many budget cycles.',
-                    'The inventory can also serve planning, addressing, or service delivery objectives, not just tax.'
-                ],
-                usuallyNotBestFirstMove: [
-                    'The city has not yet tried cheaper, faster tools that might close a significant part of the gap.',
-                    'Budget and institutional capacity for a multi-year programme are not realistic.',
-                    'The main problem is data quality or liability rules rather than missing properties.'
-                ],
-                whatFullCardWouldPlan: 'A phased, multi-year programme combining imagery analysis, field enumeration, data processing, and quality assurance to create a complete property inventory with unique identifiers and geo-references.',
-                oftenWorksBestAlongside: [
-                    'PT-COV-04 on imagery, which can provide the spatial foundation for the inventory.',
-                    'PT-COV-07 on unique property IDs, which should be designed as part of the inventory.',
-                    'PT-COV-13 on addressing, which can be built into the inventory process.'
-                ],
-                politicalNote: 'A citywide inventory is politically visible because of its cost and duration. Leadership needs to manage expectations about how long it will take and what interim benefits it will deliver. Phased delivery with visible milestones helps maintain support.'
-            },
-            fullDetails: {
-                whyThisMatters: 'A citywide baseline inventory is the most comprehensive approach to the coverage problem. Rather than picking off missing properties one area at a time, it aims to build a complete picture of all taxable properties across the jurisdiction. This is a significant investment, but it provides the foundation on which all other property tax functions depend: billing, valuation, collection, and exemption management. Without a baseline, the city is always guessing about the size of the gap.',
-                whenStrongFit: [
-                    'The city has no reliable estimate of how many taxable properties exist.',
-                    'Incremental tools have been tried but the coverage gap remains large and poorly understood.',
-                    'The city is willing to invest in a multi-year programme that will pay off over many budget cycles.',
-                    'The inventory can also serve planning, addressing, or service delivery objectives, not just tax.'
-                ],
-                whatToLineUpFirst: [
-                    'Define data standards before fieldwork begins: what fields, what formats, what identifiers.',
-                    'Secure multi-year budget commitment so the programme does not stall mid-way.',
-                    'Appoint a dedicated project manager with authority to coordinate across departments.',
-                    'Decide whether to use in-house teams, outsource to a contractor, or combine both.'
-                ],
-                designChoices: [
-                    'Choose the enumeration methodology: field-first, imagery-first, or a combination.',
-                    'Decide on the unique property identifier scheme and ensure it is compatible with other systems.',
-                    'Set the data scope: coverage-only (minimum) versus coverage plus basic valuation data.',
-                    'Phase the programme geographically, starting with areas where the yield or visibility is highest.'
-                ],
-                practicalPath: {
-                    first90Days: [
-                        'Define data standards, identifier scheme, and quality assurance protocols.',
-                        'Acquire baseline imagery and existing datasets for the first phase areas.',
-                        'Recruit, equip, and train the enumeration team or manage the procurement for an outsourced team.',
-                        'Pilot the methodology in one area to test protocols and estimate productivity.'
-                    ],
-                    sixTo12Months: [
-                        'Roll out enumeration across the first phase areas.',
-                        'Process field data continuously: de-duplicate, verify, and load into the inventory database.',
-                        'Report progress against milestones and adjust the approach based on early findings.',
-                        'Begin using early-phase data for billing and revenue purposes to demonstrate value.'
-                    ],
-                    twelveToTwentyFourMonths: [
-                        'Complete remaining phases and close gaps identified during quality assurance.',
-                        'Establish the maintenance process so the inventory does not degrade after completion.',
-                        'Integrate the inventory with billing, valuation, and collection systems.',
-                        'Evaluate the programme: coverage improvement, cost per property, and revenue impact.'
-                    ]
-                },
-                legalInstitutional: [
-                    'The programme needs clear legal authority for field enumeration and data collection.',
-                    'Data standards should be formally adopted so they survive staff turnover.',
-                    'The inventory should be designated as the official property register to avoid parallel systems.'
-                ],
-                capacitySystemsPartnerships: [
-                    'A dedicated project team is essential; this cannot be run as a side project.',
-                    'GIS and database skills are needed for data processing and quality assurance.',
-                    'Partnerships with mapping agencies, universities, or international organisations can supplement capacity.',
-                    'The IT platform for the inventory must be chosen early and must be maintainable after the project ends.'
-                ],
-                risksAndSafeguards: [
-                    'If the budget is cut mid-programme, the city will have an incomplete inventory that is harder to use than a complete one.',
-                    'If data standards are not set before fieldwork begins, the resulting data will be inconsistent and costly to clean.',
-                    'If the maintenance plan is not in place when the inventory is complete, it will start degrading immediately.',
-                    'If the programme takes too long without visible results, political support may erode.'
-                ],
-                whatToMonitor: [
-                    'Number of properties enumerated per phase against the plan.',
-                    'Data quality indicators: completeness, consistency, and error rates.',
-                    'Cost per property enumerated.',
-                    'Coverage rate improvement in completed areas.'
-                ],
-                connectionsToOtherCards: [
-                    'PT-COV-04 on imagery provides the spatial foundation.',
-                    'PT-COV-07 on unique property IDs should be designed as part of the inventory.',
-                    'PT-COV-13 on addressing can be integrated into the enumeration process.',
-                    'PT-COV-09 on routine audits provides the maintenance mechanism after the inventory is complete.'
-                ],
-                questionsBeforeLaunch: [
-                    'Can the city commit the budget for a multi-year programme?',
-                    'Have cheaper incremental tools been tried first, and what gap remains?',
-                    'Who will manage the programme, and do they have the authority and capacity?',
-                    'What will the maintenance plan look like after the inventory is complete?'
-                ]
-            }
-        },
-
-        {
-            solutionId: 'PT-COV-06',
-            stream: 'Property Tax',
-            streamType: 'property-based',
-            subgroup: null,
-            gap: 'Coverage',
-            title: 'Clarify who should pay when ownership is unclear',
-            shortTitle: 'Clarify liability rules',
-            timeline: '<1 year',
-            deliveryDifficulty: 'Medium',
-            politicalSensitivity: 'Medium-High',
-            category: 'Liability',
-            sortOrder: 7,
-            isActive: true,
-            overview: {
-                mainPurpose: 'Ensure that every identifiable property has a clearly designated person or entity responsible for paying the property tax, even when formal ownership is uncertain, disputed, or unregistered.',
-                bestStartingPoint: 'A city where a significant number of properties escape taxation because the roll lists no liable person, ownership is disputed, the owner is deceased, or the property is occupied but not formally owned.',
-                firstVisibleResult: 'A clear rule, applied in practice, that allows the city to bill the occupier, user, or manager of a property when the legal owner cannot be identified or reached.',
-                leadershipDecision: 'Adopt or clarify the liability rule in local regulations, train billing staff to apply it, and communicate the rule to the public so that occupiers understand their rights and obligations.',
-                likelyLeadOwner: 'Revenue administration, with legal support and coordination with the land registry or valuation office.',
-                whatThisOptionDoes: 'In many cities, a large number of properties are effectively untaxable because the roll has no identified liable person. Ownership may be informal, disputed, held by a deceased estate, or simply unrecorded. This card addresses the problem not by resolving ownership disputes but by clarifying that the city can and should bill whoever is benefiting from or controlling the property. The key principle is that every property should have a taxpayer, even if that taxpayer is not the legal owner.',
-                mostUsefulWhen: [
-                    'A significant share of properties has no identified liable person on the roll.',
-                    'The city has legal authority to bill occupiers or users when the owner is unknown.',
-                    'Billing staff are currently skipping properties because they do not know whom to bill.',
-                    'Ownership records are poor and unlikely to improve quickly.'
-                ],
-                usuallyNotBestFirstMove: [
-                    'The main coverage problem is missing properties rather than missing liable persons for known properties.',
-                    'The legal framework does not allow billing anyone other than the registered owner.'
-                ],
-                whatFullCardWouldPlan: 'A clear liability rule adopted in regulations, a workflow for identifying and billing occupiers or users, training for billing staff, and a communications plan so residents understand the rule.',
-                oftenWorksBestAlongside: [
-                    'PT-COV-01 on self-registration, which can collect occupier information during the registration drive.',
-                    'PT-COV-11 on fixing record errors, which can update records with the correct liable person.',
-                    'PT-COV-07 on unique property IDs, which ensures each property record can carry a liability assignment.'
-                ],
-                politicalNote: 'Billing occupiers rather than owners can be sensitive. The city should frame the rule as a fairness measure: every property that receives city services should contribute, and occupiers who pay can recover from the owner. Clear communication and an accessible dispute process are essential.'
-            },
-            fullDetails: {
-                whyThisMatters: 'In many cities, a large number of properties are effectively untaxable because the roll has no identified liable person. Ownership may be informal, disputed, held by a deceased estate, or simply unrecorded. This card addresses the problem not by resolving ownership disputes but by clarifying that the city can and should bill whoever is benefiting from or controlling the property. Without a clear liability rule, billing staff skip properties they cannot assign, and the coverage gap grows quietly.',
-                whenStrongFit: [
-                    'A significant share of properties has no identified liable person on the roll.',
-                    'The city has legal authority (or can obtain it) to bill occupiers or users when the owner is unknown.',
-                    'Billing staff are currently skipping properties because they do not know whom to bill.',
-                    'Ownership records are poor and unlikely to improve quickly.'
-                ],
-                whatToLineUpFirst: [
-                    'Review the legal framework to confirm or establish authority to bill occupiers, users, or managers.',
-                    'Identify how many properties on the roll currently have no liable person and why.',
-                    'Design the workflow for identifying and assigning a liable person when the owner is unknown.',
-                    'Prepare the communications message so residents understand the rule and their rights.'
-                ],
-                designChoices: [
-                    'Define the liability hierarchy: owner first, then occupier, then user or manager.',
-                    'Decide whether the occupier\'s liability is primary or secondary (i.e., whether the city first tries to find the owner).',
-                    'Choose whether to apply the rule to all properties immediately or to phase it in by area or property type.',
-                    'Establish a dispute process so that occupiers who believe they should not be liable can challenge the assignment.'
-                ],
-                practicalPath: {
-                    first90Days: [
-                        'Review the legal framework and confirm or amend the liability rules.',
-                        'Analyse the roll to identify properties with no liable person and categorise the reasons.',
-                        'Design the assignment workflow and train billing staff.',
-                        'Draft communications materials explaining the rule to the public.'
-                    ],
-                    sixTo12Months: [
-                        'Apply the liability rule to the first batch of properties with missing liable persons.',
-                        'Monitor billing outcomes: how many properties now have a liable person, how many bills are issued, and how many are disputed.',
-                        'Adjust the workflow based on common problems or disputes encountered.',
-                        'Extend the application to remaining properties.'
-                    ],
-                    twelveToTwentyFourMonths: [
-                        'Embed the liability rule into standard billing procedures so it is applied automatically for new records.',
-                        'Use the results to inform data improvement efforts: where ownership information can be obtained, pursue it; where it cannot, ensure the occupier rule is applied consistently.',
-                        'Report on the revenue impact and the reduction in properties with no liable person.'
-                    ]
-                },
-                legalInstitutional: [
-                    'The legal framework must clearly authorise billing of occupiers or users when the owner is unknown or unreachable.',
-                    'Occupiers should have a legal right to recover the tax from the actual owner if the owner is later identified.',
-                    'Notice requirements must be adapted so that bills reach the current occupier rather than an absent owner.'
-                ],
-                capacitySystemsPartnerships: [
-                    'Billing staff need clear guidance and training on when and how to apply the occupier rule.',
-                    'The billing system must be able to record and bill a liable person who is not the registered owner.',
-                    'Coordination with the land registry can help identify ownership over time, even if the occupier rule is used in the interim.'
-                ],
-                risksAndSafeguards: [
-                    'If the rule is applied without clear communication, occupiers may feel unfairly targeted.',
-                    'If the dispute process is inaccessible, the rule may generate political backlash.',
-                    'If billing staff apply the rule inconsistently, it will create perceptions of unfairness.',
-                    'If the city does not also work on ownership records, the occupier rule may become a permanent substitute rather than a bridge.'
-                ],
-                whatToMonitor: [
-                    'Number of properties with a liable person assigned under the new rule.',
-                    'Number of bills issued to occupiers or users.',
-                    'Dispute rate and outcomes for occupier-billed properties.',
-                    'Revenue collected from previously unbilled properties.'
-                ],
-                connectionsToOtherCards: [
-                    'PT-COV-01 on self-registration can collect occupier information during the registration drive.',
-                    'PT-COV-11 on fixing record errors can update records with the correct liable person.',
-                    'PT-COV-07 on unique property IDs ensures each property record can carry a liability assignment.',
-                    'PT-COV-03 on targeted sweeps can identify occupiers during field visits.'
-                ],
-                questionsBeforeLaunch: [
-                    'Does the legal framework allow billing of occupiers when the owner is unknown?',
-                    'How many properties currently have no liable person, and what are the main reasons?',
-                    'Are billing staff prepared to apply the rule consistently and explain it to residents?',
-                    'Is there an accessible dispute process for occupiers who believe they should not be liable?'
-                ]
-            }
-        },
-
-        {
-            solutionId: 'PT-COV-07',
-            stream: 'Property Tax',
-            streamType: 'property-based',
-            subgroup: null,
-            gap: 'Coverage',
-            title: 'Give each property one ID in one register',
-            shortTitle: 'Unique property ID',
-            timeline: '1-3 years',
-            deliveryDifficulty: 'High',
-            politicalSensitivity: 'Low-Medium',
-            category: 'Register',
-            sortOrder: 8,
-            isActive: true,
-            overview: {
-                mainPurpose: 'Assign every taxable property a single, unique identifier and maintain it in one authoritative register so that the city always knows exactly how many properties it has and can link each property to its billing, payment, and compliance history.',
-                bestStartingPoint: 'A city where property records are scattered across multiple systems, spreadsheets, or paper files, with duplicates, gaps, and no reliable way to count the actual number of distinct properties.',
-                firstVisibleResult: 'A de-duplicated register with unique IDs, giving the city for the first time an accurate count of distinct taxable properties and a foundation for reliable billing.',
-                leadershipDecision: 'Commit to a single register as the authoritative source, approve the identifier scheme, and assign one team to own data quality and deduplication.',
-                likelyLeadOwner: 'Revenue administration or IT, with support from valuation, land registry, and GIS.',
-                whatThisOptionDoes: 'Many cities maintain property information in multiple overlapping systems: a billing register, a valuation roll, a land registry extract, spreadsheets in ward offices. Each may use different identifiers or none at all. The result is that no one knows the true count of distinct properties, duplicates inflate the roll or create confusion, and it is difficult to link a property to its full administrative history. This card solves that by giving each property one ID that follows it through every administrative process.',
-                mostUsefulWhen: [
-                    'The city has multiple overlapping property databases with no common identifier.',
-                    'Duplicate records are inflating the roll or causing billing confusion.',
-                    'The city needs a reliable count of distinct taxable properties for planning and benchmarking.',
-                    'Other reform efforts, such as valuation or collection, need a clean register to build on.'
-                ],
-                usuallyNotBestFirstMove: [
-                    'The city has very few records and the immediate priority is simply finding properties, not organising them.',
-                    'No one has the technical capacity to design or maintain an identifier scheme.'
-                ],
-                whatFullCardWouldPlan: 'A register consolidation programme that merges existing data sources, de-duplicates records, assigns unique IDs, and establishes the single register as the authoritative source with clear update procedures.',
-                oftenWorksBestAlongside: [
-                    'PT-COV-05 on building a citywide baseline inventory, which generates the data the register will hold.',
-                    'PT-COV-13 on addressing, which provides a location reference that strengthens the identifier.',
-                    'PT-COV-08 on linking the roll to permits and transfers, which keeps the register current.'
-                ],
-                politicalNote: 'This is primarily a technical reform with low political sensitivity. However, if the de-duplication exercise reveals that the roll has been significantly overstated or understated, the findings may need careful communication.'
-            },
-            fullDetails: {
-                whyThisMatters: 'Many cities maintain property information in multiple overlapping systems: a billing register, a valuation roll, a land registry extract, spreadsheets in ward offices. Each may use different identifiers or none at all. The result is that no one knows the true count of distinct properties, duplicates inflate the roll or create confusion, and it is difficult to link a property to its full administrative history. A single register with unique IDs is the foundation for every other property tax function.',
-                whenStrongFit: [
-                    'The city has multiple overlapping property databases with no common identifier.',
-                    'Duplicate records are inflating the roll or causing billing confusion.',
-                    'The city needs a reliable count of distinct taxable properties for planning and benchmarking.',
-                    'Other reform efforts, such as valuation or collection, need a clean register to build on.'
-                ],
-                whatToLineUpFirst: [
-                    'Inventory all existing data sources that hold property information and assess their quality.',
-                    'Design the unique identifier scheme: what format, what it encodes, and how it will be assigned.',
-                    'Plan the de-duplication methodology: automated matching, manual review, or both.',
-                    'Designate the single register as the authoritative source and communicate this to all units.'
-                ],
-                designChoices: [
-                    'Choose between a meaningful identifier (encoding location or zone) and an arbitrary serial number. Serial numbers are simpler to maintain but carry less information.',
-                    'Decide whether the ID will be linked to a spatial reference (parcel, building, or point) or remain non-spatial.',
-                    'Determine the de-duplication threshold: how similar do two records need to be before they are flagged as potential duplicates?',
-                    'Choose the platform for the single register: existing system, new database, or an upgraded version of the best current system.'
-                ],
-                practicalPath: {
-                    first90Days: [
-                        'Inventory all existing property data sources and assess their coverage, quality, and format.',
-                        'Design the unique identifier scheme and de-duplication rules.',
-                        'Extract and standardise data from the main sources in preparation for merging.',
-                        'Pilot the de-duplication process in one area to calibrate the matching rules.'
-                    ],
-                    sixTo12Months: [
-                        'Merge the main data sources into a single register, resolving duplicates and assigning unique IDs.',
-                        'Verify the merged register against field reality in sample areas.',
-                        'Establish update procedures so new records, changes, and deletions flow through the single register.',
-                        'Begin using the register as the authoritative source for billing and other functions.'
-                    ],
-                    twelveToTwentyFourMonths: [
-                        'Complete the migration of all property data into the single register.',
-                        'Retire or archive legacy systems to prevent parallel record-keeping.',
-                        'Embed the unique ID into all property-related processes: billing, valuation, collection, permits.',
-                        'Monitor data quality and run periodic de-duplication to catch new duplicates.'
-                    ]
-                },
-                legalInstitutional: [
-                    'The single register should be formally designated as the official property roll for tax purposes.',
-                    'Data standards and update procedures should be documented and adopted as policy.',
-                    'Access controls and audit trails are essential to maintain data integrity.'
-                ],
-                capacitySystemsPartnerships: [
-                    'Data management and database skills are critical for the merging and de-duplication exercise.',
-                    'A dedicated data quality team should own the register and manage ongoing maintenance.',
-                    'Coordination with other agencies that hold property data is needed to align identifiers and avoid duplication.'
-                ],
-                risksAndSafeguards: [
-                    'If the de-duplication is too aggressive, valid records may be merged incorrectly.',
-                    'If legacy systems are not retired, parallel record-keeping will re-emerge.',
-                    'If the identifier scheme is poorly designed, it may not scale or may conflict with other systems.',
-                    'If no one owns data quality after the initial exercise, the register will degrade.'
-                ],
-                whatToMonitor: [
-                    'Total number of distinct properties in the register versus previous estimates.',
-                    'Number of duplicates identified and resolved.',
-                    'Share of properties with complete, verified data.',
-                    'Adoption of the unique ID across all property-related processes.'
-                ],
-                connectionsToOtherCards: [
-                    'PT-COV-05 on building a citywide baseline inventory generates the data the register will hold.',
-                    'PT-COV-13 on addressing provides a location reference that strengthens the identifier.',
-                    'PT-COV-08 on linking the roll to permits and transfers keeps the register current.',
-                    'PT-COV-11 on fixing record errors is often needed as part of the consolidation process.'
-                ],
-                questionsBeforeLaunch: [
-                    'How many separate systems or files currently hold property information?',
-                    'Does the city have the data management skills to merge and de-duplicate them?',
-                    'What identifier scheme will work across all property-related processes?',
-                    'Who will own the register and maintain data quality after the initial consolidation?'
-                ]
-            }
-        },
-
-        {
-            solutionId: 'PT-COV-13',
-            stream: 'Property Tax',
-            streamType: 'property-based',
-            subgroup: null,
-            gap: 'Coverage',
-            title: 'Create a simple address and location reference for each property',
-            shortTitle: 'Address and location reference',
-            timeline: '1-2 years',
-            deliveryDifficulty: 'Medium',
-            politicalSensitivity: 'Medium',
-            category: 'Addressing',
-            sortOrder: 9,
-            isActive: true,
-            overview: {
-                mainPurpose: 'Give every property in the tax roll a usable address or location reference so that bills can be delivered, field teams can find properties, and records can be matched across systems.',
-                bestStartingPoint: 'A city where many properties have no formal address, where addresses are inconsistent or ambiguous, or where field teams and postal services struggle to locate properties from the information on the roll.',
-                firstVisibleResult: 'A standardised location reference for every property on the roll, whether a formal street address, a grid reference, a descriptive location, or a combination, that allows bills to be delivered and properties to be found.',
-                leadershipDecision: 'Approve a pragmatic addressing standard that works for tax administration, assign a team to build and maintain the reference, and decide whether to align with any national addressing initiative.',
-                likelyLeadOwner: 'Revenue administration or planning department, with support from GIS, postal services, and ward offices.',
-                whatThisOptionDoes: 'Without a usable address or location reference, the city cannot reliably deliver bills, send field teams to the right property, or match records across systems. This card does not require a full national addressing programme. Instead, it focuses on creating a practical reference for every property on the roll that is good enough for tax administration purposes. This may be a formal address where one exists, supplemented by GPS coordinates, descriptive locations, or local landmarks where formal addresses are absent.',
-                mostUsefulWhen: [
-                    'Many properties on the roll have no address or an address that is too vague to be useful.',
-                    'Bill delivery failure rates are high because addresses are wrong or incomplete.',
-                    'Field teams cannot locate properties from the information available on the roll.',
-                    'The city wants to match property records across systems but has no common location reference.'
-                ],
-                usuallyNotBestFirstMove: [
-                    'The main coverage problem is finding missing properties rather than locating known ones.',
-                    'A national addressing programme is already underway and the city should align with it rather than create a parallel system.'
-                ],
-                whatFullCardWouldPlan: 'A pragmatic addressing exercise that assigns a usable location reference to every property on the roll, establishes standards for recording addresses, and creates a maintenance process for keeping references current.',
-                oftenWorksBestAlongside: [
-                    'PT-COV-07 on unique property IDs, which the address or location reference complements.',
-                    'PT-COV-05 on building a citywide baseline inventory, which can collect addressing data during enumeration.',
-                    'PT-COV-03 on targeted sweeps, which can collect or verify addresses during field visits.'
-                ],
-                politicalNote: 'Addressing is generally low to medium sensitivity. However, street naming can be politically sensitive in some contexts, and the city should be prepared for requests to name or rename streets. A pragmatic approach focused on location references rather than formal street naming can avoid some of these issues.'
-            },
-            fullDetails: {
-                whyThisMatters: 'Without a usable address or location reference, the city cannot reliably deliver bills, send field teams to the right property, or match records across systems. Many cities have properties on the roll with addresses that amount to little more than a ward name or a vague description. This makes billing uncertain, field visits inefficient, and data matching nearly impossible. A practical location reference is not a luxury; it is a basic requirement for functioning tax administration.',
-                whenStrongFit: [
-                    'Many properties on the roll have no address or an address that is too vague to be useful.',
-                    'Bill delivery failure rates are high because addresses are wrong or incomplete.',
-                    'Field teams cannot locate properties from the information available on the roll.',
-                    'The city wants to match property records across systems but has no common location reference.'
-                ],
-                whatToLineUpFirst: [
-                    'Assess the current state of addresses on the roll: how many are missing, vague, or inconsistent?',
-                    'Define a pragmatic addressing standard that works for tax administration, even if it is not a full formal address.',
-                    'Decide whether to collect GPS coordinates as a supplement or alternative to text addresses.',
-                    'Check whether a national addressing initiative exists and whether alignment is required or beneficial.'
-                ],
-                designChoices: [
-                    'Choose the addressing format: formal street address, grid reference, descriptive location, GPS coordinates, or a combination.',
-                    'Decide whether to assign addresses during field visits, from imagery, or through a desk-based exercise using existing data.',
-                    'Determine whether to build the reference into the existing register or create a separate addressing database linked by property ID.',
-                    'Choose whether to tackle the whole roll at once or prioritise areas where addressing problems are worst.'
-                ],
-                practicalPath: {
-                    first90Days: [
-                        'Audit the current state of addresses on the roll and categorise the main problems.',
-                        'Define the addressing standard and data format.',
-                        'Pilot the approach in one area to test the method and estimate the effort required.',
-                        'Coordinate with any national addressing initiative to ensure compatibility.'
-                    ],
-                    sixTo12Months: [
-                        'Roll out the addressing exercise to priority areas, collecting or correcting addresses through field visits, desk review, or a combination.',
-                        'Load address data into the register and link it to property IDs.',
-                        'Test the usability of the new addresses for bill delivery and field navigation.',
-                        'Train billing and field staff to use and maintain the address reference.'
-                    ],
-                    twelveToTwentyFourMonths: [
-                        'Complete the addressing exercise for the full roll.',
-                        'Establish a maintenance process so new properties receive addresses at registration and address changes are captured.',
-                        'Use the address reference to improve bill delivery, field operations, and data matching across systems.',
-                        'Report on the improvement in delivery rates and field efficiency.'
-                    ]
-                },
-                legalInstitutional: [
-                    'If the city is assigning or formalising addresses, it may need legal authority to do so.',
-                    'The addressing standard should be formally adopted so it is maintained consistently.',
-                    'Alignment with national addressing standards, where they exist, may be required by law or beneficial for interoperability.'
-                ],
-                capacitySystemsPartnerships: [
-                    'GIS skills are valuable for managing spatial references and GPS coordinates.',
-                    'Field teams need training on collecting or verifying addresses accurately.',
-                    'Partnerships with postal services, mapping agencies, or addressing initiatives can provide data and expertise.'
-                ],
-                risksAndSafeguards: [
-                    'If the addressing standard is too ambitious, the exercise will stall or produce data that is too complex to maintain.',
-                    'If addresses are collected but not maintained, they will degrade quickly in fast-growing areas.',
-                    'If the addressing exercise is not linked to the property register, it will create a parallel dataset that drifts out of sync.',
-                    'Street naming can be politically sensitive; a pragmatic approach using GPS or grid references may avoid this.'
-                ],
-                whatToMonitor: [
-                    'Share of properties on the roll with a usable address or location reference.',
-                    'Bill delivery success rate before and after the exercise.',
-                    'Field team time to locate a property using the address reference.',
-                    'Number of address corrections or updates processed per period.'
-                ],
-                connectionsToOtherCards: [
-                    'PT-COV-07 on unique property IDs, which the address reference complements and strengthens.',
-                    'PT-COV-05 on building a citywide baseline inventory, which can collect addresses during enumeration.',
-                    'PT-COV-03 on targeted sweeps, which can collect or verify addresses during field visits.',
-                    'PT-COV-11 on fixing record errors, which often includes correcting address information.'
-                ],
-                questionsBeforeLaunch: [
-                    'What share of properties on the roll currently have a usable address?',
-                    'What addressing standard is practical for your city, given the current state of street naming and numbering?',
-                    'Can GPS coordinates supplement or substitute for formal addresses where they are absent?',
-                    'Is there a national addressing initiative that the city should align with?'
-                ]
-            }
-        },
-
-        // =====================================================================
-        // C. Keep the roll connected to real-world events
-        // =====================================================================
-
-        {
-            solutionId: 'PT-COV-08',
-            stream: 'Property Tax',
-            streamType: 'property-based',
-            subgroup: null,
-            gap: 'Coverage',
-            title: 'Link the roll to permits, sales, and new service connections',
-            shortTitle: 'Link roll to event triggers',
-            timeline: '1-3 years',
-            deliveryDifficulty: 'High',
-            politicalSensitivity: 'Medium',
-            category: 'Integration',
-            sortOrder: 10,
-            isActive: true,
-            overview: {
-                mainPurpose: 'Create permanent, systematic links between the property tax roll and the real-world events that signal when properties are built, modified, transferred, or connected to services, so the roll stays current automatically.',
-                bestStartingPoint: 'A city that has achieved reasonable baseline coverage and now needs to prevent the roll from falling behind as new construction, transfers, and service connections occur.',
-                firstVisibleResult: 'Automatic alerts or data feeds when a building permit is issued, a property is transferred, or a new utility connection is made, triggering a check against the tax roll.',
-                leadershipDecision: 'Authorise data-sharing agreements with the relevant agencies, commit to the technical integration work, and assign a team to manage the data flows and follow up on exceptions.',
-                likelyLeadOwner: 'Revenue administration or IT, with cooperation from planning, land registry, and utility providers.',
-                whatThisOptionDoes: 'This card turns the one-off cross-matching exercise of PT-COV-02 into a permanent, ongoing process. Instead of periodically requesting data extracts and comparing them manually, the city builds systematic links so that every relevant event in another agency\'s system automatically generates a signal in the tax administration. The goal is to make it structurally difficult for a new property to exist, change hands, or receive services without appearing on the tax roll.',
-                mostUsefulWhen: [
-                    'The city has achieved reasonable baseline coverage and the priority is now keeping the roll current.',
-                    'Building permits, land transfers, and utility connections are processed through reasonably digital systems.',
-                    'The relevant agencies are willing to share data on an ongoing basis.',
-                    'The city has the IT capacity to build and maintain data integration pipelines.'
-                ],
-                usuallyNotBestFirstMove: [
-                    'The city has not yet achieved baseline coverage and the immediate priority is finding existing missing properties.',
-                    'The source systems are entirely paper-based with no realistic path to digitisation.',
-                    'There is no IT capacity to build or maintain integrations.'
-                ],
-                whatFullCardWouldPlan: 'A programme to design, build, and operate ongoing data feeds from key agencies, with exception handling workflows, data quality monitoring, and governance arrangements to sustain the integrations over time.',
-                oftenWorksBestAlongside: [
-                    'PT-COV-02 on cross-matching, which serves as the manual precursor to the permanent links.',
-                    'PT-COV-07 on unique property IDs, which provides the common identifier for matching across systems.',
-                    'PT-COV-09 on routine audits, which catches any properties that slip through the automated links.'
-                ],
-                politicalNote: 'Integration is primarily a technical and institutional challenge. Political sensitivity is moderate because it requires inter-agency cooperation and data sharing, which can encounter bureaucratic resistance. Senior leadership may need to intervene to secure cooperation.'
-            },
-            fullDetails: {
-                whyThisMatters: 'This card turns the one-off cross-matching exercise of PT-COV-02 into a permanent, ongoing process. Instead of periodically requesting data extracts and comparing them manually, the city builds systematic links so that every relevant event in another agency\'s system automatically generates a signal in the tax administration. Without these links, the roll starts falling behind the moment a coverage exercise ends, and the coverage gap quietly re-opens.',
-                whenStrongFit: [
-                    'The city has achieved reasonable baseline coverage and the priority is now keeping the roll current.',
-                    'Building permits, land transfers, and utility connections are processed through reasonably digital systems.',
-                    'The relevant agencies are willing to share data on an ongoing basis.',
-                    'The city has the IT capacity to build and maintain data integration pipelines.'
-                ],
-                whatToLineUpFirst: [
-                    'Identify the key event triggers: building permits, land transfers, new utility connections, business registrations.',
-                    'Negotiate data-sharing agreements with each agency, specifying what data is shared, how often, and in what format.',
-                    'Design the matching logic that connects incoming events to existing records or flags new properties.',
-                    'Assign a team to manage the data flows, handle exceptions, and follow up on unmatched events.'
-                ],
-                designChoices: [
-                    'Choose the integration method: real-time API feeds, periodic batch transfers, or manual extracts as a starting point.',
-                    'Decide which event types to prioritise based on volume, reliability, and expected yield.',
-                    'Design the exception handling workflow: what happens when an incoming event does not match any existing record?',
-                    'Determine the governance structure: who resolves disputes when data from different sources conflicts?'
-                ],
-                practicalPath: {
-                    first90Days: [
-                        'Map all potential event sources and assess their digital readiness and willingness to share data.',
-                        'Negotiate data-sharing agreements with the two or three highest-priority agencies.',
-                        'Design the matching logic and exception handling workflow.',
-                        'Build a pilot integration with the most accessible data source and test it in one area.'
-                    ],
-                    sixTo12Months: [
-                        'Extend integrations to additional data sources as agreements and technical work are completed.',
-                        'Process incoming events, matching them to the roll and following up on exceptions.',
-                        'Monitor the volume, quality, and yield of each data feed.',
-                        'Refine matching rules based on the types of exceptions encountered.'
-                    ],
-                    twelveToTwentyFourMonths: [
-                        'Consolidate all integrations into a stable, monitored pipeline.',
-                        'Establish performance metrics and service-level agreements with data-sharing partners.',
-                        'Use the integration data to identify systemic coverage gaps and inform other reform efforts.',
-                        'Plan for technology upgrades as source systems evolve or are replaced.'
-                    ]
-                },
-                legalInstitutional: [
-                    'Data-sharing agreements need a clear legal foundation and should specify obligations, protections, and dispute resolution.',
-                    'Privacy rules must be respected, especially when linking data from multiple sources.',
-                    'The agreements should survive staff changes, requiring institutional rather than personal commitments.'
-                ],
-                capacitySystemsPartnerships: [
-                    'IT skills for building and maintaining data integrations are essential.',
-                    'A dedicated team or unit should own the integration pipeline and monitor data quality.',
-                    'Relationships with counterparts in partner agencies need ongoing cultivation, not just initial agreement.',
-                    'The city may need to invest in middleware or integration platforms if source systems use different technologies.'
-                ],
-                risksAndSafeguards: [
-                    'If data-sharing agreements are informal, they will break down when contacts change.',
-                    'If exception handling is not resourced, unmatched events will accumulate without follow-up.',
-                    'If partner agencies change their systems without notice, integrations will break.',
-                    'If the city over-relies on integrations and stops periodic audits, properties that bypass all tracked events will be missed.'
-                ],
-                whatToMonitor: [
-                    'Volume of events received from each data source per period.',
-                    'Match rate: share of incoming events that match an existing property record.',
-                    'New properties identified through event triggers.',
-                    'Exception backlog: number of unmatched events awaiting follow-up.'
-                ],
-                connectionsToOtherCards: [
-                    'PT-COV-02 on cross-matching is the manual precursor to the permanent links built here.',
-                    'PT-COV-07 on unique property IDs provides the common identifier for matching across systems.',
-                    'PT-COV-09 on routine audits catches properties that slip through the automated links.',
-                    'PT-COV-04 on imagery catches new construction that may bypass permits and utility connections.'
-                ],
-                questionsBeforeLaunch: [
-                    'Which agencies hold the event data you need, and are they willing to share it on an ongoing basis?',
-                    'Are the source systems digital enough to support automated data feeds?',
-                    'Does the city have the IT capacity to build and maintain integrations?',
-                    'Who will manage the data flows and follow up on exceptions?'
-                ]
-            }
-        },
-
-        {
-            solutionId: 'PT-COV-09',
-            stream: 'Property Tax',
-            streamType: 'property-based',
-            subgroup: null,
-            gap: 'Coverage',
-            title: 'Put routine coverage audits on the calendar',
-            shortTitle: 'Routine coverage audits',
-            timeline: '<1 year',
-            deliveryDifficulty: 'Medium',
-            politicalSensitivity: 'Low',
-            category: 'Maintenance',
-            sortOrder: 11,
-            isActive: true,
-            overview: {
-                mainPurpose: 'Schedule regular, systematic checks to ensure the property tax roll remains complete and accurate over time, catching new properties, demolitions, and changes that other processes may have missed.',
-                bestStartingPoint: 'A city that has achieved reasonable baseline coverage through one or more initial exercises and now needs a sustainable way to keep the roll current without repeating expensive one-off programmes.',
-                firstVisibleResult: 'A published audit schedule with defined areas, frequencies, and responsibilities, and the first completed audit cycle showing how many new properties were found and how many records needed correction.',
-                leadershipDecision: 'Adopt a formal audit policy specifying the cycle, coverage, and reporting requirements, and allocate the recurring budget and staff time needed.',
-                likelyLeadOwner: 'Revenue administration, with support from field operations and data management.',
-                whatThisOptionDoes: 'Coverage degrades naturally over time as new properties are built, existing ones are modified or demolished, and records accumulate errors. Without routine audits, the city is relying entirely on self-reporting or event-triggered updates, both of which have gaps. Scheduled audits provide a safety net that catches what other processes miss and gives the city a regular measure of how well the roll matches reality.',
-                mostUsefulWhen: [
-                    'An initial coverage exercise has been completed and the city wants to maintain the gains.',
-                    'The city has field capacity that can be scheduled for periodic audits without disrupting other work.',
-                    'Leadership wants a regular measure of coverage quality to track performance and spot problems early.',
-                    'Other maintenance tools such as event triggers and citizen reporting are in place but may not catch everything.'
-                ],
-                usuallyNotBestFirstMove: [
-                    'The city has not yet achieved baseline coverage and needs a larger initial exercise first.',
-                    'There is no field capacity available for audits.'
-                ],
-                whatFullCardWouldPlan: 'A recurring audit programme with defined areas, frequencies, sampling methods, and reporting requirements, embedded in the annual work plan and budget.',
-                oftenWorksBestAlongside: [
-                    'PT-COV-08 on linking the roll to event triggers, which reduces the number of issues audits need to catch.',
-                    'PT-COV-10 on letting residents report changes, which provides another channel for catching issues between audits.',
-                    'PT-COV-11 on fixing record errors, which provides the workflow for correcting issues found during audits.'
-                ],
-                politicalNote: 'Routine audits are low political sensitivity because they are framed as maintenance rather than enforcement. However, the city should communicate the purpose clearly in audited areas to avoid causing alarm.'
-            },
-            fullDetails: {
-                whyThisMatters: 'Coverage degrades naturally over time as new properties are built, existing ones are modified or demolished, and records accumulate errors. Without routine audits, the city is relying entirely on self-reporting or event-triggered updates, both of which have gaps. Scheduled audits provide a safety net that catches what other processes miss and gives the city a regular measure of how well the roll matches reality. They also send a signal that the city is actively maintaining its register, which can deter non-compliance.',
-                whenStrongFit: [
-                    'An initial coverage exercise has been completed and the city wants to maintain the gains.',
-                    'The city has field capacity that can be scheduled for periodic audits without disrupting other work.',
-                    'Leadership wants a regular measure of coverage quality to track performance and spot problems early.',
-                    'Other maintenance tools such as event triggers and citizen reporting are in place but may not catch everything.'
-                ],
-                whatToLineUpFirst: [
-                    'Define the audit cycle: which areas are audited when, and how often each area is revisited.',
-                    'Choose the audit method: full enumeration of sample areas, comparison of imagery against the roll, or random spot checks.',
-                    'Allocate recurring budget and staff time in the annual work plan.',
-                    'Design the reporting format so audit results are comparable across areas and over time.'
-                ],
-                designChoices: [
-                    'Choose between full enumeration of sample areas and random spot checks based on available capacity.',
-                    'Decide the frequency: annual for high-growth areas, biennial or triennial for stable areas.',
-                    'Determine whether audits are conducted by internal staff, outsourced, or a combination.',
-                    'Design the escalation process for issues found: who follows up, how quickly, and what corrections are made.'
-                ],
-                practicalPath: {
-                    first90Days: [
-                        'Design the audit programme: areas, frequencies, methods, and reporting requirements.',
-                        'Allocate budget and assign or recruit audit staff.',
-                        'Develop audit protocols, checklists, and data collection tools.',
-                        'Conduct the first audit cycle in one or two areas as a pilot.'
-                    ],
-                    sixTo12Months: [
-                        'Roll out the audit programme according to the published schedule.',
-                        'Process findings promptly: add new properties, correct records, and flag issues for follow-up.',
-                        'Report results to leadership and use them to identify areas needing attention.',
-                        'Adjust the audit methodology based on the first cycle\'s experience.'
-                    ],
-                    twelveToTwentyFourMonths: [
-                        'Complete the full audit cycle for all areas and begin the next cycle.',
-                        'Track coverage metrics over time to show whether the roll is improving or degrading.',
-                        'Use audit data to inform the focus of other coverage tools and resource allocation.',
-                        'Embed the audit programme in the annual budget and work plan as a permanent activity.'
-                    ]
-                },
-                legalInstitutional: [
-                    'The city should have formal authority to conduct property audits and request information.',
-                    'The audit programme should be adopted as policy so it survives changes in leadership or staff.',
-                    'Audit results should be formally documented and used to update the official roll.'
-                ],
-                capacitySystemsPartnerships: [
-                    'Field audit teams need training on protocols, data collection, and interaction with property owners.',
-                    'A back-office team must process audit findings and update the roll promptly.',
-                    'The audit programme should use the same data tools and systems as the main register to avoid duplication.'
-                ],
-                risksAndSafeguards: [
-                    'If audits are planned but not resourced, they will be deferred indefinitely.',
-                    'If findings are not processed promptly, the audit exercise will lose credibility and value.',
-                    'If the audit is too infrequent, it will miss rapid changes in high-growth areas.',
-                    'If audit teams are not well trained, they may produce poor-quality data that is not usable.'
-                ],
-                whatToMonitor: [
-                    'Number of properties audited per cycle against the plan.',
-                    'New properties found during audits as a share of the audited area.',
-                    'Record corrections identified and processed.',
-                    'Coverage rate trend over time as measured by successive audit cycles.'
-                ],
-                connectionsToOtherCards: [
-                    'PT-COV-08 on linking the roll to event triggers reduces the issues audits need to catch.',
-                    'PT-COV-10 on letting residents report changes provides another input between audits.',
-                    'PT-COV-11 on fixing record errors provides the workflow for correcting issues found during audits.',
-                    'PT-COV-03 on targeted sweeps is a more intensive version of what audits do on a lighter, ongoing basis.'
-                ],
-                questionsBeforeLaunch: [
-                    'Does the city have the field capacity to conduct audits on a recurring basis?',
-                    'What is the right frequency for different types of areas?',
-                    'How will audit findings be processed and turned into roll updates?',
-                    'Is the budget committed as a recurring line item, not just a one-off allocation?'
-                ]
-            }
-        },
-
-        {
-            solutionId: 'PT-COV-10',
-            stream: 'Property Tax',
-            streamType: 'property-based',
-            subgroup: null,
-            gap: 'Coverage',
-            title: 'Let residents report property changes easily',
-            shortTitle: 'Citizen change reporting',
-            timeline: '<1 year',
-            deliveryDifficulty: 'Low-Medium',
-            politicalSensitivity: 'Low',
-            category: 'Citizen Reporting',
-            sortOrder: 12,
-            isActive: true,
-            overview: {
-                mainPurpose: 'Create simple, accessible channels through which residents can report property changes, new construction, demolitions, or errors in their records, helping the city keep the roll current between formal audits.',
-                bestStartingPoint: 'A city that has reasonable baseline coverage but struggles to keep the roll current because changes are not reported or captured until the next formal exercise.',
-                firstVisibleResult: 'An operational reporting channel (SMS, WhatsApp, web form, or counter) receiving and processing citizen reports of property changes.',
-                leadershipDecision: 'Approve the reporting channels, assign a team to process incoming reports, and decide how quickly the city commits to acting on verified reports.',
-                likelyLeadOwner: 'Revenue administration, with support from communications, IT, and front-office operations.',
-                whatThisOptionDoes: 'Residents are often the first to know about property changes in their area: new buildings going up, subdivisions, demolitions, or ownership transfers. By giving them a simple way to report these changes, the city gains an additional source of information that supplements formal audits and event triggers. The approach also signals that the city values resident input and is committed to keeping records accurate.',
-                mostUsefulWhen: [
-                    'Residents have access to mobile phones or the internet and are willing to report changes.',
-                    'The city has a way to verify and act on reports within a reasonable time.',
-                    'Formal audit cycles are infrequent and event triggers do not catch all changes.',
-                    'The city wants to build a collaborative relationship with residents around property information.'
-                ],
-                usuallyNotBestFirstMove: [
-                    'The main coverage problem is a large baseline gap rather than ongoing changes being missed.',
-                    'The city has no capacity to verify and act on citizen reports.'
-                ],
-                whatFullCardWouldPlan: 'A citizen reporting programme with defined channels, a processing workflow, verification procedures, and a feedback mechanism so reporters know their input was received and acted on.',
-                oftenWorksBestAlongside: [
-                    'PT-COV-09 on routine audits, which provides a formal check on areas between citizen reports.',
-                    'PT-COV-08 on linking the roll to event triggers, which catches changes that residents may not report.',
-                    'PT-COV-11 on fixing record errors, which provides the workflow for processing corrections based on citizen reports.'
-                ],
-                politicalNote: 'Citizen reporting is generally well received and low sensitivity. The city should ensure that reporting is genuinely easy and that reporters receive feedback, otherwise the channel will be seen as performative and trust will erode.'
-            },
-            fullDetails: {
-                whyThisMatters: 'Residents are often the first to know about property changes in their area: new buildings going up, subdivisions, demolitions, or ownership transfers. By giving them a simple way to report these changes, the city gains an additional source of information that supplements formal audits and event triggers. Without this channel, the city relies entirely on its own observation capacity, which is limited by budget and staff time. Citizen reporting can fill gaps between formal processes at very low cost.',
-                whenStrongFit: [
-                    'Residents have access to mobile phones or the internet and are willing to report changes.',
-                    'The city has a way to verify and act on reports within a reasonable time.',
-                    'Formal audit cycles are infrequent and event triggers do not catch all changes.',
-                    'The city wants to build a collaborative relationship with residents around property information.'
-                ],
-                whatToLineUpFirst: [
-                    'Choose the reporting channels based on what residents actually use: SMS, WhatsApp, a web form, a phone hotline, or in-person counters.',
-                    'Design a simple reporting form that captures the minimum information needed to investigate a report.',
-                    'Assign a team to receive, verify, and process reports.',
-                    'Decide on the feedback mechanism: how will the city tell reporters what happened with their report?'
-                ],
-                designChoices: [
-                    'Choose the channel mix based on digital access and resident preferences in your city.',
-                    'Decide whether to allow anonymous reports or require identification. Anonymous reporting may increase volume but reduce verifiability.',
-                    'Determine whether to offer incentives for valid reports or rely on civic motivation.',
-                    'Design the verification workflow: field visit, desk check, or automated cross-reference depending on the type of change reported.'
-                ],
-                practicalPath: {
-                    first90Days: [
-                        'Choose the reporting channels and design the submission form.',
-                        'Set up the technical infrastructure: SMS shortcode, WhatsApp business account, web form, or hotline.',
-                        'Train the receiving team on how to log, verify, and process reports.',
-                        'Pilot the channel in one or two areas and publicise it through local media and ward offices.'
-                    ],
-                    sixTo12Months: [
-                        'Extend the reporting channels to the full city with a broader communications campaign.',
-                        'Process incoming reports promptly: verify, update the roll, and send feedback to reporters.',
-                        'Track report volumes, verification rates, and the types of changes most commonly reported.',
-                        'Adjust the channels and processing workflow based on experience.'
-                    ],
-                    twelveToTwentyFourMonths: [
-                        'Embed citizen reporting as a permanent channel in the city\'s property tax administration.',
-                        'Use reporting data to identify areas where changes are happening fastest and may need more intensive audit.',
-                        'Evaluate whether incentives or recognition for active reporters would increase participation.',
-                        'Integrate citizen reports with other data sources for a more complete picture of property changes.'
-                    ]
-                },
-                legalInstitutional: [
-                    'The city should have authority to act on citizen-reported information for tax purposes.',
-                    'Privacy protections should cover both the reporter and the property owner or occupier being reported.',
-                    'The verification process should be documented so the city is not acting solely on unverified tips.'
-                ],
-                capacitySystemsPartnerships: [
-                    'A small team dedicated to processing reports is essential; if reports are ignored, the channel will die.',
-                    'The receiving system should log reports, track their status, and generate reminders for follow-up.',
-                    'Communications staff can help publicise the channel and keep it visible.'
-                ],
-                risksAndSafeguards: [
-                    'If reports are received but not acted on, the channel will lose credibility quickly.',
-                    'If the city acts on unverified reports without investigation, it may create disputes or target innocent parties.',
-                    'If the channel is not publicised effectively, report volumes will be too low to be useful.',
-                    'If the feedback loop is missing, reporters will not know whether their effort made a difference.'
-                ],
-                whatToMonitor: [
-                    'Number of reports received per channel per period.',
-                    'Share of reports verified and resulting in a roll update.',
-                    'Average time from report to verification and roll update.',
-                    'Reporter satisfaction and repeat reporting rates.'
-                ],
-                connectionsToOtherCards: [
-                    'PT-COV-09 on routine audits provides a formal check between citizen reports.',
-                    'PT-COV-08 on linking the roll to event triggers catches changes that residents may not report.',
-                    'PT-COV-11 on fixing record errors provides the workflow for processing corrections from citizen reports.',
-                    'PT-COV-01 on self-registration can be promoted through the same communication channels.'
-                ],
-                questionsBeforeLaunch: [
-                    'Which channels will residents actually use to report changes in your city?',
-                    'Who will process reports, and how quickly can they verify and act?',
-                    'How will the city provide feedback to reporters?',
-                    'What verification steps are needed before acting on a citizen report?'
-                ]
-            }
-        },
-
-        // =====================================================================
-        // D. Correct errors and keep the register usable
-        // =====================================================================
-
-        {
-            solutionId: 'PT-COV-11',
-            stream: 'Property Tax',
-            streamType: 'property-based',
-            subgroup: null,
-            gap: 'Coverage',
-            title: 'Fix basic record errors quickly',
-            shortTitle: 'Quick error correction',
-            timeline: '<1 year',
-            deliveryDifficulty: 'Low',
-            politicalSensitivity: 'Low',
-            category: 'Data Quality',
-            sortOrder: 13,
-            isActive: true,
-            overview: {
-                mainPurpose: 'Give the city a fast, delegated process for correcting routine errors in property records, such as misspelled names, wrong addresses, outdated contact details, or incorrect property use codes, without requiring senior approval for every change.',
-                bestStartingPoint: 'A city where staff and taxpayers regularly encounter errors in property records but corrections are slow because every change requires multiple approvals, a formal application, or access to a system that only a few people can use.',
-                firstVisibleResult: 'A visible reduction in the time it takes to correct a routine record error, from weeks or months to days, with an audit trail that maintains accountability.',
-                leadershipDecision: 'Define which types of corrections front-line staff can make without senior approval, set the documentation standard, and establish a simple audit trail so corrections can be reviewed.',
-                likelyLeadOwner: 'Revenue administration, with support from front-office operations, IT, and data management.',
-                whatThisOptionDoes: 'Record errors are one of the most common and most frustrating problems in property tax administration. A misspelled name means a bill cannot be delivered. A wrong address means a field team visits the wrong location. An outdated phone number means the city cannot follow up on arrears. These are not complex problems, but in many cities they persist for months or years because the correction process is cumbersome, centralised, or simply not prioritised.',
-                mostUsefulWhen: [
-                    'Staff and taxpayers frequently report errors in property records.',
-                    'Corrections are slow because of excessive approval requirements or limited system access.',
-                    'Bill delivery failure rates or complaint volumes suggest that record quality is poor.',
-                    'The city wants to improve taxpayer satisfaction and administrative efficiency quickly.'
-                ],
-                usuallyNotBestFirstMove: [
-                    'The main coverage problem is missing properties rather than errors in existing records.',
-                    'The errors are complex, such as disputed ownership or boundary conflicts, which require investigation rather than quick correction.'
-                ],
-                whatFullCardWouldPlan: 'A streamlined correction process with defined categories of routine errors, delegated authority for front-line staff, a simple audit trail, and regular quality reviews.',
-                oftenWorksBestAlongside: [
-                    'PT-COV-01 on self-registration, which often surfaces errors in existing records.',
-                    'PT-COV-10 on citizen change reporting, which provides a channel for residents to flag errors.',
-                    'PT-COV-09 on routine audits, which identifies errors that need correction.'
-                ],
-                politicalNote: 'Fixing record errors is politically easy and popular. Taxpayers appreciate faster corrections, and staff appreciate being empowered to solve problems. The main risk is if the delegation of authority is not accompanied by an audit trail, which could enable fraud.'
-            },
-            fullDetails: {
-                whyThisMatters: 'Record errors are one of the most common and most frustrating problems in property tax administration. A misspelled name means a bill cannot be delivered. A wrong address means a field team visits the wrong location. An outdated phone number means the city cannot follow up on arrears. These are not complex problems, but in many cities they persist for months or years because the correction process is cumbersome, centralised, or simply not prioritised. Fixing this is one of the easiest wins in property tax administration.',
-                whenStrongFit: [
-                    'Staff and taxpayers frequently report errors in property records.',
-                    'Corrections are slow because of excessive approval requirements or limited system access.',
-                    'Bill delivery failure rates or complaint volumes suggest that record quality is poor.',
-                    'The city wants to improve taxpayer satisfaction and administrative efficiency quickly.'
-                ],
-                whatToLineUpFirst: [
-                    'Categorise the types of errors that occur most frequently and determine which are routine enough for delegated correction.',
-                    'Define the documentation standard: what evidence is needed for each type of correction?',
-                    'Set up the audit trail: every correction should be logged with the user, date, reason, and supporting evidence.',
-                    'Train front-line staff on the new process and the boundaries of their delegated authority.'
-                ],
-                designChoices: [
-                    'Define clear categories: routine corrections that front-line staff can make immediately versus substantive changes that require senior review.',
-                    'Choose whether corrections are made in real time or batched for end-of-day processing.',
-                    'Decide whether taxpayers can request corrections through multiple channels (counter, phone, online) or only in person.',
-                    'Design the audit trail to be lightweight enough that staff actually use it, but detailed enough for meaningful review.'
-                ],
-                practicalPath: {
-                    first90Days: [
-                        'Categorise common errors and define the routine correction categories.',
-                        'Design the correction workflow, documentation standard, and audit trail.',
-                        'Train front-line staff and give them the system access or forms they need.',
-                        'Pilot the process at one or two service points and monitor the volume and quality of corrections.'
-                    ],
-                    sixTo12Months: [
-                        'Roll out the correction process to all service points.',
-                        'Review the audit trail regularly to catch any problems with the delegated authority.',
-                        'Track correction volumes and the impact on data quality, bill delivery rates, and complaint volumes.',
-                        'Adjust the categories and process based on experience.'
-                    ],
-                    twelveToTwentyFourMonths: [
-                        'Embed the correction process as a permanent, routine part of property tax administration.',
-                        'Use correction data to identify systemic data quality problems and address their root causes.',
-                        'Expand the channels through which taxpayers can request corrections if demand supports it.',
-                        'Report on the improvement in data quality and its effect on billing and collection.'
-                    ]
-                },
-                legalInstitutional: [
-                    'Delegated correction authority should be formally documented so staff are protected and accountable.',
-                    'The audit trail should meet any legal requirements for record-keeping and data integrity.',
-                    'The distinction between routine corrections and substantive changes should be clear in policy.'
-                ],
-                capacitySystemsPartnerships: [
-                    'Front-line staff need system access or clear paper-based procedures to make corrections.',
-                    'The billing or register system should support an audit trail for every change.',
-                    'A supervisor or data quality team should review corrections periodically to maintain standards.'
-                ],
-                risksAndSafeguards: [
-                    'If delegated authority is not accompanied by an audit trail, it could be exploited for fraud or favouritism.',
-                    'If the categories are too narrow, staff will still feel unable to fix obvious errors.',
-                    'If the categories are too broad, substantive changes may be made without proper review.',
-                    'If corrections are not reflected in the system quickly, bills and notices will continue to use the wrong information.'
-                ],
-                whatToMonitor: [
-                    'Number of corrections processed per period and average processing time.',
-                    'Types of corrections: which errors are most common?',
-                    'Audit trail review findings: any corrections outside the delegated scope or without proper documentation?',
-                    'Impact on bill delivery rates, complaint volumes, and taxpayer satisfaction.'
-                ],
-                connectionsToOtherCards: [
-                    'PT-COV-01 on self-registration often surfaces errors in existing records that this card can fix.',
-                    'PT-COV-10 on citizen change reporting provides a channel for residents to flag errors.',
-                    'PT-COV-09 on routine audits identifies errors that need correction.',
-                    'PT-COV-07 on unique property IDs benefits from cleaner data that reduces duplication and confusion.'
-                ],
-                questionsBeforeLaunch: [
-                    'What are the most common types of errors in your property records?',
-                    'Which corrections are routine enough that front-line staff can handle them?',
-                    'Does the system support an audit trail for every change?',
-                    'How will you review corrections to ensure quality and prevent misuse?'
-                ]
-            }
+            "legalInstitutional": [
+                "The city usually needs a clear legal basis to request property information for tax purposes and to explain how the information will be used.",
+                "The messaging should clearly separate tax registration from land titling or proof of ownership so the process does not create legal confusion."
+            ],
+            "capacitySystemsPartnerships": [
+                "A small verification team is critical; otherwise a registration drive simply creates a pile of unprocessed forms.",
+                "Basic duplicate checking, even in a spreadsheet-based system, matters from the start.",
+                "Communications and front-office staff need the same script so taxpayers hear one message."
+            ],
+            "risksAndSafeguards": [
+                "If the form asks for too much, the city will discourage participation and create a backlog.",
+                "If the city cannot process submissions quickly, public trust will fall and field staff will be blamed for a problem that is really administrative.",
+                "If the campaign sounds like a land-rights exercise, the city may trigger unnecessary fear or unrealistic expectations."
+            ],
+            "whatToMonitor": [
+                "Number of submissions received.",
+                "Share of submissions verified and either added or used to update an existing record.",
+                "Number of genuinely new properties added to the roll.",
+                "Number of contact details corrected and ready for later billing or notices."
+            ],
+            "connectionsToOtherCards": [
+                "This card usually works best alongside PT-COV-11 on fixing simple record errors, PT-COV-02 on cross-matching external data, and PT-COV-03 in areas where self-registration alone will miss too many properties."
+            ],
+            "questionsBeforeLaunch": [
+                "Which channels will actually reach missing owners or occupiers in your city?",
+                "What is the minimum information you truly need before opening a record?",
+                "Who will verify submissions, and how quickly can that team act?",
+                "How will the city explain that this is a tax-registration exercise rather than a titling exercise?"
+            ]
         }
-
-    ];
+    },
+    {
+        "solutionId": "PT-COV-02",
+        "stream": "Property Tax",
+        "streamType": "property-based",
+        "subgroup": null,
+        "gap": "Coverage",
+        "title": "Cross-match with permits, utilities, and land records",
+        "shortTitle": "Cross-match external data",
+        "timeline": "< 1 year",
+        "deliveryDifficulty": "Medium",
+        "politicalSensitivity": "Low–Medium",
+        "category": "Data Matching",
+        "sortOrder": 2,
+        "isActive": true,
+        "overview": {
+            "whatThisOptionDoes": "Use existing lists from planning, utilities, land administration, or licensing offices to find properties or contacts missing from the tax roll. This often produces faster results than starting with citywide fieldwork.",
+            "mostUsefulWhen": [
+                "Other offices already hold better data than the tax register.",
+                "The city needs fast coverage gains inside one billing cycle.",
+                "A small team can clean lists, match records, and follow up on likely misses."
+            ],
+            "whatUsuallyNeedsToBeInPlaceFirst": [
+                "Basic data-sharing permission or workable MOUs with partner agencies.",
+                "Clear matching rules and a verification step before new records are activated."
+            ],
+            "usuallyNotBestFirstMove": [
+                "It will disappoint if partner datasets are weak, outdated, or legally inaccessible.",
+                "Address standards may need cleaning before matching becomes reliable."
+            ],
+            "politicalNote": "The political risk is usually low to moderate, but the city still needs to show that new records will be handled fairly and that residents are not being drawn into a process they do not understand.",
+            "whatFullCardWouldPlan": "The full card would help the city plan which partner datasets to use first, how to agree simple data-sharing arrangements, how to match records in practice, and how to verify and absorb likely matches without creating confusion or duplicates.",
+            "oftenWorksBestAlongside": [
+                "Link the roll to permits, sales, and new service connections",
+                "Give each property one ID in one register."
+            ]
+        },
+        "fullDetails": {
+            "whyThisMatters": "This is often one of the fastest ways to widen the register because it uses information that already exists. It also tends to be cheaper than starting with fieldwork everywhere. In many cities, the real challenge is not the absence of data but the fact that information is scattered across agencies and never brought back into the tax register in a disciplined way.",
+            "mainPurpose": "Use existing data that other agencies already hold to identify properties or contacts that the tax roll is missing.",
+            "bestStartingPoint": "A city where utilities, planning, land administration, or licensing offices hold better and more current information than the tax register.",
+            "firstVisibleResult": "A first list of likely unregistered or mislinked properties that can be verified and loaded within one billing cycle.",
+            "leadershipDecision": "Choose the first partner datasets, authorise a simple data-sharing arrangement, and assign one small team to run matching and verification.",
+            "likelyLeadOwner": "Revenue administration, supported by data staff or a small analyst team, with named liaisons in partner offices.",
+            "whenStrongFit": [
+                "Planning, utility, land, or licensing offices hold lists that are newer or more complete than the tax roll.",
+                "The city needs a quick gain in coverage and does not want to wait for a citywide survey.",
+                "At least a few staff can clean lists, run basic matching logic, and follow up on uncertain cases."
+            ],
+            "whatToLineUpFirst": [
+                "Start with one or two partner datasets that are operationally useful, rather than negotiating an ambitious all-agency system from the start.",
+                "Decide the practical matching keys first: address, meter number, permit number, GPS point, or another workable reference.",
+                "If address data are weak, prepare for a cleaning step or pair this work with a basic address and location-reference initiative."
+            ],
+            "designChoices": [
+                "Choose whether the city will begin with periodic spreadsheet exchanges or a more automated feed later on.",
+                "Set a confidence rule for likely matches so staff know which cases can move quickly and which require human review.",
+                "Decide whether new matches create provisional records first or go directly to the operational register after validation."
+            ],
+            "practicalPath": {
+                "first90Days": [
+                    "Map the most promising partner datasets and select the first pilot partner or partners.",
+                    "Agree a simple file format, transfer method, and point of contact in each office.",
+                    "Run a first manual match to understand how messy the data are before trying to automate anything."
+                ],
+                "sixTo12Months": [
+                    "Verify the most promising unmatched records through desk checks, phone checks, or short field visits.",
+                    "Add or update records and keep a source log so the city can learn which partner dataset is yielding the best results.",
+                    "Refine address conventions, matching rules, and workflows based on the first rounds."
+                ],
+                "twelveToTwentyFourMonths": [
+                    "Move to a more routine cycle so new partner data are not just used once.",
+                    "Automate the easiest transfers only after the city has stabilised the basic logic and quality checks.",
+                    "Use experience from the first feeds to support wider integration or trigger-based maintenance later."
+                ]
+            },
+            "legalInstitutional": [
+                "The city usually needs permission to receive and use core non-sensitive data fields for tax administration, often through a simple MOU or administrative order.",
+                "Privacy rules need to be handled seriously even when the exchange is operational rather than technologically advanced."
+            ],
+            "capacitySystemsPartnerships": [
+                "A small analyst function matters more than a large IT project at the start.",
+                "Partner offices need named contacts; otherwise the process depends on personal relationships and quickly fades.",
+                "Verification capacity is essential so false matches do not flow directly into billing."
+            ],
+            "risksAndSafeguards": [
+                "Bad matching rules can create duplicates or attach the wrong person to the wrong property.",
+                "Weak partner data can waste staff time unless the city starts with the highest-value datasets.",
+                "An overcomplicated technical design can delay progress where a simple recurring spreadsheet exchange would already work."
+            ],
+            "whatToMonitor": [
+                "Number of likely matches identified.",
+                "Share of likely matches verified.",
+                "Number of new records added or existing records corrected through partner data.",
+                "Time between receipt of partner data and update of the tax register."
+            ],
+            "connectionsToOtherCards": [
+                "This card often works best alongside PT-COV-13 on address and location referencing, PT-COV-07 on one register and one ID, and PT-COV-08 on creating permanent trigger-based data flows."
+            ],
+            "questionsBeforeLaunch": [
+                "Which partner office has the cleanest and most useful data to start with?",
+                "What is the strongest matching field available today?",
+                "Who will review uncertain matches before records are activated?",
+                "How often can the city realistically run the matching cycle in the first year?"
+            ]
+        }
+    },
+    {
+        "solutionId": "PT-COV-03",
+        "stream": "Property Tax",
+        "streamType": "property-based",
+        "subgroup": null,
+        "gap": "Coverage",
+        "title": "Carry out a targeted street and neighbourhood sweep",
+        "shortTitle": "Targeted street sweep",
+        "timeline": "1–2 years",
+        "deliveryDifficulty": "Medium",
+        "politicalSensitivity": "Medium",
+        "category": "Fieldwork",
+        "sortOrder": 3,
+        "isActive": true,
+        "overview": {
+            "whatThisOptionDoes": "Deploy ward-level teams to walk selected streets or settlements, identify unlisted structures, and refresh basic facts for listed ones. A targeted sweep is more realistic than a citywide exercise when resources are limited and undercoverage is concentrated.",
+            "mostUsefulWhen": [
+                "Fast-growing or informal areas have many unrecorded structures.",
+                "Self-registration and desk-based matching are not enough.",
+                "Local leaders can support safe, visible fieldwork."
+            ],
+            "whatUsuallyNeedsToBeInPlaceFirst": [
+                "Authority to collect property information and identifiable field teams.",
+                "Basic maps, supervisor checks, and a route to enter findings into the register."
+            ],
+            "usuallyNotBestFirstMove": [
+                "Avoid large sweeps where supervision is too weak to protect data quality.",
+                "This is not the best first move if the city can get easier wins from data matching or register clean-up."
+            ],
+            "politicalNote": "The main risk is that residents experience the exercise as a raid rather than as a register update. The city usually needs visible local communication, identifiable teams, and a disciplined process so that fieldwork feels fair and professional.",
+            "whatFullCardWouldPlan": "The full card would help the city plan where to start, how to recruit and supervise field teams, how to manage safety and quality control, and how to move findings from the street into the register quickly.",
+            "oftenWorksBestAlongside": [
+                "Build a citywide baseline property inventory",
+                "Let residents report property changes easily",
+                "Fix basic record errors quickly."
+            ]
+        },
+        "fullDetails": {
+            "whyThisMatters": "A targeted sweep is often more realistic than a citywide canvass. It lets the city focus resources where undercoverage is likely to be highest and where paper records are least reliable. It also gives the administration a chance to test forms, routes, supervision, and community messaging before attempting anything at larger scale.",
+            "mainPurpose": "Use visible, supervised fieldwork to identify unlisted structures and refresh basic facts in places where desk-based methods will miss too much.",
+            "bestStartingPoint": "A city with concentrated blind spots such as informal settlements, fast-growing fringe areas, or neighbourhoods where address data are weak and self-registration will not be enough.",
+            "firstVisibleResult": "A cleaned and widened register in the first pilot areas, with better evidence on where the city’s biggest coverage losses actually sit.",
+            "leadershipDecision": "Choose the pilot geographies, approve the field model, and back the supervision and communications effort needed so the exercise is seen as fair and professional.",
+            "likelyLeadOwner": "Revenue administration with ward leadership, supervisors, and mapping support.",
+            "whenStrongFit": [
+                "Undercoverage is concentrated in particular settlements, fringe corridors, or neighbourhoods with weak addressing.",
+                "Desk-based matching and self-registration are yielding only partial results.",
+                "Ward leaders or local structures can support access, explain the exercise, and help prevent tension."
+            ],
+            "whatToLineUpFirst": [
+                "Choose the pilot areas deliberately rather than trying to cover the whole city at once.",
+                "Prepare maps, route plans, simple data-capture tools, supervisor checks, and a process for loading results into the register.",
+                "If safety or trust is a concern, design the public communication and field identification arrangements before deployment."
+            ],
+            "designChoices": [
+                "Decide whether the city will use staff, short-term enumerators, contractors, or a mixed team.",
+                "Choose whether the sweep will only identify missing structures or also refresh selected facts on already registered properties.",
+                "Set a realistic quality-control rule, such as supervisor re-checks on a sample of completed records."
+            ],
+            "practicalPath": {
+                "first90Days": [
+                    "Select the first pilot areas and map routes or enumeration blocks.",
+                    "Recruit and train field teams and supervisors, including on scripts, conduct, and safety.",
+                    "Prepare simple forms or tablets and agree how completed records will be reviewed."
+                ],
+                "sixTo12Months": [
+                    "Run the sweep in the pilot geographies and monitor progress closely.",
+                    "Resolve obvious duplicates, incomplete records, and unclear locations while the field teams are still available.",
+                    "Review which types of area or structure generate the most missing records and which supervision practices work best."
+                ],
+                "twelveToTwentyFourMonths": [
+                    "Expand to further high-priority areas only if the city can absorb what it finds.",
+                    "Standardise the best-performing field procedures and keep the sweep linked to a functioning register.",
+                    "Use the findings to decide whether the city needs a larger baseline exercise later on."
+                ]
+            },
+            "legalInstitutional": [
+                "The city usually needs authority to collect property information for tax purposes and a clear way to identify official field teams.",
+                "Local notice, privacy messaging, and coordination with security actors may be needed in more sensitive areas."
+            ],
+            "capacitySystemsPartnerships": [
+                "Strong supervision matters more than team size; a poorly supervised sweep can create more confusion than value.",
+                "Field results need a fast route into the register so the effort does not end in paper piles or disconnected spreadsheets.",
+                "Ward-level coordination can improve access, but the revenue team still needs to control standards and data quality."
+            ],
+            "risksAndSafeguards": [
+                "Residents may experience the exercise as a raid if the city fails to explain the purpose well.",
+                "Weak supervision can lead to inflated counts, poor-quality records, or uneven treatment across areas.",
+                "If the city does not process results quickly, the energy from fieldwork is lost and the next phase becomes harder."
+            ],
+            "whatToMonitor": [
+                "Number of structures identified that were previously outside the register.",
+                "Share of field records that pass supervisor checks.",
+                "Turnaround time from field collection to verified record creation or update.",
+                "Coverage change in the pilot areas compared with the starting position."
+            ],
+            "connectionsToOtherCards": [
+                "This card works especially well with PT-COV-11 on fixing obvious record errors, PT-COV-13 on practical location references, and PT-COV-05 if the city later decides it needs a larger baseline inventory."
+            ],
+            "questionsBeforeLaunch": [
+                "Which neighbourhoods are the biggest blind spots today?",
+                "Who will supervise teams and re-check a sample of their work?",
+                "How will the city introduce field teams so the exercise feels legitimate and safe?",
+                "How quickly can the city move pilot findings into the operational register?"
+            ]
+        }
+    },
+    {
+        "solutionId": "PT-COV-04",
+        "stream": "Property Tax",
+        "streamType": "property-based",
+        "subgroup": null,
+        "gap": "Coverage",
+        "title": "Use imagery to spot new buildings and extensions",
+        "shortTitle": "Imagery-based detection",
+        "timeline": "1–3 years",
+        "deliveryDifficulty": "Medium–High",
+        "politicalSensitivity": "Medium",
+        "category": "Technology",
+        "sortOrder": 4,
+        "isActive": true,
+        "overview": {
+            "whatThisOptionDoes": "Use recent aerial, satellite, or drone imagery to flag new roofs and building extensions that are not yet on the roll. This works especially well in fast-growing or hard-to-reach areas and helps the city target follow-up checks rather than canvassing everywhere.",
+            "mostUsefulWhen": [
+                "Peri-urban growth is fast or terrain makes fieldwork costly.",
+                "The city has at least basic GIS support or a partner who can provide it.",
+                "The administration wants a repeatable change-detection tool rather than one-off enumeration."
+            ],
+            "whatUsuallyNeedsToBeInPlaceFirst": [
+                "Access to recent imagery and a simple workflow for reviewing and verifying changes.",
+                "A route to assign IDs and update the register once a building is confirmed."
+            ],
+            "usuallyNotBestFirstMove": [
+                "Do not start here if the city cannot validate flagged structures and update the roll.",
+                "This is a poor first choice where imagery is poor or GIS support is effectively absent."
+            ],
+            "politicalNote": "The political risk is usually low to moderate, but the city still needs to show that new records will be handled fairly and that residents are not being drawn into a process they do not understand.",
+            "whatFullCardWouldPlan": "The full card would help the city plan how to obtain usable imagery, how to spot likely new buildings, how to validate them on the ground, and how to integrate confirmed changes into the register.",
+            "oftenWorksBestAlongside": [
+                "Put routine coverage audits on the calendar",
+                "Give each property one ID in one register."
+            ]
+        },
+        "fullDetails": {
+            "whyThisMatters": "Imagery is most valuable when growth is happening faster than the register can keep up. It lets the city look for change systematically and revisit the same places over time. But imagery only creates value when the city can review likely changes, validate them where needed, and push confirmed changes into the live register.",
+            "mainPurpose": "Use aerial, satellite, or drone imagery to detect buildings and extensions that the register has missed or has not yet updated.",
+            "bestStartingPoint": "A city with visible peri-urban growth, difficult terrain, or strong pressure to create a repeatable change-detection tool rather than relying only on field enumeration.",
+            "firstVisibleResult": "A first verified list of new or changed structures in priority areas, feeding directly into the register update process.",
+            "leadershipDecision": "Choose the imagery source, the pilot geography, and the minimum validation workflow so the exercise produces usable updates rather than just interesting maps.",
+            "likelyLeadOwner": "Revenue administration with GIS or mapping support and a small validation team.",
+            "whenStrongFit": [
+                "Growth corridors, fringe settlements, or dense areas are changing too quickly for occasional field sweeps alone.",
+                "The city has at least basic GIS support or can access it through a partner or contractor.",
+                "Leadership wants a method that can be repeated every year or every few years, not just a one-off project."
+            ],
+            "whatToLineUpFirst": [
+                "Decide how the city will get imagery first: existing satellite data, aerial photography, drone flights, or a partner institution.",
+                "Define the review and validation workflow before analysing imagery, otherwise the city will generate leads it cannot process.",
+                "Make sure confirmed changes can be linked to the property register and the city’s identifier system."
+            ],
+            "designChoices": [
+                "Choose between a simple visual comparison method at the start or more automated change-detection methods later.",
+                "Set thresholds for when a flagged change requires field verification and when desk validation may be enough.",
+                "Decide whether the first use of imagery will focus on missing buildings, large extensions, or both."
+            ],
+            "practicalPath": {
+                "first90Days": [
+                    "Secure the imagery source for a pilot area and confirm image quality.",
+                    "Overlay the imagery with current register or map information and define how likely changes will be flagged.",
+                    "Test the validation process on a small number of cases so the city learns how much follow-up work is really required."
+                ],
+                "sixTo12Months": [
+                    "Run the first pilot comparison and validate the highest-confidence flags.",
+                    "Create or update records for confirmed changes and document false positives so the method improves.",
+                    "Estimate the staff time and costs required for scaling to more areas."
+                ],
+                "twelveToTwentyFourMonths": [
+                    "Repeat the exercise in the same and then additional growth areas to create a regular rhythm of change detection.",
+                    "Integrate the imagery review into routine coverage audits rather than treating it as a one-off technical exercise.",
+                    "Use experience from the first cycles to decide whether more advanced analysis is worthwhile."
+                ]
+            },
+            "legalInstitutional": [
+                "Depending on the country context, the city may need clear permission to use imagery for tax-administration purposes, especially where drones are involved.",
+                "Public messaging should make clear that the purpose is to keep the roll fair and current, not to create a surveillance programme."
+            ],
+            "capacitySystemsPartnerships": [
+                "A small GIS function or trusted partner is enough to start; the city does not need a large geospatial unit at day one.",
+                "Field validation and register update capacity matter just as much as the imagery itself.",
+                "Stable property IDs or location references make imagery-based updates much easier."
+            ],
+            "risksAndSafeguards": [
+                "The city may overestimate what imagery can do and underinvest in validation and record maintenance.",
+                "Poor image quality or weak georeferencing can create misleading leads.",
+                "If communications are mishandled, the reform can attract unnecessary privacy concerns."
+            ],
+            "whatToMonitor": [
+                "Number of likely changes flagged through imagery.",
+                "Share of flagged changes confirmed after review or field validation.",
+                "Number of confirmed new or changed structures loaded into the register.",
+                "Time from identification of a likely change to completion of the register update."
+            ],
+            "connectionsToOtherCards": [
+                "This card is strongest when paired with PT-COV-09 on routine coverage audits, PT-COV-07 on one register and one ID, and PT-COV-03 where ground checks are still needed in harder areas."
+            ],
+            "questionsBeforeLaunch": [
+                "What imagery source is actually affordable and reliable for your city?",
+                "Who will validate flagged structures before records are changed?",
+                "Which geography should be piloted first to show value quickly?",
+                "How will confirmed changes flow back into the live register?"
+            ]
+        }
+    },
+    {
+        "solutionId": "PT-COV-12",
+        "stream": "Property Tax",
+        "streamType": "property-based",
+        "subgroup": null,
+        "gap": "Coverage",
+        "title": "Use a one-off registration amnesty carefully",
+        "shortTitle": "Registration amnesty",
+        "timeline": "< 1 year campaign",
+        "deliveryDifficulty": "Medium",
+        "politicalSensitivity": "Medium–High",
+        "category": "Amnesty",
+        "sortOrder": 5,
+        "isActive": true,
+        "overview": {
+            "whatThisOptionDoes": "Offer a short, one-time window in which owners of unregistered properties can come forward with reduced penalties for past non-registration. Used carefully, this can bring a large number of properties into the system before stricter follow-up begins.",
+            "mostUsefulWhen": [
+                "The city believes fear of back charges is keeping many owners from registering.",
+                "Leadership wants a visible reset before tightening enforcement.",
+                "Communication channels and front-office capacity can handle a surge."
+            ],
+            "whatUsuallyNeedsToBeInPlaceFirst": [
+                "A clear legal decision on what is waived and for how long.",
+                "A plan for immediate post-amnesty enforcement so the message stays credible."
+            ],
+            "usuallyNotBestFirstMove": [
+                "Do not repeat amnesties regularly; that trains people to wait.",
+                "It should not be used instead of fixing the underlying register and follow-up process."
+            ],
+            "politicalNote": "This can work as a reset, but only if it is clearly one-off and followed by firmer normal enforcement. Repeated amnesties tend to weaken payment culture because taxpayers learn to wait for the next waiver.",
+            "whatFullCardWouldPlan": "The full card would help the city plan eligibility, the communications campaign, surge capacity at counters, the short-term legal instrument, and the tougher follow-up that must begin once the amnesty window closes.",
+            "oftenWorksBestAlongside": [
+                "Run a quick property self-registration drive; Use a clear overdue notice ladder.",
+                "Put the register on firmer footing",
+                "These cards are about turning one-off discoveries into a more reliable property record that can support billing and future updates."
+            ]
+        },
+        "fullDetails": {
+            "whyThisMatters": "A registration amnesty can be useful where non-registration has become locked in by fear. But it is a tool to unblock a specific problem, not a standing way of doing business. If it is repeated or poorly defined, it teaches people to wait for the next waiver rather than to register on time.",
+            "mainPurpose": "Bring reluctant owners into the register by offering a short, one-time waiver of selected past penalties or back charges for prior non-registration.",
+            "bestStartingPoint": "A city that believes fear of back charges or penalties is keeping a significant pool of owners from coming forward.",
+            "firstVisibleResult": "A surge of self-disclosed properties and a reset of some hard-to-reach cases before the city tightens normal enforcement.",
+            "leadershipDecision": "Decide exactly what will be waived, for whom, for how long, and what stronger post-amnesty follow-up will begin once the window closes.",
+            "likelyLeadOwner": "Revenue administration, backed by political leadership, finance or council approval, and a strong communications effort.",
+            "whenStrongFit": [
+                "The city believes many unregistered properties are staying outside the system because owners fear penalties or back charges.",
+                "Leadership wants a visible reset before enforcing more normal rules.",
+                "The city can handle a temporary increase in traffic at counters, help desks, or registration channels."
+            ],
+            "whatToLineUpFirst": [
+                "Define the amnesty in plain language: what is waived, what is not waived, and when the offer ends.",
+                "Prepare the front-office, verification, and data-entry capacity before announcing the campaign.",
+                "Plan the post-amnesty enforcement sequence in advance so the city does not lose momentum once the window closes."
+            ],
+            "designChoices": [
+                "Decide whether the waiver applies only to penalties and interest or also to part of the principal exposure.",
+                "Choose whether the amnesty is open to all unregistered properties or only to targeted categories or areas.",
+                "Set a short, credible window rather than an open-ended offer."
+            ],
+            "practicalPath": {
+                "first90Days": [
+                    "Secure the legal or political approval needed to offer the amnesty.",
+                    "Design the communications campaign, proof requirements, and surge-capacity plan.",
+                    "Align registration, verification, billing, and enforcement teams around one clear set of rules."
+                ],
+                "sixTo12Months": [
+                    "Run the amnesty for the defined period and track uptake closely.",
+                    "Move new or corrected records into the register quickly so participants see that the city is acting consistently.",
+                    "Keep the messaging disciplined: the offer is real, but it is exceptional and temporary."
+                ],
+                "twelveToTwentyFourMonths": [
+                    "Publish the outcome and close the window cleanly.",
+                    "Begin the promised post-amnesty follow-up so taxpayers see that the city is no longer relying on repeated waivers.",
+                    "Review which types of property came in and which groups still remain outside the system."
+                ]
+            },
+            "legalInstitutional": [
+                "The city usually needs clear authority to waive penalties or other charges for a defined period.",
+                "The terms should be transparent and easy to defend politically so the amnesty is not seen as arbitrary favouritism."
+            ],
+            "capacitySystemsPartnerships": [
+                "A one-off amnesty needs surge processing capacity or it quickly becomes a queue-management problem.",
+                "Communications must be coordinated tightly with the operating teams so taxpayers are not promised one thing and told another at the counter.",
+                "The city needs a practical way to shift new records into normal administration immediately after the window."
+            ],
+            "risksAndSafeguards": [
+                "If repeated, the amnesty can undermine long-term payment culture and registration discipline.",
+                "Poorly defined waivers can create disputes and accusations of unfairness.",
+                "If leadership softens after the amnesty and does not follow up, the city loses credibility."
+            ],
+            "whatToMonitor": [
+                "Number of properties registered during the amnesty window.",
+                "Share of amnesty registrations that are verified and fully loaded into the roll.",
+                "Revenue collected during the campaign from principal amounts, penalties, or agreed settlements.",
+                "Post-amnesty compliance and registration behaviour in the following cycle."
+            ],
+            "connectionsToOtherCards": [
+                "This card should sit alongside PT-COV-01 if self-registration is the main intake channel, PT-COM-10 and PT-COM-11 if tougher follow-up will begin later, and PT-COM-17 if the city needs strong public explanation before and during the campaign."
+            ],
+            "questionsBeforeLaunch": [
+                "What exactly will the city waive, and why?",
+                "How will the city prove that this is genuinely one-off?",
+                "What enforcement or follow-up will begin immediately after the amnesty closes?",
+                "Can the operating teams handle the temporary surge without creating a backlog?",
+                "B. Put the register on firmer footing",
+                "These cards are more structural. They help the city move from ad hoc discovery and patching to a register that is coherent enough to support billing, maintenance, and later valuation work."
+            ]
+        }
+    },
+    {
+        "solutionId": "PT-COV-05",
+        "stream": "Property Tax",
+        "streamType": "property-based",
+        "subgroup": null,
+        "gap": "Coverage",
+        "title": "Build a citywide baseline property inventory",
+        "shortTitle": "Citywide baseline inventory",
+        "timeline": "1–3 years",
+        "deliveryDifficulty": "High",
+        "politicalSensitivity": "Medium",
+        "category": "Inventory",
+        "sortOrder": 6,
+        "isActive": true,
+        "overview": {
+            "whatThisOptionDoes": "Run a one-time citywide inventory that captures every parcel or structure, assigns a clear identifier, and records standard property facts. This is the reset option for cities whose property records are too fragmented or outdated to support reliable billing and later valuation work.",
+            "mostUsefulWhen": [
+                "The current roll is badly fragmented and undercoverage is likely systemic.",
+                "The city wants a clean base for future billing and valuation reform.",
+                "Leadership is willing to fund a more substantial multi-year operation."
+            ],
+            "whatUsuallyNeedsToBeInPlaceFirst": [
+                "Clear legal authority, budget, project management, and a strong quality-control plan.",
+                "A defined data model so the inventory feeds a live tax register rather than a dead survey file."
+            ],
+            "usuallyNotBestFirstMove": [
+                "Do not start here if the city cannot sustain the data after the exercise ends.",
+                "This is too heavy for cities that can fix most problems through targeted sweeps and data matching."
+            ],
+            "politicalNote": "This is a bigger political and managerial commitment than many overview cards. It often succeeds only when city leadership is prepared to fund it properly, explain why it is needed, and protect the exercise from being diluted into a weak or incomplete survey.",
+            "whatFullCardWouldPlan": "The full card would help the city plan the scope, phasing, procurement, staffing, field methodology, public communication, and quality assurance for a larger baseline exercise.",
+            "oftenWorksBestAlongside": [
+                "Give each property one ID in one register",
+                "Start with an assessment method the city can actually keep current",
+                "Revalue first where the money and change are concentrated."
+            ]
+        },
+        "fullDetails": {
+            "whyThisMatters": "A citywide baseline is not the right first move everywhere, but where the register is fundamentally broken it can be the turning point that lets the city stop operating from disconnected lists and partial field knowledge. The key is to treat the inventory as the beginning of an operational register, not as a stand-alone survey that sits on a shelf.",
+            "mainPurpose": "Create a comprehensive starting inventory of taxable properties and core facts across the whole city or across a defined first phase of the city.",
+            "bestStartingPoint": "A city with a badly fragmented or obviously incomplete register that now needs a stronger baseline to support later billing, maintenance, and valuation reform.",
+            "firstVisibleResult": "A verified baseline in the first pilot or tranche, giving the city a clearer picture of total coverage and where the biggest gaps were hiding.",
+            "leadershipDecision": "Decide whether the city will attempt a full baseline at once or phase it, and assign one owner for data standards, procurement, and quality control.",
+            "likelyLeadOwner": "Revenue administration or a dedicated project office, working with planning, mapping, IT, procurement, and field teams.",
+            "whenStrongFit": [
+                "The current property list is so incomplete or fragmented that smaller fixes keep running into the same limits.",
+                "Leadership is ready to invest in a more structural reset of the register.",
+                "The city wants a stronger platform for later billing improvement, maintenance, and possible valuation reform."
+            ],
+            "whatToLineUpFirst": [
+                "Be clear about the minimum data fields needed for operations; baseline exercises often fail when they try to collect too much at once.",
+                "Choose a governance model early so survey, mapping, IT, and revenue teams are working to the same data model.",
+                "If resources are limited, phase the inventory rather than announcing a citywide scope that cannot be delivered."
+            ],
+            "designChoices": [
+                "Settle whether the inventory is parcel-based, structure-based, or uses a layered approach that can accommodate both.",
+                "Choose whether the work will be done mainly by city staff, by contractors, or through a mixed model with strong city oversight.",
+                "Decide which areas, property types, or risk zones should be included in the first phase if the exercise is staged."
+            ],
+            "practicalPath": {
+                "first90Days": [
+                    "Define the scope, data model, pilot geography, and terms of reference.",
+                    "Clarify who will own quality control, who will approve standards, and how pilot findings will be tested.",
+                    "Design a pilot before full rollout so the city understands true costs, likely error types, and data-loading issues."
+                ],
+                "sixTo12Months": [
+                    "Complete the pilot or first phase and run meaningful quality checks.",
+                    "Resolve how the new data will enter the operational register rather than living in a project database.",
+                    "Use pilot evidence to refine cost estimates, team structure, and the rollout sequence."
+                ],
+                "twelveToTwentyFourMonths": [
+                    "Expand phase by phase only if the city can absorb the information operationally.",
+                    "Standardise the update and maintenance procedures before the exercise finishes.",
+                    "Link the baseline to later maintenance tools so the city does not need another major reset too soon."
+                ]
+            },
+            "legalInstitutional": [
+                "The city usually needs clear authority to collect and maintain property information for tax purposes and a clear working definition of taxable property.",
+                "Where the exercise uses contractors, contracts should make data ownership and confidentiality explicit."
+            ],
+            "capacitySystemsPartnerships": [
+                "Quality control is a core function, not an afterthought. Large inventories fail when supervision is too thin.",
+                "The city needs enough data-management capacity to receive, check, and load what field teams collect.",
+                "Procurement, contract management, and interdepartmental coordination matter as much as technical survey design."
+            ],
+            "risksAndSafeguards": [
+                "The city may launch a baseline that is too ambitious, too detailed, or too weakly governed to become operationally useful.",
+                "Contractor-driven inventories can produce impressive outputs that do not fit the city’s real workflows.",
+                "If the exercise ends without a maintenance plan, the city simply starts a new cycle of decline from a higher point."
+            ],
+            "whatToMonitor": [
+                "Number and share of expected properties captured in the pilot or phase.",
+                "Error rate from quality-control checks.",
+                "Share of baseline records loaded into the operational register rather than held separately.",
+                "Unit cost and time per verified record or area covered."
+            ],
+            "connectionsToOtherCards": [
+                "This card depends heavily on PT-COV-07 for a usable master register, PT-COV-13 for practical location referencing where addresses are weak, and PT-COV-09 so the new baseline does not decay after completion."
+            ],
+            "questionsBeforeLaunch": [
+                "Does the city truly need a full baseline now, or would a phased approach be more realistic?",
+                "Who owns the data model and the quality standard?",
+                "What minimum fields are essential for operations?",
+                "How will the city keep the new baseline current after the project ends?"
+            ]
+        }
+    },
+    {
+        "solutionId": "PT-COV-06",
+        "stream": "Property Tax",
+        "streamType": "property-based",
+        "subgroup": null,
+        "gap": "Coverage",
+        "title": "Clarify who should pay when ownership is unclear",
+        "shortTitle": "Clarify liability rules",
+        "timeline": "< 1 year",
+        "deliveryDifficulty": "Medium",
+        "politicalSensitivity": "Medium–High",
+        "category": "Liability",
+        "sortOrder": 7,
+        "isActive": true,
+        "overview": {
+            "whatThisOptionDoes": "Adopt simple rules for who can be billed when ownership records are weak, missing, or disputed. In many cities this means temporarily using an occupier or user rule until ownership is clarified, so that properties do not sit outside billing for years.",
+            "mostUsefulWhen": [
+                "The city has addresses or occupants but weak owner records.",
+                "Properties are slipping through because ownership clarification takes too long.",
+                "Leadership wants a practical route to start billing while records are improved."
+            ],
+            "whatUsuallyNeedsToBeInPlaceFirst": [
+                "A clear legal basis for the liability rule and a process to switch the bill when ownership is proven.",
+                "Standard notices and staff guidance for sensitive cases."
+            ],
+            "usuallyNotBestFirstMove": [
+                "Do not use this carelessly where tenant protection is weak or social risks are obvious.",
+                "This is not the first move if the law clearly prevents temporary occupier billing."
+            ],
+            "politicalNote": "This option can become sensitive quickly, especially where occupiers are vulnerable or ownership disputes are common. The city usually needs clear safeguards and should be careful not to turn an interim billing rule into a blunt instrument against tenants.",
+            "whatFullCardWouldPlan": "The full card would help the city plan the legal rule, the safeguards for occupiers and tenants, the notice templates, and the workflow for moving from interim billing to a corrected liable party once documents are clarified.",
+            "oftenWorksBestAlongside": [
+                "Run a quick property self-registration drive",
+                "Fix basic record errors quickly."
+            ]
+        },
+        "fullDetails": {
+            "whyThisMatters": "Coverage is not only about finding properties. It is also about linking each property to someone the administration can bill and contact. In settings where ownership records are weak, this becomes a binding constraint. The city needs a practical and legally defensible way to stop properties from staying outside the billing system for years while ownership issues remain unresolved.",
+            "mainPurpose": "Reduce the number of properties that remain unbilled because the city cannot confidently identify or reach the legal taxpayer.",
+            "bestStartingPoint": "A city that can identify the property but often cannot identify a workable liable party because ownership records are incomplete, disputed, or out of date.",
+            "firstVisibleResult": "A first group of previously unbillable properties moved into a workable interim billing route, often starting with commercial or clearer cases.",
+            "leadershipDecision": "Decide whether the city will rely on clearer owner-first rules, a temporary occupier fallback, or another interim liability approach, and set safeguards before rollout.",
+            "likelyLeadOwner": "Revenue administration with legal counsel, customer service, and where needed land or registration agencies.",
+            "whenStrongFit": [
+                "Properties can be identified physically, but the city still cannot bill because ownership information is missing or contested.",
+                "Utilities or permits reveal premises and occupiers before the tax office can confirm the legal owner.",
+                "The city is willing to start with clearer, less socially risky cases rather than a blanket rule."
+            ],
+            "whatToLineUpFirst": [
+                "Review the legal basis for liability carefully before changing practice.",
+                "Start with categories where the city can defend the approach more easily, such as commercial premises or absentee-owner cases.",
+                "Design a clear process for changing the liable party when ownership evidence later improves."
+            ],
+            "designChoices": [
+                "Choose whether the city will use an occupier-based temporary fallback, a service-address proxy, or a narrower owner-first clarification process.",
+                "Set the evidence threshold for switching from an interim liable party to a confirmed owner.",
+                "Decide which protections or exclusions are needed for vulnerable residential tenants."
+            ],
+            "practicalPath": {
+                "first90Days": [
+                    "Map the types of cases that are blocked today because the liable party is unclear.",
+                    "Undertake a legal and policy review and identify the least contentious entry point.",
+                    "Prepare notices, scripts, and dispute-handling procedures before piloting."
+                ],
+                "sixTo12Months": [
+                    "Pilot the chosen approach on a limited and visible set of cases.",
+                    "Track disputes, hardship issues, and data corrections closely rather than judging success only by new bills issued.",
+                    "Refine the process for changing the recorded liable party once stronger evidence becomes available."
+                ],
+                "twelveToTwentyFourMonths": [
+                    "Expand carefully if the pilot shows that the approach is workable and defensible.",
+                    "Use the learning from the pilot to improve data flows from land, utility, or permit systems.",
+                    "Keep the approach connected to a wider record-improvement agenda so it does not become a permanent substitute for better ownership data."
+                ]
+            },
+            "legalInstitutional": [
+                "This card often turns on the legal definition of the tax subject. Some cities need a bylaw or legal clarification before using any interim occupier-based approach.",
+                "Due process, notice, appeal, and tenant-protection issues must be designed in from the start."
+            ],
+            "capacitySystemsPartnerships": [
+                "Customer support and dispute handling matter as much as billing here.",
+                "The city needs a clear workflow for changing names or liability status in the register without breaking billing history.",
+                "Legal and operational teams need one consistent interpretation of the rule."
+            ],
+            "risksAndSafeguards": [
+                "If used carelessly, the reform can shift burdens onto vulnerable tenants or generate strong political backlash.",
+                "Poor scripts or unclear notices can blur the line between liability for tax purposes and legal ownership of the property.",
+                "If the city cannot correct records quickly once evidence changes, the approach becomes administratively brittle."
+            ],
+            "whatToMonitor": [
+                "Number of previously blocked properties moved into a workable billing route.",
+                "Number and share of cases later corrected or reassigned to a confirmed owner.",
+                "Volume and type of disputes triggered by the pilot.",
+                "Change in billing coverage among the targeted case type."
+            ],
+            "connectionsToOtherCards": [
+                "This card is usually safer when linked to PT-COV-02 and PT-COV-08 for better owner or occupier information, PT-COV-11 for fast corrections, and PT-COM-15 for a help-desk route that can explain and resolve disputes quickly."
+            ],
+            "questionsBeforeLaunch": [
+                "Which case type is the safest place to start?",
+                "What legal authority already exists, and what still needs clarification?",
+                "How will the city protect vulnerable residential tenants?",
+                "Who can approve a change in the liable party once new evidence appears?"
+            ]
+        }
+    },
+    {
+        "solutionId": "PT-COV-07",
+        "stream": "Property Tax",
+        "streamType": "property-based",
+        "subgroup": null,
+        "gap": "Coverage",
+        "title": "Give each property one ID in one register",
+        "shortTitle": "Unique property ID",
+        "timeline": "1–3 years",
+        "deliveryDifficulty": "High",
+        "politicalSensitivity": "Low–Medium",
+        "category": "Register",
+        "sortOrder": 8,
+        "isActive": true,
+        "overview": {
+            "whatThisOptionDoes": "Create one official property register with one identifier per property and one place where updates are made. This is the backbone reform that stops duplicate records, split files, and competing lists from undermining billing and later valuation work.",
+            "mostUsefulWhen": [
+                "The city has multiple lists or spreadsheets that do not match.",
+                "Coverage and billing work are constantly undone by duplicate or conflicting records.",
+                "The administration is ready to move from fragmented records to one system of record."
+            ],
+            "whatUsuallyNeedsToBeInPlaceFirst": [
+                "Basic digital infrastructure, data-cleaning plan, and agreement on who owns the register.",
+                "Procedures for adding, changing, and retiring records with an audit trail."
+            ],
+            "usuallyNotBestFirstMove": [
+                "Do not overspecify the system before agreeing a simple data model and update process.",
+                "This is not the best first move for tiny jurisdictions that can still manage a simpler list."
+            ],
+            "politicalNote": "Cities often underestimate the governance side of this reform. The hard part is not creating the ID itself; it is making sure every team uses the same record and that the register stays alive after the first clean-up.",
+            "whatFullCardWouldPlan": "The full card would help the city plan the unique ID structure, data migration, governance rules, staff responsibilities, and the maintenance procedures needed so that the register stays usable after the initial clean-up.",
+            "oftenWorksBestAlongside": [
+                "Link the roll to permits, sales, and new service connections",
+                "Put routine coverage audits on the calendar",
+                "Send bills people can understand."
+            ]
+        },
+        "fullDetails": {
+            "whyThisMatters": "Many cities think they have a coverage problem when they also have a register-governance problem. If different teams continue to use different lists, every discovery or clean-up exercise gets undone. One identifier and one recognised register do not solve everything, but they are the backbone for stable maintenance, better billing, and later system integration.",
+            "mainPurpose": "Create a single operational record for each property, supported by one stable identifier and one recognised register of record.",
+            "bestStartingPoint": "A city where duplicate records, parallel spreadsheets, and inconsistent updates are undermining coverage, billing, and trust in the data.",
+            "firstVisibleResult": "A cleaned pilot register with stable identifiers and a visible reduction in duplicate or conflicting records.",
+            "leadershipDecision": "Approve the master data model, the unique-ID logic, and the rule that one register becomes the record of reference for property tax operations.",
+            "likelyLeadOwner": "Revenue administration with IT, data-management, and governance support from related departments.",
+            "whenStrongFit": [
+                "The administration already has multiple lists or spreadsheets that do not match.",
+                "Duplicate and conflicting records keep disrupting normal operations.",
+                "The city is ready to move from fragmented records to a more disciplined master register."
+            ],
+            "whatToLineUpFirst": [
+                "Keep the first data model lean. The city should agree core fields, ownership rules, and update procedures before adding complexity.",
+                "Map existing sources and decide which fields can be trusted, which require cleaning, and which should not be migrated yet.",
+                "If digital infrastructure is weak, start with a simpler but still disciplined master list rather than waiting for a perfect system."
+            ],
+            "designChoices": [
+                "Settle whether the ID attaches to the parcel, the structure, or a layered system that can deal with both.",
+                "Choose a stable coding logic that does not need frequent re-numbering when streets or administrative areas change.",
+                "Decide how legacy records will be merged, retired, or preserved for audit purposes."
+            ],
+            "practicalPath": {
+                "first90Days": [
+                    "Agree the minimum data model, ID logic, and ownership of the master register.",
+                    "Select the priority dataset or pilot area for cleaning and migration.",
+                    "Document the rules for adding, editing, merging, and retiring records."
+                ],
+                "sixTo12Months": [
+                    "Clean and migrate the priority records into the new master structure.",
+                    "Resolve duplicates and ambiguous records with defined review rules rather than case-by-case improvisation.",
+                    "Train the main operational teams to use the same record rather than maintaining shadow lists."
+                ],
+                "twelveToTwentyFourMonths": [
+                    "Expand to more wards or datasets once the first migration logic has stabilised.",
+                    "Connect the master register to billing, field updates, and later event-trigger feeds.",
+                    "Retire or strictly control legacy lists so the city does not drift back into parallel systems."
+                ]
+            },
+            "legalInstitutional": [
+                "Some contexts require recognition of electronic records or a formal internal directive naming the system of record.",
+                "Data access, change authority, and audit trails should be explicit so the register remains trusted internally."
+            ],
+            "capacitySystemsPartnerships": [
+                "The city needs a business owner for the register, not just an IT custodian.",
+                "Data cleaning and migration require close operational judgement; they should not be treated as purely technical tasks.",
+                "Staff training and change management are essential because the reform changes how teams work, not just where data sit."
+            ],
+            "risksAndSafeguards": [
+                "Overdesigned systems can delay the shift to a usable master register.",
+                "If departments keep shadow lists, the reform becomes cosmetic rather than operational.",
+                "Weak migration rules can carry old errors into a new system at scale."
+            ],
+            "whatToMonitor": [
+                "Share of properties with a stable unique ID.",
+                "Number of duplicates resolved or legacy records retired.",
+                "Number of operational teams using the same register of record.",
+                "Time required to create, update, or correct a property record."
+            ],
+            "connectionsToOtherCards": [
+                "This card is foundational for PT-COV-08 on external triggers, PT-COV-09 on routine audits, PT-COV-13 on location references, and later compliance and valuation cards that need one clean property spine."
+            ],
+            "questionsBeforeLaunch": [
+                "Who owns the master register operationally?",
+                "What makes an ID stable in your context?",
+                "Which legacy records should be migrated first and which should be quarantined for review?",
+                "How will the city stop departments from rebuilding parallel lists?"
+            ]
+        }
+    },
+    {
+        "solutionId": "PT-COV-13",
+        "stream": "Property Tax",
+        "streamType": "property-based",
+        "subgroup": null,
+        "gap": "Coverage",
+        "title": "Create a simple address and location reference for each property",
+        "shortTitle": "Address and location reference",
+        "timeline": "1–2 years",
+        "deliveryDifficulty": "Medium",
+        "politicalSensitivity": "Medium",
+        "category": "Addressing",
+        "sortOrder": 9,
+        "isActive": true,
+        "overview": {
+            "whatThisOptionDoes": "Create a simple, citywide way to describe where each property is, even where formal street names, plot numbers, or cadastral references are weak. This can begin with a practical tax-use location reference—such as ward, road, block, landmark, local number, or GPS point—and later grow into a fuller municipal addressing system. The immediate goal is operational: make properties easier to find, match, bill, inspect, and update.",
+            "mostUsefulWhen": [
+                "Addresses are informal, inconsistent, or missing across city records.",
+                "Bills, notices, and field teams struggle because properties cannot be located reliably.",
+                "The city wants a practical location backbone before investing in more advanced register or systems reform."
+            ],
+            "whatUsuallyNeedsToBeInPlaceFirst": [
+                "A simple decision on the first address or location logic to use, even if it is not yet a full citywide addressing reform.",
+                "Coordination between revenue, planning, mapping or GIS staff, and ward-level actors who know the local geography well."
+            ],
+            "usuallyNotBestFirstMove": [
+                "Do not wait for a perfect citywide street-renaming programme if a simpler interim reference system would already solve the main operational problem.",
+                "This should not be treated as a substitute for adding missing properties or cleaning duplicate records."
+            ],
+            "politicalNote": "Formal addressing can become politically sensitive when it touches neighbourhood identity, informal settlements, or expectations about land rights. Many cities manage this better when they begin with a practical tax-use location reference and only later decide whether to fold it into a wider municipal addressing reform.",
+            "whatFullCardWouldPlan": "The full card would help the city plan the minimum location fields to use, the coding logic, the pilot geography, the field-verification method, and the way the new reference would be used across billing, inspections, and future data matching.",
+            "oftenWorksBestAlongside": [
+                "Give each property one ID in one register; Cross-match with permits, utilities, and land records; Make sure bills actually reach taxpayers.",
+                "Keep the roll connected to real-world events",
+                "These options help the city stop the register from drifting out of date again after an initial clean-up."
+            ]
+        },
+        "fullDetails": {
+            "whyThisMatters": "Addressing is often treated as a separate urban-management reform, but for revenue administration the immediate need is simpler: the city needs a consistent way to locate properties. A practical location reference can dramatically improve bill delivery, field verification, external data matching, and later maintenance, even before the city has a perfect public addressing system.",
+            "mainPurpose": "Give each property a practical way to be found again, even where formal street names, numbers, or cadastral references are incomplete or inconsistent.",
+            "bestStartingPoint": "A city where properties are hard to match, hard to visit, and hard to bill because location information is unreliable across systems.",
+            "firstVisibleResult": "A first pilot area where delivery, field follow-up, and record matching become visibly easier because properties can be located consistently.",
+            "leadershipDecision": "Choose the first location-reference standard and approve a practical pilot, without waiting for a full citywide addressing reform.",
+            "likelyLeadOwner": "Revenue administration with mapping or GIS support, ward actors, and possibly planning or public-works teams if public numbering is involved.",
+            "whenStrongFit": [
+                "Informal or inconsistent addresses are a major cause of undelivered notices and weak matching across records.",
+                "Field teams rely too heavily on local memory or informal landmarks to find properties.",
+                "The city wants a practical operational fix that can later support a broader addressing reform if needed."
+            ],
+            "whatToLineUpFirst": [
+                "Decide whether the first step is an internal tax-use location reference, a public numbering pilot, or a hybrid approach.",
+                "Keep the first standard simple enough that staff and residents can actually use it.",
+                "Choose the pilot geography where location problems are causing the clearest operational losses."
+            ],
+            "designChoices": [
+                "Settle the minimum location fields: for example ward, road, block, landmark, GPS point, and a local or city number.",
+                "Choose whether the reference will sit mainly in the database, on signs, or in both.",
+                "Decide how the location reference will interact with property IDs, especially in places where one parcel contains multiple taxable structures."
+            ],
+            "practicalPath": {
+                "first90Days": [
+                    "Choose the pilot area and document the first location-reference logic.",
+                    "Test the logic with field teams, bill-delivery staff, and data-matching staff before scaling.",
+                    "Prepare a simple rulebook so everyone records location information in the same way."
+                ],
+                "sixTo12Months": [
+                    "Apply the reference system in the pilot area and update existing records accordingly.",
+                    "Use the pilot to see whether delivery success, field revisit speed, and data matching actually improve.",
+                    "Refine the standard based on what staff and residents find confusing."
+                ],
+                "twelveToTwentyFourMonths": [
+                    "Scale to more areas once the basic standard is stable.",
+                    "Use the same reference across new registrations, audits, and partner-data matching.",
+                    "Decide later whether the city wants to convert the operational location reference into a broader municipal addressing initiative."
+                ]
+            },
+            "legalInstitutional": [
+                "A purely internal location reference may require little formal legal change, but public numbering or street naming may require clearer municipal authority and coordination.",
+                "The city should be careful not to imply that the new reference is proof of ownership or a land-rights instrument."
+            ],
+            "capacitySystemsPartnerships": [
+                "Ward knowledge is often essential during the pilot; revenue teams should use it without letting the system depend entirely on informal memory.",
+                "Mapping or GIS support helps, but the design should remain usable by non-specialists.",
+                "The location reference becomes far more valuable when linked to one master register and one property ID."
+            ],
+            "risksAndSafeguards": [
+                "The city may overcomplicate the reform by trying to solve the full addressing agenda at once.",
+                "Numbering or naming can become politically sensitive if residents feel excluded or fear implications for land claims.",
+                "If the standard is not applied consistently, staff will quickly drift back to ad hoc descriptions."
+            ],
+            "whatToMonitor": [
+                "Share of records with a usable location reference.",
+                "Improvement in successful bill delivery or field revisit rates in the pilot area.",
+                "Improvement in external data matching where address quality was previously weak.",
+                "Number of staff teams using the same location standard."
+            ],
+            "connectionsToOtherCards": [
+                "This card has the strongest payoff when paired with PT-COV-07 on one register and one ID, PT-COV-02 on cross-matching, and PT-COM-02 on reliable bill delivery."
+            ],
+            "questionsBeforeLaunch": [
+                "Is an internal location reference enough for now, or does the city need visible public numbering in the pilot area?",
+                "Which area should be piloted first to demonstrate operational value?",
+                "Who will maintain the location reference when subdivisions or new buildings appear?",
+                "How will the city explain the reform so it does not create confusion about land rights or titling?",
+                "C. Keep the roll connected to real-world events",
+                "These cards are about maintenance. They help the city stop coverage gains from fading once the first discovery and clean-up work has been done."
+            ]
+        }
+    },
+    {
+        "solutionId": "PT-COV-08",
+        "stream": "Property Tax",
+        "streamType": "property-based",
+        "subgroup": null,
+        "gap": "Coverage",
+        "title": "Link the roll to permits, sales, and new service connections",
+        "shortTitle": "Link roll to event triggers",
+        "timeline": "1–3 years",
+        "deliveryDifficulty": "High",
+        "politicalSensitivity": "Medium",
+        "category": "Integration",
+        "sortOrder": 10,
+        "isActive": true,
+        "overview": {
+            "whatThisOptionDoes": "Make key events—building permits, completions, transfers, and utility connections—feed the property roll automatically or through a routine monthly process. This turns coverage from a one-off clean-up into a maintenance system.",
+            "mostUsefulWhen": [
+                "Planning, land, or utility processes are already functioning reasonably well.",
+                "The city wants coverage maintenance to happen through normal government workflows.",
+                "There is some institutional support for inter-agency cooperation."
+            ],
+            "whatUsuallyNeedsToBeInPlaceFirst": [
+                "Agreements with partner agencies and a clear matching key or address standard.",
+                "A routine for receiving, reviewing, and acting on incoming event data."
+            ],
+            "usuallyNotBestFirstMove": [
+                "Avoid this as a first move when basic record matching is still too weak.",
+                "It is not a good fit where the relevant transactions happen mostly outside formal systems."
+            ],
+            "politicalNote": "The political risk is usually low to moderate, but the city still needs to show that new records will be handled fairly and that residents are not being drawn into a process they do not understand.",
+            "whatFullCardWouldPlan": "The full card would help the city plan the event triggers, the institutional agreements, the monthly update process, and the exception-handling rules that turn permits, transfers, and service connections into routine register updates.",
+            "oftenWorksBestAlongside": [
+                "Cross-match with permits, utilities, and land records",
+                "Give each property one ID in one register",
+                "Put routine coverage audits on the calendar."
+            ]
+        },
+        "fullDetails": {
+            "whyThisMatters": "Initial discovery drives are valuable, but the real test is whether the city can keep the roll current without repeatedly starting from scratch. Trigger-based updates are one of the most practical ways to do this because they connect the tax register to events that already happen elsewhere in government or in the market.",
+            "mainPurpose": "Turn routine external events—such as building permits, completions, sales, inheritances, subdivisions, or utility connections—into regular triggers for register updates.",
+            "bestStartingPoint": "A city that wants the register to update more continuously and has at least a few external processes or agencies that can realistically serve as triggers.",
+            "firstVisibleResult": "A first trigger stream that begins to feed usable changes back into the register, such as building completions or new service connections.",
+            "leadershipDecision": "Choose the first trigger to operationalise and back the inter-agency arrangement needed to make it routine rather than exceptional.",
+            "likelyLeadOwner": "Revenue administration with partner agencies such as planning, land registration, utilities, or licensing.",
+            "whenStrongFit": [
+                "The city already relies on formal or semi-formal processes such as permits, title transfers, or new service connections.",
+                "Partner agencies are open to a simple operational arrangement, even if full systems integration is still far away.",
+                "Leadership wants the register to evolve from a one-off project into a routine administrative process."
+            ],
+            "whatToLineUpFirst": [
+                "Choose one trigger first and make it work before trying to connect everything.",
+                "Agree the minimum data fields and the common key or location logic that will let records be matched and updated reliably.",
+                "Clarify who is responsible for reviewing trigger data and who has authority to change the register."
+            ],
+            "designChoices": [
+                "Decide whether the first trigger feed will be manual, periodic, or more automated.",
+                "Choose whether the reform will simply update the register or also require tax ID or clearance checks within the partner process.",
+                "Set a rule for exception handling so mismatches do not stall the entire process."
+            ],
+            "practicalPath": {
+                "first90Days": [
+                    "Identify the first candidate trigger and negotiate a practical operating arrangement.",
+                    "Pilot the data handover or query process on a small sample of cases.",
+                    "Define the workflow from trigger receipt to confirmed register update."
+                ],
+                "sixTo12Months": [
+                    "Run the first trigger process routinely and review exception cases every month or quarter.",
+                    "Measure how often the trigger data actually produce usable updates.",
+                    "Refine the fields, timing, and validation rules before scaling or automating."
+                ],
+                "twelveToTwentyFourMonths": [
+                    "Add further trigger streams only after the first one is stable.",
+                    "Move toward more predictable or automated exchange where it is genuinely useful.",
+                    "Use the trigger logic to reduce the size and cost of future audit or discovery exercises."
+                ]
+            },
+            "legalInstitutional": [
+                "The city usually needs data-sharing authority or an MOU, and in some cases a rule requiring tax ID or tax clearance as part of a partner process.",
+                "The arrangement should be narrow and practical enough to survive staff changes and routine bureaucratic pressures."
+            ],
+            "capacitySystemsPartnerships": [
+                "Trigger-based maintenance needs named liaisons in each office, not just senior-level agreement.",
+                "A small exception-review routine is critical because not every trigger will match cleanly to an existing record.",
+                "One stable register and one location or ID logic make this reform much easier to sustain."
+            ],
+            "risksAndSafeguards": [
+                "Cities often sign ambitious agreements that never become operational because no one owns the daily workflow.",
+                "Weak matching rules can create bad updates or rising backlogs of exceptions.",
+                "If the tax office cannot act on the trigger data promptly, partner confidence may fall."
+            ],
+            "whatToMonitor": [
+                "Number of update events received from each trigger source.",
+                "Share of trigger events converted into confirmed record updates.",
+                "Average lag between the real-world event and the register update.",
+                "Number of unresolved exception cases."
+            ],
+            "connectionsToOtherCards": [
+                "This card depends on PT-COV-07 and PT-COV-13 for a usable register backbone, and it complements PT-COV-09 because good trigger flows reduce the burden on later audits."
+            ],
+            "questionsBeforeLaunch": [
+                "Which trigger source is easiest to operationalise first?",
+                "Who reviews and approves updates coming from the trigger feed?",
+                "What should happen when a trigger cannot be matched cleanly to a record?",
+                "Will the city also use tax clearance or tax ID checks inside partner processes, or only data sharing?"
+            ]
+        }
+    },
+    {
+        "solutionId": "PT-COV-09",
+        "stream": "Property Tax",
+        "streamType": "property-based",
+        "subgroup": null,
+        "gap": "Coverage",
+        "title": "Put routine coverage audits on the calendar",
+        "shortTitle": "Routine coverage audits",
+        "timeline": "< 1 year to start; repeat",
+        "deliveryDifficulty": "Medium",
+        "politicalSensitivity": "Low",
+        "category": "Maintenance",
+        "sortOrder": 11,
+        "isActive": true,
+        "overview": {
+            "whatThisOptionDoes": "Schedule small, regular checks—such as hotspot audits, permit-to-roll checks, and imagery reviews—so that coverage does not decay after a one-off campaign. This protects earlier gains and is usually cheaper than repeatedly rebuilding the roll from scratch.",
+            "mostUsefulWhen": [
+                "The city has already improved the roll and now needs to keep it current.",
+                "Growth is steady enough that the register drifts if nothing is checked routinely.",
+                "Management can commit to a recurring calendar and small annual budget."
+            ],
+            "whatUsuallyNeedsToBeInPlaceFirst": [
+                "A simple audit plan, ownership of follow-up actions, and a place to record corrections.",
+                "At least one source of update evidence, such as field checks, permits, or imagery."
+            ],
+            "usuallyNotBestFirstMove": [
+                "This is not the first move if the underlying register is still badly incomplete.",
+                "Routine audits add little value if there is no process to absorb and act on findings."
+            ],
+            "politicalNote": "The political risk is usually low to moderate, but the city still needs to show that new records will be handled fairly and that residents are not being drawn into a process they do not understand.",
+            "whatFullCardWouldPlan": "The full card would help the city plan a repeatable audit rhythm, the hotspots to review, the minimum evidence to collect, and the staffing and budget needed to keep coverage from slipping.",
+            "oftenWorksBestAlongside": [
+                "Use imagery to spot new buildings and extensions",
+                "Give each property one ID in one register",
+                "Link the roll to permits, sales, and new service connections."
+            ]
+        },
+        "fullDetails": {
+            "whyThisMatters": "Coverage declines quietly when the city treats maintenance as something that will happen informally. Routine audits give the administration a calendar, a budget logic, and a leadership checkpoint. They also make it easier to protect the gains from more intensive discovery work without having to repeat a major survey every few years.",
+            "mainPurpose": "Create a repeating audit rhythm so the city periodically checks whether the register is drifting out of date and corrects it before losses become large again.",
+            "bestStartingPoint": "A city that has already made some improvement in coverage and now needs a practical maintenance cycle that leadership can budget for and supervise.",
+            "firstVisibleResult": "A first scheduled audit cycle in priority areas, with a concrete list of additions and corrections rather than a vague commitment to keep the roll current.",
+            "leadershipDecision": "Adopt an affordable audit rhythm and assign a small team to own it, rather than leaving maintenance to good intentions.",
+            "likelyLeadOwner": "Revenue administration with mapping, field, and possibly partner-data support.",
+            "whenStrongFit": [
+                "The city has already widened the register but has no predictable method for keeping it current.",
+                "Growth or densification is continuing, even if not everywhere.",
+                "Leadership prefers a manageable recurring task over occasional large clean-up drives."
+            ],
+            "whatToLineUpFirst": [
+                "Choose a realistic cycle and scope, such as annual hotspot checks or a two- to three-year rotation.",
+                "Decide how the audit will combine desk review, imagery, partner data, and field follow-up.",
+                "Create a clear workflow from audit finding to register correction."
+            ],
+            "designChoices": [
+                "Set the unit of review: hotspot, ward, growth corridor, or rotating citywide sample.",
+                "Decide which audit methods are most cost-effective for the city’s context.",
+                "Choose how results will be reported to management so the cycle remains visible and funded."
+            ],
+            "practicalPath": {
+                "first90Days": [
+                    "Approve the first audit calendar and define the team responsible.",
+                    "Select the first geography or risk areas and assemble the relevant existing data.",
+                    "Document the update and reporting process so the audit produces action rather than only findings."
+                ],
+                "sixTo12Months": [
+                    "Run the first audit cycle and process the additions and corrections it reveals.",
+                    "Compare the audit yield across different methods or geographies.",
+                    "Use the first results to refine the next cycle and to justify budget provision."
+                ],
+                "twelveToTwentyFourMonths": [
+                    "Embed the audit routine in the normal budget and annual workplan.",
+                    "Link the audit cycle to imagery review, trigger data, or field checks where useful.",
+                    "Use repeat cycles to spot where the city still needs deeper reforms rather than only maintenance."
+                ]
+            },
+            "legalInstitutional": [
+                "Most cities can start this administratively, though partner-data access or field-verification authority may need clarifying.",
+                "The main legal need is often not a new law but clear internal authorisation and documented procedures."
+            ],
+            "capacitySystemsPartnerships": [
+                "A small cross-functional team is usually more effective than a large one with weak ownership.",
+                "The city needs simple reporting discipline so audit findings do not disappear into routine workload.",
+                "Maintenance is easier when the register already has stable IDs and usable location references."
+            ],
+            "risksAndSafeguards": [
+                "Audit cycles that are too ambitious quickly collapse into missed deadlines and declining credibility.",
+                "Findings can accumulate without action if update capacity is weak.",
+                "If management never reviews the results, the audit becomes a ritual rather than a maintenance tool."
+            ],
+            "whatToMonitor": [
+                "Whether the audit cycle was completed on schedule.",
+                "Number of additions and corrections identified and processed.",
+                "Lag between identification of an issue and update of the register.",
+                "Change in coverage quality in the audited areas over successive cycles."
+            ],
+            "connectionsToOtherCards": [
+                "This card reinforces PT-COV-04 on imagery, PT-COV-08 on event triggers, and PT-COV-10 on citizen-reported changes. Together these cards create a maintenance system rather than a one-off clean-up."
+            ],
+            "questionsBeforeLaunch": [
+                "What audit cycle can the city actually sustain every year or every two to three years?",
+                "Which areas should be checked first and why?",
+                "Who will follow through on audit findings once they are identified?",
+                "How will leadership know whether the cycle is working?"
+            ]
+        }
+    },
+    {
+        "solutionId": "PT-COV-10",
+        "stream": "Property Tax",
+        "streamType": "property-based",
+        "subgroup": null,
+        "gap": "Coverage",
+        "title": "Let residents report property changes easily",
+        "shortTitle": "Citizen change reporting",
+        "timeline": "< 1 year",
+        "deliveryDifficulty": "Low–Medium",
+        "politicalSensitivity": "Low",
+        "category": "Citizen Reporting",
+        "sortOrder": 12,
+        "isActive": true,
+        "overview": {
+            "whatThisOptionDoes": "Create easy ways for residents to report address changes, ownership changes, completed extensions, or occupancy changes through a counter, phone, messaging app, or short digital form. This captures small but frequent updates that formal audits often miss.",
+            "mostUsefulWhen": [
+                "Many small changes happen between formal update cycles.",
+                "The city can respond quickly enough to make reporting feel worthwhile.",
+                "Phone, WhatsApp, or ward-counter usage is common."
+            ],
+            "whatUsuallyNeedsToBeInPlaceFirst": [
+                "At least one low-friction reporting channel and a small verification workflow.",
+                "A feedback step so people know their update was received and processed."
+            ],
+            "usuallyNotBestFirstMove": [
+                "Do not launch this without a team that can verify and update records promptly.",
+                "It adds little value where residents have almost no practical way to contact the city."
+            ],
+            "politicalNote": "The political risk is usually low to moderate, but the city still needs to show that new records will be handled fairly and that residents are not being drawn into a process they do not understand.",
+            "whatFullCardWouldPlan": "The full card would help the city plan low-friction reporting channels, the verification workflow, the feedback message to residents, and the way reported changes flow into the official record.",
+            "oftenWorksBestAlongside": [
+                "Put routine coverage audits on the calendar; Fix basic record errors quickly.",
+                "Correct errors and keep the register usable",
+                "These options deal with the simple but important issues that make a register frustrating to use if they are left unresolved."
+            ]
+        },
+        "fullDetails": {
+            "whyThisMatters": "Residents often know about changes before the tax office does. When the city gives them a simple way to report those changes, it can maintain the roll more cheaply between larger checks. But the key is not the channel itself. The key is whether the administration can triage, verify, and act on the information promptly enough that the public sees the channel as useful.",
+            "mainPurpose": "Create easy, low-friction channels through which owners or occupiers can report changes to contact details, building status, occupancy, or other core facts between audit cycles.",
+            "bestStartingPoint": "A city that needs a practical ongoing update channel and has enough front-office discipline to receive, verify, and act on the reports.",
+            "firstVisibleResult": "A first stream of citizen-reported updates that can be processed into visible corrections and additions without waiting for the next formal audit.",
+            "leadershipDecision": "Choose the reporting channels and verification standard, and make sure the city is ready to respond rather than simply receive messages.",
+            "likelyLeadOwner": "Revenue administration, front-office or help-desk teams, and where relevant ward offices or digital service channels.",
+            "whenStrongFit": [
+                "Many small changes occur between formal audit or inspection cycles.",
+                "The city has at least some usable channels such as ward counters, web forms, USSD, WhatsApp, SMS, or a hotline.",
+                "Leadership wants a low-cost maintenance tool that can complement, not replace, more formal checks."
+            ],
+            "whatToLineUpFirst": [
+                "Choose the change types the city is actually ready to process, rather than opening a channel for every possible issue at once.",
+                "Define the minimum proof or verification required for different kinds of update.",
+                "Set a response standard so taxpayers know what will happen after they submit a change."
+            ],
+            "designChoices": [
+                "Decide whether one common channel is enough or whether different groups need different routes.",
+                "Choose whether the city will confirm receipt automatically and later confirm outcome once the update is verified.",
+                "Set triage rules so easy changes are processed quickly and harder cases are escalated."
+            ],
+            "practicalPath": {
+                "first90Days": [
+                    "Select the first channels and prepare a simple submission format.",
+                    "Train staff on triage, scripts, and confirmation messages.",
+                    "Pilot the channel on a limited set of change types and watch where the process slows down."
+                ],
+                "sixTo12Months": [
+                    "Open the channel more broadly and begin reporting on how many changes are being processed.",
+                    "Refine proof requirements and scripts based on the types of change that arrive most often.",
+                    "Use the inflow of reports to identify areas where audit or field checks are still needed."
+                ],
+                "twelveToTwentyFourMonths": [
+                    "Integrate the reporting channel into the normal maintenance cycle and annual communications calendar.",
+                    "Link the channel to citizen-facing campaigns so residents know why and when to report changes.",
+                    "Keep reviewing whether the channel is improving data quality or just creating noise."
+                ]
+            },
+            "legalInstitutional": [
+                "Most cities can start administratively, but the city should still be clear about how reported information will be used and what proof is needed for more material changes.",
+                "A privacy notice and consistent data-use explanation are good practice even for simple channels."
+            ],
+            "capacitySystemsPartnerships": [
+                "The city needs staff who can triage and route cases quickly, not just receive them.",
+                "A simple log or ticketing system is important so submissions do not disappear.",
+                "This card becomes much more valuable when linked to the register backbone and simple location references."
+            ],
+            "risksAndSafeguards": [
+                "If the city does not respond or takes too long, trust in the channel collapses.",
+                "False or low-quality submissions can create workload unless triage rules are clear.",
+                "A successful channel can quickly overwhelm a weak back office."
+            ],
+            "whatToMonitor": [
+                "Number of change reports received.",
+                "Share of reports verified and acted on within the stated service standard.",
+                "Most common change types and most common failure points.",
+                "Effect of citizen-reported changes on delivery success or data quality."
+            ],
+            "connectionsToOtherCards": [
+                "This card pairs naturally with PT-COV-11 on quick record fixes, PT-COM-15 on help-desk support, and PT-COV-09 on routine audits that can verify or complement citizen-reported changes."
+            ],
+            "questionsBeforeLaunch": [
+                "Which reporting channels are most realistic in your city right now?",
+                "What types of change should be accepted in the first phase?",
+                "Who will verify submissions and close the loop with the taxpayer?",
+                "How will the city stop the channel from becoming a backlog of unprocessed messages?",
+                "D. Correct errors and keep the register usable",
+                "These cards keep the register credible day to day. They reduce the friction that makes taxpayers and staff lose confidence in the system."
+            ]
+        }
+    },
+    {
+        "solutionId": "PT-COV-11",
+        "stream": "Property Tax",
+        "streamType": "property-based",
+        "subgroup": null,
+        "gap": "Coverage",
+        "title": "Fix basic record errors quickly",
+        "shortTitle": "Quick error correction",
+        "timeline": "< 1 year",
+        "deliveryDifficulty": "Low",
+        "politicalSensitivity": "Low",
+        "category": "Data Quality",
+        "sortOrder": 13,
+        "isActive": true,
+        "overview": {
+            "whatThisOptionDoes": "Set up a fast route to correct simple mistakes in names, addresses, contacts, and duplicate records. Quick data correction is a small reform with outsized effects because it improves bill delivery, public trust, and the quality of later coverage and compliance work.",
+            "mostUsefulWhen": [
+                "Many problems are basic data errors rather than major legal disputes.",
+                "Bills are being returned because names or addresses are wrong.",
+                "The city wants a visible service improvement while larger reforms are prepared."
+            ],
+            "whatUsuallyNeedsToBeInPlaceFirst": [
+                "A simple correction rule, proof requirements, and a staff member with authority to update records.",
+                "An audit trail so changes can be reviewed later."
+            ],
+            "usuallyNotBestFirstMove": [
+                "Do not send factual disputes into a long appeal process if they can be corrected administratively.",
+                "This will not solve deep undercoverage by itself."
+            ],
+            "politicalNote": "The political risk is usually low to moderate, but the city still needs to show that new records will be handled fairly and that residents are not being drawn into a process they do not understand.",
+            "whatFullCardWouldPlan": "The full card would help the city plan a correction desk, service standards, evidence rules, audit trails, and the interface between quick factual fixes and more formal disputes.",
+            "oftenWorksBestAlongside": [
+                "Run a quick property self-registration drive; Make sure bills actually reach taxpayers; Set up a help desk and quick fixes for billing mistakes.",
+                "Compliance and collection",
+                "These cards help the city move from bills on paper to money in the treasury. They start with understandable bills and easy payment, then move into controls, follow-up, and stronger enforcement tools for arrears.",
+                "A city normally does not need every enforcement card at once. The point is to choose a package that starts with credible basics and only then moves into stronger measures.",
+                "Bills and payment basics",
+                "These are the first things taxpayers experience. If they are weak, even fair tax bills can become hard to collect."
+            ]
+        },
+        "fullDetails": {
+            "whyThisMatters": "Coverage work creates value only if the register remains usable. In many cities, a large share of day-to-day friction comes not from deep policy problems but from small factual mistakes that no one can fix quickly. A fast correction route removes those barriers, improves delivery, and keeps public interaction focused on the tax rather than on administrative irritation.",
+            "mainPurpose": "Create a fast route for correcting simple factual errors in the property record so that delivery, billing, and taxpayer interaction are not constantly disrupted by avoidable mistakes.",
+            "bestStartingPoint": "A city where small errors in names, addresses, contacts, or record links are causing repeat delivery failure, front-office frustration, and avoidable disputes.",
+            "firstVisibleResult": "A visible reduction in easy-to-fix errors and a faster response time for taxpayers who need a correction made.",
+            "leadershipDecision": "Define what counts as a simple administrative correction, assign a team or desk to handle it, and give that team authority to act within clear rules.",
+            "likelyLeadOwner": "Revenue administration, customer support, and data-management staff.",
+            "whenStrongFit": [
+                "Returned bills and failed contact attempts often trace back to simple factual errors.",
+                "Staff and taxpayers both know the mistakes are minor, but the current correction route is slow or unclear.",
+                "Leadership wants an early service improvement that also protects later revenue operations."
+            ],
+            "whatToLineUpFirst": [
+                "Be explicit about which cases count as simple corrections and which still require a formal review or appeal.",
+                "Keep the evidence rule light for truly factual issues but maintain a proper audit trail of every change.",
+                "Link the correction process to the live register and, where relevant, the billing system."
+            ],
+            "designChoices": [
+                "Choose whether the city will use a counter desk, help-desk route, online request form, or all three.",
+                "Set a service standard for how quickly simple corrections should be handled.",
+                "Decide who can approve a change and when a supervisor sign-off is needed."
+            ],
+            "practicalPath": {
+                "first90Days": [
+                    "Define eligible error types and the proof needed for each.",
+                    "Assign staff, scripts, and a tracking method for requests.",
+                    "Pilot the quick-fix route and monitor which error types are most common."
+                ],
+                "sixTo12Months": [
+                    "Open the service more widely and track whether the correction backlog is shrinking.",
+                    "Use the data to identify which upstream processes create repeat errors.",
+                    "Adjust the rules so truly simple corrections move quickly while contentious cases are routed elsewhere."
+                ],
+                "twelveToTwentyFourMonths": [
+                    "Embed the correction function into normal customer support and register maintenance.",
+                    "Use recurring error patterns to improve forms, data-entry rules, or external data feeds.",
+                    "Review whether the service standard should be tightened once the workflow stabilises."
+                ]
+            },
+            "legalInstitutional": [
+                "The city usually needs clear internal authority for administrative corrections and an audit requirement for any record change.",
+                "The process should distinguish factual correction from disputes about valuation, liability, or exemptions."
+            ],
+            "capacitySystemsPartnerships": [
+                "The team handling corrections needs both customer-service skill and direct access to the register.",
+                "A simple log or ticketing tool matters because corrections are easy to promise and easy to lose.",
+                "The value of this card rises when it is connected to bill delivery, help-desk, and register-maintenance workflows."
+            ],
+            "risksAndSafeguards": [
+                "If authority is unclear, staff will push simple cases into slow formal channels.",
+                "If controls are too weak, the city risks unauthorised changes to the record.",
+                "If the service standard is unrealistic, the city creates new frustration instead of solving old friction."
+            ],
+            "whatToMonitor": [
+                "Number of correction requests received and resolved.",
+                "Average turnaround time for simple corrections.",
+                "Most common error types and their source.",
+                "Reduction in undelivered bills or repeated taxpayer complaints linked to record errors."
+            ],
+            "connectionsToOtherCards": [
+                "This card supports nearly every other coverage and compliance card. It is especially important alongside PT-COV-01, PT-COV-10, PT-COM-02, and PT-COM-15 because those reforms all create new interactions where errors surface quickly."
+            ],
+            "questionsBeforeLaunch": [
+                "What counts as a simple correction in your city and what does not?",
+                "Who can approve and execute a change in the live register?",
+                "How will the city track requests and prove that they were resolved?",
+                "Which recurring error types point to a deeper upstream data problem?"
+            ]
+        }
+    }
+];
 
 })(window);
