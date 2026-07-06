@@ -1003,6 +1003,7 @@
                 // Overview Selection tab - both stored in same field under different properties
                 'rosraOverviewSelections': { fieldId: 'selectedSolutionsData', subKey: 'selections' },
                 'rosraSelectedSolutions': { fieldId: 'selectedSolutionsData', subKey: 'selectedSolutions' },
+                'rosraSavedSolutionCards': { fieldId: 'selectedSolutionsData', subKey: 'savedSolutionCards' },
                 // Implementation Progress tab
                 'rosraImplementationProgress': { fieldId: 'implementationProgressData' },
                 // Prioritization tab (read-only, populated from Gap Analysis)
@@ -1287,6 +1288,9 @@
                         }
                         if (selectedSolutionsData.selectedSolutions) {
                             localStorage.setItem('rosraSelectedSolutions', JSON.stringify(selectedSolutionsData.selectedSolutions));
+                        }
+                        if (selectedSolutionsData.savedSolutionCards) {
+                            localStorage.setItem('rosraSavedSolutionCards', JSON.stringify(selectedSolutionsData.savedSolutionCards));
                         }
                     } catch (e) {
                         console.warn('Could not parse selected solutions data:', e);
@@ -1609,9 +1613,11 @@
                 function flushOverviewSelectionsToForm() {
                     var overviewSelections = localStorage.getItem('rosraOverviewSelections');
                     var selectedSolutionsList = localStorage.getItem('rosraSelectedSolutions');
+                    var savedSolutionCards = localStorage.getItem('rosraSavedSolutionCards');
                     var selectedSolutionsData = {
                         selections: overviewSelections ? JSON.parse(overviewSelections) : {},
                         selectedSolutions: selectedSolutionsList ? JSON.parse(selectedSolutionsList) : [],
+                        savedSolutionCards: savedSolutionCards ? JSON.parse(savedSolutionCards) : [],
                         timestamp: new Date().toISOString()
                     };
                     $("#selectedSolutionsData").val(JSON.stringify(selectedSolutionsData));

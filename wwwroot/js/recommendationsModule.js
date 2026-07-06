@@ -115,6 +115,7 @@
 
             let selectedSolutions = [];
             let progressData = {};
+            let savedSolutionKeys = [];
             let timelineFilter = 'all'; // 'all' | '<1 year' | '1-3 years' | '3+ years'
             let priorityRefreshListenerBound = false;
 
@@ -122,6 +123,39 @@
             function getFilteredSolutions() {
                 if (timelineFilter === 'all') return selectedSolutions;
                 return selectedSolutions.filter(s => s.timeline === timelineFilter);
+            }
+
+            function getSolutionKey(solution) {
+                if (!solution) return '';
+                return [
+                    solution.solutionId || '',
+                    solution.streamName || '',
+                    solution.gapType || ''
+                ].map(part => encodeURIComponent(String(part))).join('|');
+            }
+
+            function isSolutionSaved(solution) {
+                return savedSolutionKeys.includes(getSolutionKey(solution));
+            }
+
+            function getSavedSolutions() {
+                const saved = new Set(savedSolutionKeys);
+                return selectedSolutions.filter(s => saved.has(getSolutionKey(s)));
+            }
+
+            function getFilteredSavedSolutions() {
+                const saved = getSavedSolutions();
+                if (timelineFilter === 'all') return saved;
+                return saved.filter(s => s.timeline === timelineFilter);
+            }
+
+            function pruneSavedSolutionKeys() {
+                const valid = new Set(selectedSolutions.map(getSolutionKey));
+                const pruned = savedSolutionKeys.filter(key => valid.has(key));
+                if (pruned.length !== savedSolutionKeys.length) {
+                    savedSolutionKeys = pruned;
+                    saveSavedSolutionCards();
+                }
             }
 
             // Sync the active state on the summary filter cards
@@ -138,6 +172,8 @@
                 const viewName = activeView ? activeView.dataset.view : 'cards';
                 if (viewName === 'timeline') {
                     renderTimelineView();
+                } else if (viewName === 'saved') {
+                    renderSavedCardsView();
                 } else if (viewName === 'progress') {
                     renderProgressView();
                 } else {
@@ -167,6 +203,7 @@
 
             function refreshFromSelection() {
                 loadSelectedSolutions();
+                pruneSavedSolutionKeys();
                 renderActiveView();
                 updateSummaryStats();
                 const filters = window.RosraRecommendationChipFilters;
@@ -182,6 +219,8 @@
                 console.log('Recommendations: Initial currency symbol:', currencySymbol);
 
                 loadSelectedSolutions();
+                loadSavedSolutionCards();
+                pruneSavedSolutionKeys();
                 loadProgressData();
                 renderSolutionCards();
                 updateSummaryStats();
@@ -451,6 +490,60 @@
                 }
             }
 
+            // Load saved/shortlisted card keys from form field (primary) with localStorage fallback.
+            function loadSavedSolutionCards() {
+                try {
+                    const formField = document.getElementById('selectedSolutionsData');
+                    if (formField && formField.value && formField.value.trim() !== '') {
+                        const formData = JSON.parse(formField.value);
+                        if (Array.isArray(formData.savedSolutionCards)) {
+                            savedSolutionKeys = formData.savedSolutionCards.filter(Boolean).map(String);
+                            console.log('Recommendations: Loaded', savedSolutionKeys.length, 'saved cards from selectedSolutionsData');
+                            return;
+                        }
+
+                        // Existing reports saved before this feature have selectedSolutionsData
+                        // but no saved-card subkey. Treat that as an empty shortlist rather
+                        // than falling back to stale localStorage from another report.
+                        savedSolutionKeys = [];
+                        localStorage.removeItem('rosraSavedSolutionCards');
+                        return;
+                    }
+
+                    if (typeof FormStateManager !== 'undefined') {
+                        const data = FormStateManager.getData('rosraSavedSolutionCards');
+                        if (Array.isArray(data)) {
+                            savedSolutionKeys = data.filter(Boolean).map(String);
+                            console.log('Recommendations: Loaded', savedSolutionKeys.length, 'saved cards from FormStateManager');
+                            return;
+                        }
+                    }
+
+                    const stored = localStorage.getItem('rosraSavedSolutionCards');
+                    if (stored) {
+                        const parsed = JSON.parse(stored);
+                        savedSolutionKeys = Array.isArray(parsed) ? parsed.filter(Boolean).map(String) : [];
+                        console.log('Recommendations: Loaded', savedSolutionKeys.length, 'saved cards from localStorage (fallback)');
+                    }
+                } catch (e) {
+                    console.error('Error loading saved solution cards:', e);
+                    savedSolutionKeys = [];
+                }
+            }
+
+            function saveSavedSolutionCards() {
+                try {
+                    if (typeof FormStateManager !== 'undefined') {
+                        FormStateManager.setData('rosraSavedSolutionCards', savedSolutionKeys);
+                        console.log('Recommendations: Saved shortlisted cards via FormStateManager');
+                    } else {
+                        localStorage.setItem('rosraSavedSolutionCards', JSON.stringify(savedSolutionKeys));
+                    }
+                } catch (e) {
+                    console.error('Error saving shortlisted cards:', e);
+                }
+            }
+
             // Load progress data from form field (primary) with localStorage fallback
             function loadProgressData() {
                 try {
@@ -503,6 +596,12 @@
                 document.getElementById('quickWinsCount').textContent = quickWins;
                 document.getElementById('mediumTermCount').textContent = mediumTerm;
                 document.getElementById('longTermCount').textContent = longTerm;
+
+                const savedCount = getSavedSolutions().length;
+                const tabCount = document.getElementById('savedCardsTabCount');
+                const panelCount = document.getElementById('savedCardsCount');
+                if (tabCount) tabCount.textContent = savedCount;
+                if (panelCount) panelCount.textContent = savedCount;
             }
 
             // Render solution cards grouped by stream and gap
@@ -805,9 +904,12 @@
                     : '';
 
                 const fullIdLabel = buildFullIdLabel(solution.solutionId, fullSolution);
+                const cardKey = getSolutionKey(solution);
+                const saved = isSolutionSaved(solution);
 
                 return `
-                    <div class="solution-card" data-solution-id="${escapeForTemplate(solution.solutionId)}"
+                    <div class="solution-card ${saved ? 'is-saved' : ''}" data-solution-id="${escapeForTemplate(solution.solutionId)}"
+                         data-saved-key="${escapeForTemplate(cardKey)}"
                          data-timeline="${escapeForTemplate(solution.timeline || '')}"
                          data-political="${escapeForTemplate(fullSolution.politicalFeasibility || fullSolution.politicalSensitivity || '')}"
                          data-gap="${escapeForTemplate(String(solution.gapType || '').toLowerCase())}"
@@ -843,6 +945,9 @@
                             ${renderDetailSections(fullSolution)}
                         </div>
                         <div class="solution-actions">
+                            <button type="button" class="btn btn-sm solution-save-btn ${saved ? 'is-saved' : ''}" onclick="RecommendationsModule.toggleSavedCard('${cardKey}')">
+                                <i class="bi ${saved ? 'bi-bookmark-check-fill' : 'bi-bookmark-plus'} me-1"></i> <span>${saved ? 'Saved' : 'Save card'}</span>
+                            </button>
                             <button type="button" class="btn btn-sm btn-outline-info" id="toggle-btn-${solution.solutionId}" onclick="RecommendationsModule.toggleSolution('${solution.solutionId}')">
                                 <i class="fas fa-chevron-down me-1"></i> <span class="toggle-label">Expand Details</span>
                             </button>
@@ -855,6 +960,55 @@
                         </div>
                     </div>
                 `;
+            }
+
+            function renderSavedCardsView() {
+                const container = document.getElementById('savedCardsContainer');
+                if (!container) return;
+
+                const saved = getSavedSolutions();
+                if (saved.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="bi bi-bookmark empty-icon"></i>
+                            <h3>No saved cards yet</h3>
+                            <p>Save cards from the Solution Cards view to build a focused shortlist for reform planning.</p>
+                            <button type="button" class="btn btn-primary" onclick="RecommendationsModule.switchView('cards')">
+                                <i class="bi bi-grid-3x3-gap-fill me-2"></i> View Solution Cards
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const visibleSaved = getFilteredSavedSolutions();
+                if (visibleSaved.length === 0) {
+                    container.innerHTML = `<div class="empty-state"><p>No saved cards match the current filter. <a href="#" onclick="event.preventDefault(); RecommendationsModule.filterByTimeline('all');">Clear filter</a>.</p></div>`;
+                    return;
+                }
+
+                const sorted = visibleSaved.slice().sort((a, b) => {
+                    const rankDiff = (a.streamRank || 999) - (b.streamRank || 999);
+                    if (rankDiff !== 0) return rankDiff;
+                    const gapDiff = (a.gapPriority || 999) - (b.gapPriority || 999);
+                    if (gapDiff !== 0) return gapDiff;
+                    return String(a.solutionId || '').localeCompare(String(b.solutionId || ''));
+                });
+
+                container.innerHTML = sorted.map(renderSolutionCard).join('');
+            }
+
+            function toggleSavedCard(cardKey) {
+                if (!cardKey) return;
+                const idx = savedSolutionKeys.indexOf(cardKey);
+                if (idx >= 0) {
+                    savedSolutionKeys.splice(idx, 1);
+                } else {
+                    savedSolutionKeys.push(cardKey);
+                }
+                saveSavedSolutionCards();
+                updateSummaryStats();
+                renderActiveView();
             }
 
             // Build the expanded ID label shown on the card header, e.g.
@@ -1161,6 +1315,8 @@
                     // Render content for the view
                     if (viewName === 'timeline') {
                         renderTimelineView();
+                    } else if (viewName === 'saved') {
+                        renderSavedCardsView();
                     } else if (viewName === 'progress') {
                         renderProgressView();
                     }
@@ -4350,7 +4506,8 @@
                 refreshFromSelection,
                 generateReport,
                 copyToClipboard,
-                printSolution
+                printSolution,
+                toggleSavedCard
             };
         })();
 

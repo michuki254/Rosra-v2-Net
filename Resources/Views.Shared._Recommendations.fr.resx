@@ -46,9 +46,15 @@
 
   <!-- View Toggle -->
   <data name="View_SolutionCards" xml:space="preserve"><value>Fiches de solutions</value></data>
+  <data name="View_SavedCards" xml:space="preserve"><value>Fiches enregistrées</value></data>
   <data name="View_TimelineView" xml:space="preserve"><value>Vue chronologique</value></data>
   <data name="View_ProgressTracker" xml:space="preserve"><value>Suivi de l'avancement</value></data>
   <data name="View_ExpandHint" xml:space="preserve"><value>Cliquez sur une fiche pour la développer et voir tous les détails de la solution.</value></data>
+
+  <!-- Saved Cards View -->
+  <data name="Saved_Title" xml:space="preserve"><value>Fiches enregistrées</value></data>
+  <data name="Saved_Description" xml:space="preserve"><value>Fiches de recommandations présélectionnées pour une planification de réforme plus ciblée.</value></data>
+  <data name="Saved_CountLabel" xml:space="preserve"><value>enregistrées</value></data>
 
   <!-- Empty State -->
   <data name="Empty_Title" xml:space="preserve"><value>Aucune solution sélectionnée</value></data>
