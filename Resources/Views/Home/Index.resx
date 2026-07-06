@@ -91,6 +91,15 @@
   <data name="UnHabitatSupport_Title" xml:space="preserve"><value>Supported by UN-Habitat municipal finance experience</value></data>
   <data name="UnHabitatSupport_Body" xml:space="preserve"><value>ROSRA builds on UN-Habitat's work with local governments on own-source revenue, municipal finance and reform prioritization.</value></data>
 
+  <!-- Experts -->
+  <data name="Experts_Title" xml:space="preserve"><value>Our Experts</value></data>
+  <data name="Experts_Shubhagato_Name" xml:space="preserve"><value>Shubhagato Dasgupta</value></data>
+  <data name="Experts_Shubhagato_Title" xml:space="preserve"><value>Section Chief, Planning and Finance Section</value></data>
+  <data name="Experts_Lennart_Name" xml:space="preserve"><value>Lennart Fleck</value></data>
+  <data name="Experts_Lennart_Title" xml:space="preserve"><value>Senior Local Finance Expert, Planning and Finance Section</value></data>
+  <data name="Experts_Division" xml:space="preserve"><value>Global Solutions Division</value></data>
+  <data name="Experts_EmailLabel" xml:space="preserve"><value>Email</value></data>
+
   <!-- Why Choose UN-Habitat Section (legacy, not rendered on the new homepage) -->
   <data name="WhyChoose_Title" xml:space="preserve"><value>Why Choose UN-Habitat?</value></data>
   <data name="WhyChoose_Data" xml:space="preserve"><value>Data</value></data>

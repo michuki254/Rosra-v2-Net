@@ -90,6 +90,15 @@
   <data name="UnHabitatSupport_Title" xml:space="preserve"><value>Soutenu par l'expérience d'ONU-Habitat en finances municipales</value></data>
   <data name="UnHabitatSupport_Body" xml:space="preserve"><value>ROSRA s'appuie sur le travail d'ONU-Habitat avec les gouvernements locaux sur les recettes propres, les finances municipales et la priorisation des réformes.</value></data>
 
+  <!-- Experts -->
+  <data name="Experts_Title" xml:space="preserve"><value>Nos experts</value></data>
+  <data name="Experts_Shubhagato_Name" xml:space="preserve"><value>Shubhagato Dasgupta</value></data>
+  <data name="Experts_Shubhagato_Title" xml:space="preserve"><value>Chef de section, Section de la planification et des finances</value></data>
+  <data name="Experts_Lennart_Name" xml:space="preserve"><value>Lennart Fleck</value></data>
+  <data name="Experts_Lennart_Title" xml:space="preserve"><value>Expert principal en finances locales, Section de la planification et des finances</value></data>
+  <data name="Experts_Division" xml:space="preserve"><value>Division des solutions mondiales</value></data>
+  <data name="Experts_EmailLabel" xml:space="preserve"><value>Courriel</value></data>
+
   <data name="WhyChoose_Title" xml:space="preserve"><value>Pourquoi choisir ONU-Habitat ?</value></data>
   <data name="WhyChoose_Data" xml:space="preserve"><value>Donnees</value></data>
   <data name="WhyChoose_Data_Desc" xml:space="preserve"><value>Nous mettons a disposition les meilleures donnees mondiales associees a une analyse exemplaire pour fournir les recommandations les plus adaptees.</value></data>
