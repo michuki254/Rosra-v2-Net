@@ -21,6 +21,7 @@ namespace RosraApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
+        private const string PrivacyDataUseConsentVersion = "2026-07-06";
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -63,6 +64,11 @@ namespace RosraApp.Controllers
                     LastName = model.LastName,
                     Organization = model.Organization,
                     PhoneNumber = model.PhoneNumber,
+                    ConsentToBeContacted = model.ConsentToBeContacted,
+                    ConsentToBeContactedAt = model.ConsentToBeContacted ? System.DateTime.UtcNow : null,
+                    PrivacyDataUseAcknowledged = model.PrivacyDataUseAcknowledged,
+                    PrivacyDataUseConsentVersion = PrivacyDataUseConsentVersion,
+                    PrivacyDataUseAcknowledgedAt = model.PrivacyDataUseAcknowledged ? System.DateTime.UtcNow : null,
                     CreatedAt = System.DateTime.UtcNow
                 };
 
@@ -324,6 +330,11 @@ namespace RosraApp.Controllers
                 LastName = model.LastName,
                 Organization = model.Organization,
                 PhoneNumber = model.PhoneNumber,
+                ConsentToBeContacted = model.ConsentToBeContacted,
+                ConsentToBeContactedAt = model.ConsentToBeContacted ? System.DateTime.UtcNow : null,
+                PrivacyDataUseAcknowledged = model.PrivacyDataUseAcknowledged,
+                PrivacyDataUseConsentVersion = PrivacyDataUseConsentVersion,
+                PrivacyDataUseAcknowledgedAt = model.PrivacyDataUseAcknowledged ? System.DateTime.UtcNow : null,
                 CreatedAt = System.DateTime.UtcNow
             };
 

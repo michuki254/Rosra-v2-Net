@@ -206,6 +206,12 @@ namespace RosraApp.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("ConsentToBeContacted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ConsentToBeContactedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -247,6 +253,15 @@ namespace RosraApp.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("PrivacyDataUseAcknowledged")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("PrivacyDataUseAcknowledgedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PrivacyDataUseConsentVersion")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");

@@ -461,6 +461,26 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input asp-for="ConsentToBeContacted" class="form-check-input" type="checkbox" />
+                            <label asp-for="ConsentToBeContacted" class="form-check-label">
+                                I agree that UN-Habitat may contact me about my ROSRA account, reports, or follow-up support.
+                            </label>
+                        </div>
+                        <span asp-validation-for="ConsentToBeContacted" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input asp-for="PrivacyDataUseAcknowledged" class="form-check-input" type="checkbox" />
+                            <label asp-for="PrivacyDataUseAcknowledged" class="form-check-label">
+                                I understand that ROSRA stores the information and report data I enter, and that submitted data may be reviewed by UN-Habitat for internal analysis, quality control, tool improvement, and reporting. Individual report data will not be publicly disclosed without appropriate authorization.
+                            </label>
+                        </div>
+                        <span asp-validation-for="PrivacyDataUseAcknowledged" class="text-danger"></span>
+                    </div>
+
                     <button type="submit" class="btn-register">@Localizer["CreateAccountButton"]</button>
 
                     <div class="login-row">

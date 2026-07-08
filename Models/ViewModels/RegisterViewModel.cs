@@ -29,6 +29,14 @@ namespace RosraApp.Models.ViewModels
         [Display(Name = "Phone Number")]
         public string? PhoneNumber { get; set; }
 
+        [Range(typeof(bool), "true", "true", ErrorMessage = "Consent to be contacted is required.")]
+        [Display(Name = "Consent to be contacted")]
+        public bool ConsentToBeContacted { get; set; }
+
+        [Range(typeof(bool), "true", "true", ErrorMessage = "Privacy and data-use acknowledgement is required.")]
+        [Display(Name = "Privacy and data-use acknowledgement")]
+        public bool PrivacyDataUseAcknowledged { get; set; }
+
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
         [DataType(DataType.Password)]
