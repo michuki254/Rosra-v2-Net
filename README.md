@@ -119,6 +119,7 @@ The `/Admin` area manages users, roles, permissions, reports, deleted reports, a
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
+- [Future Developer Guide](docs/FUTURE_DEVELOPER_GUIDE.md)
 - [Setup And Deployment](docs/SETUP_AND_DEPLOYMENT.md)
 - [Security Audit Pre-Assessment](docs/SECURITY-AUDIT-PRE-ASSESSMENT.md)
 - [Cybersecurity Audit 2026-05-25](docs/CYBERSECURITY-AUDIT-2026-05-25.md)

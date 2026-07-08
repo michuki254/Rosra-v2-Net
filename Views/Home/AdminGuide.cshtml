@@ -314,6 +314,120 @@
 
         .nav-path i { font-size: 0.65rem; color: #94a3b8; }
 
+        /* ── Screenshots & operational cards ── */
+        .visual-admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 1.25rem 0;
+        }
+
+        .admin-shot {
+            min-width: 0;
+        }
+
+        .admin-shot img {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: cover;
+            object-position: top center;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+            display: block;
+        }
+
+        .admin-shot figcaption {
+            margin-top: 0.55rem;
+            font-size: 0.825rem;
+            line-height: 1.5;
+            color: #475569;
+        }
+
+        .admin-shot strong {
+            color: #1e293b;
+        }
+
+        .ops-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.85rem;
+            margin: 1rem 0;
+        }
+
+        .ops-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .ops-card h4 {
+            margin-top: 0;
+            color: #1e3a5f;
+        }
+
+        .ops-card p,
+        .ops-card li {
+            font-size: 0.875rem;
+        }
+
+        .admin-checklist {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .admin-checkitem {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.65rem;
+            padding: 0.85rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+            color: #475569;
+            font-size: 0.875rem;
+            line-height: 1.55;
+        }
+
+        .admin-checkitem i {
+            color: #2563eb;
+            flex-shrink: 0;
+            margin-top: 0.15rem;
+        }
+
+        .do-dont-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .do-box,
+        .dont-box {
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid;
+        }
+
+        .do-box {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+        }
+
+        .dont-box {
+            background: #fff7ed;
+            border-color: #fed7aa;
+        }
+
+        .do-box h4,
+        .dont-box h4 {
+            margin-top: 0;
+        }
+
         /* ── Responsive ── */
         @@media (max-width: 991.98px) {
             .toc-sidebar { position: static; max-height: none; margin-bottom: 1.5rem; }
@@ -356,6 +470,8 @@
                     <h6>Contents</h6>
                     <nav>
                         <a href="#overview" class="toc-link"><i class="bi bi-speedometer2"></i> Admin Dashboard</a>
+                        <a href="#visual-walkthrough" class="toc-link"><i class="bi bi-images"></i> Screenshots</a>
+                        <a href="#daily-operations" class="toc-link"><i class="bi bi-calendar-check"></i> Daily Operations</a>
                         <a href="#manage-users" class="toc-link"><i class="bi bi-people"></i> Managing Users</a>
                         <a href="#user-details" class="toc-link"><i class="bi bi-person-gear"></i> User Details & Roles</a>
                         <a href="#activate-deactivate" class="toc-link"><i class="bi bi-toggle-on"></i> Activate / Deactivate</a>
@@ -366,7 +482,11 @@
                         <a href="#reviewing" class="toc-link"><i class="bi bi-clipboard-check"></i> Reviewing a Report</a>
                         <a href="#review-decisions" class="toc-link"><i class="bi bi-check2-square"></i> Validate or Revise</a>
                         <a href="#audit-log" class="toc-link"><i class="bi bi-journal-text"></i> Audit Log</a>
+                        <a href="#data-management" class="toc-link"><i class="bi bi-database"></i> Data Management</a>
                         <a href="#data-upload" class="toc-link"><i class="bi bi-cloud-upload"></i> Data Upload</a>
+                        <a href="#solution-library" class="toc-link"><i class="bi bi-layers"></i> Solution Library</a>
+                        <a href="#settings-email" class="toc-link"><i class="bi bi-envelope-gear"></i> Settings & Email</a>
+                        <a href="#troubleshooting" class="toc-link"><i class="bi bi-tools"></i> Troubleshooting</a>
                         <a href="#tips" class="toc-link"><i class="bi bi-lightbulb"></i> Tips & Best Practices</a>
                     </nav>
                 </div>
@@ -417,6 +537,64 @@
 
                 <h4>Recent Reports Table</h4>
                 <p>The bottom section shows a table of the most recent reports across all users. You can search by title, location, or user email. Click <strong>View</strong> on any report to open it.</p>
+            </section>
+
+            <!-- Visual Walkthrough -->
+            <section id="visual-walkthrough" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-images"></i></span>
+                    Admin Screenshots
+                </h2>
+                <p>
+                    The admin area uses a left-hand navigation with operational pages for reports, deleted reports,
+                    data management, solution cards, users, roles, audit logs, uploads, email, and system settings.
+                    These screenshots show the reporting-data views admins use most often when checking assessment quality.
+                </p>
+                <div class="visual-admin-grid">
+                    <figure class="admin-shot">
+                        <img src="~/images/admin-guide/data-management-streams.png" asp-append-version="true" alt="Admin Data Management page showing filters, report table, status counts, export button, and expanded revenue-stream details" />
+                        <figcaption><strong>Data Management overview.</strong> Use filters, status counts, column controls, and the Excel export button to inspect reports across all authors.</figcaption>
+                    </figure>
+                    <figure class="admin-shot">
+                        <img src="~/images/admin-guide/data-management-prioritization.png" asp-append-version="true" alt="Admin Data Management page with expanded prioritization details for a ROSRA report" />
+                        <figcaption><strong>Expanded report details.</strong> Open row details to inspect streams, prioritization, recommendations, and solution coverage without entering the full report editor.</figcaption>
+                    </figure>
+                </div>
+                <div class="guide-tip">
+                    <i class="bi bi-lightbulb"></i>
+                    <strong>Tip:</strong> For training, pair this admin guide with the user guide. Admins need to understand both what authors enter and how reviewers validate it.
+                </div>
+            </section>
+
+            <!-- Daily Operations -->
+            <section id="daily-operations" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-calendar-check"></i></span>
+                    Daily Admin Operations
+                </h2>
+                <p>
+                    Use this checklist as the normal operating rhythm for a ROSRA administrator. It keeps user access,
+                    reviews, data quality, and system configuration under control without requiring a full audit each day.
+                </p>
+
+                <h3>Daily Checklist</h3>
+                <div class="admin-checklist">
+                    <div class="admin-checkitem"><i class="bi bi-check-circle-fill"></i><span><strong>Review queue:</strong> check submitted reports and assign or claim anything waiting too long.</span></div>
+                    <div class="admin-checkitem"><i class="bi bi-check-circle-fill"></i><span><strong>User requests:</strong> activate/deactivate accounts and assign roles only when requested by an authorized lead.</span></div>
+                    <div class="admin-checkitem"><i class="bi bi-check-circle-fill"></i><span><strong>Data quality:</strong> scan recent reports for missing profile fields, unusual values, or empty stream coverage.</span></div>
+                    <div class="admin-checkitem"><i class="bi bi-check-circle-fill"></i><span><strong>Audit log:</strong> check recent role, user, deletion, and status-change activity for unexpected actions.</span></div>
+                    <div class="admin-checkitem"><i class="bi bi-check-circle-fill"></i><span><strong>Email health:</strong> confirm notification failures are not blocking review or password/account workflows.</span></div>
+                    <div class="admin-checkitem"><i class="bi bi-check-circle-fill"></i><span><strong>Deleted reports:</strong> restore accidental deletions promptly and avoid permanent deletion unless approved.</span></div>
+                </div>
+
+                <h3>Weekly Checklist</h3>
+                <ul>
+                    <li>Review all users with <strong>Admin</strong> or <strong>Reviewer</strong> roles and confirm they still need that access.</li>
+                    <li>Check stale <strong>Submitted</strong> and <strong>Under Review</strong> reports and follow up with assigned reviewers.</li>
+                    <li>Export assessment data from <strong>Data Management</strong> if stakeholders need an offline review package.</li>
+                    <li>Review upload history before replacing country, peer SNG, or other reference datasets.</li>
+                    <li>Spot-check validated reports to confirm snapshots, artifacts, and exports are being created as expected.</li>
+                </ul>
             </section>
 
             <!-- 2. Managing Users -->
@@ -577,6 +755,37 @@
                         </tr>
                     </tbody>
                 </table>
+
+                <h3>Role Assignment Guide</h3>
+                <table class="guide-table">
+                    <thead><tr><th>User Type</th><th>Recommended Role</th><th>Notes</th></tr></thead>
+                    <tbody>
+                        <tr><td>Municipal or local-government analyst</td><td><strong>User</strong></td><td>Can create, save, submit, and export their own reports.</td></tr>
+                        <tr><td>Technical reviewer or validation lead</td><td><strong>Reviewer</strong></td><td>Use when the person needs to claim, review, validate, or request revision on submitted reports.</td></tr>
+                        <tr><td>System administrator</td><td><strong>Admin</strong></td><td>Use sparingly. Admins can manage users, roles, data, reports, and system settings.</td></tr>
+                        <tr><td>Data steward</td><td><strong>Custom role</strong></td><td>Create a limited role with data-management/upload permissions instead of giving full Admin access.</td></tr>
+                        <tr><td>Observer or partner viewer</td><td><strong>Custom role</strong></td><td>Create a read-only role if they only need to inspect reports or exports.</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="do-dont-grid">
+                    <div class="do-box">
+                        <h4><i class="bi bi-check-circle me-1"></i> Do</h4>
+                        <ul>
+                            <li>Assign the smallest role that lets the user do their work.</li>
+                            <li>Document why elevated roles were granted.</li>
+                            <li>Review Admin and Reviewer access regularly.</li>
+                        </ul>
+                    </div>
+                    <div class="dont-box">
+                        <h4><i class="bi bi-exclamation-triangle me-1"></i> Avoid</h4>
+                        <ul>
+                            <li>Giving Admin access just so someone can review one report.</li>
+                            <li>Sharing admin accounts between people.</li>
+                            <li>Deleting roles before checking who still depends on them.</li>
+                        </ul>
+                    </div>
+                </div>
 
                 <h3>Creating a New Role</h3>
                 <div class="step-box">
@@ -912,7 +1121,49 @@
                 </ul>
             </section>
 
-            <!-- 12. Data Upload -->
+            <!-- 12. Data Management -->
+            <section id="data-management" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-database"></i></span>
+                    Data Management & Assessment Export
+                </h2>
+                <p>
+                    The Data Management page is the admin workspace for browsing assessment data across all reports,
+                    checking stream completeness, and exporting structured data for external analysis.
+                </p>
+
+                <h3>How to Access</h3>
+                <p><span class="nav-path">My Dashboard <i class="bi bi-chevron-right"></i> Data Management</span>, or use the admin sidebar item labeled <strong>Data Management</strong>.</p>
+
+                <h3>What You Will See</h3>
+                <ul>
+                    <li><strong>Status counters</strong> for total, draft, submitted, in review, revision, and validated reports.</li>
+                    <li><strong>Filters</strong> for search, country, status, completion, author, year, and date range.</li>
+                    <li><strong>Report table</strong> with key metadata, workflow status, completion status, stream indicators, recommendations, prioritization, and solution coverage.</li>
+                    <li><strong>Expandable rows</strong> that reveal stream totals, gap values, prioritization details, and selected solutions.</li>
+                    <li><strong>Column controls</strong> to show or hide fields depending on the review task.</li>
+                    <li><strong>Export Excel</strong> to download the current dataset for offline review.</li>
+                </ul>
+
+                <h3>Common Uses</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Task</th><th>How to Do It</th></tr></thead>
+                    <tbody>
+                        <tr><td>Find incomplete reports</td><td>Filter by <strong>Completion</strong> and scan reports with missing stream/recommendation/prioritization indicators.</td></tr>
+                        <tr><td>Prepare a stakeholder data package</td><td>Apply country, status, author, or year filters, then click <strong>Export Excel</strong>.</td></tr>
+                        <tr><td>Inspect a report without opening the editor</td><td>Expand the row to review revenue streams, gap values, prioritization, and selected solutions.</td></tr>
+                        <tr><td>Check review backlog</td><td>Filter by <strong>Submitted</strong>, <strong>In Review</strong>, or <strong>Revision</strong> status.</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="guide-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Data handling:</strong> Exports may contain jurisdiction names, author details, and financial figures.
+                    Share exported files only with approved stakeholders and store them in the agreed project location.
+                </div>
+            </section>
+
+            <!-- 13. Data Upload -->
             <section id="data-upload" class="guide-section">
                 <h2>
                     <span class="section-icon"><i class="bi bi-cloud-upload"></i></span>
@@ -966,7 +1217,107 @@
                 </div>
             </section>
 
-            <!-- 13. Tips & Best Practices -->
+            <!-- 14. Solution Library -->
+            <section id="solution-library" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-layers"></i></span>
+                    Solution Card Library
+                </h2>
+                <p>
+                    The Solution Card Library contains the reform options shown to users in the Recommendations step.
+                    Admins can review cards, manage card status, and keep the recommendation library aligned with the
+                    latest ROSRA methodology.
+                </p>
+
+                <h3>How to Access</h3>
+                <p><span class="nav-path">My Dashboard <i class="bi bi-chevron-right"></i> Solution Card Library</span>, or use the admin sidebar under <strong>Solution Cards</strong>.</p>
+
+                <h3>What to Check Before Editing Cards</h3>
+                <ul>
+                    <li><strong>Stream mapping</strong> &mdash; confirm the card belongs to the correct stream, such as Property Tax or Business License.</li>
+                    <li><strong>Gap type</strong> &mdash; confirm the card is linked to the correct gap driver, such as Coverage, Compliance, Valuation, or Liability.</li>
+                    <li><strong>Timeline</strong> &mdash; confirm whether the card is a Quick Win, Medium Term, or Long Term action.</li>
+                    <li><strong>Feasibility and political weight</strong> &mdash; ensure tags are consistent across similar cards.</li>
+                    <li><strong>Wording</strong> &mdash; keep card text practical, concise, and understandable to non-technical users.</li>
+                </ul>
+
+                <div class="guide-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Methodology note:</strong> Changing solution cards affects what users see in recommendations.
+                    Coordinate major card edits with the ROSRA methodology owner before publishing them.
+                </div>
+            </section>
+
+            <!-- 15. Settings & Email -->
+            <section id="settings-email" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-envelope-gear"></i></span>
+                    Email & System Settings
+                </h2>
+                <p>
+                    Email and system settings control operational behavior such as notifications, SMTP delivery, and configurable system values.
+                    Treat these pages as production administration surfaces.
+                </p>
+
+                <h3>Email Settings</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Setting</th><th>Purpose</th><th>Admin Check</th></tr></thead>
+                    <tbody>
+                        <tr><td>SMTP server and port</td><td>Controls where notification email is sent from.</td><td>Confirm values match the approved mail provider.</td></tr>
+                        <tr><td>Sender email/name</td><td>Controls what users see as the email sender.</td><td>Use an official ROSRA/UN-Habitat sender identity.</td></tr>
+                        <tr><td>SMTP username/password</td><td>Authenticates with the mail provider.</td><td>Rotate credentials when staff or vendors change.</td></tr>
+                        <tr><td>Test email</td><td>Verifies delivery.</td><td>Send a test after configuration changes.</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>System Settings</h3>
+                <ul>
+                    <li>Change settings only when the operational impact is understood.</li>
+                    <li>Record major changes in the project handover notes or issue tracker.</li>
+                    <li>After changing settings, test the affected workflow as a normal user and as an admin.</li>
+                </ul>
+
+                <div class="guide-danger">
+                    <i class="bi bi-exclamation-octagon"></i>
+                    <strong>Secret handling:</strong> Do not share SMTP passwords, database connection strings, Entra client secrets,
+                    or exported datasets in chat, screenshots, or public documents.
+                </div>
+            </section>
+
+            <!-- 16. Troubleshooting -->
+            <section id="troubleshooting" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-tools"></i></span>
+                    Troubleshooting
+                </h2>
+
+                <h3>Common Admin Issues</h3>
+                <table class="guide-table">
+                    <thead><tr><th>Issue</th><th>Likely Cause</th><th>What to Do</th></tr></thead>
+                    <tbody>
+                        <tr><td>User cannot access admin pages</td><td>User lacks Admin role or required permissions.</td><td>Check their roles on User Details, then review the role's permissions.</td></tr>
+                        <tr><td>Reviewer cannot see the queue</td><td>Reviewer role missing or review permissions removed from a custom role.</td><td>Assign Reviewer role or add review permissions to the custom role.</td></tr>
+                        <tr><td>Report is stuck in Submitted</td><td>No reviewer has claimed it.</td><td>Assign a reviewer or claim it yourself from the Review Queue.</td></tr>
+                        <tr><td>Report is stuck Under Review</td><td>Reviewer claimed it but has not validated, revised, or unclaimed it.</td><td>Follow up with the reviewer; if needed, use admin assignment controls.</td></tr>
+                        <tr><td>PDF export fails</td><td>PDF browser engine may still be starting or unavailable.</td><td>Retry after a minute. If it persists, check application logs and use browser Print as a temporary workaround.</td></tr>
+                        <tr><td>Email notifications fail</td><td>SMTP credentials, port, TLS, or sender settings are wrong.</td><td>Send a test email and confirm settings with the mail provider.</td></tr>
+                        <tr><td>Uploaded CSV fails</td><td>Wrong template, missing columns, invalid numbers, or encoding issue.</td><td>Download the template, compare headers, fix data, and upload again.</td></tr>
+                        <tr><td>Deleted report needs recovery</td><td>User or admin soft-deleted it.</td><td>Open Deleted Reports and restore it. Do not permanently delete unless approved.</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Escalation Checklist</h3>
+                <ol>
+                    <li>Capture the affected user's email, report title, and approximate time of the issue.</li>
+                    <li>Check the report status, assigned reviewer, and audit log entries.</li>
+                    <li>Confirm whether the issue affects one user/report or the whole system.</li>
+                    <li>Try the same workflow with an admin test account if available.</li>
+                    <li>Record what changed recently: role edits, uploads, settings, deployment, or email configuration.</li>
+                    <li>Escalate to the developer or hosting administrator with screenshots and exact reproduction steps.</li>
+                </ol>
+            </section>
+
+            <!-- 17. Tips & Best Practices -->
             <section id="tips" class="guide-section">
                 <h2>
                     <span class="section-icon"><i class="bi bi-lightbulb"></i></span>

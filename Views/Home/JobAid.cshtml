@@ -268,6 +268,89 @@
             margin-right: 0.5rem;
         }
 
+        /* Visual walkthrough */
+        .visual-walkthrough {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+            margin: 1.25rem 0;
+        }
+
+        .visual-shot {
+            min-width: 0;
+        }
+
+        .visual-shot img {
+            width: 100%;
+            height: auto;
+            max-height: 260px;
+            object-fit: cover;
+            object-position: top center;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #f8f9fa;
+            display: block;
+        }
+
+        .visual-shot figcaption {
+            margin-top: 0.55rem;
+            font-size: 0.825rem;
+            line-height: 1.5;
+            color: #495057;
+        }
+
+        .visual-shot strong {
+            color: #212529;
+        }
+
+        .guide-checklist {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .guide-checkitem {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.65rem;
+            padding: 0.85rem;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #f8f9fa;
+            color: #495057;
+            font-size: 0.875rem;
+            line-height: 1.55;
+        }
+
+        .guide-checkitem i {
+            color: #00689D;
+            flex-shrink: 0;
+            margin-top: 0.15rem;
+        }
+
+        .input-example {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .input-example-header {
+            background: #f1f9fc;
+            color: #00689D;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 0.7rem 0.9rem;
+            border-bottom: 1px solid #d7eff7;
+        }
+
+        .input-example table {
+            margin: 0;
+            border: 0;
+            border-radius: 0;
+        }
+
         /* ── Status badges ── */
         .status-example {
             display: inline-flex;
@@ -324,7 +407,7 @@
             gap: 0.3rem;
         }
 
-        /* ── Step Cards (for 4-step pipeline) ── */
+        /* Step Cards (for the Detailed Diagnostic workflow) */
         .step-card {
             background: #f8f9fa;
             border-radius: 8px;
@@ -635,13 +718,13 @@
                         <a href="#getting-started" class="toc-link"><i class="bi bi-rocket-takeoff"></i> Getting Started</a>
                         <a href="#navigation" class="toc-link"><i class="bi bi-compass"></i> Navigation</a>
                         <a href="#creating-report" class="toc-link"><i class="bi bi-file-earmark-plus"></i> Creating a Report</a>
+                        <a href="#visual-walkthrough" class="toc-link"><i class="bi bi-images"></i> Visual Walkthrough</a>
                         <a href="#quick-estimate" class="toc-link"><i class="bi bi-binoculars"></i> Quick Estimate <small class="text-muted">(macro)</small></a>
                         <a href="#detailed-diagnostic" class="toc-link"><i class="bi bi-zoom-in"></i> Detailed Diagnostic <small class="text-muted">(micro)</small></a>
                         <div class="toc-sub">
                             <a href="#step1-gap" class="toc-link"><i class="bi bi-1-circle"></i> Gap Analysis</a>
                             <a href="#step2-prioritize" class="toc-link"><i class="bi bi-2-circle"></i> Prioritization</a>
-                            <a href="#step3-solutions" class="toc-link"><i class="bi bi-3-circle"></i> Solutions</a>
-                            <a href="#step4-recommendations" class="toc-link"><i class="bi bi-4-circle"></i> Recommendations</a>
+                            <a href="#step3-recommendations" class="toc-link"><i class="bi bi-3-circle"></i> Recommendations</a>
                         </div>
                         <a href="#dashboard" class="toc-link"><i class="bi bi-grid-1x2"></i> Your Dashboard</a>
                         <a href="#submitting" class="toc-link"><i class="bi bi-send"></i> Submitting Reports</a>
@@ -686,7 +769,7 @@
                 </table>
                 <p>
                     The tool helps you identify where revenue is being lost, prioritize which streams to reform first,
-                    select proven solutions, and build an actionable recommendation plan.
+                    and build an actionable recommendation plan.
                 </p>
             </section>
 
@@ -709,10 +792,17 @@
                             <li><strong>Organization</strong> (e.g., your municipality or agency)</li>
                             <li><strong>Phone Number</strong></li>
                             <li><strong>Password</strong> and confirmation</li>
+                            <li><strong>Consent to be contacted</strong> for ROSRA follow-up, if needed</li>
+                            <li><strong>Privacy/data-use acknowledgement</strong> before account creation</li>
                         </ul>
                     </li>
                     <li>Click <strong>Register</strong>. You will be automatically logged in.</li>
                 </ol>
+
+                <div class="guide-tip">
+                    <i class="bi bi-shield-check"></i>
+                    <strong>Privacy note:</strong> The consent and data-use acknowledgement confirm that ROSRA may use your account details and report metadata to support the assessment workflow. Report content you enter should be treated as official working data for your jurisdiction and shared only with users who are meant to review or administer the assessment.
+                </div>
 
                 <h3>Logging In</h3>
                 <ol>
@@ -867,6 +957,48 @@
                 </div>
             </section>
 
+            <!-- Visual Walkthrough -->
+            <section id="visual-walkthrough" class="guide-section">
+                <h2>
+                    <span class="section-icon"><i class="bi bi-images"></i></span>
+                    Visual Walkthrough
+                </h2>
+                <p>
+                    These examples show the main areas new users will work through. The exact fields shown may vary by country,
+                    role, and report status.
+                </p>
+                <div class="visual-walkthrough">
+                    <figure class="visual-shot">
+                        <img src="~/images/job-aid/local-government-profile.png" asp-append-version="true" alt="Local government profile form with country, government unit, OSR, population, GDP per capita, and local economic profile fields" />
+                        <figcaption><strong>1. Local government profile.</strong> Start by selecting the country and government unit, then enter the fiscal year, OSR, population, and local economic profile.</figcaption>
+                    </figure>
+                    <figure class="visual-shot">
+                        <img src="~/images/job-aid/quick-estimate-profile.png" asp-append-version="true" alt="Quick Estimate profile screen before generating an analysis" />
+                        <figcaption><strong>2. Quick Estimate setup.</strong> Complete the required profile fields, then click <strong>Get Analysis</strong> to generate the macro estimate.</figcaption>
+                    </figure>
+                    <figure class="visual-shot">
+                        <img src="~/images/job-aid/quick-estimate-results.png" asp-append-version="true" alt="Quick Estimate results with estimated OSR potential, room to improve, frontier index, and gap chart" />
+                        <figcaption><strong>3. Quick Estimate result.</strong> Use the potential, estimated room to improve, and frontier index as a headline benchmark before the detailed diagnostic.</figcaption>
+                    </figure>
+                    <figure class="visual-shot">
+                        <img src="~/images/job-aid/detailed-gap-analysis.png" asp-append-version="true" alt="Detailed Diagnostic gap analysis screen with stream inputs and gap charts" />
+                        <figcaption><strong>4. Gap Analysis.</strong> Enter stream-level data and review the calculated coverage, compliance, valuation, liability, and mixed gaps.</figcaption>
+                    </figure>
+                    <figure class="visual-shot">
+                        <img src="~/images/job-aid/prioritization.png" asp-append-version="true" alt="Prioritization screen showing ranked revenue streams and gap sequencing" />
+                        <figcaption><strong>5. Prioritization.</strong> Rank streams, include or exclude them from the reform focus, and sequence the most important gaps.</figcaption>
+                    </figure>
+                    <figure class="visual-shot">
+                        <img src="~/images/job-aid/recommendations.png" asp-append-version="true" alt="Recommendations screen showing solution cards, timeline view, and progress tracker tabs" />
+                        <figcaption><strong>6. Recommendations.</strong> Select solution cards, review timelines, and track implementation actions for the final plan.</figcaption>
+                    </figure>
+                </div>
+                <div class="guide-tip">
+                    <i class="bi bi-lightbulb"></i>
+                    <strong>Tip:</strong> For training sessions, pair this guide with a sample report so users can compare the screenshots with a completed assessment.
+                </div>
+            </section>
+
             <!-- 5. Quick Estimate (formerly Top-Down) -->
             <section id="quick-estimate" class="guide-section">
                 <h2>
@@ -895,6 +1027,19 @@
                     <li>Review the estimated revenue potential and gap summary.</li>
                 </ol>
 
+                <div class="input-example">
+                    <div class="input-example-header">Example input set</div>
+                    <table class="guide-table">
+                        <tbody>
+                            <tr><td><strong>Country / Government Unit</strong></td><td>Kenya / Kilifi</td></tr>
+                            <tr><td><strong>Financial Year</strong></td><td>2024</td></tr>
+                            <tr><td><strong>Own-Source Revenue</strong></td><td>KSh 1,209,000,000 collected locally</td></tr>
+                            <tr><td><strong>Population</strong></td><td>1,737,000 residents</td></tr>
+                            <tr><td><strong>Local Economic Profile</strong></td><td>Regional service centre</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
                 <h3>When to Use the Quick Estimate</h3>
                 <ul>
                     <li>Initial scoping before a detailed study</li>
@@ -915,7 +1060,7 @@
                     the mechanics. For each revenue stream you enter the underlying inputs, and ROSRA
                     decomposes the revenue gap into its specific drivers &mdash; <em>are people not
                     registered, not paying, under-valued, or under-charged?</em> &mdash; then walks
-                    you through a structured <strong>4-step pipeline</strong> from diagnosis to a
+                    you through a structured <strong>3-step workflow</strong> from diagnosis to a
                     concrete reform plan.
                 </p>
 
@@ -987,6 +1132,21 @@
                         </div>
                     </div>
 
+                    <div class="input-example">
+                        <div class="input-example-header">Example stream inputs</div>
+                        <table class="guide-table">
+                            <thead>
+                                <tr><th>Stream</th><th>Example data to prepare before entry</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Property Tax</strong></td><td>Registered properties, estimated unregistered properties, compliant payers, assessed value, market value, billed amount, outstanding amount, and collected revenue.</td></tr>
+                                <tr><td><strong>Business License</strong></td><td>Registered businesses, estimated unregistered percentage, billed amount, outstanding amount, statutory average fee, and realistic improvement percentage.</td></tr>
+                                <tr><td><strong>User Charges</strong></td><td>Units, daily or monthly rate, collection rate, operating days, and any separate daily/monthly components.</td></tr>
+                                <tr><td><strong>Non-Property Streams</strong></td><td>Stream name, collection basis, actual collections, billed amounts, and assumptions used to estimate missing coverage or compliance.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                     <div class="guide-tip">
                         <i class="bi bi-lightbulb"></i>
                         <strong>Tip:</strong> The <strong>Total Estimate</strong> tab shows the grand total of all gaps &mdash;
@@ -1018,70 +1178,42 @@
                 </div>
 
                 <!-- Step 3 -->
-                <div id="step3-solutions" class="step-card">
-                    <h4><span class="step-number">3</span> Overview &amp; Solution Selection</h4>
-                    <p>Connect your diagnostic findings to proven reform interventions:</p>
+                <div id="step3-recommendations" class="step-card">
+                    <h4><span class="step-number">3</span> Recommendations</h4>
+                    <p>Connect your prioritized gaps to practical reform options and build a focused recommendation set:</p>
                     <ol>
                         <li>
                             ROSRA presents a curated library of <strong>82 evidence-based solution
                             cards</strong>, narrowed automatically to the streams and gap-types you
-                            kept in Step 2.
+                            kept in Prioritization.
                         </li>
                         <li>
-                            Cards are organised by stream type and gap-type (Compliance, Coverage,
-                            Valuation, Liability), and tagged by:
+                            Use the filter chips to focus the cards by stream, gap type, timeline, and feasibility.
+                            All filters are selected by default; deselecting a filter hides cards outside that filter.
+                        </li>
+                        <li>
+                            The summary cards update with the currently visible recommendation set, including:
                             <ul>
-                                <li><strong>Stream type</strong> &mdash; Property Tax, Business License, or non-property streams (subgroups A / B / C)</li>
-                                <li><strong>Timeline</strong> &mdash; Quick Win (&lt;1 yr), Medium Term (1&ndash;3 yr), or Long Term (3+ yr)</li>
-                                <li><strong>Political feasibility</strong> &mdash; higher, moderate, or lower</li>
+                                <li><strong>Solutions Selected</strong> &mdash; selected cards in the current view</li>
+                                <li><strong>Quick Wins</strong> &mdash; actions expected in less than 1 year</li>
+                                <li><strong>Medium Term</strong> &mdash; actions expected in 1&ndash;3 years</li>
+                                <li><strong>Long Term</strong> &mdash; actions expected in 3+ years</li>
                             </ul>
                         </li>
                         <li>
-                            Use the <strong>3-question personaliser</strong> at the top to narrow the
-                            list to your context (time horizon, political appetite, focus areas) &mdash;
-                            or browse all 82.
+                            In <strong>Solution Cards</strong>, review each card and select the reforms you plan to include.
+                            Cards explain when the option is useful, when it may not be the best first move, and what it
+                            often works well with.
                         </li>
                         <li>
-                            Each card explains <em>what the option does</em>, <em>most useful when</em>,
-                            <em>usually not the best first move when</em>, and <em>often works best
-                            alongside</em>. Click <strong>Select</strong> on the cards you plan to implement.
+                            Use <strong>Saved Cards</strong> to shortlist cards for discussion before finalising the
+                            recommendation set.
                         </li>
                         <li>
-                            The right-hand <strong>Selection Summary</strong> tracks every pick by
-                            stream and gap-type, with a one-click jump to Recommendations once you
-                            have enough.
+                            Use <strong>Timeline View</strong> to see selected reforms grouped by Quick Wins, Medium Term,
+                            and Long Term. Use <strong>Progress Tracker</strong> to record implementation progress.
                         </li>
                     </ol>
-                </div>
-
-                <!-- Step 4 -->
-                <div id="step4-recommendations" class="step-card">
-                    <h4><span class="step-number">4</span> Recommendations</h4>
-                    <p>Synthesize your analysis into an actionable reform plan:</p>
-
-                    <table class="guide-table">
-                        <thead>
-                            <tr><th>Section</th><th>What to Write</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Problem Statement</strong></td>
-                                <td>Describe the current revenue situation, key challenges, and impact on service delivery</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Root Causes</strong></td>
-                                <td>List underlying causes (e.g., outdated cadastre, weak enforcement, insufficient staffing). Click <em>Add Root Cause</em> for each</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Recommendation Summary</strong></td>
-                                <td>Overall summary of proposed reforms based on selected solutions</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Action Items</strong></td>
-                                <td>Specific tasks with priority (High / Medium / Low), responsible party, and timeline. Click <em>Add Action Item</em> for each</td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </section>
 
@@ -1142,11 +1274,14 @@
 
                 <h3>Before You Submit</h3>
                 <p>Ensure you have completed:</p>
-                <ul>
-                    <li>All report metadata (country, city, currency, financial year)</li>
-                    <li>At least one revenue stream in the Gap Analysis</li>
-                    <li>Root causes and recommendations (for Full completion level)</li>
-                </ul>
+                <div class="guide-checklist">
+                    <div class="guide-checkitem"><i class="bi bi-check-circle-fill"></i><span><strong>Report profile:</strong> country, government unit, city/region where applicable, currency, and financial year.</span></div>
+                    <div class="guide-checkitem"><i class="bi bi-check-circle-fill"></i><span><strong>Baseline figures:</strong> actual OSR, population, GDP per capita if available, and local economic profile.</span></div>
+                    <div class="guide-checkitem"><i class="bi bi-check-circle-fill"></i><span><strong>Gap analysis:</strong> at least one revenue stream with enough data for ROSRA to calculate gaps.</span></div>
+                    <div class="guide-checkitem"><i class="bi bi-check-circle-fill"></i><span><strong>Prioritization:</strong> selected streams ranked for reform focus.</span></div>
+                    <div class="guide-checkitem"><i class="bi bi-check-circle-fill"></i><span><strong>Recommendations:</strong> selected solutions and implementation actions for a Full report.</span></div>
+                    <div class="guide-checkitem"><i class="bi bi-check-circle-fill"></i><span><strong>Review readiness:</strong> check unusual assumptions, very large values, and missing notes before submitting.</span></div>
+                </div>
 
                 <h3>How to Submit</h3>
                 <ol>
@@ -1164,9 +1299,9 @@
                         <tr><th>Level</th><th>Criteria</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td><strong>Metadata</strong></td><td>Only location and financial information entered</td></tr>
+                        <tr><td><strong>Profile only</strong> <span class="text-muted">(Metadata)</span></td><td>Only report profile, location, and financial information entered; no stream-level data yet</td></tr>
                         <tr><td><strong>Partial</strong></td><td>At least one revenue stream has data, but analysis sections incomplete</td></tr>
-                        <tr><td><strong>Full</strong></td><td>Stream data + root causes + recommendations + prioritization all completed</td></tr>
+                        <tr><td><strong>Full</strong></td><td>Stream data, prioritization, and recommendations completed</td></tr>
                     </tbody>
                 </table>
 
@@ -1234,6 +1369,18 @@
                     <li><strong>Assign Reviewer</strong> &mdash; assign a specific reviewer to a report</li>
                     <li><strong>Unlock Validated Report</strong> &mdash; reopen a validated report for further edits</li>
                 </ul>
+
+                <h3>Reviewer/Admin Handover Notes</h3>
+                <table class="guide-table">
+                    <thead>
+                        <tr><th>Role</th><th>What to check</th><th>Expected result</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Reviewer</strong></td><td>Completeness indicators, stream totals, assumptions, selected solutions, and author notes.</td><td>Validate the report or request a revision with clear comments.</td></tr>
+                        <tr><td><strong>Admin</strong></td><td>Reviewer assignment, stuck submissions, validated reports that need unlocking, and deleted report recovery.</td><td>Keep the review queue moving without changing report content unnecessarily.</td></tr>
+                        <tr><td><strong>Author</strong></td><td>Revision comments, missing fields, and any values questioned by the reviewer.</td><td>Edit the draft and resubmit a clearer version.</td></tr>
+                    </tbody>
+                </table>
             </section>
 
             <!-- 10. Exporting -->
@@ -1251,7 +1398,7 @@
                     </thead>
                     <tbody>
                         <tr><td><strong>Print Quick Estimate</strong></td><td>Macro-view OSR potential estimate only</td></tr>
-                        <tr><td><strong>Print Detailed Diagnostic</strong></td><td>Stream-by-stream gap analysis, prioritisation, selected solutions, and recommendations</td></tr>
+                        <tr><td><strong>Print Detailed Diagnostic</strong></td><td>Stream-by-stream gap analysis, prioritisation, and selected recommendation cards</td></tr>
                         <tr><td><strong>Print Full Report</strong></td><td>Complete report with all sections</td></tr>
                     </tbody>
                 </table>
@@ -1405,7 +1552,7 @@
                         <i class="bi bi-chevron-down"></i>
                     </div>
                     <div id="faq5" class="collapse faq-answer">
-                        <p><strong>Metadata</strong> means only location/financial info is filled. <strong>Partial</strong> means at least one revenue stream has data. <strong>Full</strong> means streams, root causes, recommendations, and prioritization are all completed.</p>
+                        <p><strong>Metadata</strong> means only report profile, location, and financial info is filled. <strong>Partial</strong> means at least one revenue stream has data. <strong>Full</strong> means stream data, prioritization, and recommendations are completed.</p>
                     </div>
                 </div>
 
@@ -1446,6 +1593,58 @@
                     </div>
                     <div id="faq9" class="collapse faq-answer">
                         <p>Use the <strong>Export</strong> button in the left sidebar. Choose PDF for formatted documents with charts, or Excel for raw data tables. You can also use <strong>Print</strong> for a browser-based print layout.</p>
+                    </div>
+                </div>
+
+                <h3>Troubleshooting</h3>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq10" aria-expanded="false">
+                        My report did not save. What should I check?
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq10" class="collapse faq-answer">
+                        <p>Confirm you are still signed in, check that required fields are complete, and click <strong>Save</strong> again. If the page has been open for a long time, copy any long text entries before refreshing so you do not lose recent edits.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq11" aria-expanded="false">
+                        PDF export is not working. What should I do?
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq11" class="collapse faq-answer">
+                        <p>Try again after a minute, especially on a fresh deployment where the PDF browser engine may still be starting. If it still fails, use <strong>Print Full Report</strong> as a temporary browser print option and contact the system administrator.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq12" aria-expanded="false">
+                        I cannot find a report on my dashboard.
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq12" class="collapse faq-answer">
+                        <p>Check the <strong>Archived</strong> tab, clear search filters, and confirm you are signed in with the same email account used to create the report. If the report was deleted, an administrator can check the Deleted Reports page.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq13" aria-expanded="false">
+                        I forgot my password.
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq13" class="collapse faq-answer">
+                        <p>Contact your ROSRA system administrator for account help. If your organization uses UN account sign-in, use the UN account recovery process instead of creating a duplicate ROSRA account.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" data-bs-toggle="collapse" data-bs-target="#faq14" aria-expanded="false">
+                        The language did not change.
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div id="faq14" class="collapse faq-answer">
+                        <p>Select the language again from the top navigation, then refresh the page. Interface labels should change, but report titles and narrative text remain in the language originally typed by the user.</p>
                     </div>
                 </div>
             </section>

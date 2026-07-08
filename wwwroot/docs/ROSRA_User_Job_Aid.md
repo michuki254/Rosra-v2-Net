@@ -53,7 +53,11 @@ ROSRA helps you identify revenue gaps, prioritize reforms, and develop actionabl
    - **Organization** (e.g., your municipality or agency name)
    - **Phone Number**
    - **Password** (and confirm it)
+   - **Consent to be contacted** for ROSRA follow-up, if needed
+   - **Privacy/data-use acknowledgement** before account creation
 5. Click **Register**. You will be automatically logged in and redirected to the application.
+
+**Privacy note:** The consent and data-use acknowledgement confirm that ROSRA may use your account details and report metadata to support the assessment workflow. Report content should be treated as official working data for your jurisdiction and shared only with users who are meant to review or administer the assessment.
 
 ### 2.2 Logging In
 
@@ -150,6 +154,34 @@ ROSRA offers two analytical approaches. Select the one that fits your needs:
 
 Click the **Top-Down** or **Bottom-Up** tab at the top of the main content area to switch between approaches.
 
+### 4.4 Visual Walkthrough
+
+These screenshots show the main areas new users will work through. The exact fields may vary by country, role, and report status.
+
+![Local government profile form](../images/job-aid/local-government-profile.png)
+
+**Local government profile:** Start by selecting the country and government unit, then enter the fiscal year, OSR, population, and local economic profile.
+
+![Quick Estimate setup](../images/job-aid/quick-estimate-profile.png)
+
+**Quick Estimate setup:** Complete the required profile fields, then click **Get Analysis** to generate the macro estimate.
+
+![Quick Estimate results](../images/job-aid/quick-estimate-results.png)
+
+**Quick Estimate result:** Use the potential, estimated room to improve, and frontier index as a headline benchmark before the detailed diagnostic.
+
+![Detailed Diagnostic gap analysis](../images/job-aid/detailed-gap-analysis.png)
+
+**Gap Analysis:** Enter stream-level data and review the calculated coverage, compliance, valuation, liability, and mixed gaps.
+
+![Prioritization screen](../images/job-aid/prioritization.png)
+
+**Prioritization:** Rank streams, include or exclude them from the reform focus, and sequence the most important gaps.
+
+![Recommendations screen](../images/job-aid/recommendations.png)
+
+**Recommendations:** Select solution cards, review timelines, and track implementation actions for the final plan.
+
 ---
 
 ## 5. Top-Down Approach (Quick Estimate)
@@ -171,6 +203,16 @@ The Top-Down approach provides a rapid OSR potential estimate based on aggregate
    - Peer subnational government (SNG) benchmarks from the same country and income group.
 4. Review the estimated revenue potential and gap analysis summary.
 
+**Example input set:**
+
+| Field | Example |
+|---|---|
+| **Country / Government Unit** | Kenya / Kilifi |
+| **Financial Year** | 2024 |
+| **Own-Source Revenue** | KSh 1,209,000,000 collected locally |
+| **Population** | 1,737,000 residents |
+| **Local Economic Profile** | Regional service centre |
+
 ### 5.2 When to Use Top-Down
 
 - Initial scoping of revenue potential before a detailed study.
@@ -182,7 +224,7 @@ The Top-Down approach provides a rapid OSR potential estimate based on aggregate
 
 ## 6. Bottom-Up Approach (Detailed Analysis)
 
-The Bottom-Up approach follows a structured 4-step pipeline for comprehensive revenue diagnostics and reform planning.
+The Bottom-Up approach follows a structured 3-step workflow for comprehensive revenue diagnostics and reform planning.
 
 ### Step 1: Gap Analysis (Diagnostic)
 
@@ -280,6 +322,15 @@ This tab provides a **consolidated summary** of all revenue gaps across all stre
 - Total Valuation/Liability Gap (all streams combined)
 - **Grand Total Functional Gap** -- The total additional revenue your jurisdiction could potentially collect
 
+**Example data to prepare before entry:**
+
+| Stream | Example data |
+|---|---|
+| **Property Tax** | Registered properties, estimated unregistered properties, compliant payers, assessed value, market value, billed amount, outstanding amount, and collected revenue |
+| **Business License** | Registered businesses, estimated unregistered percentage, billed amount, outstanding amount, statutory average fee, and realistic improvement percentage |
+| **User Charges** | Units, daily or monthly rate, collection rate, operating days, and any separate daily/monthly components |
+| **Generic Streams** | Stream name, collection basis, actual collections, billed amounts, and assumptions used to estimate missing coverage or compliance |
+
 ---
 
 ### Step 2: Prioritization
@@ -304,61 +355,23 @@ After completing the Gap Analysis, this step helps you rank and prioritize reven
 
 ---
 
-### Step 3: Overview & Solutions Selection
+### Step 3: Recommendations
 
-Navigate to **Bottom-Up > Step 3: Overview & Solutions Selection**.
+Navigate to **Bottom-Up > Step 3: Recommendations**.
 
-This step connects your diagnostic findings to a **solutions database** of proven reform interventions:
+This final step connects your prioritized gaps to practical reform options and helps you build a focused recommendation set:
 
-1. For each prioritized revenue stream, the system displays relevant solutions organized by gap type:
-   - **Compliance Solutions** -- Improving collection from registered/licensed entities
-   - **Coverage Solutions** -- Expanding the tax/fee base to unregistered entities
-   - **Valuation Solutions** (Property Tax) -- Updating property assessments
-   - **Liability Solutions** (Licenses) -- Aligning fee schedules with statutory rates
-
-2. Solutions are further categorized as:
-   - **Generic Solutions** -- Applicable to any revenue stream
-   - **Property Tax-Specific** -- Tailored for property tax reform
-   - **Business License-Specific** -- Tailored for license reform
-
-3. For each solution, review:
-   - Description of the intervention
-   - Implementation approach
-   - Expected timeline
-   - Resource requirements
-
-4. **Select the solutions** you plan to implement by clicking on them. Selected solutions will be carried forward into your recommendations.
-
----
-
-### Step 4: Recommendations
-
-Navigate to **Bottom-Up > Step 4: Recommendations**.
-
-This final step synthesizes your analysis into an actionable reform plan:
-
-#### 4a. Problem Statement
-Write a clear description of the current revenue situation, including:
-- Current revenue performance vs. potential
-- Key challenges and barriers
-- Impact on service delivery
-
-#### 4b. Root Causes
-List the underlying causes of revenue underperformance:
-- Click **Add Root Cause** to add each cause
-- Examples: outdated cadastre, weak enforcement, low political will, insufficient staffing
-
-#### 4c. Recommendation Summary
-Write an overall summary of proposed reforms based on the solutions selected in Step 3.
-
-#### 4d. Action Items
-Create specific, actionable reform tasks:
-- Click **Add Action Item** to create each task
-- For each item, specify:
-  - **Action description** -- What needs to be done
-  - **Priority level** -- High, Medium, or Low
-  - **Responsible party** (optional)
-  - **Timeline** (optional)
+1. ROSRA presents a curated library of **82 evidence-based solution cards**, narrowed automatically to the streams and gap types you kept in Prioritization.
+2. Use the filter chips to focus cards by stream, gap type, timeline, and feasibility. All filters are selected by default; deselecting a filter hides cards outside that filter.
+3. Summary cards update with the currently visible recommendation set:
+   - **Solutions Selected** -- selected cards in the current view
+   - **Quick Wins** -- actions expected in less than 1 year
+   - **Medium Term** -- actions expected in 1-3 years
+   - **Long Term** -- actions expected in 3+ years
+4. In **Solution Cards**, review each card and select the reforms you plan to include.
+5. Use **Saved Cards** to shortlist cards for discussion before finalising the recommendation set.
+6. Use **Timeline View** to see selected reforms grouped by Quick Wins, Medium Term, and Long Term.
+7. Use **Progress Tracker** to record implementation progress.
 
 ---
 
@@ -418,6 +431,17 @@ Submit your report when you have completed your analysis and are ready for exper
 - Completed at least one revenue stream in the Gap Analysis
 - Added root causes and recommendations (for Full completion level)
 
+Use this quick checklist before submitting:
+
+| Area | Check |
+|---|---|
+| **Report profile** | Country, government unit, city/region where applicable, currency, and financial year are complete |
+| **Baseline figures** | Actual OSR, population, GDP per capita if available, and local economic profile are entered |
+| **Gap analysis** | At least one revenue stream has enough data for ROSRA to calculate gaps |
+| **Prioritization** | Selected streams are ranked for reform focus |
+| **Recommendations** | Selected solutions and implementation actions are included for a Full report |
+| **Review readiness** | Unusual assumptions, very large values, and missing notes have been checked |
+
 ### 8.2 How to Submit
 
 1. Go to your **Dashboard**.
@@ -432,9 +456,9 @@ When you submit, the system automatically assesses your report's completeness:
 
 | Level | Criteria |
 |---|---|
-| **Metadata** | Only location and financial information entered |
+| **Profile only (Metadata)** | Only report profile, location, and financial information entered; no stream-level data yet |
 | **Partial** | At least one revenue stream has data, but analysis sections are incomplete |
-| **Full** | Stream data + root causes + recommendations + prioritization all completed |
+| **Full** | Stream data, prioritization, and recommendations completed |
 
 ### 8.4 After Submission
 
@@ -494,6 +518,14 @@ Draft --> Submitted --> Under Review --> Validated
 
 - **Assign Reviewer** -- Assign a specific reviewer to a report.
 - **Unlock Validated Report** -- Reopen a validated report for further edits if needed.
+
+### 9.5 Reviewer/Admin Handover Notes
+
+| Role | What to Check | Expected Result |
+|---|---|---|
+| **Reviewer** | Completeness indicators, stream totals, assumptions, selected solutions, and author notes | Validate the report or request a revision with clear comments |
+| **Admin** | Reviewer assignment, stuck submissions, validated reports that need unlocking, and deleted report recovery | Keep the review queue moving without changing report content unnecessarily |
+| **Author** | Revision comments, missing fields, and any values questioned by the reviewer | Edit the draft and resubmit a clearer version |
 
 ---
 
@@ -696,7 +728,7 @@ A: The report status changes to **Needs Revision** and appears on your dashboard
 A: Regular users can soft-delete reports (move to trash). Only administrators can permanently delete reports from the Deleted Reports page.
 
 **Q: How is the completion level determined?**
-A: The system checks what sections of your report have data. **Metadata** means only location/financial info is filled. **Partial** means at least one revenue stream has data. **Full** means streams, root causes, recommendations, and prioritization are all completed.
+A: The system checks what sections of your report have data. **Metadata** means only report profile, location, and financial info is filled. **Partial** means at least one revenue stream has data. **Full** means stream data, prioritization, and recommendations are completed.
 
 **Q: Can I use both Top-Down and Bottom-Up approaches in the same report?**
 A: Yes. Both approaches exist within the same report. You can fill in the Top-Down quick estimate and also complete the detailed Bottom-Up analysis. Switch between them using the tabs at the top of the editor.
@@ -709,6 +741,21 @@ A: Users with the **Reviewer** or **Admin** role can access the Submission Queue
 
 **Q: How do I export charts and data for presentations?**
 A: Use the **Export** button in the left sidebar. Choose PDF for formatted documents with charts, or Excel for raw data tables. You can also use **Print** for a browser-based print layout.
+
+**Q: My report did not save. What should I check?**
+A: Confirm you are still signed in, check that required fields are complete, and click **Save** again. If the page has been open for a long time, copy any long text entries before refreshing so you do not lose recent edits.
+
+**Q: PDF export is not working. What should I do?**
+A: Try again after a minute, especially on a fresh deployment where the PDF browser engine may still be starting. If it still fails, use **Print Full Report** as a temporary browser print option and contact the system administrator.
+
+**Q: I cannot find a report on my dashboard.**
+A: Check the **Archived** tab, clear search filters, and confirm you are signed in with the same email account used to create the report. If the report was deleted, an administrator can check the Deleted Reports page.
+
+**Q: I forgot my password.**
+A: Contact your ROSRA system administrator for account help. If your organization uses UN account sign-in, use the UN account recovery process instead of creating a duplicate ROSRA account.
+
+**Q: The language did not change.**
+A: Select the language again from the top navigation, then refresh the page. Interface labels should change, but report titles and narrative text remain in the language originally typed by the user.
 
 ---
 
