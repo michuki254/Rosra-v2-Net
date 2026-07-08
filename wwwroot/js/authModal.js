@@ -215,6 +215,8 @@ window.AuthModal = (function () {
         const organization = document.getElementById('registerOrganization').value.trim();
         const password = document.getElementById('registerPassword').value;
         const confirmPassword = document.getElementById('registerConfirmPassword').value;
+        const consentToBeContacted = document.getElementById('registerConsentToBeContacted').checked;
+        const privacyDataUseAcknowledged = document.getElementById('registerPrivacyDataUseAcknowledged').checked;
 
         // Validate
         let isValid = true;
@@ -253,6 +255,16 @@ window.AuthModal = (function () {
             isValid = false;
         }
 
+        if (!consentToBeContacted) {
+            showFieldError('registerConsentToBeContacted', 'registerConsentToBeContactedError', 'Consent to be contacted is required');
+            isValid = false;
+        }
+
+        if (!privacyDataUseAcknowledged) {
+            showFieldError('registerPrivacyDataUseAcknowledged', 'registerPrivacyDataUseAcknowledgedError', 'Privacy and data-use acknowledgement is required');
+            isValid = false;
+        }
+
         if (!isValid) return;
 
         // Show loading state
@@ -273,6 +285,8 @@ window.AuthModal = (function () {
                 lastName: lastName,
                 email: email,
                 organization: organization,
+                consentToBeContacted: consentToBeContacted,
+                privacyDataUseAcknowledged: privacyDataUseAcknowledged,
                 password: password,
                 confirmPassword: confirmPassword
             })

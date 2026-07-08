@@ -108,6 +108,22 @@
                                 <div class="invalid-feedback" id="registerConfirmPasswordError"></div>
                             </div>
 
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="registerConsentToBeContacted" name="ConsentToBeContacted" required>
+                                <label for="registerConsentToBeContacted" class="form-check-label">
+                                    I agree that UN-Habitat may contact me about my ROSRA account, reports, or follow-up support.
+                                </label>
+                                <div class="invalid-feedback" id="registerConsentToBeContactedError"></div>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="registerPrivacyDataUseAcknowledged" name="PrivacyDataUseAcknowledged" required>
+                                <label for="registerPrivacyDataUseAcknowledged" class="form-check-label">
+                                    I understand that ROSRA stores the information and report data I enter, and that submitted data may be reviewed by UN-Habitat for internal analysis, quality control, tool improvement, and reporting.
+                                </label>
+                                <div class="invalid-feedback" id="registerPrivacyDataUseAcknowledgedError"></div>
+                            </div>
+
                             <button type="submit" class="btn btn-auth-primary w-100" id="registerSubmitBtn">
                                 <span class="btn-text">@Localizer["CreateAccount"]</span>
                                 <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
