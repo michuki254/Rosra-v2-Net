@@ -1162,6 +1162,59 @@ document.addEventListener('DOMContentLoaded', function() {
         streams = [];
         let genericColorIndex = 0;
 
+        const createPropertyTaxFallbackStream = (stateStream = null) => {
+            const propertyTaxGap = parseFloat(localStorage.getItem('propertyTaxGapValue')) || 0;
+            if (propertyTaxGap <= 0) return null;
+
+            return {
+                ...(stateStream || {}),
+                id: 'property-tax',
+                name: 'Property Tax',
+                type: 'property-tax',
+                totalFunctionalGap: propertyTaxGap,
+                currentRevenue: parseFloat(localStorage.getItem('propertyTaxCurrentValue')) || 0,
+                potentialRevenue: parseFloat(localStorage.getItem('propertyTaxPotentialValue')) || 0,
+                complianceGap: parseFloat(localStorage.getItem('propertyTaxComplianceGap')) || 0,
+                coverageGap: parseFloat(localStorage.getItem('propertyTaxCoverageGap')) || 0,
+                valuationGap: parseFloat(localStorage.getItem('propertyTaxValuationGap')) || 0,
+                complianceRatio: parseFloat(localStorage.getItem('propertyTaxComplianceRatio')) || 0,
+                coverageRatio: parseFloat(localStorage.getItem('propertyTaxCoverageRatio')) || 0,
+                included: stateStream ? stateStream.included !== false : true,
+                adjustedRank: stateStream ? (stateStream.adjustedRank ?? null) : null,
+                color: streamColors['Property Tax']
+            };
+        };
+
+        const createBusinessLicenseFallbackStream = (stateStream = null) => {
+            const licenseGap = parseFloat(localStorage.getItem('licenseGapValue')) || 0;
+            if (licenseGap <= 0) return null;
+
+            return {
+                ...(stateStream || {}),
+                id: 'business-license',
+                name: 'Business License',
+                type: 'business-license',
+                totalFunctionalGap: licenseGap,
+                currentRevenue: parseFloat(localStorage.getItem('licenseCurrentValue')) || 0,
+                potentialRevenue: parseFloat(localStorage.getItem('licensePotentialValue')) || 0,
+                complianceGap: parseFloat(localStorage.getItem('licenseComplianceGap')) || 0,
+                coverageGap: parseFloat(localStorage.getItem('licenseCoverageGap')) || 0,
+                liabilityGap: parseFloat(localStorage.getItem('licenseLiabilityGap')) || 0,
+                complianceRatio: parseFloat(localStorage.getItem('licenseComplianceRatio')) || 0,
+                coverageRatio: parseFloat(localStorage.getItem('licenseCoverageRatio')) || 0,
+                included: stateStream ? stateStream.included !== false : true,
+                adjustedRank: stateStream ? (stateStream.adjustedRank ?? null) : null,
+                color: streamColors['Business License']
+            };
+        };
+
+        const addFixedFallbackStream = (fallbackStream) => {
+            if (!fallbackStream) return false;
+            if (streams.some(s => s.id === fallbackStream.id)) return false;
+            streams.push(fallbackStream);
+            return true;
+        };
+
         // Try to use RosraStateManager first
         if (typeof RosraStateManager !== 'undefined') {
             const stateStreams = RosraStateManager.getStreams();
@@ -1194,6 +1247,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 });
 
+                const propertyState = stateStreams.find(s => s.id === 'property-tax' || s.type === 'property-tax');
+                const licenseState = stateStreams.find(s => s.id === 'business-license' || s.type === 'business-license');
+                const recoveredPropertyTax = addFixedFallbackStream(createPropertyTaxFallbackStream(propertyState));
+                const recoveredBusinessLicense = addFixedFallbackStream(createBusinessLicenseFallbackStream(licenseState));
+
+                if (recoveredPropertyTax || recoveredBusinessLicense) {
+                    console.log('Prioritization: Recovered fixed stream data from localStorage fallback', {
+                        propertyTax: recoveredPropertyTax,
+                        businessLicense: recoveredBusinessLicense
+                    });
+                }
+
                 console.log('Prioritization: Loaded', streams.length, 'populated streams from RosraStateManager (skipped',
                             (stateStreams.length - populatedStreams.length), 'empty streams)');
 
@@ -1213,46 +1278,10 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Prioritization: Falling back to localStorage');
 
         // Load Property Tax data
-        const propertyTaxGap = parseFloat(localStorage.getItem('propertyTaxGapValue')) || 0;
-        if (propertyTaxGap > 0) {
-            streams.push({
-                id: 'property-tax',
-                name: 'Property Tax',
-                type: 'property-tax',
-                totalFunctionalGap: propertyTaxGap,
-                currentRevenue: parseFloat(localStorage.getItem('propertyTaxCurrentValue')) || 0,
-                potentialRevenue: parseFloat(localStorage.getItem('propertyTaxPotentialValue')) || 0,
-                complianceGap: parseFloat(localStorage.getItem('propertyTaxComplianceGap')) || 0,
-                coverageGap: parseFloat(localStorage.getItem('propertyTaxCoverageGap')) || 0,
-                valuationGap: parseFloat(localStorage.getItem('propertyTaxValuationGap')) || 0,
-                complianceRatio: parseFloat(localStorage.getItem('propertyTaxComplianceRatio')) || 0,
-                coverageRatio: parseFloat(localStorage.getItem('propertyTaxCoverageRatio')) || 0,
-                included: true,
-                adjustedRank: null,
-                color: streamColors['Property Tax']
-            });
-        }
+        addFixedFallbackStream(createPropertyTaxFallbackStream());
 
         // Load Business License data
-        const licenseGap = parseFloat(localStorage.getItem('licenseGapValue')) || 0;
-        if (licenseGap > 0) {
-            streams.push({
-                id: 'business-license',
-                name: 'Business License',
-                type: 'business-license',
-                totalFunctionalGap: licenseGap,
-                currentRevenue: parseFloat(localStorage.getItem('licenseCurrentValue')) || 0,
-                potentialRevenue: parseFloat(localStorage.getItem('licensePotentialValue')) || 0,
-                complianceGap: parseFloat(localStorage.getItem('licenseComplianceGap')) || 0,
-                coverageGap: parseFloat(localStorage.getItem('licenseCoverageGap')) || 0,
-                liabilityGap: parseFloat(localStorage.getItem('licenseLiabilityGap')) || 0,
-                complianceRatio: parseFloat(localStorage.getItem('licenseComplianceRatio')) || 0,
-                coverageRatio: parseFloat(localStorage.getItem('licenseCoverageRatio')) || 0,
-                included: true,
-                adjustedRank: null,
-                color: streamColors['Business License']
-            });
-        }
+        addFixedFallbackStream(createBusinessLicenseFallbackStream());
 
         // Load Generic Streams data
         const genericStreamsJson = localStorage.getItem('genericStreamsData');
