@@ -91,7 +91,10 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.Lax;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.ExpireTimeSpan = TimeSpan.FromHours(2);
+    // Idle-session policy: sign out after 15 minutes of inactivity. Sliding renewal
+    // keeps active users logged in; wwwroot/js/idle-timeout.js enforces the same
+    // limit client-side so an open-but-idle page visibly logs out too.
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
     options.SlidingExpiration = true;
 });
 
@@ -198,7 +201,8 @@ builder.Services.AddSingleton<RosraApp.Services.WofiPotentialEstimator>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    // Match the 15-minute idle-logout policy on the auth cookie above.
+    options.IdleTimeout = TimeSpan.FromMinutes(15);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     // Audit M-4: Strict + Always for the session cookie too.
