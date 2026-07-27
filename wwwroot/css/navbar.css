@@ -312,6 +312,11 @@ header.scrolled .logo-container {
     z-index: 1050;
     border-top: 3px solid var(--sdg11-orange);
     background: var(--dropdown-bg);
+    /* The Admin section makes this menu taller than the viewport; cap it just
+       below the navbar (~90px) and scroll inside so Logout stays reachable. */
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 /* ========================================
