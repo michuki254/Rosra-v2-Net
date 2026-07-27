@@ -352,7 +352,10 @@ app.Use(async (context, next) =>
         "img-src 'self' data: https:; " +
         "object-src 'none'; " +
         "base-uri 'self'; " +
-        "form-action 'self'; " +
+        // form-action must allow the Entra ID authorize endpoint: the SSO login form
+        // posts to /Account/ExternalLogin which 302s to login.microsoftonline.com, and
+        // Chrome enforces form-action against the redirect target of a form submission.
+        "form-action 'self' https://login.microsoftonline.com; " +
         connectSrc);
 
     // Audit 9.3: forms containing sensitive information must not be cached
