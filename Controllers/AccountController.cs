@@ -229,14 +229,12 @@ namespace RosraApp.Controllers
             return LocalRedirectOrHome(returnUrl);
         }
 
-        // Maps configured UN admin UPNs (EntraId:AdminEmails, comma-separated) to the Admin role.
+        // Every SSO sign-in is UN staff (the Entra app registration is tenant-only), so
+        // all SSO users receive the Admin role. External subnational-government users
+        // register with email + password and stay in the "User" role.
         private async Task EnsureAdminRoleAsync(string email)
         {
             if (string.IsNullOrEmpty(email)) return;
-            var adminEmails = (_configuration["EntraId:AdminEmails"] ?? string.Empty)
-                .Split(',', System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries);
-            if (!adminEmails.Any(a => string.Equals(a, email, System.StringComparison.OrdinalIgnoreCase))) return;
-
             var user = await _userManager.FindByEmailAsync(email);
             if (user != null && !await _userManager.IsInRoleAsync(user, "Admin"))
             {
