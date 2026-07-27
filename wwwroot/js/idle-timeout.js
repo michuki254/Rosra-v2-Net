@@ -60,6 +60,16 @@
         if (warningShown) hideWarning();
     }
 
+    // A manual Logout click on a stale page hits the same antiforgery 400, so
+    // route the form's own submit through the resilient path too.
+    var logoutForm = document.getElementById('logoutForm');
+    if (logoutForm && window.fetch) {
+        logoutForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            logout();
+        });
+    }
+
     // Passive, throttled-by-nature activity signals.
     ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'].forEach(function (evt) {
         window.addEventListener(evt, onActivity, { passive: true });
