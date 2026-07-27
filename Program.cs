@@ -77,16 +77,19 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 // Point [Authorize] redirects at the custom AccountController instead of the
 // default scaffolded /Identity/Account/Login page.
 //
-// Audit M-4: pin the auth cookie to SameSite=Strict and Secure=Always. Strict eliminates
-// CSRF-via-auth-cookie on cross-site navigations; Always forces HTTPS even if the host
-// terminates TLS in front of us. Also cap absolute lifetime with sliding renewal so
-// stolen cookies don't live forever.
+// Audit M-4 (amended for SSO): SameSite=Lax + Secure=Always on the auth cookie. Lax still
+// withholds the cookie on cross-site POSTs (the CSRF vector — all state-changing actions
+// are POSTs guarded by antiforgery anyway) but, unlike Strict, sends it on top-level
+// navigations. Strict broke Entra ID sign-in: the cookie is issued mid redirect-chain
+// from login.microsoftonline.com, so the browser withheld it on the post-login landing
+// page and users appeared logged out until their next same-site click. Also cap absolute
+// lifetime with sliding renewal so stolen cookies don't live forever.
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
     options.Cookie.HttpOnly = true;
-    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SameSite = SameSiteMode.Lax;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.ExpireTimeSpan = TimeSpan.FromHours(2);
     options.SlidingExpiration = true;
