@@ -326,7 +326,13 @@ header.scrolled .logo-container {
 }
 
 .user-mega-menu.user-mega-admin {
-    min-width: 700px;
+    /* Never wider than the viewport, and pinned to the toggle's right edge so
+       the panel grows leftwards into the page instead of off-screen. The
+       explicit right/left override is needed because the hover-display CSS
+       above bypasses Bootstrap's own dropdown-menu-end positioning. */
+    min-width: min(700px, calc(100vw - 2rem));
+    right: 0;
+    left: auto;
 }
 
 .user-mega-admin .user-mega-grid {
