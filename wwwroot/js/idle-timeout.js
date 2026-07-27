@@ -15,11 +15,22 @@
     var banner = null;
 
     function logout() {
+        // The server's sliding cookie expires at the same 15-minute mark this
+        // timer fires on, so a plain form.submit() can lose the race: the
+        // antiforgery token no longer matches the (now anonymous) request and
+        // the user lands on a bare HTTP 400 page. Post the logout in the
+        // background instead and always finish on the login page — if the
+        // cookie is already dead the redirect alone is enough.
+        var goToLogin = function () { window.location.href = '/Account/Login'; };
         var form = document.getElementById('logoutForm');
-        if (form) {
-            form.submit();
+        if (form && window.fetch) {
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                credentials: 'same-origin'
+            }).then(goToLogin, goToLogin);
         } else {
-            window.location.href = '/Account/Login';
+            goToLogin();
         }
     }
 
