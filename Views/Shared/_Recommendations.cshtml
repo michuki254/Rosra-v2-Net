@@ -1873,8 +1873,9 @@
 <script src="~/js/solutionsDatabase.js" asp-append-version="true"></script>
 <!-- Full Solutions Database (detailed solution information) -->
 <script src="~/js/solutionsFullDatabase.js" asp-append-version="true"></script>
-<!-- html2pdf (jsPDF + html2canvas) — self-hosted to avoid CDN/CSP ambiguity -->
-<script src="~/lib/html2pdf/html2pdf.bundle.min.js" asp-append-version="true"></script>
+<!-- html2pdf removed (Burp 2.1): nothing calls it — PDF export is server-side
+     via HtmlToPdfService/Playwright — and its bundled DOMPurify 2.3.0 carried
+     four XSS/prototype-pollution CVEs. -->
 <script src="~/js/recommendationsModule.js" asp-append-version="true"></script>
 
 <script>

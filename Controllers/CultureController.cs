@@ -18,11 +18,20 @@ namespace RosraApp.Controllers
                 {
                     Expires = DateTimeOffset.UtcNow.AddYears(1),
                     IsEssential = true,
-                    SameSite = SameSiteMode.Lax
+                    SameSite = SameSiteMode.Lax,
+                    // Burp 5.2/6: no JS reads this cookie, so lock it down.
+                    Secure = true,
+                    HttpOnly = true
                 }
             );
 
-            return LocalRedirect(returnUrl ?? "/");
+            // Burp 7: don't reflect arbitrary attacker-supplied paths — validate and
+            // fall back to home instead of throwing (LocalRedirect 500s on bad input).
+            if (string.IsNullOrEmpty(returnUrl) || !Url.IsLocalUrl(returnUrl))
+            {
+                returnUrl = "/";
+            }
+            return LocalRedirect(returnUrl);
         }
     }
 }

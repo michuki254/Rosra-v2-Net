@@ -2375,6 +2375,7 @@ namespace RosraApp.Controllers
         /// </summary>
         [HttpGet]
         [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("api")]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<IActionResult> GetCountries()
         {
             try
@@ -2440,6 +2441,7 @@ namespace RosraApp.Controllers
         /// </summary>
         [HttpGet]
         [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("api")]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<IActionResult> GetStatesByCountry(string country)
         {
             try
@@ -2601,6 +2603,7 @@ namespace RosraApp.Controllers
         /// Get list of Peer SNGs for dropdown, optionally filtered by country code
         /// </summary>
         [HttpGet]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<IActionResult> GetPeerSNGs(string countryCode = null)
         {
             try

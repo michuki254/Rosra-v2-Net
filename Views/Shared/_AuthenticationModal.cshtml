@@ -29,7 +29,10 @@
                 <div class="tab-content pt-4" id="authTabContent">
                     <!-- Login Tab -->
                     <div class="tab-pane fade show active" id="loginPane" role="tabpanel" aria-labelledby="login-tab">
-                        <form id="ajaxLoginForm">
+                        @* method=post: these forms are submitted via AJAX, but without an
+                           explicit method a fallback (JS error / early Enter press) would GET
+                           the password into the URL, server logs and browser history. *@
+                        <form id="ajaxLoginForm" method="post" asp-controller="Account" asp-action="Login">
                             <div class="alert alert-danger d-none" id="loginError"></div>
 
                             <div class="mb-3">
@@ -63,7 +66,7 @@
 
                     <!-- Register Tab -->
                     <div class="tab-pane fade" id="registerPane" role="tabpanel" aria-labelledby="register-tab">
-                        <form id="ajaxRegisterForm">
+                        <form id="ajaxRegisterForm" method="post" asp-controller="Account" asp-action="Register">
                             <div class="alert alert-danger d-none" id="registerError"></div>
 
                             <div class="row">

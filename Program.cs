@@ -146,6 +146,14 @@ builder.Services.AddControllersWithViews(options =>
 builder.Services.AddAntiforgery(options =>
 {
     options.HeaderName = "RequestVerificationToken";
+    // Burp 5.1: the antiforgery cookie was issued without the Secure flag.
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
+// Burp 5.3: the TempData cookie (set e.g. on /Rosra/NewReport) lacked the Secure flag.
+builder.Services.Configure<Microsoft.AspNetCore.Mvc.ViewFeatures.CookieTempDataProviderOptions>(options =>
+{
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 // Add Authorization with Permission-based policies
